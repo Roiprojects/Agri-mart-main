@@ -1,0 +1,70 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --brand-green: #079447;
+    --brand-green-dark: #066832;
+    --brand-yellow: #F7C629;
+    --brand-lime: #B4D334;
+    --soft-cream: #FAFAF3;
+    --pale-green: #EFF7EA;
+    --dark-green-text: #183526;
+    --secondary-text: #596B60;
+    --border-subtle: #E2E8DF;
+  }
+
+  body {
+    background-color: var(--soft-cream);
+    color: var(--dark-green-text);
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    color: var(--dark-green-text);
+    font-weight: 700;
+  }
+}
+
+/* Accessible focus ring utilities */
+.focus-ring {
+  @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-agri-green focus-visible:ring-offset-2 focus-visible:ring-offset-white;
+}
+
+/* Restrained, tactile hover card lift */
+.card-hover {
+  @apply transition-all duration-200 ease-out hover:-translate-y-1 hover:shadow-hover hover:border-agri-green/40;
+}
+
+/* Restrained image zoom */
+.img-zoom {
+  @apply transition-transform duration-300 ease-out group-hover:scale-105;
+}
+
+/* Custom subtle scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f5f0;
+}
+::-webkit-scrollbar-thumb {
+  background: #c5d6c2;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #9ab495;
+}
+
+/* Strict respect for prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

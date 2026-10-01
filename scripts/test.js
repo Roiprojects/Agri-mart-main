@@ -1,0 +1,1 @@
+console.log(" Node generator test works!);

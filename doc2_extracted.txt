@@ -1,0 +1,757 @@
+AGRI MART
+COMPLETE SITE ARCHITECTURE REPORT
+E-Commerce Platform · AI &amp; Recommendations · Rental ServicesService Booking · Lead Management · Multi-Warehouse · Mobile AppRepair &amp; Service Management · Finance Incentive Commission Portal
+Prepared by: ROI Infotech SolutionsPrepared for: Agri Mart (GreenShield Industries Pvt Ltd)Date: August 2026Project Reference: Ref No: 2026-27/P163
+TABLE OF CONTENTS
+1
+3
+2
+4
+3
+5
+4
+6
+5
+7
+6
+8
+7
+8
+8
+9
+9
+9
+10
+10
+11
+10
+12
+11
+13
+12
+14
+13
+15
+13
+16
+14
+17
+15
+18
+16
+19
+16
+20
+18
+21
+18
+22
+19
+23
+19
+24
+20
+25
+21
+26
+22
+27
+23
+28
+24
+29
+24
+30
+25
+31
+25
+32
+26
+1. Executive Summary
+Agri Mart is a comprehensive, multi-module digital agricultural platform developed for GreenShield Industries Pvt Ltd. The platform integrates E-Commerce, AI-driven product recommendations, rental services, service booking, lead management, multi-warehouse operations, crop lifecycle management, equipment repair &amp; service management, and a finance incentive commission portal — all accessible through web and mobile applications.
+The platform is designed to serve farmers, agricultural dealers, warehouse operators, procurement teams, sales teams, service centers, and administrators through role-based access, enabling end-to-end digitization of the agricultural supply chain.
+
+[TABLE]
+| Component | Platform | Cost (INR) | Timeline |
+| E-Commerce Website + Admin Panel | Web | ₹81,500 | 30–35 Days |
+| Multi-Warehouse Management System | Web | ₹48,000 | — |
+| Mobile Application (Android + iOS) | Mobile | ₹1,35,000 | 40–45 Days |
+| Repair &amp; Service Management System | Web | ₹31,500 | — |
+| Finance Incentive Commission Portal | Web | ₹20,000 | — |
+| Virtual Private Server (1 Year) | Infrastructure | ₹5,900 | — |
+| Android + iOS Registration Charges | Platform | ₹23,700 | — |
+[END TABLE]
+
+Total Project Value (exclusive of GST): ₹3,25,000 | Total with 18% GST: ₹3,83,500
+2. Project Overview &amp; Objectives
+The Agri Mart platform is designed as a unified digital ecosystem that connects every stakeholder in the agricultural value chain — from farmers purchasing products to warehouses fulfilling orders, procurement teams tracking crop cycles, sales teams managing leads, service centers repairing equipment, and administrators overseeing the entire operation.
+2.1 Business Objectives
+Enable farmers to discover, purchase, and receive agricultural products through an intelligent e-commerce platform.
+Provide AI-driven product recommendations based on crop type, soil, acreage, and farming stage.
+Facilitate rental of agricultural equipment on daily, weekly, or monthly basis.
+Enable booking of agricultural services (tractor, spraying, harvesting, etc.) via GPS-based smart requests.
+Manage dark warehouses with intelligent order allocation based on GPS and PIN code mapping.
+Track farmers through complete crop lifecycle stages for timely product recommendations and follow-ups.
+Manage post-sale repair and service of agricultural equipment across a 1,500+ dealer network.
+Provide a finance incentive commission portal for tracking dealer and sales incentives.
+Deliver native mobile experience on Android and iOS for customers and internal teams.
+2.2 Technology Partners
+This project is commissioned by GreenShield Industries Pvt Ltd, Bangalore, and will be executed by ROI Infotech Solutions. The project reference is Ref No: 2026-27/P163, dated 19-08-2026.
+3. System Architecture Overview
+The Agri Mart platform follows a modular, microservices-inspired architecture built around a central API layer that serves both the web application and mobile applications. The system is organized into the following architectural layers:
+3.1 Presentation Layer
+
+[TABLE]
+| ▸  Customer-facing Web Portal (Responsive) |
+| ▸  Native Android &amp; iOS Mobile Apps |
+| ▸  Super Admin Web Portal |
+| ▸  Warehouse Portal (Web) |
+| ▸  Procurement Portal (Web/Mobile) |
+| ▸  Sales Team Portal (Web/Mobile) |
+| ▸  Dealer/Service Center Portal |
+[END TABLE]
+
+3.2 Application Layer
+
+[TABLE]
+| ▸  E-Commerce Engine |
+| ▸  AI Recommendation Engine |
+| ▸  AI Chatbot Module |
+| ▸  Rental Management Module |
+| ▸  Service Request Module |
+| ▸  Lead Management (CRM) Module |
+| ▸  Warehouse Assignment Engine |
+| ▸  Crop Lifecycle Tracker |
+| ▸  Repair &amp; Service Management Module |
+| ▸  Commission Calculation Engine |
+| ▸  Notification Orchestrator |
+[END TABLE]
+
+3.3 Integration Layer
+
+[TABLE]
+| ▸  Payment Gateway Adapter (Razorpay/PhonePe/PayU) |
+| ▸  Logistics &amp; Shipping Adapter |
+| ▸  Google Maps / GPS Adapter |
+| ▸  SMS Gateway Adapter |
+| ▸  WhatsApp Business API Adapter |
+| ▸  PIN Code Serviceability API |
+| ▸  Third-party AI API Adapter |
+[END TABLE]
+
+3.4 Data Layer
+
+[TABLE]
+| ▸  Primary Database (Product, Order, Customer, Warehouse) |
+| ▸  CRM Database (Leads, Follow-ups, Communications) |
+| ▸  Service Management Database (Job Cards, Repairs, Parts) |
+| ▸  Analytics &amp; Reporting Data Warehouse |
+| ▸  File Storage (Images, Documents, Invoices) |
+[END TABLE]
+
+3.5 Infrastructure Layer
+
+[TABLE]
+| ▸  Virtual Private Server (VPS) Hosting |
+| ▸  SSL/TLS Certificates |
+| ▸  CDN for Static Assets |
+| ▸  Backup &amp; Disaster Recovery |
+| ▸  Monitoring &amp; Logging |
+[END TABLE]
+
+4. E-Commerce Website — Customer Portal
+The customer-facing web portal is a premium, responsive e-commerce platform designed specifically for agricultural product buyers. It features modern UI/UX, fast loading, and SEO-friendly structure.
+4.1 Website Design &amp; UX Features
+Premium Responsive Website — Mobile, Tablet, Desktop compatible
+Modern UI/UX with smooth navigation
+Smart Search with auto-suggestions
+Advanced Product Filters (Category, Brand, Price, Crop Type, Stage)
+Wishlist &amp; Recently Viewed Products
+Offers, Promotions &amp; Banner Management
+Testimonials, Blogs &amp; FAQs
+About Us, Contact, Privacy Policy, T&amp;C, Shipping Policy pages
+SSL Ready with HTTPS
+SEO Friendly URLs, Meta Titles, Sitemap, Schema Ready
+4.2 Customer Registration &amp; Profile
+Mobile OTP Login / Sign-Up
+Forgot Password functionality
+Profile Management (Name, Email, Mobile)
+Address Management — Multiple Shipping Addresses
+Farm Details — Farm Location (GPS), Farm Size, Crops Cultivated
+Order History, Rental History, Service Request History
+4.3 Product Management
+Unlimited Categories, Sub-Categories &amp; Products
+Product Images, Gallery &amp; Videos
+Product Specifications, Description &amp; Variants
+Product Reviews &amp; Ratings
+Related Products display
+Inventory &amp; Stock Management
+Admin-managed product catalogue
+4.4 Shopping &amp; Checkout
+Shopping Cart with quantity management
+Wishlist functionality
+Coupon / Discount System
+Order Placement with address selection
+Order Cancellation Module
+Delivery Charges Calculation
+System Validation — Nearby Warehouse (GPS/PIN Code) &amp; Delivery Serviceability
+Online Payment — UPI, Credit Card, Debit Card, Net Banking
+5. AI Product Recommendation Engine
+The AI Recommendation Engine uses an intelligent questionnaire-based approach to guide customers toward the most suitable agricultural products.
+5.1 Guided Questionnaire
+What crop are you growing?
+Soil type
+Acreage (farm size)
+Current farming stage
+Pest problems (if any)
+Irrigation method
+Budget range
+Location / Region
+Farming objective
+5.2 AI-Powered Recommendations
+Recommend suitable fertilizers based on crop and soil
+Recommend pesticides for identified pest problems
+Recommend seeds appropriate for the region and season
+Recommend farming equipment based on farm size and stage
+Recommend farming accessories and consumables
+Display best-selling products in the category
+Display recommended product combinations (fertilizer + pesticide combo)
+Cross-sell related products based on purchase history
+AI Search Assistance for natural language queries
+AI Customer Query Handling for common questions
+5.3 AI Integrations
+The platform supports modern AI capabilities including AI Chat Assistant, AI Product Recommendation Engine, AI Search Assistance, AI Customer Query Handling, AI FAQ Responses, AI Lead Qualification, and AI Personalized Suggestions. Usage-based charges from third-party AI providers are additional and borne by the client.
+6. AI Chatbot Integration
+A complete AI-powered chatbot is integrated into both the web and mobile platforms to provide instant customer support and guidance.
+Answer customer questions in natural language
+Product guidance and recommendations
+Rental assistance — help customers find and book equipment
+Service booking assistance — guide through service request flow
+FAQ handling — automated responses to common queries
+Lead generation — capture visitor interest and convert to leads
+Customer support — resolve issues in real-time
+Escalation to admin/support team when chatbot cannot resolve
+7. Rent a Product Module
+A dedicated rental marketplace allowing customers to rent agricultural equipment and products on flexible time periods.
+Product Listings with images, specifications, and rental rates
+Rental Categories (Power Weeders, Brush Cutters, Sprayers, Power Reapers, etc.)
+Daily Rental, Weekly Rental, Monthly Rental options
+Availability Calendar showing booked and free dates
+Rental Booking with date selection
+Security Deposit calculation and management
+Rental Payments — online payment integration
+Rental History for customers
+Rental Approval workflow — admin/staff approval required
+Rental Tracking — track active rentals and return dates
+Return Status management — on-time, late, damaged
+Admin Approval Workflow for all rental requests
+8. Rent a Service Module
+Customers can request on-field agricultural services through the platform.
+Tractor Services
+Rotavator Services
+Harvesting Services
+Spraying Services
+Cultivation Services
+Labour Services
+Soil Testing
+Farm Consultation
+Equipment Operators
+Any Custom Agricultural Service
+9. GPS-Based Smart Service Request System
+When a customer books a service through the platform, the system automatically captures all necessary location and service details.
+
+[TABLE]
+| GPS Coordinates | Automatically captured via device/mobile location |
+| Customer Location | Full address with pin on map |
+| Mobile Number | Customer contact number |
+| Customer Name | Full name of the requester |
+| Service Required | Type of service selected |
+| Preferred Date | Date for service delivery |
+| Preferred Time | Time slot preference |
+| Notes from Customer | Additional instructions or requirements |
+| Image Upload | Optional photos of the field/equipment/issue |
+[END TABLE]
+
+The complete request is automatically forwarded to the Super Admin Portal for processing and assignment to the appropriate service provider.
+10. Lead Management System (CRM)
+Every enquiry generated from the platform is automatically captured and stored in the CRM system for systematic follow-up and conversion.
+10.1 Lead Information Captured
+Customer Name, Mobile Number, Email
+GPS Location &amp; Full Address
+Interested Product / Service / Rental Request
+AI Recommendation History
+Source of Lead (Website, Mobile App, Chatbot, etc.)
+Lead Status (New, Assigned, Contacted, etc.)
+Follow-up Notes &amp; Follow-up Date
+Assigned Sales Executive
+Lead Conversion Status
+Customer Communication History
+10.2 Lead Stages Pipeline
+New → Assigned → Contacted → Interested → Follow-up → Quotation Sent → Converted → Closed
+10.3 Sales Team CRM Features
+Dashboard — Today's Orders, New/Repeat Customers, Upcoming Follow-ups, Sales Target
+Customer View — Purchase History, Current Crop Stage, Next Product Recommendation
+Call History, Schedule Visit, Add Remarks
+Lead Status Tracking with visual pipeline
+Upselling &amp; Product Recommendation tools
+11. Super Admin Portal
+The Super Admin Portal provides complete administrative control over the entire platform.
+11.1 Dashboard
+Sales Dashboard — Total sales, orders, revenue trends
+Revenue Reports — Daily, weekly, monthly, yearly
+Lead Reports — Lead count, conversion rate, source analysis
+Customer Reports — New registrations, active customers
+Product Reports — Top-selling products, inventory alerts
+Rental Reports — Active rentals, revenue, return status
+Service Reports — Service requests, completion rate
+Payment Reports — Transactions, refunds, pending payments
+11.2 Management Modules
+Product Management — Add/edit/delete products, manage variants
+Category Management — Hierarchical category structure
+Inventory Management — Stock levels, alerts, updates
+Orders Management — View, process, cancel orders
+Rental Management — Approve, track, manage rentals
+Service Request Management — Assign, track, complete services
+Customer Management — View, edit, segment customers
+Lead Management — Assign, track, convert leads
+Coupons Management — Create and manage discount codes
+Banner Management — Homepage and promotional banners
+Blog Management — Publish and manage blog articles
+CMS Pages — Manage About Us, Privacy Policy, etc.
+Reports &amp; Analytics — Comprehensive business intelligence
+Notification Management — Send SMS, Email, Push notifications
+User Roles &amp; Permissions — Granular access control
+12. Customer Dashboard
+Orders — View all orders with status tracking
+Rentals — View active and past rentals
+Service Requests — Track service status
+Wishlist — Saved products for future purchase
+Saved Addresses — Multiple delivery addresses
+Profile — Edit personal and farm details
+Wallet (Optional) — Store credits and refunds
+Notifications — Real-time order and service updates
+Invoice Downloads — Download order invoices
+AI Recommendations History — View past AI suggestions
+13. Multi-Warehouse Management System
+A centralized, cloud-based platform for automated order management, warehouse allocation, procurement tracking, sales follow-up, and customer crop lifecycle management.
+13.1 Intelligent Warehouse Assignment Engine
+The system supports two assignment modes:
+Option 1 — Automatic Assignment:
+The system automatically assigns the order to the nearest dark warehouse based on GPS Coordinates, PIN Code, and Warehouse Radius. Flow: Customer Places Order → Payment Success → GPS Detection → Nearest Warehouse Search → Inventory Check → Auto Assignment → Warehouse Notification → Admin Notification → Procurement Portal → Sales Team Portal.
+Option 2 — Manual Assignment:
+Change Warehouse / Assign Another Warehouse
+Split Order across multiple warehouses
+Hold Assignment (pause for review)
+Reassign Warehouse
+Manual mode is useful during stock shortage, warehouse overload, or emergency situations.
+13.2 End-to-End Order Workflow
+Step 1: Customer Places Order
+Step 2: Payment Success
+Step 3: System Detects GPS / PIN Code
+Step 4: Finds Nearest Warehouse with Available Stock
+Step 5: Auto or Manual Warehouse Assignment
+Step 6: Warehouse Accepts Order
+Step 7: Packing
+Step 8: Dispatch
+Step 9: Delivery
+Step 10: Procurement Follow-up Starts (Crop Stage Tracking)
+Step 11: Sales Follow-up (Upselling &amp; Retention)
+Step 12: Crop Completed → Customer Retention Campaign
+14. Warehouse Management Portal
+Every Dark Warehouse gets a secure login with a dedicated dashboard.
+Warehouse Dashboard — Today's Orders, Pending Orders, Ready to Dispatch, Packed, Delivered, Cancelled, Inventory Alerts
+Accept Order / Reject Order
+Dispatch Orders with status updates
+Update Order Status (Packed → Dispatched → Delivered)
+Inventory Management — stock in/out, low stock alerts
+15. Procurement Portal
+The Procurement Team receives a copy of every successful order through a secure login.
+Dashboard — Today's Orders, Active Farmers, Crop Stage Status, Follow-up Calendar, Pending Calls, Product Usage, Stage Completion
+Farmer Profile — Name, Contact, Address, GPS Location, Farm Size, Crop Type, Purchase History
+Crop Lifecycle Management — Track farmers through 7 stages
+Product Usage Timeline &amp; Procurement Notes
+Reminder Alerts &amp; Follow-up Status Tracking
+15.1 Crop Lifecycle Stages
+
+[TABLE]
+| Stage | Focus Area | Key Details Tracked |
+| 1. Preparation of Soil | Soil health &amp; readiness | Date started, products purchased, soil condition, notes, follow-up date |
+| 2. Sowing | Seed treatment &amp; planting | Seeds used, seed treatment products, sowing date, images, follow-up |
+| 3. Manure &amp; Fertilizers | Nutrient management | Fertilizers purchased, quantity, usage details, recommended products, follow-up |
+| 4. Irrigation | Water management | Irrigation products, water schedule, customer notes, images |
+| 5. Protection from Weeds | Pest &amp; weed control | Herbicides, pesticides, fungicides, spray schedule, follow-up reminder |
+| 6. Harvesting | Crop collection | Harvest date, harvest quantity, yield, issues, images |
+| 7. Storage | Post-harvest management | Storage products, warehouse suggestions, storage tips, follow-up completion |
+[END TABLE]
+
+16. Sales Team Portal
+A separate, secure portal for the sales team with real-time order and customer insights.
+Dashboard — Today's Orders, New/Repeat Customers, Upcoming Follow-ups, Sales Target &amp; Achievements
+Customer View — Purchase History, Current Crop Stage, Next Product Recommendation
+Call History, Schedule Visit, Add Remarks
+Lead Status Tracking — Visual pipeline management
+Upselling &amp; Product Recommendation tools
+CRM Integration — Complete customer communication history
+17. Repair &amp; Service Management System
+A comprehensive system to manage post-sale service, repair, warranty, and spare-parts operations across Agri Mart's network of 1,500+ dealers and service centers. Adapted from the automotive workshop management model for agricultural equipment (power weeders, brush cutters, sprayers, power reapers, fogging machines, tea harvesters, etc.).
+17.1 Customer Management
+Customer ID, Name, Mobile, Email, Address (village/district/state)
+Customer Type: Farmer (Retail) / Dealer
+Purchase &amp; Service History
+17.2 Product / Equipment Management
+Product ID / Serial Number, Model Name, Category
+Brand (if multi-brand distribution)
+Engine/Motor Number, Fuel/Power Type
+Purchase Date &amp; Dealer, Warranty Start/End Date
+AMC (Annual Maintenance Contract) Details
+Usage Hours/Meter Reading
+17.3 Job Card Management
+Job Card Number, Date &amp; Time, Customer, Product
+Complaint Description, Images of Product Condition
+Fuel/Battery Level, Accessories Received
+Expected Delivery Date, Customer Signature
+17.4 Complaint Recording
+Engine/Motor Starting Problem, Noise/Vibration
+Cutting Blade/Attachment Issue, Spray Nozzle Blockage
+Battery Not Charging, Belt/Chain Issue, Electrical Fault
+Fuel Leakage, Overheating, Low Power/Performance Drop
+Allow multiple complaints per job card
+17.5 Inspection Checklist
+Configurable per product category
+Engine/Motor, Battery &amp; Charging, Blade/Cutting Assembly
+Fuel Tank/Lines, Spray Pump &amp; Nozzles, Belts/Chains
+Wheels/Tyres, Handle/Frame, Safety Guards, Wiring &amp; Switches
+Status: Good / Replace / Repair / Not Applicable
+17.6 Diagnosis Module
+Root Cause recording by technician
+Required Spare Parts list
+Estimated Labor Hours &amp; Cost
+Remarks
+17.7 Estimate &amp; Approval
+Generate estimate: Parts + Labor + Tax = Total
+Customer approval: Approved / Rejected / Partial Approval
+Store approval date and signature
+17.8 Spare Parts Management
+Part Number, Name, Category, Compatible Models
+Purchase Price / Selling Price, Stock Quantity &amp; Reorder Level
+Supplier, Warehouse Location
+Stock In/Out, Inter-Warehouse/Dealer Transfers, Returns, Damaged Stock
+17.9 Service Center / Dealer Workshop
+Technician Assignment, Service Bay/Station Number
+Estimated Time, Start Time / End Time
+17.10 Labor Catalogue
+Configurable rates per product category
+Standard Hours &amp; Price for each service type
+Example: General Service (1 hr, ₹300), Blade Sharpening (0.5 hr, ₹150), etc.
+17.11 Work Progress Tracking
+Live stages: Product Received → Inspection → Estimate → Customer Approval → Repair → Quality Check → Cleaning → Billing → Delivery
+17.12 Quality Check
+Test Run, Fuel/Battery Level Check, Blade Alignment
+Spray/Function Test, Leakage Check, Final Cleaning
+Inspector Approval required before delivery
+17.13 Billing &amp; Delivery
+Invoice: Parts, Labor, Discounts, GST, Total, Payment Mode
+Payment: Cash / Card / UPI / Credit (dealer credit)
+Delivery: Customer Verification, Final Inspection, Warranty Terms, Next Service Due Date
+17.14 Warranty Claims
+Part Warranty &amp; Labor Warranty tracking
+Claim Status management
+Dealer → HQ escalation path
+17.15 Service Reminders
+Next Scheduled Service, Seasonal Maintenance
+Warranty Expiry, AMC Renewal
+Via SMS / WhatsApp / Email
+17.16 Reports &amp; Dashboard
+Daily: Products Received, Delivered, Revenue, Pending Jobs
+Monthly: Service Revenue, Labor Revenue, Parts Revenue, Profit
+Top Complaints by Product Category, Inventory Usage
+Customer Retention, Warranty Claim Trends
+17.17 Employee Management
+Technicians/Mechanics, Service Advisors, Cashiers
+Warehouse/Store Managers
+17.18 Mobile App (Optional)
+Technician/Dealer App: View jobs, update progress, upload photos
+Customer App: Book service, track repair, download invoice, locate dealer
+18. Finance Incentive Commission Portal
+A dedicated portal for managing dealer incentives, sales commissions, and financial incentive calculations across the Agri Mart dealer network.
+Dealer Registration &amp; Profile Management
+Sales Target Setting per Dealer/Region
+Commission Calculation based on sales volume, product category, and performance tiers
+Incentive Tracking — real-time view of earned incentives
+Performance Reports — individual and comparative dealer analytics
+Payout Management — schedule and track commission disbursements
+Leaderboard — top-performing dealers display
+Historical Commission Records with export capability
+19. Mobile Application (Android + iOS)
+The Agri Mart Mobile Application replicates the complete web platform experience natively on Android (8.0+) and iOS (14.0+), with additional role-based apps for Warehouse, Procurement, Sales, and Admin teams.
+19.1 Customer App Features
+Native Android &amp; iOS Application
+Mobile OTP Login / Sign-Up
+Farm Details — GPS Location, Farm Size, Crops Cultivated
+Category-based navigation, Smart Search, Advanced Filters
+Complete E-Commerce — Cart, Wishlist, Coupons, Order Placement
+AI Product Recommendation Engine (in-app questionnaire)
+AI Chatbot Integration
+Rent a Product — Daily/Weekly/Monthly, Availability Calendar
+Rent a Service — Tractor, Harvesting, Spraying, etc.
+GPS-Based Smart Service Request System
+Order History, Rental History, Service Request History
+Wallet (Optional), Notifications, Invoice Downloads
+19.2 Role-Based Apps
+Warehouse App — Order management, inventory, dispatch tracking
+Procurement App — Farmer tracking, crop lifecycle, follow-ups
+Sales Team App — Customer management, leads, targets
+Admin App — Full dashboard access on mobile
+19.3 Push Notifications
+Order Confirmation, Payment Confirmation
+Order Shipped, Order Delivered
+Rental Confirmation, Approval, Return
+Service Request Submitted, Service Assigned
+Lead Generated, Password Reset, Invoice Generation
+19.4 App Store Registration
+Google Play Store: ₹5,900 + GST (one-time), ₹2,100 + GST (yearly renewal)
+Apple App Store: ₹17,800 + GST (one-time), ₹5,800 + GST (yearly renewal)
+20. Payment Gateway Integration
+The platform integrates with secure payment gateways to support multiple payment methods.
+UPI Payments (Google Pay, PhonePe, etc.)
+Credit Cards (Visa, MasterCard, RuPay)
+Debit Cards
+Net Banking — All major Indian banks
+Wallet Payments
+Payment Confirmation with automated notifications
+Refund Support — partial and full refunds
+Secure Payment Flow with SSL encryption
+Payment Reconciliation &amp; Reports
+Recommended Gateways: Razorpay / PhonePe / PayU. API charges, gateway fees, and merchant account charges are borne by the client.
+21. Logistics API Integration
+Shipment Creation — auto-generate shipments on order dispatch
+Shipping Labels — auto-generated printable labels
+Order Tracking — real-time tracking integration
+Delivery Updates — automated status updates
+Estimated Delivery Time display to customer
+Shipping Notifications — email/SMS on status changes
+Courier Status Synchronization — sync with logistics partner API
+22. SMS &amp; Notification System
+Automated notifications are generated for every major event across all modules.
+
+[TABLE]
+| Event | Recipients | Channels |
+| Order Confirmation | Customer | SMS, Email, Push |
+| Payment Confirmation | Customer | SMS, Email, Push |
+| Order Shipped | Customer | SMS, Email, Push |
+| Order Delivered | Customer | SMS, Email, Push |
+| Rental Confirmation | Customer, Admin | SMS, Email, Push |
+| Rental Approval | Customer | SMS, Email, Push |
+| Rental Return | Customer, Admin | SMS, Email, Push |
+| Service Request Submitted | Admin, Service Provider | SMS, Email, Push |
+| Service Assigned | Customer, Provider | SMS, Email, Push |
+| Lead Generated | Admin, Sales Executive | SMS, Email, Push |
+| Contact Form Submission | Admin | SMS, Email |
+| Password Reset | Customer | SMS, Email |
+| Invoice Generation | Customer | Email |
+| Warranty/Service Reminder | Customer | SMS, WhatsApp, Email |
+[END TABLE]
+
+23. User Roles &amp; Access Matrix
+The platform supports granular role-based access control across all portals.
+
+[TABLE]
+| # | Role / Portal | Access Level | Key Features |
+| 1 | Super Admin | Full System Access | All modules, user management, analytics, reports |
+| 2 | Admin | Administrative Access | Product, order, customer, lead, content management |
+| 3 | Warehouse Manager | Warehouse Operations | Order processing, inventory, dispatch, status updates |
+| 4 | Procurement Team | Farmer &amp; Crop Management | Farmer profiles, crop lifecycle, follow-ups, procurement notes |
+| 5 | Sales Team | Sales &amp; Lead Management | Customer view, leads, call history, upselling, targets |
+| 6 | Service Advisor | Service Desk Operations | Job card creation, estimates, customer communication |
+| 7 | Technician | Repair Execution | View assigned jobs, update repair status, record parts |
+| 8 | Dealer/Service Center Admin | Dealer Management | Manage dealer's job cards, inventory, staff |
+| 9 | Cashier | Billing &amp; Payments | Invoice generation, payment processing |
+| 10 | Quality Inspector | Quality Control | Final inspection, delivery approval |
+| 11 | Customer / Farmer | Self-Service | Shopping, rentals, service booking, order tracking, AI recommendations |
+[END TABLE]
+
+24. Database Architecture Overview
+The platform uses a relational database architecture with the following core entity groups:
+
+[TABLE]
+| Module | Core Tables | Key Relationships |
+| E-Commerce | Users, Products, Categories, Orders, Cart, Wishlist, Coupons, Reviews, Addresses | Orders → Products (many-to-many), Users → Orders (one-to-many) |
+| AI &amp; Recommendations | QuestionnaireResponses, Recommendations, ProductMatches | User → Responses → Recommendations |
+| Rentals | RentalProducts, RentalBookings, RentalPayments, RentalReturns, SecurityDeposits | User → Bookings → Payments |
+| Services | ServiceTypes, ServiceRequests, ServiceAssignments, ServiceFeedback | User → Requests → Assignments |
+| CRM / Leads | Leads, LeadStages, FollowUps, Communications, LeadSources | User → Leads → FollowUps |
+| Warehouse | Warehouses, WarehouseInventory, WarehouseOrders, OrderAssignments | Orders → WarehouseAssignments → Warehouses |
+| Crop Lifecycle | FarmProfiles, CropStages, ProductUsage, FollowUpCalendar | User → FarmProfile → CropStages → ProductUsage |
+| Service/Repair | ServiceProducts, JobCards, Complaints, Inspections, Estimates, Repairs, LaborEntries, Parts, Invoices, Payments, WarrantyClaims, Employees, Notifications | Customer → JobCards → Repairs → Invoices |
+| Commission | Dealers, SalesTargets, Commissions, Incentives, Payouts, Leaderboard | Dealer → Sales → Commission → Payout |
+| Notifications | Notifications, SMSLogs, EmailLogs, PushLogs | User → Notifications (many) |
+[END TABLE]
+
+25. Third-Party Integrations &amp; API Costs
+The platform integrates with several third-party services. The following APIs are required but are billed directly by the respective providers and are NOT included in the development cost.
+
+[TABLE]
+| API / Service | Purpose | Cost (INR) | Billing Cycle | Borne By |
+| GOKwik | Checkout &amp; conversion optimization | ₹2,000 | Annual | Client |
+| Google Maps API | Location, mapping &amp; geocoding | ₹2,500 | Annual | Client |
+| SMS DLT API | DLT-registered transactional SMS | ₹5,900 | One-Time | Client |
+| WhatsApp API | WhatsApp Business messaging | ₹45,000 | One-Time | Client |
+| E-Aadhaar API | Aadhaar-based identity verification | ₹6,200 | One-Time | Client |
+| Calendly API | Appointment &amp; meeting scheduling | ₹1,200 | Annual | Client |
+| Payment Gateway | Razorpay / PhonePe / PayU | Variable | Per Transaction | Client |
+| Logistics Partner API | Shipment tracking &amp; labels | Variable | Per Shipment | Client |
+[END TABLE]
+
+26. Customer Data Form (Farmer Onboarding)
+The Customer Data Form is the primary farmer/customer onboarding document used to capture complete customer information, farm details, and activity schedules. This form is filled during customer registration and serves as the foundation for the AI Recommendation Engine, CRM system, and Procurement follow-up workflows.
+CUSTOMER DATA FORM
+26.1 Personal &amp; Farm Information
+
+[TABLE]
+| Sl. No: |  | District: |  |
+| Taluk: |  | V.P. (Village Panchayat): |  |
+| State: |  | Name: |  |
+| Mobile Number: |  | VLE/FPO No: |  |
+| Date: |  | Survey Number: |  |
+| Address: |  | Acre (s): |  |
+| Pin Code: |  | Email Id: |  |
+| Job Work Location: | Distance from VLE/FPO: |  |  |
+| Irrigation: | Well / Borewell / Rain Fed / Channel / Drip / sprinkler |
+[END TABLE]
+
+26.2 Farm Operations Details
+
+[TABLE]
+| Job Work: | Chaff Cutting | Fodder Preparing | Dry shredding | Wet Weeding | Spraying | Harvesting | Soil Preparation | Logistics |
+| ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
+| ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
+| ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
+[END TABLE]
+
+Crop: _________________________________________________     Crop Cycle Days: ______________     POP: Attached  ☐ Yes  ☐ No
+26.3 Crop Activity Schedule
+The following table records the planned schedule for each farming activity throughout the crop lifecycle. This data feeds into the Procurement Portal's follow-up calendar and the AI Recommendation Engine.
+Sown Date
+Soil Preparation
+Manuring
+Irrigation
+Weeding Schedule
+Spraying Schedule
+Maintenance Schedule
+Harvesting Schedule
+26.4 Integration with Platform Modules
+Customer Registration: Fields like Name, Mobile, Address, Pin Code feed directly into the user profile and address book.
+AI Recommendation Engine: Crop type, irrigation method, soil type, acreage, and farm stage drive personalized product recommendations.
+CRM / Lead Management: All contact details and farm information are captured as lead data for sales follow-up.
+Procurement Portal: Crop Cycle Days, Activity Schedule, and Farm Details enable the procurement team to plan follow-ups at each crop stage.
+Service Request Module: Job Work Location, irrigation details, and farm address are used for GPS-based service assignment.
+Rental Module: Farm size and type of operations inform equipment rental recommendations and availability.
+27. Security Architecture
+SSL/TLS Encryption — All data in transit encrypted via HTTPS
+Secure Authentication — Password hashing with bcrypt/Argon2
+Role-Based Access Control (RBAC) — Granular permissions per role
+Input Validation &amp; Sanitization — Prevent SQL injection, XSS
+Session Management — Secure session handling with timeout
+Audit Logs — Track all administrative actions and data changes
+Secure Payment Flow — PCI-compliant payment processing
+API Security — Token-based authentication, rate limiting
+Data Backup — Regular automated backups with recovery procedures
+Password Encryption — Industry-standard hashing algorithms
+28. Deployment Architecture
+Virtual Private Server (VPS) — Dedicated cloud hosting (1-year included)
+Domain Registration — agrimartmega.com (1-year complimentary registration)
+SSL Certificate — HTTPS enabled for all domains and subdomains
+CDN Integration — For static assets (images, CSS, JS)
+Database — Managed relational database with automated backups
+File Storage — Cloud storage for product images, documents, invoices
+Email Server — Transactional email via integrated email service
+CI/CD Pipeline — Automated deployment on code changes
+Monitoring — Uptime monitoring, error tracking, performance alerts
+Disaster Recovery — Regular backups with point-in-time recovery
+29. SEO &amp; Performance Architecture
+SEO Friendly URLs — Clean, descriptive URL structure
+Meta Titles &amp; Descriptions — Per product, category, and page
+Sitemap Generation — Auto-generated XML sitemap
+Robots.txt — Search engine crawling configuration
+Image Optimization — Lazy loading, compressed images, WebP format
+Schema.org Markup — Structured data for products, reviews, organization
+Google Index Friendly Structure — Semantic HTML5 markup
+Page Speed Optimization — Minified CSS/JS, caching strategies
+Mobile-First Indexing — Responsive design prioritized
+30. Testing &amp; Quality Assurance
+Functional Testing — All features tested against requirements
+UI Testing — Cross-browser, cross-device visual validation
+Mobile Testing — Android &amp; iOS device compatibility
+Cross-Browser Testing — Chrome, Edge, Firefox, Safari
+Performance Testing — Load testing, response time optimization
+Security Testing — Vulnerability assessment, penetration testing
+User Acceptance Testing (UAT) — Client review and sign-off
+Bug Fixes — Post-UAT bug resolution before go-live
+31. Project Timeline &amp; Milestones
+
+[TABLE]
+| Milestone | Payment | Deliverables | Timeline |
+| 1. Project Commencement | 30% | UI/UX Design, Architecture, Database, Customer Portal, Admin Setup | Week 1–2 |
+| 2. Core Development | 35% | Backend, Warehouse/Procurement/Sales Portals, GPS Allocation, Integrations, Testing | Week 3–5 |
+| 3. UAT &amp; Go-Live | 35% | UAT, Deployment, Training, Documentation, Bug Fixes, Handover | Week 6–7 |
+[END TABLE]
+
+Component-Specific Timelines:
+
+[TABLE]
+| Component | Timeline | Dependencies |
+| E-Commerce Website + Admin Panel | 30–35 Working Days | Design approval, content, API credentials |
+| Multi-Warehouse Management | Included in main timeline | GPS API, PIN code serviceability API |
+| Mobile App (Android + iOS) | 40–45 Working Days | Web platform completion, app store accounts |
+| Repair &amp; Service Management | Separate scope | Dealer network details, spare parts catalog |
+| Finance Incentive Portal | Separate scope | Commission rules, dealer data |
+| VPS + Domain Setup | 1–2 Working Days | Domain availability, VPS provisioning |
+[END TABLE]
+
+32. Commercial Summary
+
+[TABLE]
+| Item | Amount (INR) | GST @ 18% | Total (INR) |
+| E-Commerce Website + Admin Panel | 81,500.00 | 14,670.00 | 96,170.00 |
+| Multi-Warehouse Management | 48,000.00 | 8,640.00 | 56,640.00 |
+| Mobile Application (Android + iOS) | 1,35,000.00 | 24,300.00 | 1,59,300.00 |
+| Repair &amp; Service Management | 31,500.00 | 5,670.00 | 37,170.00 |
+| Finance Incentive Commission Portal | 20,000.00 | 3,600.00 | 23,600.00 |
+| VPS (1 Year) | 5,900.00 | 1,062.00 | 6,962.00 |
+| Android + iOS Registration | 23,700.00 | 4,266.00 | 27,966.00 |
+| Subtotal | 3,45,600.00 | 62,208.00 | 4,07,808.00 |
+[END TABLE]
+
+Note: Third-party API costs (₹63,800 one-time + ₹6,700 annually) are additional and borne directly by the client. Payment gateway transaction fees, SMS/WhatsApp charges, and logistics fees are also client-borne.
+Client Responsibilities
+Company Logo &amp; Branding Assets
+Product Catalogue — Names, descriptions, specifications, pricing
+Product Images &amp; Videos
+Rental Details — Rates, availability, terms
+Service Details — Service types, rates, coverage areas
+GST Information for invoicing
+Payment Gateway Credentials (Razorpay/PhonePe/PayU merchant account)
+Logistics API Credentials
+Google Play Console &amp; Apple Developer Account Access
+Domain &amp; Hosting Access (if applicable)
+Any third-party service credentials required for integrations
+Annual Maintenance Charges (AMC)
+E-Commerce Website AMC: ₹5,250/year — Technical support, bug fixes, security updates, routine maintenance
+Mobile App AMC: To be mutually agreed separately
+Additional modules (Repair, Commission Portal): AMC communicated separately
+Assumptions, Exclusions &amp; Terms
+Domain registration, web hosting, SSL certificates, third-party API subscriptions are not included in development cost.
+AI platform usage charges, SMS/WhatsApp gateway charges, payment gateway transaction fees, logistics provider fees are client-borne.
+Additional features requested after scope approval are treated as change requests with separate cost/timeline.
+Any price variation in third-party APIs is not controlled by ROI Infotech Solutions.
+Final deliverables and ownership rights transferred only after full payment.
+ROI Infotech Solutions retains ownership of reusable tools, frameworks, and technologies.
+Browser &amp; Device Compatibility
+Google Chrome (latest 2 versions)
+Microsoft Edge (latest 2 versions)
+Mozilla Firefox (latest 2 versions)
+Safari (latest 2 versions)
+Android Browsers (Chrome, Samsung Internet)
+iOS Browsers (Safari, Chrome)
+Android 8.0+ and iOS 14.0+ for mobile app
+Optimised for Phones &amp; Tablets

@@ -1,0 +1,14 @@
+{
+  "name": "@agrimart/contracts",
+  "version": "1.0.0",
+  "description": "Shared API contracts, types, and schemas for AGRI MART MEGA",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "scripts": {
+    "build": "tsc"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "typescript": "^5.7.3"
+  }
+}
