@@ -2,24 +2,40 @@ import { NextResponse } from 'next/server';
 import { devDb } from '@/lib/dev-db';
 
 const SEED_PRODUCT_ATTRIBUTES = [
-  { id: 'pa-1', name: 'Sprayer Tank Capacity (L)', description: 'Volume capacity for liquid sprays', displayOrder: 1 },
-  { id: 'pa-2', name: 'Blade Type & Material', description: 'Hardened carbon steel or standard heat-treated blades', displayOrder: 2 },
-  { id: 'pa-3', name: 'Color / Finish', description: 'Equipment chassis protective coat', displayOrder: 3 },
-  { id: 'pa-4', name: 'Power Source (Battery / Petrol / Diesel)', description: 'Primary engine or electric propulsion', displayOrder: 4 },
-  { id: 'pa-5', name: 'Packaging Size (5kg, 10kg, 25kg)', description: 'Bulk bag and granule SKU size', displayOrder: 5 },
+  { id: 'pa-color', name: 'Color', description: 'Product color variants (blue, green, yellow, etc.)', displayOrder: 1 },
+  { id: 'pa-frame-color', name: 'Frame Color', description: 'Chassis or frame finish colors', displayOrder: 2 },
+  { id: 'pa-pattern', name: 'Pattern', description: 'Surface or structural pattern options', displayOrder: 3 },
+  { id: 'pa-sprayer', name: 'Sprayer Tank Capacity (L)', description: 'Volume capacity for liquid sprays', displayOrder: 4 },
+  { id: 'pa-blade', name: 'Blade Type & Material', description: 'Hardened carbon steel or standard heat-treated blades', displayOrder: 5 },
+  { id: 'pa-package', name: 'Packaging Size (5kg, 10kg, 25kg)', description: 'Bulk bag and granule SKU size', displayOrder: 6 },
 ];
 
 function ensureSeedData() {
   if (!devDb.data.productAttributes || devDb.data.productAttributes.length === 0) {
     devDb.data.productAttributes = [...SEED_PRODUCT_ATTRIBUTES];
     try { devDb.save?.(); } catch {}
+  } else {
+    const hasColor = devDb.data.productAttributes.some((a: any) => a.name === 'Color');
+    if (!hasColor) {
+      devDb.data.productAttributes = [...SEED_PRODUCT_ATTRIBUTES, ...devDb.data.productAttributes];
+      try { devDb.save?.(); } catch {}
+    }
   }
 }
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
     ensureSeedData();
-    const attrs = devDb.getProductAttributes ? devDb.getProductAttributes() : devDb.data.productAttributes || [];
+    const { searchParams } = new URL(request.url);
+    const search = searchParams.get('search');
+
+    let attrs = devDb.getProductAttributes ? devDb.getProductAttributes() : devDb.data.productAttributes || [];
+
+    if (search && search.trim()) {
+      const q = search.toLowerCase().trim();
+      attrs = attrs.filter((a: any) => a.name.toLowerCase().includes(q));
+    }
+
     return NextResponse.json({ success: true, count: attrs.length, data: attrs });
   } catch (err: any) {
     return NextResponse.json({ success: false, error: err.message }, { status: 500 });

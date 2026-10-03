@@ -13818,5 +13818,43 @@
       "reason": "Monthly verification of delivered orders completed. Authorized for bank payment run.",
       "timestamp": "2026-03-05T16:00:00Z"
     }
+  ],
+  "productAttributes": [
+    {
+      "id": "pa-color",
+      "name": "Color",
+      "description": "Product color variants (blue, green, yellow, etc.)",
+      "displayOrder": 1
+    },
+    {
+      "id": "pa-frame-color",
+      "name": "Frame Color",
+      "description": "Chassis or frame finish colors",
+      "displayOrder": 2
+    },
+    {
+      "id": "pa-pattern",
+      "name": "Pattern",
+      "description": "Surface or structural pattern options",
+      "displayOrder": 3
+    },
+    {
+      "id": "pa-sprayer",
+      "name": "Sprayer Tank Capacity (L)",
+      "description": "Volume capacity for liquid sprays",
+      "displayOrder": 4
+    },
+    {
+      "id": "pa-blade",
+      "name": "Blade Type & Material",
+      "description": "Hardened carbon steel or standard heat-treated blades",
+      "displayOrder": 5
+    },
+    {
+      "id": "pa-package",
+      "name": "Packaging Size (5kg, 10kg, 25kg)",
+      "description": "Bulk bag and granule SKU size",
+      "displayOrder": 6
+    }
   ]
 }

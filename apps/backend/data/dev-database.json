@@ -15528,34 +15528,22 @@
   ],
   "productAttributes": [
     {
-      "id": "pa-1",
-      "name": "Sprayer Tank Capacity (L)",
-      "description": "Volume capacity for liquid sprays",
+      "id": "pa-color",
+      "name": "Color",
+      "description": "Product color variants (blue, green, yellow, etc.)",
       "displayOrder": 1
     },
     {
-      "id": "pa-2",
-      "name": "Blade Type & Material",
-      "description": "Hardened carbon steel or standard heat-treated blades",
+      "id": "pa-frame-color",
+      "name": "Frame Color",
+      "description": "Chassis or frame finish colors",
       "displayOrder": 2
     },
     {
-      "id": "pa-3",
-      "name": "Color / Finish",
-      "description": "Equipment chassis protective coat",
+      "id": "pa-pattern",
+      "name": "Pattern",
+      "description": "Surface or structural pattern options",
       "displayOrder": 3
-    },
-    {
-      "id": "pa-4",
-      "name": "Power Source (Battery / Petrol / Diesel)",
-      "description": "Primary engine or electric propulsion",
-      "displayOrder": 4
-    },
-    {
-      "id": "pa-5",
-      "name": "Packaging Size (5kg, 10kg, 25kg)",
-      "description": "Bulk bag and granule SKU size",
-      "displayOrder": 5
     }
   ],
   "specificationAttributes": [
