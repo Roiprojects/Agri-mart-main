@@ -4,36 +4,67 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import {
   Plus,
-  Edit,
   Trash2,
   X,
   RotateCw,
   CheckCircle2,
   AlertCircle,
-  Sliders,
+  Search,
   ChevronUp,
+  ChevronDown,
+  Edit,
+  Sliders,
+  Check,
 } from 'lucide-react';
 
-interface SpecAttribute {
+interface SpecGroup {
   id: string;
   name: string;
   displayOrder: number;
 }
 
+interface SpecAttribute {
+  id: string;
+  name: string;
+  displayOrder: number;
+  groupId?: string;
+}
+
 export default function SpecificationAttributesPage() {
+  const [groups, setGroups] = useState<SpecGroup[]>([]);
   const [attributes, setAttributes] = useState<SpecAttribute[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
-  // Modal State
-  const [modalOpen, setModalOpen] = useState(false);
-  const [editingAttr, setEditingAttr] = useState<SpecAttribute | null>(null);
-  const [formName, setFormName] = useState('');
-  const [formDisplayOrder, setFormDisplayOrder] = useState<number>(1);
+  // Search State
+  const [searchOpen, setSearchOpen] = useState(true);
+  const [searchName, setSearchName] = useState('');
+  const [activeSearch, setActiveSearch] = useState('');
 
-  // Delete Confirm
+  // Expand / Collapse group state (by group ID)
+  // Default to collapsed or expanded
+  const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({});
+
+  // Selection for bulk delete
+  const [selectedAttrIds, setSelectedAttrIds] = useState<string[]>([]);
+
+  // Modals
+  const [groupModalOpen, setGroupModalOpen] = useState(false);
+  const [groupFormName, setGroupFormName] = useState('');
+  const [groupFormDisplayOrder, setGroupFormDisplayOrder] = useState<number>(0);
+
+  const [attrModalOpen, setAttrModalOpen] = useState(false);
+  const [editingAttr, setEditingAttr] = useState<SpecAttribute | null>(null);
+  const [attrFormName, setAttrFormName] = useState('');
+  const [attrFormGroupId, setAttrFormGroupId] = useState('group-default');
+  const [attrFormDisplayOrder, setAttrFormDisplayOrder] = useState<number>(1);
+
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
-  const [targetDeleteId, setTargetDeleteId] = useState<string | null>(null);
+  const [deleteMode, setDeleteMode] = useState<'bulk' | 'single'>('bulk');
+  const [singleDeleteId, setSingleDeleteId] = useState<string | null>(null);
+
+  // Pagination
+  const [pageSize, setPageSize] = useState<number>(15);
 
   // Toast
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
@@ -43,13 +74,23 @@ export default function SpecificationAttributesPage() {
     setTimeout(() => setToast(null), 3500);
   };
 
-  const fetchAttributes = async () => {
+  const fetchAttributes = async (query = activeSearch) => {
     try {
       setLoading(true);
-      const res = await fetch('/api/admin/catalogue/attributes/specification');
+      const url = query
+        ? `/api/admin/catalogue/attributes/specification?search=${encodeURIComponent(query)}`
+        : '/api/admin/catalogue/attributes/specification';
+      const res = await fetch(url);
       const json = await res.json();
-      if (json.success && Array.isArray(json.data)) {
-        setAttributes(json.data.sort((a: any, b: any) => a.displayOrder - b.displayOrder));
+      if (json.success) {
+        setAttributes(json.data || []);
+        if (json.groups && json.groups.length > 0) {
+          setGroups(json.groups);
+        } else {
+          setGroups([
+            { id: 'group-default', name: 'Default group (non-grouped specification attributes)', displayOrder: 0 },
+          ]);
+        }
       } else {
         showToast(json.error || 'Failed to load specification attributes', 'error');
       }
@@ -64,24 +105,99 @@ export default function SpecificationAttributesPage() {
     fetchAttributes();
   }, []);
 
-  const openCreateModal = () => {
-    setEditingAttr(null);
-    setFormName('');
-    setFormDisplayOrder(attributes.length + 1);
-    setModalOpen(true);
+  const handleSearch = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    setActiveSearch(searchName.trim());
+    fetchAttributes(searchName.trim());
   };
 
-  const openEditModal = (attr: SpecAttribute) => {
-    setEditingAttr(attr);
-    setFormName(attr.name);
-    setFormDisplayOrder(attr.displayOrder);
-    setModalOpen(true);
+  const toggleGroup = (groupId: string) => {
+    setExpandedGroups((prev) => ({
+      ...prev,
+      [groupId]: !prev[groupId],
+    }));
   };
 
-  const handleSave = async (e: React.FormEvent) => {
+  // Selection handlers
+  const handleToggleSelectAllInGroup = (groupId: string, groupAttrs: SpecAttribute[]) => {
+    const groupAttrIds = groupAttrs.map((a) => a.id);
+    const allSelected = groupAttrIds.every((id) => selectedAttrIds.includes(id));
+
+    if (allSelected) {
+      setSelectedAttrIds((prev) => prev.filter((id) => !groupAttrIds.includes(id)));
+    } else {
+      setSelectedAttrIds((prev) => Array.from(new Set([...prev, ...groupAttrIds])));
+    }
+  };
+
+  const handleToggleSelectAttr = (id: string) => {
+    setSelectedAttrIds((prev) =>
+      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
+    );
+  };
+
+  // Group Modal Handlers
+  const handleOpenAddGroup = () => {
+    setGroupFormName('');
+    setGroupFormDisplayOrder(groups.length);
+    setGroupModalOpen(true);
+  };
+
+  const handleSaveGroup = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formName.trim()) return;
+    if (!groupFormName.trim()) {
+      showToast('Group name is required', 'error');
+      return;
+    }
+    try {
+      setSaving(true);
+      const res = await fetch('/api/admin/catalogue/attributes/specification', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          isGroup: true,
+          name: groupFormName.trim(),
+          displayOrder: Number(groupFormDisplayOrder) || 0,
+        }),
+      });
+      const json = await res.json();
+      if (json.success) {
+        showToast('Specification attribute group added!');
+        setGroupModalOpen(false);
+        fetchAttributes();
+      } else {
+        showToast(json.error || 'Failed to add group', 'error');
+      }
+    } catch (err: any) {
+      showToast(err.message, 'error');
+    } finally {
+      setSaving(false);
+    }
+  };
 
+  // Attribute Modal Handlers
+  const handleOpenAddAttr = () => {
+    setEditingAttr(null);
+    setAttrFormName('');
+    setAttrFormGroupId(groups[0]?.id || 'group-default');
+    setAttrFormDisplayOrder(attributes.length + 1);
+    setAttrModalOpen(true);
+  };
+
+  const handleOpenEditAttr = (attr: SpecAttribute) => {
+    setEditingAttr(attr);
+    setAttrFormName(attr.name);
+    setAttrFormGroupId(attr.groupId || 'group-default');
+    setAttrFormDisplayOrder(attr.displayOrder);
+    setAttrModalOpen(true);
+  };
+
+  const handleSaveAttr = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!attrFormName.trim()) {
+      showToast('Name is required', 'error');
+      return;
+    }
     try {
       setSaving(true);
       const isEdit = !!editingAttr;
@@ -90,43 +206,65 @@ export default function SpecificationAttributesPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           id: editingAttr?.id,
-          name: formName.trim(),
-          displayOrder: Number(formDisplayOrder),
+          name: attrFormName.trim(),
+          groupId: attrFormGroupId,
+          displayOrder: Number(attrFormDisplayOrder) || 1,
         }),
       });
       const json = await res.json();
       if (json.success) {
         showToast(isEdit ? 'Specification attribute updated!' : 'Specification attribute created!');
-        setModalOpen(false);
+        setAttrModalOpen(false);
         fetchAttributes();
       } else {
-        showToast(json.error || 'Failed to save attribute', 'error');
+        showToast(json.error || 'Failed to save specification attribute', 'error');
       }
     } catch (err: any) {
-      showToast('Error: ' + err.message, 'error');
+      showToast(err.message, 'error');
     } finally {
       setSaving(false);
     }
   };
 
+  // Delete Handlers
+  const handleConfirmDeleteSelected = () => {
+    if (selectedAttrIds.length === 0) {
+      showToast('Please select at least one attribute to delete', 'error');
+      return;
+    }
+    setDeleteMode('bulk');
+    setDeleteConfirmOpen(true);
+  };
+
+  const handleConfirmDeleteSingle = (id: string) => {
+    setSingleDeleteId(id);
+    setDeleteMode('single');
+    setDeleteConfirmOpen(true);
+  };
+
   const executeDelete = async () => {
-    if (!targetDeleteId) return;
     try {
       setSaving(true);
-      const res = await fetch(`/api/admin/catalogue/attributes/specification?id=${targetDeleteId}`, {
+      const idsToDelete = deleteMode === 'bulk' ? selectedAttrIds : singleDeleteId ? [singleDeleteId] : [];
+      if (idsToDelete.length === 0) return;
+
+      const res = await fetch('/api/admin/catalogue/attributes/specification', {
         method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ids: idsToDelete }),
       });
       const json = await res.json();
       if (json.success) {
-        showToast('Specification attribute deleted!');
+        showToast(`Deleted ${idsToDelete.length} attribute(s) successfully!`);
+        setSelectedAttrIds((prev) => prev.filter((id) => !idsToDelete.includes(id)));
         setDeleteConfirmOpen(false);
-        setTargetDeleteId(null);
+        setSingleDeleteId(null);
         fetchAttributes();
       } else {
-        showToast(json.error || 'Failed to delete attribute', 'error');
+        showToast(json.error || 'Failed to delete attributes', 'error');
       }
     } catch (err: any) {
-      showToast('Error: ' + err.message, 'error');
+      showToast(err.message, 'error');
     } finally {
       setSaving(false);
     }
@@ -146,166 +284,386 @@ export default function SpecificationAttributesPage() {
         </div>
       )}
 
-      {/* TOP HEADER: Title + Add new button */}
+      {/* TOP HEADER: Title + Buttons (Matching media_1791009966324.png) */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1 pb-1">
         <h1 className="text-2xl font-normal text-slate-800 tracking-tight">Specification attributes</h1>
 
-        <div>
+        <div className="flex items-center gap-2 flex-wrap">
+          {/* Add group button */}
           <button
             type="button"
-            onClick={openCreateModal}
+            onClick={handleOpenAddGroup}
             className="bg-[#2585be] hover:bg-[#1f72a3] text-white text-xs font-semibold px-3 py-1.5 rounded flex items-center gap-1.5 shadow-xs transition cursor-pointer"
           >
             <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
-            <span>Add new</span>
+            <span>Add group</span>
+          </button>
+
+          {/* Add attribute button */}
+          <button
+            type="button"
+            onClick={handleOpenAddAttr}
+            className="bg-[#2585be] hover:bg-[#1f72a3] text-white text-xs font-semibold px-3 py-1.5 rounded flex items-center gap-1.5 shadow-xs transition cursor-pointer"
+          >
+            <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
+            <span>Add attribute</span>
+          </button>
+
+          {/* Delete attributes (selected) button */}
+          <button
+            type="button"
+            onClick={handleConfirmDeleteSelected}
+            className="bg-[#dd4b39] hover:bg-[#c23321] text-white text-xs font-semibold px-3 py-1.5 rounded flex items-center gap-1.5 shadow-xs transition cursor-pointer"
+          >
+            <Trash2 className="w-3.5 h-3.5" />
+            <span>Delete attributes (selected)</span>
           </button>
         </div>
       </div>
 
-      {/* TABLE CARD */}
+      {/* SEARCH CARD (Matching media_1791009966324.png) */}
       <div className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden">
-        <div className="px-4 py-2 border-b border-[#f4f4f4] bg-slate-50/50 flex items-center justify-between text-xs">
-          <span className="text-slate-600 font-medium">Manage product technical and specification dictionaries</span>
+        {/* Card Header: 🔍 Search with collapsible chevron */}
+        <div
+          onClick={() => setSearchOpen(!searchOpen)}
+          className="border-b border-[#f4f4f4] px-4 py-2.5 flex items-center justify-between cursor-pointer select-none bg-white hover:bg-slate-50/50 transition"
+        >
+          <div className="flex items-center gap-2 text-slate-800 font-semibold text-xs sm:text-sm">
+            <Search className="w-4 h-4 text-slate-700" />
+            <span>Search</span>
+          </div>
           <button
             type="button"
-            onClick={fetchAttributes}
-            className="text-slate-500 hover:text-slate-800 p-1"
-            title="Refresh"
+            className="p-1 text-slate-500 hover:text-slate-700 focus:outline-none cursor-pointer"
           >
-            <RotateCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
+            {searchOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
           </button>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs border-collapse">
-            <thead>
-              <tr className="bg-[#f4f4f4] border-b border-[#d2d6de] text-slate-700 font-semibold select-none">
-                <th className="p-2.5 border-r border-[#d2d6de] min-w-[300px]">Name</th>
-                <th className="p-2.5 border-r border-[#d2d6de] text-center w-36">Display order</th>
-                <th className="p-2.5 text-center w-28">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {loading ? (
-                <tr>
-                  <td colSpan={3} className="text-center py-12 text-slate-500 bg-white">
-                    <div className="flex flex-col items-center justify-center gap-2">
-                      <RotateCw className="w-5 h-5 animate-spin text-[#3c8dbc]" />
-                      <span>Loading specification attributes...</span>
-                    </div>
-                  </td>
-                </tr>
-              ) : attributes.length === 0 ? (
-                <tr>
-                  <td colSpan={3} className="text-center py-12 text-slate-400 bg-white">
-                    No specification attributes found.
-                  </td>
-                </tr>
-              ) : (
-                attributes.map((attr, index) => {
-                  const isEven = index % 2 === 1;
-                  return (
-                    <tr
-                      key={attr.id}
-                      className={`${isEven ? 'bg-[#f9f9f9]' : 'bg-white'} hover:bg-[#f1f1f1] border-b border-[#e9ecef] transition-colors`}
-                    >
-                      <td className="p-2.5 border-r border-[#e9ecef] font-medium text-slate-800">
-                        {attr.name}
-                      </td>
-                      <td className="p-2.5 border-r border-[#e9ecef] text-center text-slate-700">
-                        {attr.displayOrder}
-                      </td>
-                      <td className="p-2.5 text-center">
-                        <div className="flex items-center justify-center gap-1.5">
-                          <button
-                            type="button"
-                            onClick={() => openEditModal(attr)}
-                            className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold rounded border border-[#d2d6de] bg-white text-slate-700 hover:bg-slate-100 shadow-2xs transition cursor-pointer"
-                          >
-                            <Edit className="w-3 h-3 text-slate-600" />
-                            <span>Edit</span>
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setTargetDeleteId(attr.id);
-                              setDeleteConfirmOpen(true);
-                            }}
-                            className="p-1 text-red-500 hover:text-red-700 hover:bg-red-50 rounded transition"
-                            title="Delete"
-                          >
-                            <Trash2 className="w-3.5 h-3.5" />
-                          </button>
+        {/* Card Body */}
+        {searchOpen && (
+          <form onSubmit={handleSearch} className="p-4 sm:p-6 space-y-4">
+            <div className="max-w-2xl mx-auto space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
+                <div className="sm:col-span-3 flex items-center justify-start sm:justify-end font-medium text-xs text-slate-700">
+                  <span>Name</span>
+                  <span
+                    title="A specification attribute name."
+                    className="inline-flex items-center justify-center w-3.5 h-3.5 rounded-full bg-[#3c8dbc] text-white text-[10px] cursor-help font-bold shrink-0 select-none ml-1"
+                  >
+                    ?
+                  </span>
+                </div>
+                <div className="sm:col-span-9">
+                  <input
+                    type="text"
+                    value={searchName}
+                    onChange={(e) => setSearchName(e.target.value)}
+                    placeholder=""
+                    className="w-full text-xs px-2.5 py-1.5 rounded border border-[#d2d6de] bg-white focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none text-slate-700"
+                  />
+                </div>
+              </div>
+
+              {/* Centered Search Button (Matching screenshot) */}
+              <div className="text-center pt-2">
+                <button
+                  type="submit"
+                  className="bg-[#2585be] hover:bg-[#1f72a3] text-white text-xs font-semibold px-6 py-1.5 rounded inline-flex items-center gap-1.5 shadow-xs transition cursor-pointer"
+                >
+                  <Search className="w-3.5 h-3.5" />
+                  <span>Search</span>
+                </button>
+              </div>
+            </div>
+          </form>
+        )}
+      </div>
+
+      {/* MAIN DATA CARD (Matching media_1791009966324.png) */}
+      <div className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden">
+        <div className="p-4 sm:p-5 space-y-4">
+          {/* Explanatory Paragraph matching screenshot copy */}
+          <p className="text-xs text-slate-600 leading-relaxed">
+            Specification attributes are product features i.e, screen size, number of USB-ports, visible on product details page. Specification attributes can be used for filtering products on the category details page. Unlike product attributes, specification attributes are used for information purposes only. You can add attributes to existing product on a product details page. Learn more about{' '}
+            <a
+              href="https://docs.nopcommerce.com/en/running-your-store/catalog/products/specification-attributes.html"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[#3c8dbc] hover:underline"
+            >
+              specification attributes
+            </a>
+          </p>
+
+          {/* Table Container */}
+          <div className="border border-[#e5e7eb] rounded overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-xs text-left border-collapse">
+                <thead>
+                  <tr className="bg-[#f9fafb] text-slate-700 font-semibold border-b border-[#e5e7eb]">
+                    <th className="px-3 py-2.5 w-10 border-r border-[#e5e7eb]"></th>
+                    <th className="px-4 py-2.5 border-r border-[#e5e7eb]">Name</th>
+                    <th className="px-4 py-2.5 text-right w-36">Display order</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {loading ? (
+                    <tr>
+                      <td colSpan={3} className="py-10 text-center">
+                        <div className="flex flex-col items-center justify-center gap-2 text-slate-600">
+                          <RotateCw className="w-6 h-6 animate-spin text-[#3c8dbc]" />
+                          <span className="text-xs font-normal">Loading specification attributes...</span>
                         </div>
                       </td>
                     </tr>
-                  );
-                })
-              )}
-            </tbody>
-          </table>
-        </div>
+                  ) : groups.length === 0 ? (
+                    <tr>
+                      <td colSpan={3} className="px-4 py-8 text-center text-slate-500 font-normal">
+                        No data available in table
+                      </td>
+                    </tr>
+                  ) : (
+                    groups.map((group) => {
+                      const groupAttrs = attributes.filter(
+                        (a) => (a.groupId || 'group-default') === group.id
+                      );
+                      const isExpanded = !!expandedGroups[group.id];
 
-        {/* PAGING FOOTER */}
-        <div className="p-3 border-t border-[#d2d6de] bg-[#fcfcfc] flex items-center justify-between text-xs text-slate-600">
-          <div>{attributes.length} item(s) found</div>
-          <div>Page 1 of 1</div>
+                      return (
+                        <React.Fragment key={group.id}>
+                          {/* Group Row (Matching media_1791009966324.png) */}
+                          <tr
+                            onClick={() => toggleGroup(group.id)}
+                            className="border-b border-[#e5e7eb] hover:bg-slate-50/80 cursor-pointer select-none bg-white transition"
+                          >
+                            <td className="px-3 py-2.5 text-center border-r border-[#e5e7eb] w-10">
+                              <span className="inline-block text-slate-800 text-[11px] font-bold transform transition-transform duration-150">
+                                {isExpanded ? '▼' : '▶'}
+                              </span>
+                            </td>
+                            <td className="px-4 py-2.5 border-r border-[#e5e7eb] font-medium text-slate-800">
+                              {group.name}
+                            </td>
+                            <td className="px-4 py-2.5 text-right text-slate-700 font-medium w-36">
+                              {group.displayOrder}
+                            </td>
+                          </tr>
+
+                          {/* Expanded Nested Attributes Table */}
+                          {isExpanded && (
+                            <tr>
+                              <td colSpan={3} className="p-0 bg-slate-50/60 border-b border-[#e5e7eb]">
+                                <div className="p-3 sm:p-4 pl-8 sm:pl-10 space-y-2">
+                                  <div className="border border-[#d2d6de] bg-white rounded overflow-hidden shadow-2xs">
+                                    <table className="w-full text-xs text-left border-collapse">
+                                      <thead>
+                                        <tr className="bg-[#f4f6f9] text-slate-700 font-semibold border-b border-[#e5e7eb]">
+                                          <th className="p-2 w-10 text-center border-r border-[#e5e7eb]">
+                                            <input
+                                              type="checkbox"
+                                              checked={
+                                                groupAttrs.length > 0 &&
+                                                groupAttrs.every((a) => selectedAttrIds.includes(a.id))
+                                              }
+                                              onChange={() => handleToggleSelectAllInGroup(group.id, groupAttrs)}
+                                              className="w-3.5 h-3.5 rounded text-[#3c8dbc] cursor-pointer"
+                                            />
+                                          </th>
+                                          <th className="px-3 py-2 border-r border-[#e5e7eb]">Attribute Name</th>
+                                          <th className="px-3 py-2 text-center w-28 border-r border-[#e5e7eb]">
+                                            Display order
+                                          </th>
+                                          <th className="px-3 py-2 text-center w-20 border-r border-[#e5e7eb]">Edit</th>
+                                          <th className="px-3 py-2 text-center w-20">Delete</th>
+                                        </tr>
+                                      </thead>
+                                      <tbody>
+                                        {groupAttrs.length === 0 ? (
+                                          <tr>
+                                            <td colSpan={5} className="py-6 text-center text-slate-400">
+                                              No specification attributes in this group. Click &quot;Add attribute&quot; to add one.
+                                            </td>
+                                          </tr>
+                                        ) : (
+                                          groupAttrs.map((attr) => (
+                                            <tr
+                                              key={attr.id}
+                                              className="border-b border-[#f0f0f0] hover:bg-slate-50 transition"
+                                            >
+                                              <td className="p-2 text-center border-r border-[#f0f0f0]">
+                                                <input
+                                                  type="checkbox"
+                                                  checked={selectedAttrIds.includes(attr.id)}
+                                                  onChange={() => handleToggleSelectAttr(attr.id)}
+                                                  className="w-3.5 h-3.5 rounded text-[#3c8dbc] cursor-pointer"
+                                                />
+                                              </td>
+                                              <td className="px-3 py-2 border-r border-[#f0f0f0] font-medium text-slate-800">
+                                                {attr.name}
+                                              </td>
+                                              <td className="px-3 py-2 text-center text-slate-700 border-r border-[#f0f0f0]">
+                                                {attr.displayOrder}
+                                              </td>
+                                              <td className="px-3 py-2 text-center border-r border-[#f0f0f0]">
+                                                <button
+                                                  type="button"
+                                                  onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handleOpenEditAttr(attr);
+                                                  }}
+                                                  className="text-[#2585be] hover:underline font-medium cursor-pointer"
+                                                >
+                                                  Edit
+                                                </button>
+                                              </td>
+                                              <td className="px-3 py-2 text-center">
+                                                <button
+                                                  type="button"
+                                                  onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handleConfirmDeleteSingle(attr.id);
+                                                  }}
+                                                  className="text-red-500 hover:underline font-medium cursor-pointer"
+                                                >
+                                                  Delete
+                                                </button>
+                                              </td>
+                                            </tr>
+                                          ))
+                                        )}
+                                      </tbody>
+                                    </table>
+                                  </div>
+                                </div>
+                              </td>
+                            </tr>
+                          )}
+                        </React.Fragment>
+                      );
+                    })
+                  )}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Pagination / Table Footer (Matching media_1791009966324.png) */}
+            <div className="bg-[#fcfcfc] border-t border-[#e5e7eb] px-3 py-2 flex flex-wrap items-center justify-between gap-3 text-xs text-slate-600">
+              {/* Previous / Next */}
+              <div className="flex items-center">
+                <button
+                  type="button"
+                  disabled
+                  className="px-2.5 py-1 border border-[#d2d6de] bg-white text-slate-400 rounded-l cursor-not-allowed hover:bg-slate-50 transition"
+                >
+                  Previous
+                </button>
+                <button
+                  type="button"
+                  disabled
+                  className="px-2.5 py-1 border-t border-b border-r border-[#d2d6de] bg-white text-slate-400 rounded-r cursor-not-allowed hover:bg-slate-50 transition"
+                >
+                  Next
+                </button>
+              </div>
+
+              {/* Show [ 15 ▾ ] items */}
+              <div className="flex items-center gap-1.5">
+                <span>Show</span>
+                <select
+                  value={pageSize}
+                  onChange={(e) => setPageSize(Number(e.target.value))}
+                  className="border border-[#d2d6de] bg-white rounded px-2 py-0.5 text-xs text-slate-700 outline-none cursor-pointer"
+                >
+                  <option value={15}>15</option>
+                  <option value={30}>30</option>
+                  <option value={50}>50</option>
+                  <option value={100}>100</option>
+                </select>
+                <span>items</span>
+              </div>
+
+              {/* Records count & Refresh button */}
+              <div className="flex items-center gap-3">
+                <span>
+                  {groups.length === 0
+                    ? 'No records'
+                    : `1-${groups.length} of ${groups.length} items`}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    fetchAttributes();
+                    showToast('Specification attributes refreshed', 'success');
+                  }}
+                  className="p-1 border border-[#d2d6de] bg-white text-slate-600 hover:text-slate-900 rounded hover:bg-slate-50 transition cursor-pointer"
+                  title="Refresh"
+                >
+                  <RotateCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* CREATE / EDIT MODAL */}
-      {modalOpen && (
+      {/* MODAL: Add Group */}
+      {groupModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
           <div className="bg-white rounded border border-[#d2d6de] shadow-xl w-full max-w-md overflow-hidden animate-fadeIn">
-            <div className="bg-slate-50 border-b border-[#d2d6de] px-4 py-3 flex items-center justify-between">
-              <h3 className="font-semibold text-sm text-slate-800 flex items-center gap-1.5">
-                <Sliders className="w-4 h-4 text-[#3c8dbc]" />
-                <span>{editingAttr ? 'Edit specification attribute' : 'Add new specification attribute'}</span>
-              </h3>
+            <div className="bg-[#f4f6f9] border-b border-[#e5e7eb] px-4 py-3 flex items-center justify-between">
+              <h3 className="font-semibold text-sm text-slate-800">Add a new specification attribute group</h3>
               <button
                 type="button"
-                onClick={() => setModalOpen(false)}
-                className="text-slate-400 hover:text-slate-600 p-1"
+                onClick={() => setGroupModalOpen(false)}
+                className="text-slate-400 hover:text-slate-700 text-lg leading-none cursor-pointer"
               >
-                <X className="w-4 h-4" />
+                &times;
               </button>
             </div>
-
-            <form onSubmit={handleSave} className="p-4 sm:p-5 space-y-3.5 text-xs text-slate-700">
-              <div className="space-y-1">
-                <label className="font-medium text-slate-700">Name *</label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. Engine Displacement (cc)"
-                  value={formName}
-                  onChange={(e) => setFormName(e.target.value)}
-                  className="w-full text-xs px-2.5 py-1.5 rounded border border-[#d2d6de] bg-white focus:border-[#3c8dbc] outline-none"
-                />
+            <form onSubmit={handleSaveGroup} className="p-4 sm:p-5 space-y-4 text-xs">
+              <div className="grid grid-cols-12 items-center gap-2">
+                <label className="col-span-4 text-right font-medium text-slate-700">
+                  Name <span className="text-red-500 font-bold">*</span>
+                </label>
+                <div className="col-span-8">
+                  <input
+                    type="text"
+                    required
+                    value={groupFormName}
+                    onChange={(e) => setGroupFormName(e.target.value)}
+                    placeholder="e.g. Dimensions, Performance"
+                    className="w-full text-xs px-2.5 py-1.5 rounded border border-[#d2d6de] bg-white focus:border-[#3c8dbc] outline-none"
+                  />
+                </div>
               </div>
 
-              <div className="space-y-1">
-                <label className="font-medium text-slate-700">Display order</label>
-                <input
-                  type="number"
-                  value={formDisplayOrder}
-                  onChange={(e) => setFormDisplayOrder(Number(e.target.value))}
-                  className="w-full text-xs px-2.5 py-1.5 rounded border border-[#d2d6de] bg-white focus:border-[#3c8dbc] outline-none"
-                />
+              <div className="grid grid-cols-12 items-center gap-2">
+                <label className="col-span-4 text-right font-medium text-slate-700">
+                  Display order
+                </label>
+                <div className="col-span-8">
+                  <input
+                    type="number"
+                    value={groupFormDisplayOrder}
+                    onChange={(e) => setGroupFormDisplayOrder(parseInt(e.target.value, 10) || 0)}
+                    className="w-full text-xs px-2.5 py-1.5 rounded border border-[#d2d6de] bg-white focus:border-[#3c8dbc] outline-none"
+                  />
+                </div>
               </div>
 
-              <div className="pt-3 border-t border-[#d2d6de] flex items-center justify-end gap-2">
+              <div className="pt-3 border-t border-[#e5e7eb] flex items-center justify-end gap-2">
                 <button
                   type="button"
-                  onClick={() => setModalOpen(false)}
-                  className="px-4 py-1.5 rounded border border-[#d2d6de] bg-white text-slate-700 hover:bg-slate-100 transition cursor-pointer"
+                  onClick={() => setGroupModalOpen(false)}
+                  className="bg-white border border-[#d2d6de] hover:bg-slate-100 text-slate-700 text-xs font-semibold px-3 py-1.5 rounded transition cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={saving}
-                  className="px-5 py-1.5 rounded bg-[#2585be] hover:bg-[#1f72a3] text-white font-semibold transition cursor-pointer shadow-xs disabled:opacity-50"
+                  className="bg-[#2585be] hover:bg-[#1f72a3] text-white text-xs font-semibold px-4 py-1.5 rounded transition cursor-pointer disabled:opacity-50"
                 >
                   {saving ? 'Saving...' : 'Save'}
                 </button>
@@ -315,11 +673,98 @@ export default function SpecificationAttributesPage() {
         </div>
       )}
 
-      {/* DELETE CONFIRM MODAL */}
+      {/* MODAL: Add / Edit Attribute */}
+      {attrModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="bg-white rounded border border-[#d2d6de] shadow-xl w-full max-w-md overflow-hidden animate-fadeIn">
+            <div className="bg-[#f4f6f9] border-b border-[#e5e7eb] px-4 py-3 flex items-center justify-between">
+              <h3 className="font-semibold text-sm text-slate-800">
+                {editingAttr ? 'Edit specification attribute' : 'Add a new specification attribute'}
+              </h3>
+              <button
+                type="button"
+                onClick={() => setAttrModalOpen(false)}
+                className="text-slate-400 hover:text-slate-700 text-lg leading-none cursor-pointer"
+              >
+                &times;
+              </button>
+            </div>
+            <form onSubmit={handleSaveAttr} className="p-4 sm:p-5 space-y-4 text-xs">
+              <div className="grid grid-cols-12 items-center gap-2">
+                <label className="col-span-4 text-right font-medium text-slate-700">
+                  Name <span className="text-red-500 font-bold">*</span>
+                </label>
+                <div className="col-span-8">
+                  <input
+                    type="text"
+                    required
+                    value={attrFormName}
+                    onChange={(e) => setAttrFormName(e.target.value)}
+                    placeholder="e.g. Engine Displacement (cc)"
+                    className="w-full text-xs px-2.5 py-1.5 rounded border border-[#d2d6de] bg-white focus:border-[#3c8dbc] outline-none"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-12 items-center gap-2">
+                <label className="col-span-4 text-right font-medium text-slate-700">
+                  Group
+                </label>
+                <div className="col-span-8">
+                  <select
+                    value={attrFormGroupId}
+                    onChange={(e) => setAttrFormGroupId(e.target.value)}
+                    className="w-full text-xs px-2.5 py-1.5 rounded border border-[#d2d6de] bg-white focus:border-[#3c8dbc] outline-none"
+                  >
+                    {groups.map((g) => (
+                      <option key={g.id} value={g.id}>
+                        {g.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-12 items-center gap-2">
+                <label className="col-span-4 text-right font-medium text-slate-700">
+                  Display order
+                </label>
+                <div className="col-span-8">
+                  <input
+                    type="number"
+                    value={attrFormDisplayOrder}
+                    onChange={(e) => setAttrFormDisplayOrder(parseInt(e.target.value, 10) || 1)}
+                    className="w-full text-xs px-2.5 py-1.5 rounded border border-[#d2d6de] bg-white focus:border-[#3c8dbc] outline-none"
+                  />
+                </div>
+              </div>
+
+              <div className="pt-3 border-t border-[#e5e7eb] flex items-center justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setAttrModalOpen(false)}
+                  className="bg-white border border-[#d2d6de] hover:bg-slate-100 text-slate-700 text-xs font-semibold px-3 py-1.5 rounded transition cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={saving}
+                  className="bg-[#2585be] hover:bg-[#1f72a3] text-white text-xs font-semibold px-4 py-1.5 rounded transition cursor-pointer disabled:opacity-50"
+                >
+                  {saving ? 'Saving...' : 'Save'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* CONFIRM DELETE MODAL */}
       {deleteConfirmOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
           <div className="bg-white rounded border border-[#d2d6de] shadow-xl w-full max-w-sm overflow-hidden animate-fadeIn">
-            <div className="bg-slate-50 border-b border-[#d2d6de] px-4 py-3 flex items-center justify-between">
+            <div className="bg-[#f4f6f9] border-b border-[#e5e7eb] px-4 py-3 flex items-center justify-between">
               <h3 className="font-semibold text-sm text-red-600 flex items-center gap-1.5">
                 <Trash2 className="w-4 h-4" />
                 <span>Confirm Deletion</span>
@@ -327,18 +772,22 @@ export default function SpecificationAttributesPage() {
               <button
                 type="button"
                 onClick={() => setDeleteConfirmOpen(false)}
-                className="text-slate-400 hover:text-slate-600 p-1"
+                className="text-slate-400 hover:text-slate-700 text-lg leading-none cursor-pointer"
               >
-                <X className="w-4 h-4" />
+                &times;
               </button>
             </div>
-            <div className="p-4 text-xs text-slate-700 space-y-3">
-              <p>Are you sure you want to delete this specification attribute?</p>
-              <div className="pt-2 border-t border-[#d2d6de] flex items-center justify-end gap-2">
+            <div className="p-4 sm:p-5 text-xs text-slate-700 space-y-3">
+              <p>
+                {deleteMode === 'bulk'
+                  ? `Are you sure you want to delete ${selectedAttrIds.length} selected specification attribute(s)?`
+                  : 'Are you sure you want to delete this specification attribute?'}
+              </p>
+              <div className="pt-2 border-t border-[#e5e7eb] flex items-center justify-end gap-2">
                 <button
                   type="button"
                   onClick={() => setDeleteConfirmOpen(false)}
-                  className="px-3 py-1 rounded border border-[#d2d6de] bg-white text-slate-700 hover:bg-slate-100"
+                  className="bg-white border border-[#d2d6de] hover:bg-slate-100 text-slate-700 text-xs font-semibold px-3 py-1.5 rounded"
                 >
                   Cancel
                 </button>
@@ -346,7 +795,7 @@ export default function SpecificationAttributesPage() {
                   type="button"
                   disabled={saving}
                   onClick={executeDelete}
-                  className="px-4 py-1 rounded bg-[#dd4b39] text-white font-semibold hover:bg-[#c23321]"
+                  className="bg-[#dd4b39] hover:bg-[#c23321] text-white text-xs font-semibold px-4 py-1.5 rounded disabled:opacity-50"
                 >
                   {saving ? 'Deleting...' : 'Delete'}
                 </button>
@@ -358,19 +807,28 @@ export default function SpecificationAttributesPage() {
 
       {/* FOOTER */}
       <footer className="mt-8 border-t border-[#d2d6de] pt-4 text-xs text-slate-500 flex flex-col sm:flex-row items-center justify-between gap-2">
-        <div>Powered by <a href="https://www.nopcommerce.com/" target="_blank" rel="noopener noreferrer" className="text-[#3c8dbc] hover:underline">nopCommerce</a></div>
+        <div>
+          Powered by{' '}
+          <a
+            href="https://www.nopcommerce.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[#3c8dbc] hover:underline"
+          >
+            nopCommerce
+          </a>
+        </div>
+        <div>
+          {new Date().toLocaleDateString('en-US', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+          })}{' '}
+          {new Date().toLocaleTimeString()}
+        </div>
         <div>nopCommerce version 4.90.0</div>
       </footer>
-
-      {/* Floating Scroll to Top */}
-      <button
-        type="button"
-        onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-        className="fixed bottom-6 right-6 p-2.5 rounded-full bg-[#00a65a] hover:bg-[#008d4c] text-white shadow-lg transition cursor-pointer z-40"
-        title="Scroll to top"
-      >
-        <ChevronUp className="w-5 h-5 stroke-[2.5]" />
-      </button>
     </div>
   );
 }
