@@ -15,11 +15,29 @@ function ensureSeedData() {
   }
 }
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
     ensureSeedData();
-    const attrs = devDb.getCheckoutAttributes ? devDb.getCheckoutAttributes() : devDb.data.checkoutAttributes || [];
-    return NextResponse.json({ success: true, count: attrs.length, data: attrs });
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
+    const search = searchParams.get('search')?.toLowerCase().trim();
+
+    let attrs = devDb.getCheckoutAttributes ? devDb.getCheckoutAttributes() : devDb.data.checkoutAttributes || [];
+
+    if (id) {
+      const single = attrs.find((a: any) => a.id === id);
+      return NextResponse.json({ success: !!single, data: single });
+    }
+
+    if (search) {
+      attrs = attrs.filter((a: any) => a.name.toLowerCase().includes(search));
+    }
+
+    return NextResponse.json({
+      success: true,
+      count: attrs.length,
+      data: attrs.sort((a: any, b: any) => a.displayOrder - b.displayOrder),
+    });
   } catch (err: any) {
     return NextResponse.json({ success: false, error: err.message }, { status: 500 });
   }
