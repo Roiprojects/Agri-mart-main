@@ -395,6 +395,30 @@ export interface DbProductTag {
   createdAt?: string;
 }
 
+export interface DbProductAttribute {
+  id: string;
+  name: string;
+  description?: string;
+  displayOrder: number;
+  createdAt?: string;
+}
+
+export interface DbSpecificationAttribute {
+  id: string;
+  name: string;
+  displayOrder: number;
+  createdAt?: string;
+}
+
+export interface DbCheckoutAttribute {
+  id: string;
+  name: string;
+  controlType: 'Dropdown' | 'RadioList' | 'Checkboxes' | 'TextBox';
+  isRequired: boolean;
+  displayOrder: number;
+  createdAt?: string;
+}
+
 export interface DbCustomerNotification {
   id: string;
   userId?: string;
@@ -765,6 +789,9 @@ export interface DevDatabaseData {
   blogPosts: DbBlogPost[];
   blogReviews: DbBlogReview[];
   productTags?: DbProductTag[];
+  productAttributes?: DbProductAttribute[];
+  specificationAttributes?: DbSpecificationAttribute[];
+  checkoutAttributes?: DbCheckoutAttribute[];
 }
 
 function resolveDataFilePath(): string {
@@ -5127,6 +5154,120 @@ class PersistentDevDatabase {
     this.data.productTags = this.data.productTags.filter((t) => !ids.includes(t.id));
     this.save();
     return this.data.productTags.length < initialLen;
+  }
+
+  // --------------------------------------------------
+  // PRODUCT ATTRIBUTES METHODS
+  // --------------------------------------------------
+
+  getProductAttributes(): DbProductAttribute[] {
+    if (!this.data.productAttributes) this.data.productAttributes = [];
+    return this.data.productAttributes;
+  }
+
+  saveProductAttribute(attrData: Partial<DbProductAttribute> & { id?: string }): DbProductAttribute {
+    if (!this.data.productAttributes) this.data.productAttributes = [];
+    const index = this.data.productAttributes.findIndex((a) => a.id === attrData.id);
+    if (index >= 0) {
+      this.data.productAttributes[index] = { ...this.data.productAttributes[index], ...attrData };
+      this.save();
+      return this.data.productAttributes[index];
+    } else {
+      const newAttr: DbProductAttribute = {
+        id: attrData.id || `pa-${Date.now()}`,
+        name: attrData.name || '',
+        description: attrData.description || '',
+        displayOrder: attrData.displayOrder || 1,
+        createdAt: attrData.createdAt || new Date().toISOString(),
+      };
+      this.data.productAttributes.push(newAttr);
+      this.save();
+      return newAttr;
+    }
+  }
+
+  deleteProductAttributes(ids: string[]): boolean {
+    if (!this.data.productAttributes) this.data.productAttributes = [];
+    const initialLen = this.data.productAttributes.length;
+    this.data.productAttributes = this.data.productAttributes.filter((a) => !ids.includes(a.id));
+    this.save();
+    return this.data.productAttributes.length < initialLen;
+  }
+
+  // --------------------------------------------------
+  // SPECIFICATION ATTRIBUTES METHODS
+  // --------------------------------------------------
+
+  getSpecificationAttributes(): DbSpecificationAttribute[] {
+    if (!this.data.specificationAttributes) this.data.specificationAttributes = [];
+    return this.data.specificationAttributes;
+  }
+
+  saveSpecificationAttribute(attrData: Partial<DbSpecificationAttribute> & { id?: string }): DbSpecificationAttribute {
+    if (!this.data.specificationAttributes) this.data.specificationAttributes = [];
+    const index = this.data.specificationAttributes.findIndex((a) => a.id === attrData.id);
+    if (index >= 0) {
+      this.data.specificationAttributes[index] = { ...this.data.specificationAttributes[index], ...attrData };
+      this.save();
+      return this.data.specificationAttributes[index];
+    } else {
+      const newAttr: DbSpecificationAttribute = {
+        id: attrData.id || `sa-${Date.now()}`,
+        name: attrData.name || '',
+        displayOrder: attrData.displayOrder || 1,
+        createdAt: attrData.createdAt || new Date().toISOString(),
+      };
+      this.data.specificationAttributes.push(newAttr);
+      this.save();
+      return newAttr;
+    }
+  }
+
+  deleteSpecificationAttributes(ids: string[]): boolean {
+    if (!this.data.specificationAttributes) this.data.specificationAttributes = [];
+    const initialLen = this.data.specificationAttributes.length;
+    this.data.specificationAttributes = this.data.specificationAttributes.filter((a) => !ids.includes(a.id));
+    this.save();
+    return this.data.specificationAttributes.length < initialLen;
+  }
+
+  // --------------------------------------------------
+  // CHECKOUT ATTRIBUTES METHODS
+  // --------------------------------------------------
+
+  getCheckoutAttributes(): DbCheckoutAttribute[] {
+    if (!this.data.checkoutAttributes) this.data.checkoutAttributes = [];
+    return this.data.checkoutAttributes;
+  }
+
+  saveCheckoutAttribute(attrData: Partial<DbCheckoutAttribute> & { id?: string }): DbCheckoutAttribute {
+    if (!this.data.checkoutAttributes) this.data.checkoutAttributes = [];
+    const index = this.data.checkoutAttributes.findIndex((a) => a.id === attrData.id);
+    if (index >= 0) {
+      this.data.checkoutAttributes[index] = { ...this.data.checkoutAttributes[index], ...attrData };
+      this.save();
+      return this.data.checkoutAttributes[index];
+    } else {
+      const newAttr: DbCheckoutAttribute = {
+        id: attrData.id || `ca-${Date.now()}`,
+        name: attrData.name || '',
+        controlType: attrData.controlType || 'Dropdown',
+        isRequired: attrData.isRequired || false,
+        displayOrder: attrData.displayOrder || 1,
+        createdAt: attrData.createdAt || new Date().toISOString(),
+      };
+      this.data.checkoutAttributes.push(newAttr);
+      this.save();
+      return newAttr;
+    }
+  }
+
+  deleteCheckoutAttributes(ids: string[]): boolean {
+    if (!this.data.checkoutAttributes) this.data.checkoutAttributes = [];
+    const initialLen = this.data.checkoutAttributes.length;
+    this.data.checkoutAttributes = this.data.checkoutAttributes.filter((a) => !ids.includes(a.id));
+    this.save();
+    return this.data.checkoutAttributes.length < initialLen;
   }
 }
 

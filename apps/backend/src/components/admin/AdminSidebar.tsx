@@ -25,17 +25,28 @@ import {
   AlertTriangle,
   ChevronRight,
   ChevronLeft,
+  ChevronDown,
+  CircleDot,
+  Circle,
   Leaf,
   ExternalLink,
   X,
 } from 'lucide-react';
+import React, { useState } from 'react';
 import { clsx } from 'clsx';
+
+interface NavSubItem {
+  label: string;
+  href: string;
+  icon?: React.ElementType;
+}
 
 interface NavItem {
   label: string;
   href: string;
   icon: React.ElementType;
   badge?: string;
+  children?: NavSubItem[];
 }
 
 interface NavGroup {
@@ -58,7 +69,16 @@ const navTree: NavGroup[] = [
       { label: 'Manufacturers', href: '/admin/catalogue/manufacturers', icon: Award },
       { label: 'Product reviews', href: '/admin/catalogue/reviews', icon: Star },
       { label: 'Product tags', href: '/admin/catalogue/tags', icon: Tag },
-      { label: 'Attributes', href: '/admin/catalogue/attributes', icon: Sliders },
+      {
+        label: 'Attributes',
+        href: '/admin/catalogue/attributes',
+        icon: CircleDot,
+        children: [
+          { label: 'Product attributes', href: '/admin/catalogue/attributes/product', icon: Circle },
+          { label: 'Specification attributes', href: '/admin/catalogue/attributes/specification', icon: Circle },
+          { label: 'Checkout attributes', href: '/admin/catalogue/attributes/checkout', icon: Circle },
+        ],
+      },
     ],
   },
   {
@@ -115,9 +135,81 @@ interface AdminSidebarProps {
 }
 
 function NavItemLink({ item, collapsed, pathname }: { item: NavItem; collapsed: boolean; pathname: string }) {
-  const isActive =
-    item.href === '/admin' ? pathname === '/admin' : pathname.startsWith(item.href);
+  const isChildActive = item.children?.some((c) => pathname === c.href || pathname.startsWith(c.href));
+  const isParentActive =
+    item.href === '/admin' ? pathname === '/admin' : pathname.startsWith(item.href) || !!isChildActive;
+
+  const [isOpen, setIsOpen] = useState(
+    item.children ? isParentActive || item.label === 'Attributes' : false
+  );
+
   const Icon = item.icon;
+
+  if (item.children && item.children.length > 0) {
+    return (
+      <div className="space-y-0.5">
+        <button
+          type="button"
+          onClick={() => setIsOpen(!isOpen)}
+          title={collapsed ? item.label : undefined}
+          className={clsx(
+            'w-full flex items-center justify-between rounded-lg px-2.5 py-2 text-sm font-medium transition-colors text-left cursor-pointer',
+            isParentActive
+              ? 'text-slate-900 font-semibold'
+              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/80'
+          )}
+        >
+          <div className="flex items-center gap-3 min-w-0">
+            <Icon
+              className={clsx(
+                'h-4 w-4 flex-shrink-0',
+                isParentActive ? 'text-emerald-700' : 'text-slate-500'
+              )}
+            />
+            {!collapsed && <span className="truncate">{item.label}</span>}
+          </div>
+          {!collapsed && (
+            <ChevronDown
+              className={clsx(
+                'h-3.5 w-3.5 text-slate-400 transition-transform duration-200 stroke-[2.5]',
+                isOpen ? 'rotate-0' : '-rotate-90'
+              )}
+            />
+          )}
+        </button>
+
+        {/* Children sub-menu matching media_1791006594469.png */}
+        {!collapsed && isOpen && (
+          <div className="pl-6 space-y-0.5 mt-0.5">
+            {item.children.map((child) => {
+              const isSelected = pathname === child.href || pathname.startsWith(child.href);
+              const ChildIcon = child.icon || Circle;
+              return (
+                <Link
+                  key={child.href}
+                  href={child.href}
+                  className={clsx(
+                    'flex items-center gap-2.5 rounded-lg px-2 py-1.5 text-xs transition-colors',
+                    isSelected
+                      ? 'bg-emerald-50 text-emerald-800 font-semibold border border-emerald-200/80 shadow-2xs'
+                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/80'
+                  )}
+                >
+                  <ChildIcon
+                    className={clsx(
+                      'h-3 w-3 flex-shrink-0 stroke-[2.5]',
+                      isSelected ? 'text-emerald-700' : 'text-slate-400'
+                    )}
+                  />
+                  <span className="truncate">{child.label}</span>
+                </Link>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    );
+  }
 
   return (
     <Link
@@ -125,12 +217,12 @@ function NavItemLink({ item, collapsed, pathname }: { item: NavItem; collapsed: 
       title={collapsed ? item.label : undefined}
       className={clsx(
         'flex items-center gap-3 rounded-lg px-2.5 py-2 text-sm font-medium transition-colors',
-        isActive
+        isParentActive
           ? 'bg-emerald-50 text-emerald-800 border border-emerald-200/80 font-semibold shadow-xs'
           : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/80'
       )}
     >
-      <Icon className={clsx('h-4 w-4 flex-shrink-0', isActive ? 'text-emerald-700' : 'text-slate-500')} />
+      <Icon className={clsx('h-4 w-4 flex-shrink-0', isParentActive ? 'text-emerald-700' : 'text-slate-500')} />
       {!collapsed && <span className="truncate">{item.label}</span>}
       {!collapsed && item.badge && (
         <span className="ml-auto rounded-full bg-emerald-600 px-1.5 py-0.5 text-xs text-white leading-none">

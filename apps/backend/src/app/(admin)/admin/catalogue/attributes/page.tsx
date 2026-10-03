@@ -1,61 +1,110 @@
-import { Sliders, CheckCircle2, ShieldCheck, Layers } from 'lucide-react';
+'use client';
 
-export default function AttributesPage() {
-  const standardGroups = [
+import React from 'react';
+import Link from 'next/link';
+import {
+  CircleDot,
+  Circle,
+  Sliders,
+  Layers,
+  ShoppingCart,
+  ChevronRight,
+  ExternalLink,
+} from 'lucide-react';
+
+export default function AttributesHubPage() {
+  const sections = [
     {
-      name: 'Engine & Power Specifications',
-      items: ['Engine Displacement (cc)', 'Power Rating (HP / kW)', 'Fuel Tank Capacity', 'Starting Mechanism'],
+      title: 'Product attributes',
+      href: '/admin/catalogue/attributes/product',
+      description: 'Manage configurable attributes like Sprayer Tank Capacity, Blade Type, Power Source, and Packaging SKU Size.',
+      countLabel: '5 Standard Attributes',
+      icon: Sliders,
+      badgeColor: 'bg-blue-50 text-blue-700 border-blue-200',
     },
     {
-      name: 'Physical & Structural Attributes',
-      items: ['Weight (kg)', 'Tilling Width (inches)', 'Blade Material', 'Wheelbase Dimensions'],
+      title: 'Specification attributes',
+      href: '/admin/catalogue/attributes/specification',
+      description: 'Define technical specification dictionaries including Engine Displacement, HP, Tilling Width, and Soil Compatibility.',
+      countLabel: '8 Technical Specs',
+      icon: Layers,
+      badgeColor: 'bg-emerald-50 text-emerald-700 border-emerald-200',
     },
     {
-      name: 'Soil & Agronomy Compatibility',
-      items: ['Target Crop Types', 'Approved Soil Textures', 'Recommended Crop Stages (1-7)', 'Operating Pressure (PSI)'],
+      title: 'Checkout attributes',
+      href: '/admin/catalogue/attributes/checkout',
+      description: 'Configure options selected by farmers at checkout, such as Pre-delivery Assembly, Transit Insurance, and Dark-store Dispatch.',
+      countLabel: '4 Checkout Options',
+      icon: ShoppingCart,
+      badgeColor: 'bg-purple-50 text-purple-700 border-purple-200',
     },
   ];
 
   return (
-    <div className="space-y-6 max-w-5xl">
-      <div>
-        <div className="flex items-center gap-2.5">
-          <div className="p-2 rounded-lg bg-emerald-50 text-emerald-600">
-            <Sliders className="h-5 w-5" />
-          </div>
-          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Product Attributes & Groups</h1>
+    <div className="space-y-6 max-w-full text-slate-800 pb-16 font-sans">
+      {/* HEADER */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1 pb-1">
+        <div>
+          <h1 className="text-2xl font-normal text-slate-800 tracking-tight flex items-center gap-2">
+            <CircleDot className="w-6 h-6 text-[#3c8dbc]" />
+            <span>Attributes</span>
+          </h1>
+          <p className="text-xs text-slate-500 mt-1">
+            Configure product options, technical specification dictionaries, and checkout attributes.
+          </p>
         </div>
-        <p className="text-xs text-slate-500 mt-1">
-          Standardized technical attribute dictionaries attached across machinery, inputs, and fertilizers.
-        </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {standardGroups.map((grp) => (
-          <div key={grp.name} className="rounded-xl border border-slate-200 bg-white p-5 space-y-4 shadow-xs">
-            <div className="flex items-center gap-2">
-              <Layers className="h-4 w-4 text-emerald-600" />
-              <h3 className="font-bold text-sm text-slate-900">{grp.name}</h3>
-            </div>
-            <ul className="space-y-2 text-xs text-slate-700">
-              {grp.items.map((it) => (
-                <li key={it} className="flex items-center gap-2 bg-slate-50 p-2 rounded-lg border border-slate-200">
-                  <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600 shrink-0" />
-                  <span>{it}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        ))}
+      {/* 3 ATTRIBUTE CARDS MATCHING SIDEBAR SUB-ITEMS */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+        {sections.map((sec) => {
+          const Icon = sec.icon;
+          return (
+            <Link
+              key={sec.title}
+              href={sec.href}
+              className="bg-white rounded border border-[#d2d6de] p-5 shadow-2xs hover:shadow-md hover:border-[#3c8dbc] transition-all group flex flex-col justify-between"
+            >
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-slate-900 font-semibold text-sm group-hover:text-[#3c8dbc] transition-colors">
+                    <Circle className="w-4 h-4 stroke-[2.5] text-slate-500 group-hover:text-[#3c8dbc]" />
+                    <span>{sec.title}</span>
+                  </div>
+                  <span className={`px-2 py-0.5 rounded text-[11px] font-semibold border ${sec.badgeColor}`}>
+                    {sec.countLabel}
+                  </span>
+                </div>
+
+                <p className="text-xs text-slate-600 leading-relaxed">
+                  {sec.description}
+                </p>
+              </div>
+
+              <div className="pt-4 mt-4 border-t border-[#f4f4f4] flex items-center justify-between text-xs text-[#3c8dbc] font-medium group-hover:translate-x-1 transition-transform">
+                <span>Manage {sec.title.toLowerCase()}</span>
+                <ChevronRight className="w-4 h-4" />
+              </div>
+            </Link>
+          );
+        })}
       </div>
 
-      <div className="rounded-xl border border-slate-200 bg-white p-6 text-center text-xs text-slate-500 shadow-xs">
-        <ShieldCheck className="h-6 w-6 text-emerald-600 mx-auto mb-2" />
-        <p className="font-semibold text-slate-900">Catalog Schema Enforced</p>
-        <p className="mt-1 max-w-md mx-auto text-slate-500">
-          Product specifications are synchronized automatically with the farmer storefront product page filter facets and comparison matrices.
-        </p>
-      </div>
+      {/* FOOTER */}
+      <footer className="mt-8 border-t border-[#d2d6de] pt-4 text-xs text-slate-500 flex flex-col sm:flex-row items-center justify-between gap-2">
+        <div>
+          Powered by{' '}
+          <a
+            href="https://www.nopcommerce.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[#3c8dbc] hover:underline"
+          >
+            nopCommerce
+          </a>
+        </div>
+        <div>nopCommerce version 4.90.0</div>
+      </footer>
     </div>
   );
 }

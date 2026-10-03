@@ -15525,5 +15525,109 @@
       "taggedProductsCount": 5,
       "createdAt": "2022-01-09T00:00:00.000Z"
     }
+  ],
+  "productAttributes": [
+    {
+      "id": "pa-1",
+      "name": "Sprayer Tank Capacity (L)",
+      "description": "Volume capacity for liquid sprays",
+      "displayOrder": 1
+    },
+    {
+      "id": "pa-2",
+      "name": "Blade Type & Material",
+      "description": "Hardened carbon steel or standard heat-treated blades",
+      "displayOrder": 2
+    },
+    {
+      "id": "pa-3",
+      "name": "Color / Finish",
+      "description": "Equipment chassis protective coat",
+      "displayOrder": 3
+    },
+    {
+      "id": "pa-4",
+      "name": "Power Source (Battery / Petrol / Diesel)",
+      "description": "Primary engine or electric propulsion",
+      "displayOrder": 4
+    },
+    {
+      "id": "pa-5",
+      "name": "Packaging Size (5kg, 10kg, 25kg)",
+      "description": "Bulk bag and granule SKU size",
+      "displayOrder": 5
+    }
+  ],
+  "specificationAttributes": [
+    {
+      "id": "sa-1",
+      "name": "Engine Displacement (cc)",
+      "displayOrder": 1
+    },
+    {
+      "id": "sa-2",
+      "name": "Power Rating (HP / kW)",
+      "displayOrder": 2
+    },
+    {
+      "id": "sa-3",
+      "name": "Fuel Tank Capacity (L)",
+      "displayOrder": 3
+    },
+    {
+      "id": "sa-4",
+      "name": "Starting Mechanism",
+      "displayOrder": 4
+    },
+    {
+      "id": "sa-5",
+      "name": "Tilling Width (inches)",
+      "displayOrder": 5
+    },
+    {
+      "id": "sa-6",
+      "name": "Operating Pressure (PSI)",
+      "displayOrder": 6
+    },
+    {
+      "id": "sa-7",
+      "name": "Target Crop Types",
+      "displayOrder": 7
+    },
+    {
+      "id": "sa-8",
+      "name": "Soil Texture Compatibility",
+      "displayOrder": 8
+    }
+  ],
+  "checkoutAttributes": [
+    {
+      "id": "ca-1",
+      "name": "Pre-delivery Assembly & Testing",
+      "controlType": "Dropdown",
+      "isRequired": false,
+      "displayOrder": 1
+    },
+    {
+      "id": "ca-2",
+      "name": "Dark Warehouse Transit Insurance",
+      "controlType": "Checkboxes",
+      "isRequired": false,
+      "displayOrder": 2
+    },
+    {
+      "id": "ca-3",
+      "name": "Priority Agronomy Advice Call",
+      "controlType": "RadioList",
+      "isRequired": false,
+      "displayOrder": 3
+    },
+    {
+      "id": "ca-4",
+      "name": "Protective Heavy-Duty Rain Cover",
+      "controlType": "Dropdown",
+      "isRequired": false,
+      "displayOrder": 4
+    }
   ]
 }
