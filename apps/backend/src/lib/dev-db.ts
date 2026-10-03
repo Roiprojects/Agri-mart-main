@@ -3075,6 +3075,17 @@ class PersistentDevDatabase {
     return booking;
   }
 
+  updateRentalBooking(
+    bookingId: string,
+    updates: Partial<DbRentalBooking>
+  ): DbRentalBooking | null {
+    const booking = this.getRentalBookingById(bookingId);
+    if (!booking) return null;
+    Object.assign(booking, updates, { updatedAt: new Date().toISOString() });
+    this.save();
+    return booking;
+  }
+
   processRentalReturn(
     bookingId: string,
     params: {
@@ -3267,6 +3278,17 @@ class PersistentDevDatabase {
     if (!req) return null;
     req.status = status;
     req.updatedAt = new Date().toISOString();
+    this.save();
+    return req;
+  }
+
+  updateServiceRequest(
+    requestId: string,
+    updates: Partial<DbServiceBookingRequest>
+  ): DbServiceBookingRequest | null {
+    const req = this.getServiceRequestById(requestId);
+    if (!req) return null;
+    Object.assign(req, updates, { updatedAt: new Date().toISOString() });
     this.save();
     return req;
   }

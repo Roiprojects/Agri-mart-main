@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
+import Link from 'next/link';
 import {
   Wrench,
   Clock,
@@ -10,6 +11,7 @@ import {
   X,
   AlertTriangle,
   UserCheck,
+  Eye,
 } from 'lucide-react';
 import { StatusBadge } from '@/components/admin/StatusBadge';
 import { StatsCard } from '@/components/admin/StatsCard';
@@ -468,42 +470,46 @@ export default function ServicesAdminPage() {
             emptyMessage="No service requests found."
             actions={(r) => {
               const busy = actionLoading === r.id;
-              if (r.status === 'REQUESTED') {
-                return (
-                  <button
-                    disabled={busy}
-                    onClick={() => setAssignRequest(r)}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-medium shadow-xs transition disabled:opacity-50"
+              return (
+                <div className="flex items-center gap-1.5">
+                  <Link
+                    href={`/admin/services/${r.id}`}
+                    className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold rounded-md bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200 transition"
                   >
-                    <UserCheck className="h-3.5 w-3.5" />
-                    {busy ? '…' : 'Assign Provider'}
-                  </button>
-                );
-              }
-              if (r.status === 'ASSIGNED') {
-                return (
-                  <button
-                    disabled={busy}
-                    onClick={() => handleStatusChange(r.id, 'IN_PROGRESS')}
-                    className="px-3 py-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 text-xs font-medium transition disabled:opacity-50"
-                  >
-                    {busy ? '…' : 'Mark In Progress'}
-                  </button>
-                );
-              }
-              if (r.status === 'IN_PROGRESS') {
-                return (
-                  <button
-                    disabled={busy}
-                    onClick={() => handleStatusChange(r.id, 'COMPLETED')}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-medium shadow-xs transition disabled:opacity-50"
-                  >
-                    <CheckCircle2 className="h-3.5 w-3.5" />
-                    {busy ? '…' : 'Mark Completed'}
-                  </button>
-                );
-              }
-              return null;
+                    <Eye className="h-3 w-3" />
+                    View
+                  </Link>
+                  {r.status === 'REQUESTED' && (
+                    <button
+                      disabled={busy}
+                      onClick={() => setAssignRequest(r)}
+                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shadow-2xs transition disabled:opacity-50"
+                    >
+                      <UserCheck className="h-3 w-3" />
+                      {busy ? '…' : 'Assign'}
+                    </button>
+                  )}
+                  {r.status === 'ASSIGNED' && (
+                    <button
+                      disabled={busy}
+                      onClick={() => handleStatusChange(r.id, 'IN_PROGRESS')}
+                      className="px-2.5 py-1 rounded-md bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 text-xs font-semibold transition disabled:opacity-50"
+                    >
+                      {busy ? '…' : 'Start'}
+                    </button>
+                  )}
+                  {r.status === 'IN_PROGRESS' && (
+                    <button
+                      disabled={busy}
+                      onClick={() => handleStatusChange(r.id, 'COMPLETED')}
+                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold shadow-2xs transition disabled:opacity-50"
+                    >
+                      <CheckCircle2 className="h-3 w-3" />
+                      {busy ? '…' : 'Complete'}
+                    </button>
+                  )}
+                </div>
+              );
             }}
           />
         )}

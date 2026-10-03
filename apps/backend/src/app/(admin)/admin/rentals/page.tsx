@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
+import Link from 'next/link';
 import {
   CalendarDays,
   Clock,
@@ -9,6 +10,7 @@ import {
   RefreshCw,
   X,
   AlertTriangle,
+  Eye,
 } from 'lucide-react';
 import { StatusBadge } from '@/components/admin/StatusBadge';
 import { StatsCard } from '@/components/admin/StatsCard';
@@ -452,40 +454,44 @@ export default function RentalsAdminPage() {
           emptyMessage="No rental bookings found."
           actions={(r) => {
             const busy = actionLoading === r.id;
-            if (r.status === 'PENDING_APPROVAL') {
-              return (
-                <button
-                  disabled={busy}
-                  onClick={() => handleStatusChange(r.id, 'APPROVED')}
-                  className="px-2.5 py-1 rounded-md bg-sky-600 hover:bg-sky-700 text-white text-xs font-semibold transition disabled:opacity-50 shadow-2xs"
+            return (
+              <div className="flex items-center gap-1.5">
+                <Link
+                  href={`/admin/rentals/${r.id}`}
+                  className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold rounded-md bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200 transition"
                 >
-                  {busy ? '…' : 'Approve'}
-                </button>
-              );
-            }
-            if (r.status === 'APPROVED') {
-              return (
-                <button
-                  disabled={busy}
-                  onClick={() => handleStatusChange(r.id, 'ACTIVE')}
-                  className="px-2.5 py-1 rounded-md bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold transition disabled:opacity-50 shadow-2xs"
-                >
-                  {busy ? '…' : 'Activate'}
-                </button>
-              );
-            }
-            if (r.status === 'ACTIVE') {
-              return (
-                <button
-                  disabled={busy}
-                  onClick={() => setReturnBooking(r)}
-                  className="px-2.5 py-1 rounded-md bg-purple-600 hover:bg-purple-700 text-white text-xs font-semibold transition shadow-2xs"
-                >
-                  Process Return
-                </button>
-              );
-            }
-            return null;
+                  <Eye className="h-3 w-3" />
+                  View
+                </Link>
+                {r.status === 'PENDING_APPROVAL' && (
+                  <button
+                    disabled={busy}
+                    onClick={() => handleStatusChange(r.id, 'APPROVED')}
+                    className="px-2.5 py-1 rounded-md bg-sky-600 hover:bg-sky-700 text-white text-xs font-semibold transition disabled:opacity-50 shadow-2xs"
+                  >
+                    {busy ? '…' : 'Approve'}
+                  </button>
+                )}
+                {r.status === 'APPROVED' && (
+                  <button
+                    disabled={busy}
+                    onClick={() => handleStatusChange(r.id, 'ACTIVE')}
+                    className="px-2.5 py-1 rounded-md bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold transition disabled:opacity-50 shadow-2xs"
+                  >
+                    {busy ? '…' : 'Activate'}
+                  </button>
+                )}
+                {r.status === 'ACTIVE' && (
+                  <button
+                    disabled={busy}
+                    onClick={() => setReturnBooking(r)}
+                    className="px-2.5 py-1 rounded-md bg-purple-600 hover:bg-purple-700 text-white text-xs font-semibold transition shadow-2xs"
+                  >
+                    Process Return
+                  </button>
+                )}
+              </div>
+            );
           }}
         />
       )}

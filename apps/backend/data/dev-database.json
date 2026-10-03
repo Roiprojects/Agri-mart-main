@@ -2536,7 +2536,7 @@
       "deliveryFee": 0,
       "taxAmount": 1825,
       "totalAmount": 38325,
-      "status": "CONFIRMED",
+      "status": "PACKED",
       "paymentMethod": "UPI",
       "paymentStatus": "PENDING",
       "assignedWarehouseId": "wh-hubballi",
@@ -2582,7 +2582,7 @@
         }
       ],
       "createdAt": "2026-09-18T06:35:49.620Z",
-      "updatedAt": "2026-09-18T06:35:49.620Z"
+      "updatedAt": "2026-10-03T08:03:46.625Z"
     },
     {
       "id": "ord-1789713312605",
@@ -2650,7 +2650,7 @@
       "deliveryFee": 0,
       "taxAmount": 1825,
       "totalAmount": 38325,
-      "status": "CONFIRMED",
+      "status": "OUT_FOR_DELIVERY",
       "paymentMethod": "UPI",
       "paymentStatus": "PENDING",
       "assignedWarehouseId": "wh-hubballi",
@@ -2696,7 +2696,7 @@
         }
       ],
       "createdAt": "2026-09-18T06:31:01.292Z",
-      "updatedAt": "2026-09-18T06:31:01.292Z"
+      "updatedAt": "2026-10-03T08:04:55.421Z"
     },
     {
       "id": "ord-1789710681883",
@@ -7047,7 +7047,7 @@
       "rentalProductId": "rnt-weeder-7hp",
       "productTitle": "AgriPro 7HP Multi-Speed Heavy-Duty Power Weeder",
       "userId": "usr-farmer-02",
-      "customerName": "Mallikarjun Patil",
+      "customerName": "Ramesh Patil Updated",
       "customerMobile": "9480112345",
       "deliveryAddress": "Plot #9, Hubballi Bypass",
       "pincode": "580020",
@@ -7057,16 +7057,16 @@
       "totalDays": 4,
       "pricingTier": "DAILY",
       "dailyRate": 850,
-      "rentAmount": 3400,
+      "rentAmount": 5500,
       "securityDeposit": 3000,
       "totalPaid": 6400,
       "paymentMethod": "UPI",
       "paymentStatus": "PAID",
       "paymentId": "pay_rent_collision_01",
-      "status": "PENDING_APPROVAL",
+      "status": "ACTIVE",
       "depositRefundStatus": "PENDING",
       "createdAt": "2026-09-18T05:51:21.873Z",
-      "updatedAt": "2026-09-18T05:51:21.873Z"
+      "updatedAt": "2026-10-03T09:15:01.451Z"
     },
     {
       "id": "rnt-bk-1789710681725",
@@ -7419,7 +7419,7 @@
       "id": "srv-req-1789710681743",
       "requestNumber": "REQ-SRV-2026-965",
       "userId": "usr-1789710451699",
-      "customerName": "Shivanand Patil",
+      "customerName": "Basavaraj Gowda Updated",
       "customerMobile": "9886099991",
       "serviceId": "srv-tractor",
       "serviceName": "Tractor Precision Ploughing & Land Preparation",
@@ -7441,7 +7441,7 @@
       "estimatedCost": 4200,
       "advancePaid": 0,
       "createdAt": "2026-09-18T05:51:21.743Z",
-      "updatedAt": "2026-09-18T05:51:21.771Z",
+      "updatedAt": "2026-10-03T09:15:10.283Z",
       "assignedProviderId": "op-01",
       "assignedProviderName": "Basavaraj Tractor Services (55HP 4WD)",
       "assignedOperatorMobile": "9845012345",
@@ -15628,42 +15628,50 @@
     {
       "id": "sa-1",
       "name": "Engine Displacement (cc)",
-      "displayOrder": 1
+      "displayOrder": 1,
+      "groupId": "group-default"
     },
     {
       "id": "sa-2",
       "name": "Power Rating (HP / kW)",
-      "displayOrder": 2
+      "displayOrder": 2,
+      "groupId": "group-default"
     },
     {
       "id": "sa-3",
       "name": "Fuel Tank Capacity (L)",
-      "displayOrder": 3
+      "displayOrder": 3,
+      "groupId": "group-default"
     },
     {
       "id": "sa-4",
       "name": "Starting Mechanism",
-      "displayOrder": 4
+      "displayOrder": 4,
+      "groupId": "group-default"
     },
     {
       "id": "sa-5",
       "name": "Tilling Width (inches)",
-      "displayOrder": 5
+      "displayOrder": 5,
+      "groupId": "group-default"
     },
     {
       "id": "sa-6",
       "name": "Operating Pressure (PSI)",
-      "displayOrder": 6
+      "displayOrder": 6,
+      "groupId": "group-default"
     },
     {
       "id": "sa-7",
       "name": "Target Crop Types",
-      "displayOrder": 7
+      "displayOrder": 7,
+      "groupId": "group-default"
     },
     {
       "id": "sa-8",
       "name": "Soil Texture Compatibility",
-      "displayOrder": 8
+      "displayOrder": 8,
+      "groupId": "group-default"
     }
   ],
   "checkoutAttributes": [
