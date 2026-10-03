@@ -290,14 +290,13 @@ export default function SpecificationAttributesPage() {
 
         <div className="flex items-center gap-2 flex-wrap">
           {/* Add group button */}
-          <button
-            type="button"
-            onClick={handleOpenAddGroup}
+          <Link
+            href="/admin/catalogue/attributes/specification/group/new"
             className="bg-[#2585be] hover:bg-[#1f72a3] text-white text-xs font-semibold px-3 py-1.5 rounded flex items-center gap-1.5 shadow-xs transition cursor-pointer"
           >
             <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
             <span>Add group</span>
-          </button>
+          </Link>
 
           {/* Add attribute button */}
           <button

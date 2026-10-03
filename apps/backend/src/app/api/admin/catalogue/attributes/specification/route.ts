@@ -37,10 +37,17 @@ export async function GET(request: Request) {
   try {
     ensureSeedData();
     const { searchParams } = new URL(request.url);
+    const groupId = searchParams.get('groupId') || searchParams.get('group_id');
     const search = searchParams.get('search')?.toLowerCase().trim();
 
-    let attrs = devDb.getSpecificationAttributes ? devDb.getSpecificationAttributes() : devDb.data.specificationAttributes || [];
     const groups = (devDb as any).data.specificationAttributeGroups || [...SEED_SPEC_GROUPS];
+
+    if (groupId) {
+      const singleGroup = groups.find((g: any) => g.id === groupId);
+      return NextResponse.json({ success: !!singleGroup, data: singleGroup });
+    }
+
+    let attrs = devDb.getSpecificationAttributes ? devDb.getSpecificationAttributes() : devDb.data.specificationAttributes || [];
 
     if (search) {
       attrs = attrs.filter((a: any) => a.name.toLowerCase().includes(search));
