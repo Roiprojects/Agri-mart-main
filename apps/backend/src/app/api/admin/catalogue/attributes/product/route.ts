@@ -2,12 +2,40 @@ import { NextResponse } from 'next/server';
 import { devDb } from '@/lib/dev-db';
 
 const SEED_PRODUCT_ATTRIBUTES = [
-  { id: 'pa-color', name: 'Color', description: 'Product color variants (blue, green, yellow, etc.)', displayOrder: 1 },
-  { id: 'pa-frame-color', name: 'Frame Color', description: 'Chassis or frame finish colors', displayOrder: 2 },
-  { id: 'pa-pattern', name: 'Pattern', description: 'Surface or structural pattern options', displayOrder: 3 },
-  { id: 'pa-sprayer', name: 'Sprayer Tank Capacity (L)', description: 'Volume capacity for liquid sprays', displayOrder: 4 },
-  { id: 'pa-blade', name: 'Blade Type & Material', description: 'Hardened carbon steel or standard heat-treated blades', displayOrder: 5 },
-  { id: 'pa-package', name: 'Packaging Size (5kg, 10kg, 25kg)', description: 'Bulk bag and granule SKU size', displayOrder: 6 },
+  {
+    id: 'pa-color',
+    name: 'Color',
+    description: 'Product color variants (blue, green, yellow, etc.)',
+    displayOrder: 1,
+    predefinedValues: [
+      { id: 'pv-1', name: 'Agri Green', priceAdjustment: 0, weightAdjustment: 0, isPreSelected: true, displayOrder: 1 },
+      { id: 'pv-2', name: 'Kisan Blue', priceAdjustment: 0, weightAdjustment: 0, isPreSelected: false, displayOrder: 2 },
+      { id: 'pv-3', name: 'Harvest Yellow', priceAdjustment: 50, weightAdjustment: 0, isPreSelected: false, displayOrder: 3 },
+      { id: 'pv-4', name: 'Flame Red', priceAdjustment: 75, weightAdjustment: 0, isPreSelected: false, displayOrder: 4 },
+    ],
+    usedByProducts: [
+      { id: 'prod-1', name: 'Smart Power Weeder Pro 7HP Petrol Engine', published: true },
+      { id: 'prod-2', name: 'Heavy-Duty Earth Auger 52CC 2-Stroke', published: true },
+      { id: 'prod-3', name: 'Multi-Crop High-Pressure Battery Sprayer 16L', published: true },
+    ],
+  },
+  {
+    id: 'pa-frame-color',
+    name: 'Frame Color',
+    description: 'Chassis or frame finish colors',
+    displayOrder: 2,
+    predefinedValues: [
+      { id: 'pv-5', name: 'Matte Black', priceAdjustment: 0, weightAdjustment: 0, isPreSelected: true, displayOrder: 1 },
+      { id: 'pv-6', name: 'Gunmetal Grey', priceAdjustment: 120, weightAdjustment: 0.5, isPreSelected: false, displayOrder: 2 },
+    ],
+    usedByProducts: [
+      { id: 'prod-1', name: 'Smart Power Weeder Pro 7HP Petrol Engine', published: true },
+    ],
+  },
+  { id: 'pa-pattern', name: 'Pattern', description: 'Surface or structural pattern options', displayOrder: 3, predefinedValues: [], usedByProducts: [] },
+  { id: 'pa-sprayer', name: 'Sprayer Tank Capacity (L)', description: 'Volume capacity for liquid sprays', displayOrder: 4, predefinedValues: [], usedByProducts: [] },
+  { id: 'pa-blade', name: 'Blade Type & Material', description: 'Hardened carbon steel or standard heat-treated blades', displayOrder: 5, predefinedValues: [], usedByProducts: [] },
+  { id: 'pa-package', name: 'Packaging Size (5kg, 10kg, 25kg)', description: 'Bulk bag and granule SKU size', displayOrder: 6, predefinedValues: [], usedByProducts: [] },
 ];
 
 function ensureSeedData() {
@@ -15,6 +43,15 @@ function ensureSeedData() {
     devDb.data.productAttributes = [...SEED_PRODUCT_ATTRIBUTES];
     try { devDb.save?.(); } catch {}
   } else {
+    // If existing records don't have predefinedValues, enrich them
+    devDb.data.productAttributes = devDb.data.productAttributes.map((attr: any) => {
+      const seedMatch = SEED_PRODUCT_ATTRIBUTES.find((s) => s.id === attr.id);
+      return {
+        ...attr,
+        predefinedValues: attr.predefinedValues || seedMatch?.predefinedValues || [],
+        usedByProducts: attr.usedByProducts || seedMatch?.usedByProducts || [],
+      };
+    });
     const hasColor = devDb.data.productAttributes.some((a: any) => a.name === 'Color');
     if (!hasColor) {
       devDb.data.productAttributes = [...SEED_PRODUCT_ATTRIBUTES, ...devDb.data.productAttributes];
@@ -65,6 +102,8 @@ export async function POST(request: Request) {
         name: body.name.trim(),
         description: body.description || '',
         displayOrder: body.displayOrder || (devDb as any).data.productAttributes.length + 1,
+        predefinedValues: body.predefinedValues || [],
+        usedByProducts: body.usedByProducts || [],
         createdAt: new Date().toISOString(),
       };
       (devDb as any).data.productAttributes.push(item);
