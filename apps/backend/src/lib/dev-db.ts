@@ -374,11 +374,14 @@ export interface DbCoupon {
 export interface DbReview {
   id: string;
   productId: string;
+  productName?: string;
   userId: string;
   customerName: string;
+  customerEmail?: string;
   rating: number;
   title: string;
   comment: string;
+  replyText?: string;
   verifiedPurchase: boolean;
   status: 'PENDING' | 'APPROVED' | 'REJECTED';
   createdAt: string;
@@ -5004,6 +5007,72 @@ class PersistentDevDatabase {
     rev.status = status;
     this.save();
     return rev;
+  }
+
+  // --------------------------------------------------
+  // PRODUCT REVIEWS METHODS
+  // --------------------------------------------------
+
+  getReviews(): DbReview[] {
+    if (!this.data.reviews) this.data.reviews = [];
+    return this.data.reviews;
+  }
+
+  getReviewById(id: string): DbReview | undefined {
+    return (this.data.reviews || []).find((r) => r.id === id);
+  }
+
+  saveReview(reviewData: Partial<DbReview> & { id?: string }): DbReview {
+    if (!this.data.reviews) this.data.reviews = [];
+    const index = this.data.reviews.findIndex((r) => r.id === reviewData.id);
+    if (index >= 0) {
+      this.data.reviews[index] = {
+        ...this.data.reviews[index],
+        ...reviewData,
+      };
+      this.save();
+      return this.data.reviews[index];
+    } else {
+      const newReview: DbReview = {
+        id: reviewData.id || `rev-${Date.now()}`,
+        productId: reviewData.productId || 'prod-001',
+        productName: reviewData.productName || 'Round Straw Bag',
+        userId: reviewData.userId || 'usr-farmer-01',
+        customerName: reviewData.customerName || 'b7662095-d56e-489a-98df-b7f1c2cc0f5c',
+        customerEmail: reviewData.customerEmail || 'customer@example.com',
+        rating: reviewData.rating !== undefined ? reviewData.rating : 5,
+        title: reviewData.title || '',
+        comment: reviewData.comment || '',
+        replyText: reviewData.replyText || '',
+        verifiedPurchase: reviewData.verifiedPurchase !== false,
+        status: reviewData.status || 'APPROVED',
+        createdAt: reviewData.createdAt || new Date().toISOString(),
+      };
+      this.data.reviews.unshift(newReview);
+      this.save();
+      return newReview;
+    }
+  }
+
+  updateReviewStatus(ids: string[], status: 'APPROVED' | 'PENDING' | 'REJECTED'): DbReview[] {
+    if (!this.data.reviews) this.data.reviews = [];
+    const updated: DbReview[] = [];
+    this.data.reviews.forEach((r) => {
+      if (ids.includes(r.id)) {
+        r.status = status;
+        updated.push(r);
+      }
+    });
+    this.save();
+    return updated;
+  }
+
+  deleteReviews(ids: string[]): boolean {
+    if (!this.data.reviews) this.data.reviews = [];
+    const initialLen = this.data.reviews.length;
+    this.data.reviews = this.data.reviews.filter((r) => !ids.includes(r.id));
+    this.save();
+    return this.data.reviews.length < initialLen;
   }
 }
 
