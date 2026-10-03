@@ -243,14 +243,13 @@ export default function ProductAttributesPage() {
 
         <div className="flex flex-wrap items-center gap-2">
           {/* Add new button */}
-          <button
-            type="button"
-            onClick={openCreateModal}
+          <Link
+            href="/admin/catalogue/attributes/product/new"
             className="bg-[#2585be] hover:bg-[#1f72a3] text-white text-xs font-semibold px-3 py-1.5 rounded flex items-center gap-1.5 shadow-xs transition cursor-pointer"
           >
             <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
             <span>Add new</span>
-          </button>
+          </Link>
 
           {/* Delete selected button */}
           <button
@@ -406,14 +405,13 @@ export default function ProductAttributesPage() {
 
                       {/* Edit Button */}
                       <td className="p-2.5 text-center">
-                        <button
-                          type="button"
-                          onClick={() => openEditModal(attr)}
+                        <Link
+                          href={`/admin/catalogue/attributes/product/${attr.id}/edit`}
                           className="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-semibold rounded border border-[#d2d6de] bg-white text-slate-700 hover:bg-slate-100 shadow-2xs transition cursor-pointer"
                         >
                           <Edit className="w-3.5 h-3.5 text-slate-600" />
                           <span>Edit</span>
-                        </button>
+                        </Link>
                       </td>
                     </tr>
                   );

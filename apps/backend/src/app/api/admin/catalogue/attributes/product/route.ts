@@ -27,9 +27,15 @@ export async function GET(request: Request) {
   try {
     ensureSeedData();
     const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
     const search = searchParams.get('search');
 
     let attrs = devDb.getProductAttributes ? devDb.getProductAttributes() : devDb.data.productAttributes || [];
+
+    if (id) {
+      const single = attrs.find((a: any) => a.id === id);
+      return NextResponse.json({ success: !!single, data: single });
+    }
 
     if (search && search.trim()) {
       const q = search.toLowerCase().trim();
@@ -49,7 +55,21 @@ export async function POST(request: Request) {
     if (!body.name) {
       return NextResponse.json({ success: false, error: 'Name is required' }, { status: 400 });
     }
-    const item = devDb.saveProductAttribute ? devDb.saveProductAttribute(body) : body;
+    let item: any;
+    if (typeof (devDb as any).saveProductAttribute === 'function') {
+      item = (devDb as any).saveProductAttribute(body);
+    } else {
+      if (!(devDb as any).data.productAttributes) (devDb as any).data.productAttributes = [];
+      item = {
+        id: body.id || `pa-${Date.now()}`,
+        name: body.name.trim(),
+        description: body.description || '',
+        displayOrder: body.displayOrder || (devDb as any).data.productAttributes.length + 1,
+        createdAt: new Date().toISOString(),
+      };
+      (devDb as any).data.productAttributes.push(item);
+      try { (devDb as any).save?.(); } catch {}
+    }
     return NextResponse.json({ success: true, data: item });
   } catch (err: any) {
     return NextResponse.json({ success: false, error: err.message }, { status: 500 });
@@ -63,7 +83,20 @@ export async function PATCH(request: Request) {
     if (!body.id) {
       return NextResponse.json({ success: false, error: 'ID is required' }, { status: 400 });
     }
-    const item = devDb.saveProductAttribute ? devDb.saveProductAttribute(body) : body;
+    let item: any;
+    if (typeof (devDb as any).saveProductAttribute === 'function') {
+      item = (devDb as any).saveProductAttribute(body);
+    } else {
+      const list = (devDb as any).data?.productAttributes || [];
+      const idx = list.findIndex((a: any) => a.id === body.id);
+      if (idx >= 0) {
+        list[idx] = { ...list[idx], ...body };
+        item = list[idx];
+        try { (devDb as any).save?.(); } catch {}
+      } else {
+        item = body;
+      }
+    }
     return NextResponse.json({ success: true, data: item });
   } catch (err: any) {
     return NextResponse.json({ success: false, error: err.message }, { status: 500 });
