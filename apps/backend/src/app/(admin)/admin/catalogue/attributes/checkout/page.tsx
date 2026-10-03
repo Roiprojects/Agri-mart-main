@@ -224,14 +224,13 @@ export default function CheckoutAttributesPage() {
 
         <div className="flex items-center gap-2">
           {/* Add new button */}
-          <button
-            type="button"
-            onClick={openCreateModal}
+          <Link
+            href="/admin/catalogue/attributes/checkout/new"
             className="bg-[#2585be] hover:bg-[#1f72a3] text-white text-xs font-semibold px-3 py-1.5 rounded flex items-center gap-1.5 shadow-xs transition cursor-pointer"
           >
             <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
             <span>Add new</span>
-          </button>
+          </Link>
 
           {/* Delete (selected) button */}
           <button
@@ -313,7 +312,12 @@ export default function CheckoutAttributesPage() {
                           />
                         </td>
                         <td className="px-4 py-2.5 border-r border-[#f0f0f0] font-medium text-slate-800">
-                          {attr.name}
+                          <Link
+                            href={`/admin/catalogue/attributes/checkout/${attr.id}/edit`}
+                            className="text-[#3c8dbc] hover:underline"
+                          >
+                            {attr.name}
+                          </Link>
                         </td>
                         <td className="px-4 py-2.5 border-r border-[#f0f0f0] text-slate-600">
                           {CONTROL_TYPE_LABELS[attr.controlType] || attr.controlType}
@@ -329,13 +333,12 @@ export default function CheckoutAttributesPage() {
                           {attr.displayOrder}
                         </td>
                         <td className="px-4 py-2.5 text-center">
-                          <button
-                            type="button"
-                            onClick={() => openEditModal(attr)}
+                          <Link
+                            href={`/admin/catalogue/attributes/checkout/${attr.id}/edit`}
                             className="text-[#2585be] hover:underline font-medium cursor-pointer"
                           >
                             Edit
-                          </button>
+                          </Link>
                         </td>
                       </tr>
                     ))
