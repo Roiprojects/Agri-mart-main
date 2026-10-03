@@ -49,6 +49,12 @@ export async function GET(request: Request) {
 
     let attrs = devDb.getSpecificationAttributes ? devDb.getSpecificationAttributes() : devDb.data.specificationAttributes || [];
 
+    const id = searchParams.get('id');
+    if (id) {
+      const single = attrs.find((a: any) => a.id === id);
+      return NextResponse.json({ success: !!single, data: single });
+    }
+
     if (search) {
       attrs = attrs.filter((a: any) => a.name.toLowerCase().includes(search));
     }

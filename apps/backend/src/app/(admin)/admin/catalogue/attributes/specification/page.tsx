@@ -299,14 +299,13 @@ export default function SpecificationAttributesPage() {
           </Link>
 
           {/* Add attribute button */}
-          <button
-            type="button"
-            onClick={handleOpenAddAttr}
+          <Link
+            href="/admin/catalogue/attributes/specification/new"
             className="bg-[#2585be] hover:bg-[#1f72a3] text-white text-xs font-semibold px-3 py-1.5 rounded flex items-center gap-1.5 shadow-xs transition cursor-pointer"
           >
             <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
             <span>Add attribute</span>
-          </button>
+          </Link>
 
           {/* Delete attributes (selected) button */}
           <button
@@ -499,22 +498,23 @@ export default function SpecificationAttributesPage() {
                                                 />
                                               </td>
                                               <td className="px-3 py-2 border-r border-[#f0f0f0] font-medium text-slate-800">
-                                                {attr.name}
+                                                <Link
+                                                  href={`/admin/catalogue/attributes/specification/${attr.id}/edit`}
+                                                  className="text-[#3c8dbc] hover:underline"
+                                                >
+                                                  {attr.name}
+                                                </Link>
                                               </td>
                                               <td className="px-3 py-2 text-center text-slate-700 border-r border-[#f0f0f0]">
                                                 {attr.displayOrder}
                                               </td>
                                               <td className="px-3 py-2 text-center border-r border-[#f0f0f0]">
-                                                <button
-                                                  type="button"
-                                                  onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    handleOpenEditAttr(attr);
-                                                  }}
+                                                <Link
+                                                  href={`/admin/catalogue/attributes/specification/${attr.id}/edit`}
                                                   className="text-[#2585be] hover:underline font-medium cursor-pointer"
                                                 >
                                                   Edit
-                                                </button>
+                                                </Link>
                                               </td>
                                               <td className="px-3 py-2 text-center">
                                                 <button
