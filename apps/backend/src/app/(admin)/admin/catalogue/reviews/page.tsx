@@ -17,6 +17,7 @@ import {
   AlertCircle,
   ExternalLink,
   Filter,
+  Tag as TagIcon,
 } from 'lucide-react';
 
 interface Review {
@@ -436,6 +437,15 @@ export default function AdminReviewsPage() {
             <Trash2 className="w-3.5 h-3.5" />
             <span>Delete (selected)</span>
           </button>
+
+          {/* Product tags button */}
+          <Link
+            href="/admin/catalogue/tags"
+            className="bg-[#2585be] hover:bg-[#1f72a3] text-white text-xs font-semibold px-3 py-1.5 rounded flex items-center gap-1.5 shadow-xs transition cursor-pointer"
+          >
+            <TagIcon className="w-3.5 h-3.5" />
+            <span>Product tags</span>
+          </Link>
         </div>
       </div>
 

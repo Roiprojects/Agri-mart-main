@@ -57,6 +57,7 @@ const navTree: NavGroup[] = [
       { label: 'Categories', href: '/admin/catalogue/categories', icon: Tag },
       { label: 'Manufacturers', href: '/admin/catalogue/manufacturers', icon: Award },
       { label: 'Product reviews', href: '/admin/catalogue/reviews', icon: Star },
+      { label: 'Product tags', href: '/admin/catalogue/tags', icon: Tag },
       { label: 'Attributes', href: '/admin/catalogue/attributes', icon: Sliders },
     ],
   },

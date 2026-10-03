@@ -387,6 +387,14 @@ export interface DbReview {
   createdAt: string;
 }
 
+export interface DbProductTag {
+  id: string;
+  name: string;
+  taggedProductsCount: number;
+  productIds?: string[];
+  createdAt?: string;
+}
+
 export interface DbCustomerNotification {
   id: string;
   userId?: string;
@@ -756,6 +764,7 @@ export interface DevDatabaseData {
   galleryItems: DbGalleryItem[];
   blogPosts: DbBlogPost[];
   blogReviews: DbBlogReview[];
+  productTags?: DbProductTag[];
 }
 
 function resolveDataFilePath(): string {
@@ -5073,6 +5082,51 @@ class PersistentDevDatabase {
     this.data.reviews = this.data.reviews.filter((r) => !ids.includes(r.id));
     this.save();
     return this.data.reviews.length < initialLen;
+  }
+
+  // --------------------------------------------------
+  // PRODUCT TAGS METHODS
+  // --------------------------------------------------
+
+  getProductTags(): DbProductTag[] {
+    if (!this.data.productTags) this.data.productTags = [];
+    return this.data.productTags;
+  }
+
+  getProductTagById(id: string): DbProductTag | undefined {
+    return (this.data.productTags || []).find((t) => t.id === id);
+  }
+
+  saveProductTag(tagData: Partial<DbProductTag> & { id?: string }): DbProductTag {
+    if (!this.data.productTags) this.data.productTags = [];
+    const index = this.data.productTags.findIndex((t) => t.id === tagData.id);
+    if (index >= 0) {
+      this.data.productTags[index] = {
+        ...this.data.productTags[index],
+        ...tagData,
+      };
+      this.save();
+      return this.data.productTags[index];
+    } else {
+      const newTag: DbProductTag = {
+        id: tagData.id || `tag-${Date.now()}`,
+        name: tagData.name || '',
+        taggedProductsCount: tagData.taggedProductsCount || 0,
+        productIds: tagData.productIds || [],
+        createdAt: tagData.createdAt || new Date().toISOString(),
+      };
+      this.data.productTags.push(newTag);
+      this.save();
+      return newTag;
+    }
+  }
+
+  deleteProductTags(ids: string[]): boolean {
+    if (!this.data.productTags) this.data.productTags = [];
+    const initialLen = this.data.productTags.length;
+    this.data.productTags = this.data.productTags.filter((t) => !ids.includes(t.id));
+    this.save();
+    return this.data.productTags.length < initialLen;
   }
 }
 

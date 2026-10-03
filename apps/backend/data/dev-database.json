@@ -15469,5 +15469,61 @@
       "status": "APPROVED",
       "createdAt": "2026-09-19T10:57:06.821Z"
     }
+  ],
+  "productTags": [
+    {
+      "id": "tag-1",
+      "name": "awesome",
+      "taggedProductsCount": 17,
+      "createdAt": "2022-01-01T00:00:00.000Z"
+    },
+    {
+      "id": "tag-2",
+      "name": "cool",
+      "taggedProductsCount": 17,
+      "createdAt": "2022-01-02T00:00:00.000Z"
+    },
+    {
+      "id": "tag-3",
+      "name": "computer",
+      "taggedProductsCount": 14,
+      "createdAt": "2022-01-03T00:00:00.000Z"
+    },
+    {
+      "id": "tag-4",
+      "name": "apparel",
+      "taggedProductsCount": 9,
+      "createdAt": "2022-01-04T00:00:00.000Z"
+    },
+    {
+      "id": "tag-5",
+      "name": "compact",
+      "taggedProductsCount": 7,
+      "createdAt": "2022-01-05T00:00:00.000Z"
+    },
+    {
+      "id": "tag-6",
+      "name": "organic",
+      "taggedProductsCount": 8,
+      "createdAt": "2022-01-06T00:00:00.000Z"
+    },
+    {
+      "id": "tag-7",
+      "name": "power-weeder",
+      "taggedProductsCount": 6,
+      "createdAt": "2022-01-07T00:00:00.000Z"
+    },
+    {
+      "id": "tag-8",
+      "name": "seeds",
+      "taggedProductsCount": 12,
+      "createdAt": "2022-01-08T00:00:00.000Z"
+    },
+    {
+      "id": "tag-9",
+      "name": "fertilizer",
+      "taggedProductsCount": 5,
+      "createdAt": "2022-01-09T00:00:00.000Z"
+    }
   ]
 }
