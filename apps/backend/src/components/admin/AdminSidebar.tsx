@@ -35,6 +35,19 @@ import {
 import React, { useState, useEffect } from 'react';
 import { clsx } from 'clsx';
 
+function CubesIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 512 512"
+      fill="currentColor"
+      className={className}
+      aria-hidden="true"
+    >
+      <path d="M488.6 250.4L392 189.7V105.8c0-11.3-6.4-21.7-16.6-26.8L270.6 24.3c-9.1-4.6-19.8-4.6-28.9 0L136.6 79c-10.2 5.1-16.6 15.5-16.6 26.8v83.9L23.4 250.4c-9.6 6-15.4 16.5-15.4 27.8v105c0 11.3 6.4 21.7 16.6 26.8l104.8 54.7c9.1 4.6 19.8 4.6 28.9 0l77.7-40.6v.1l20 10.4c9.1 4.6 19.8 4.6 28.9 0l104.8-54.7c10.2-5.1 16.6-15.5 16.6-26.8v-105c0-11.3-5.8-21.8-15.4-27.8zM256 52.8l100.9 52.6L256 166 155.1 105.4 256 52.8zm-116 83.2v72.1l-89.9-56.7L140 136zm0 102.5v94.1l-90.1-47v-94.2l90.1 47.1zm20 157.9l-89.9-46.9 89.9-56.7v103.6zm18.3-125.6l97.7-61.6 97.7 61.6-97.7 51-97.7-51zm97.7 172.9l-89.9-46.9v-94.2l89.9 46.9v94.2zm20-103.6v-94.2l89.9-46.9v94.2l-89.9 46.9zm116-22.3l-89.9 46.9v-72.1l89.9-56.7v81.9z" />
+    </svg>
+  );
+}
+
 interface NavSubItem {
   label: string;
   href: string;
@@ -111,11 +124,23 @@ const navTree: NavGroup[] = [
     ],
   },
   {
-    group: 'Content',
+    group: 'Content management',
     items: [
-      { label: 'Blog Posts', href: '/admin/content/blog', icon: FileText },
-      { label: 'Gallery', href: '/admin/content/gallery', icon: Image },
-      { label: 'Blog Reviews', href: '/admin/content/reviews', icon: MessageSquare },
+      {
+        label: 'Content management',
+        href: '/admin/content',
+        icon: CubesIcon,
+        children: [
+          { label: 'Topics (pages)', href: '/admin/content/topics', icon: CircleDot },
+          { label: 'Message templates', href: '/admin/content/message-templates', icon: CircleDot },
+          { label: 'News items', href: '/admin/content/news', icon: CircleDot },
+          { label: 'News comments', href: '/admin/content/news-comments', icon: CircleDot },
+          { label: 'Blog posts', href: '/admin/content/blog', icon: CircleDot },
+          { label: 'Blog comments', href: '/admin/content/blog-comments', icon: CircleDot },
+          { label: 'Polls', href: '/admin/content/polls', icon: CircleDot },
+          { label: 'Forums', href: '/admin/content/forums', icon: CircleDot },
+        ],
+      },
     ],
   },
   {
@@ -148,7 +173,12 @@ function NavItemLink({ item, collapsed, pathname }: { item: NavItem; collapsed: 
     item.href === '/admin' ? pathname === '/admin' : pathname.startsWith(item.href) || !!isChildActive;
 
   const [isOpen, setIsOpen] = useState(
-    item.children ? isParentActive || item.label === 'Attributes' || item.label === 'Promotions' : false
+    item.children
+      ? isParentActive ||
+        item.label === 'Attributes' ||
+        item.label === 'Promotions' ||
+        item.label === 'Content management'
+      : false
   );
 
   useEffect(() => {
