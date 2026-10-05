@@ -15715,5 +15715,29 @@
       "name": "Default group (non-grouped specification attributes)",
       "displayOrder": 0
     }
+  ],
+  "discounts": [
+    {
+      "id": "disc-1791176350834",
+      "isActive": true,
+      "name": "Seasonal Monsoon Launch",
+      "discountType": "Assigned to order total",
+      "vendor": "No vendor",
+      "usePercentage": false,
+      "discountAmount": 250,
+      "discountPercentage": 0,
+      "currency": "USD",
+      "requiresCouponCode": false,
+      "couponCode": "",
+      "startDate": "",
+      "endDate": "",
+      "cumulativeWithOtherDiscounts": false,
+      "discountLimitation": "Unlimited",
+      "limitationTimes": 1,
+      "adminComment": "",
+      "timesUsed": 0,
+      "createdAt": "2026-10-05T04:59:10.834Z",
+      "updatedAt": "2026-10-05T04:59:10.834Z"
+    }
   ]
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import {
   Plus,
@@ -18,7 +18,11 @@ interface DiscountRecord {
   id: string;
   name: string;
   discountType: string;
-  discount: string;
+  discount?: string;
+  discountAmount?: number;
+  discountPercentage?: number;
+  usePercentage?: boolean;
+  currency?: string;
   startDate: string;
   endDate: string;
   couponCode?: string;
@@ -52,20 +56,24 @@ export default function DiscountsPage() {
   const [pageSize, setPageSize] = useState(15);
   const [currentPage, setCurrentPage] = useState(1);
 
-  // Add New Modal State
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [newForm, setNewForm] = useState({
-    name: '',
-    discountType: 'Assigned to products',
-    discount: '',
-    couponCode: '',
-    startDate: '',
-    endDate: '',
-    isActive: true,
-  });
-
-  // Discounts state - default empty matching screenshot, with ability to add or test
+  // Discounts state
   const [discounts, setDiscounts] = useState<DiscountRecord[]>([]);
+
+  const fetchDiscounts = async () => {
+    try {
+      const res = await fetch('/api/admin/promotions/discounts');
+      const json = await res.json();
+      if (json.success && Array.isArray(json.data)) {
+        setDiscounts(json.data);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  useEffect(() => {
+    fetchDiscounts();
+  }, []);
 
   // Filter logic
   const filteredDiscounts = discounts.filter((d) => {
@@ -113,34 +121,7 @@ export default function DiscountsPage() {
     setDiscountName('');
     setIsActiveFilter('All');
     setCurrentPage(1);
-  };
-
-  const handleCreateDiscount = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newForm.name.trim()) return;
-
-    const newDiscount: DiscountRecord = {
-      id: `disc-${Date.now()}`,
-      name: newForm.name.trim(),
-      discountType: newForm.discountType,
-      discount: newForm.discount.trim() || '10%',
-      startDate: newForm.startDate || '—',
-      endDate: newForm.endDate || '—',
-      couponCode: newForm.couponCode.trim() || undefined,
-      isActive: newForm.isActive,
-    };
-
-    setDiscounts((prev) => [newDiscount, ...prev]);
-    setIsAddModalOpen(false);
-    setNewForm({
-      name: '',
-      discountType: 'Assigned to products',
-      discount: '',
-      couponCode: '',
-      startDate: '',
-      endDate: '',
-      isActive: true,
-    });
+    fetchDiscounts();
   };
 
   return (
@@ -148,14 +129,13 @@ export default function DiscountsPage() {
       {/* ── TOP HEADER: Discounts + Add new button (Matching media_1791173765894.png) ── */}
       <div className="flex items-center justify-between gap-4 pt-1">
         <h1 className="text-2xl font-normal text-slate-800 tracking-tight">Discounts</h1>
-        <button
-          type="button"
-          onClick={() => setIsAddModalOpen(true)}
+        <Link
+          href="/admin/promotions/discounts/new"
           className="bg-[#2489c5] hover:bg-[#1f72a3] text-white text-xs font-semibold px-3.5 py-1.5 rounded flex items-center gap-1.5 shadow-2xs transition cursor-pointer"
         >
           <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
           <span>Add new</span>
-        </button>
+        </Link>
       </div>
 
       {/* ── SEARCH CARD (Matching media_1791173765894.png) ── */}
@@ -358,7 +338,13 @@ export default function DiscountsPage() {
                   <tr key={d.id} className="hover:bg-slate-50/70 transition-colors">
                     <td className="px-4 py-3 font-semibold text-slate-900">{d.name}</td>
                     <td className="px-4 py-3 text-slate-600">{d.discountType}</td>
-                    <td className="px-4 py-3 font-bold text-emerald-700 font-mono">{d.discount}</td>
+                    <td className="px-4 py-3 font-bold text-emerald-700 font-mono">
+                      {d.usePercentage
+                        ? `${d.discountPercentage || 0}%`
+                        : d.discountAmount !== undefined
+                        ? `${d.discountAmount} ${d.currency || 'USD'}`
+                        : d.discount || '—'}
+                    </td>
                     <td className="px-4 py-3 text-slate-500 font-mono">{d.startDate}</td>
                     <td className="px-4 py-3 text-slate-500 font-mono">{d.endDate}</td>
                   </tr>
@@ -430,131 +416,6 @@ export default function DiscountsPage() {
           </div>
         </div>
       </div>
-
-      {/* ── ADD NEW MODAL ── */}
-      {isAddModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-2xs">
-          <div className="bg-white rounded-lg border border-[#d2d6de] shadow-xl w-full max-w-lg overflow-hidden animate-fadeIn">
-            {/* Modal Header */}
-            <div className="px-5 py-3.5 border-b border-[#f4f4f4] flex items-center justify-between bg-slate-50">
-              <h2 className="text-sm font-semibold text-slate-800">Add New Discount</h2>
-              <button
-                type="button"
-                onClick={() => setIsAddModalOpen(false)}
-                className="text-slate-400 hover:text-slate-600 p-1"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            {/* Modal Form */}
-            <form onSubmit={handleCreateDiscount} className="p-5 space-y-3.5 text-xs">
-              <div>
-                <label className="block font-semibold text-slate-700 mb-1">
-                  Discount Name <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={newForm.name}
-                  onChange={(e) => setNewForm((f) => ({ ...f, name: e.target.value }))}
-                  placeholder="e.g. Kharif Monsoon Offer"
-                  className="w-full border border-[#d2d6de] rounded px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-[#3c8dbc]"
-                />
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label className="block font-semibold text-slate-700 mb-1">Discount Type</label>
-                  <select
-                    value={newForm.discountType}
-                    onChange={(e) => setNewForm((f) => ({ ...f, discountType: e.target.value }))}
-                    className="w-full border border-[#d2d6de] rounded px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-[#3c8dbc]"
-                  >
-                    <option value="Assigned to products">Assigned to products</option>
-                    <option value="Assigned to order total">Assigned to order total</option>
-                    <option value="Assigned to categories">Assigned to categories</option>
-                    <option value="Assigned to manufacturers">Assigned to manufacturers</option>
-                    <option value="Assigned to shipping">Assigned to shipping</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block font-semibold text-slate-700 mb-1">Discount Amount / %</label>
-                  <input
-                    type="text"
-                    value={newForm.discount}
-                    onChange={(e) => setNewForm((f) => ({ ...f, discount: e.target.value }))}
-                    placeholder="e.g. 15% or ₹200"
-                    className="w-full border border-[#d2d6de] rounded px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-[#3c8dbc]"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block font-semibold text-slate-700 mb-1">Coupon Code (Optional)</label>
-                <input
-                  type="text"
-                  value={newForm.couponCode}
-                  onChange={(e) => setNewForm((f) => ({ ...f, couponCode: e.target.value }))}
-                  placeholder="e.g. KHARIF15"
-                  className="w-full border border-[#d2d6de] rounded px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-[#3c8dbc] font-mono"
-                />
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label className="block font-semibold text-slate-700 mb-1">Start Date</label>
-                  <input
-                    type="date"
-                    value={newForm.startDate}
-                    onChange={(e) => setNewForm((f) => ({ ...f, startDate: e.target.value }))}
-                    className="w-full border border-[#d2d6de] rounded px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-[#3c8dbc]"
-                  />
-                </div>
-                <div>
-                  <label className="block font-semibold text-slate-700 mb-1">End Date</label>
-                  <input
-                    type="date"
-                    value={newForm.endDate}
-                    onChange={(e) => setNewForm((f) => ({ ...f, endDate: e.target.value }))}
-                    className="w-full border border-[#d2d6de] rounded px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-[#3c8dbc]"
-                  />
-                </div>
-              </div>
-
-              <div className="flex items-center gap-2 pt-1">
-                <input
-                  type="checkbox"
-                  id="isActiveNew"
-                  checked={newForm.isActive}
-                  onChange={(e) => setNewForm((f) => ({ ...f, isActive: e.target.checked }))}
-                  className="rounded border-[#d2d6de] text-[#2489c5] focus:ring-[#3c8dbc]"
-                />
-                <label htmlFor="isActiveNew" className="font-semibold text-slate-700 cursor-pointer">
-                  Is Active
-                </label>
-              </div>
-
-              <div className="flex items-center justify-end gap-2 pt-3 border-t border-[#f4f4f4]">
-                <button
-                  type="button"
-                  onClick={() => setIsAddModalOpen(false)}
-                  className="px-3.5 py-1.5 border border-[#d2d6de] rounded bg-white hover:bg-slate-50 text-slate-700 transition"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-4 py-1.5 rounded bg-[#2489c5] hover:bg-[#1f72a3] text-white font-semibold shadow-xs transition"
-                >
-                  Save Discount
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
