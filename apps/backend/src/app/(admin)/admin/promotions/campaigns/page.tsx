@@ -207,14 +207,13 @@ export default function CampaignsPage() {
       {/* ── TOP HEADER: Campaigns + Add new button (Matching media_1791180337566.png) ── */}
       <div className="flex items-center justify-between gap-4 pt-1">
         <h1 className="text-2xl font-normal text-slate-800 tracking-tight">Campaigns</h1>
-        <button
-          type="button"
-          onClick={handleOpenAdd}
+        <Link
+          href="/admin/promotions/campaigns/new"
           className="bg-[#2489c5] hover:bg-[#1f72a3] text-white text-xs font-semibold px-3.5 py-1.5 rounded flex items-center gap-1.5 shadow-2xs transition cursor-pointer"
         >
           <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
           <span>Add new</span>
-        </button>
+        </Link>
       </div>
 
       {/* ── TABLE CARD (Matching media_1791180337566.png) ── */}
@@ -264,14 +263,13 @@ export default function CampaignsPage() {
                       {c.plannedDateOfSending}
                     </td>
                     <td className="px-4 py-3 text-center">
-                      <button
-                        type="button"
-                        onClick={() => handleOpenEdit(c)}
+                      <Link
+                        href={`/admin/promotions/campaigns/${c.id}`}
                         className="inline-flex items-center gap-1 px-3 py-1 rounded border border-[#d2d6de] bg-white text-slate-700 hover:bg-slate-50 text-xs font-semibold shadow-2xs transition cursor-pointer"
                       >
                         <Edit className="h-3 w-3 text-slate-500" />
                         <span>Edit</span>
-                      </button>
+                      </Link>
                     </td>
                   </tr>
                 ))

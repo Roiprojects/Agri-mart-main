@@ -83,7 +83,9 @@ export async function POST(request: Request) {
       createdOn: formattedCreated,
       plannedDateOfSending: body.plannedDateOfSending?.trim() || '—',
       body: body.body?.trim() || '',
-      targetRole: body.targetRole || 'All Customers',
+      limitedToCustomerRole: body.limitedToCustomerRole || 'All',
+      limitedToSubscriptionTypes: body.limitedToSubscriptionTypes || 'All',
+      targetRole: body.limitedToCustomerRole || body.targetRole || 'All Customers',
     };
 
     (devDb as any).data.campaigns.unshift(newCampaign);
