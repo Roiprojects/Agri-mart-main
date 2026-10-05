@@ -539,13 +539,12 @@ export default function EditMessageTemplatePage() {
                 <span>Test template</span>
               </div>
               <div className="md:col-span-9">
-                <button
-                  type="button"
-                  onClick={() => setTestModalOpen(true)}
+                <Link
+                  href={`/admin/content/message-templates/${id}/test`}
                   className="bg-[#2489c5] hover:bg-[#1f72a3] text-white text-xs font-semibold px-4 py-1.5 rounded inline-flex items-center gap-1.5 shadow-2xs transition cursor-pointer"
                 >
                   <span>Test template</span>
-                </button>
+                </Link>
               </div>
             </div>
           </div>
