@@ -7120,13 +7120,18 @@
       "rentAmount": 3400,
       "securityDeposit": 3000,
       "totalPaid": 6400,
-      "paymentMethod": "UPI",
-      "paymentStatus": "PAID",
+      "paymentMethod": "cash",
+      "paymentStatus": "PENDING",
       "paymentId": "pay_rent_collision_01",
       "status": "PENDING_APPROVAL",
       "depositRefundStatus": "PENDING",
       "createdAt": "2026-09-18T05:50:19.265Z",
-      "updatedAt": "2026-09-18T05:50:19.265Z"
+      "updatedAt": "2026-10-05T03:55:05.647Z",
+      "lateDays": 0,
+      "lateFee": 0,
+      "damageFee": 0,
+      "damageNotes": "",
+      "depositRefundAmount": 0
     },
     {
       "id": "rnt-bk-1789710619136",

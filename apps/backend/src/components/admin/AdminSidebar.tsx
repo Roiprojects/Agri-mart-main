@@ -32,7 +32,7 @@ import {
   ExternalLink,
   X,
 } from 'lucide-react';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { clsx } from 'clsx';
 
 interface NavSubItem {
@@ -98,8 +98,16 @@ const navTree: NavGroup[] = [
   {
     group: 'Promotions',
     items: [
-      { label: 'Coupons', href: '/admin/promotions/coupons', icon: Ticket },
-      { label: 'Discounts', href: '/admin/promotions/discounts', icon: Percent },
+      {
+        label: 'Promotions',
+        href: '/admin/promotions',
+        icon: Tag,
+        children: [
+          { label: 'Discounts', href: '/admin/promotions/discounts', icon: CircleDot },
+          { label: 'Affiliates', href: '/admin/promotions/affiliates', icon: CircleDot },
+          { label: 'Campaigns', href: '/admin/promotions/campaigns', icon: CircleDot },
+        ],
+      },
     ],
   },
   {
@@ -140,8 +148,14 @@ function NavItemLink({ item, collapsed, pathname }: { item: NavItem; collapsed: 
     item.href === '/admin' ? pathname === '/admin' : pathname.startsWith(item.href) || !!isChildActive;
 
   const [isOpen, setIsOpen] = useState(
-    item.children ? isParentActive || item.label === 'Attributes' : false
+    item.children ? isParentActive || item.label === 'Attributes' || item.label === 'Promotions' : false
   );
+
+  useEffect(() => {
+    if (isParentActive) {
+      setIsOpen(true);
+    }
+  }, [isParentActive]);
 
   const Icon = item.icon;
 
@@ -256,20 +270,26 @@ export function AdminSidebar({ collapsed, onToggle, mobileOpen, onMobileClose }:
 
       {/* Nav */}
       <nav className="flex-1 overflow-y-auto py-4 px-2 space-y-6">
-        {navTree.map((group) => (
-          <div key={group.group}>
-            {!collapsed && (
-              <p className="mb-1.5 px-2 text-[10px] font-semibold uppercase tracking-wider text-slate-400">
-                {group.group}
-              </p>
-            )}
-            <div className="space-y-0.5">
-              {group.items.map((item) => (
-                <NavItemLink key={item.href} item={item} collapsed={collapsed} pathname={pathname} />
-              ))}
+        {navTree.map((group) => {
+          const isSingleSelfNamed =
+            group.items.length === 1 &&
+            group.items[0].label.toLowerCase() === group.group.toLowerCase();
+
+          return (
+            <div key={group.group}>
+              {!collapsed && !isSingleSelfNamed && (
+                <p className="mb-1.5 px-2 text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+                  {group.group}
+                </p>
+              )}
+              <div className="space-y-0.5">
+                {group.items.map((item) => (
+                  <NavItemLink key={item.href} item={item} collapsed={collapsed} pathname={pathname} />
+                ))}
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </nav>
 
       {/* Footer */}

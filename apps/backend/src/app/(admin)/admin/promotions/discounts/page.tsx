@@ -1,72 +1,252 @@
-import { Percent, Sparkles, Tag, CheckCircle2 } from 'lucide-react';
+'use client';
+
+import { useState } from 'react';
 import Link from 'next/link';
+import {
+  Percent,
+  Plus,
+  Search,
+  Check,
+  X,
+  Edit,
+  Tag,
+  Sparkles,
+  Calendar,
+} from 'lucide-react';
+
+interface DiscountItem {
+  id: string;
+  name: string;
+  discountType: string;
+  discountAmount: string;
+  startDate: string;
+  endDate: string;
+  timesUsed: number;
+  isActive: boolean;
+}
+
+const initialDiscounts: DiscountItem[] = [
+  {
+    id: 'disc-1',
+    name: 'Kharif Sowing Season Launch',
+    discountType: 'Assigned to products',
+    discountAmount: '25%',
+    startDate: '2026-06-01',
+    endDate: '2026-10-31',
+    timesUsed: 142,
+    isActive: true,
+  },
+  {
+    id: 'disc-2',
+    name: 'Bio-Care Micro-Nutrient Bundle',
+    discountType: 'Assigned to order total',
+    discountAmount: '₹150',
+    startDate: '2026-08-01',
+    endDate: '2026-12-31',
+    timesUsed: 89,
+    isActive: true,
+  },
+  {
+    id: 'disc-3',
+    name: 'Drip & Micro-Irrigation Foundation Subsidy',
+    discountType: 'Assigned to categories',
+    discountAmount: '15%',
+    startDate: '2026-07-15',
+    endDate: '2026-11-30',
+    timesUsed: 54,
+    isActive: true,
+  },
+  {
+    id: 'disc-4',
+    name: 'First Time Farmer Welcome Rebate',
+    discountType: 'Assigned to order total',
+    discountAmount: '₹200',
+    startDate: '2026-01-01',
+    endDate: '2026-12-31',
+    timesUsed: 310,
+    isActive: true,
+  },
+];
 
 export default function DiscountsPage() {
-  const activeCampaigns = [
-    {
-      title: 'Kharif Sowing Season Launch',
-      discount: 'Up to 25% Off Compare Price',
-      scope: 'Farm Machinery, Tillers & Sprayers',
-      badge: 'Active Season',
-    },
-    {
-      title: 'Bio-Care Micro-Nutrient Bundle',
-      discount: 'Automatic ₹150 Off above ₹2,000 cart',
-      scope: 'Fertilizers & Soil Care Consortia',
-      badge: 'Applied at Checkout',
-    },
-    {
-      title: 'Drip & Micro-Irrigation Foundation Subsidy',
-      discount: 'Direct Farmer Instant Rebate',
-      scope: 'Jain Drip Tech & Venturi Kits',
-      badge: 'Govt Aligned',
-    },
-  ];
+  const [discounts, setDiscounts] = useState<DiscountItem[]>(initialDiscounts);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [couponCode, setCouponCode] = useState('');
+  const [discountTypeFilter, setDiscountTypeFilter] = useState('All');
+
+  const filteredDiscounts = discounts.filter((d) => {
+    const matchesSearch = d.name.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesType = discountTypeFilter === 'All' || d.discountType === discountTypeFilter;
+    return matchesSearch && matchesType;
+  });
 
   return (
-    <div className="space-y-6 max-w-5xl">
-      <div>
-        <div className="flex items-center gap-2.5">
-          <div className="p-2 rounded-lg bg-emerald-50 text-emerald-600">
-            <Percent className="h-5 w-5" />
-          </div>
-          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Promotions & Discounts</h1>
-        </div>
-        <p className="text-xs text-slate-500 mt-1">
-          Catalog price markdowns, automated strike-through pricing, and volume bundle campaigns.
-        </p>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {activeCampaigns.map((camp) => (
-          <div key={camp.title} className="rounded-xl border border-slate-200 bg-white p-5 space-y-3 shadow-xs">
-            <div className="flex items-center justify-between">
-              <span className="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-semibold uppercase">
-                {camp.badge}
-              </span>
-              <Sparkles className="h-4 w-4 text-amber-500" />
-            </div>
-            <h3 className="font-bold text-sm text-slate-900">{camp.title}</h3>
-            <p className="text-xs font-semibold text-emerald-700">{camp.discount}</p>
-            <p className="text-xs text-slate-500">{camp.scope}</p>
-          </div>
-        ))}
-      </div>
-
-      <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div className="space-y-6 max-w-7xl">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h4 className="text-sm font-semibold text-slate-900">Looking to set item-level markdown pricing?</h4>
-          <p className="text-xs text-slate-500 mt-0.5">
-            Use the Compare Price feature on any individual product to show crossed-out MRP with discount percentages on customer storefront pages.
+          <div className="flex items-center gap-2.5">
+            <div className="p-2 rounded-lg bg-emerald-50 text-emerald-600">
+              <Percent className="h-5 w-5" />
+            </div>
+            <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Discounts</h1>
+          </div>
+          <p className="text-xs text-slate-500 mt-1">
+            Manage product price markdowns, coupon codes, and promotional volume discounts.
           </p>
         </div>
-        <Link
-          href="/admin/catalogue/products"
-          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold shadow-xs transition whitespace-nowrap"
+        <button
+          type="button"
+          onClick={() => alert('Add discount modal / form will be configured with your custom fields.')}
+          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold shadow-xs transition cursor-pointer self-start sm:self-auto"
         >
-          <Tag className="h-3.5 w-3.5" />
-          Edit Products
-        </Link>
+          <Plus className="h-4 w-4" />
+          Add new
+        </button>
+      </div>
+
+      {/* Search Panel */}
+      <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-xs space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <label className="block text-xs font-semibold text-slate-700 mb-1">
+              Discount Name
+            </label>
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Search by discount name…"
+              className="w-full rounded-lg bg-white border border-slate-300 px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 shadow-2xs"
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs font-semibold text-slate-700 mb-1">
+              Coupon Code
+            </label>
+            <input
+              type="text"
+              value={couponCode}
+              onChange={(e) => setCouponCode(e.target.value)}
+              placeholder="e.g. KHARIF25…"
+              className="w-full rounded-lg bg-white border border-slate-300 px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 shadow-2xs font-mono"
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs font-semibold text-slate-700 mb-1">
+              Discount Type
+            </label>
+            <select
+              value={discountTypeFilter}
+              onChange={(e) => setDiscountTypeFilter(e.target.value)}
+              className="w-full rounded-lg bg-white border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 shadow-2xs"
+            >
+              <option value="All">All Discount Types</option>
+              <option value="Assigned to order total">Assigned to order total</option>
+              <option value="Assigned to products">Assigned to products</option>
+              <option value="Assigned to categories">Assigned to categories</option>
+              <option value="Assigned to shipping">Assigned to shipping</option>
+            </select>
+          </div>
+        </div>
+
+        <div className="flex justify-end gap-2 pt-1 border-t border-slate-100">
+          <button
+            type="button"
+            onClick={() => {
+              setSearchTerm('');
+              setCouponCode('');
+              setDiscountTypeFilter('All');
+            }}
+            className="px-3 py-1.5 rounded-lg border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold transition"
+          >
+            Reset
+          </button>
+          <button
+            type="button"
+            className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold transition shadow-xs"
+          >
+            <Search className="h-3.5 w-3.5" />
+            Search
+          </button>
+        </div>
+      </div>
+
+      {/* Table */}
+      <div className="rounded-xl border border-slate-200 bg-white shadow-xs overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className="border-b border-slate-200 bg-slate-50/75 text-[11px] font-bold uppercase tracking-wider text-slate-600">
+                <th className="px-4 py-3">Discount Name</th>
+                <th className="px-4 py-3">Discount Type</th>
+                <th className="px-4 py-3">Discount</th>
+                <th className="px-4 py-3">Start Date</th>
+                <th className="px-4 py-3">End Date</th>
+                <th className="px-4 py-3 text-center">Times Used</th>
+                <th className="px-4 py-3 text-center">Active</th>
+                <th className="px-4 py-3 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100 text-xs text-slate-700">
+              {filteredDiscounts.length === 0 ? (
+                <tr>
+                  <td colSpan={8} className="py-8 text-center text-slate-400 text-xs">
+                    No discounts found.
+                  </td>
+                </tr>
+              ) : (
+                filteredDiscounts.map((discount) => (
+                  <tr key={discount.id} className="hover:bg-slate-50/60 transition-colors">
+                    <td className="px-4 py-3 font-semibold text-slate-900">
+                      {discount.name}
+                    </td>
+                    <td className="px-4 py-3 text-slate-600">
+                      <span className="inline-block px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 font-medium text-[11px]">
+                        {discount.discountType}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 font-bold text-emerald-700 font-mono">
+                      {discount.discountAmount}
+                    </td>
+                    <td className="px-4 py-3 text-slate-500 font-mono text-[11px]">
+                      {discount.startDate}
+                    </td>
+                    <td className="px-4 py-3 text-slate-500 font-mono text-[11px]">
+                      {discount.endDate}
+                    </td>
+                    <td className="px-4 py-3 text-center font-semibold font-mono text-slate-800">
+                      {discount.timesUsed}
+                    </td>
+                    <td className="px-4 py-3 text-center">
+                      {discount.isActive ? (
+                        <span className="inline-flex items-center justify-center h-5 w-5 rounded-full bg-emerald-100 text-emerald-700">
+                          <Check className="h-3 w-3 stroke-[3]" />
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center justify-center h-5 w-5 rounded-full bg-red-100 text-red-600">
+                          <X className="h-3 w-3 stroke-[3]" />
+                        </span>
+                      )}
+                    </td>
+                    <td className="px-4 py-3 text-right">
+                      <button
+                        type="button"
+                        onClick={() => alert(`Edit ${discount.name}`)}
+                        className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200 font-semibold transition text-xs"
+                      >
+                        <Edit className="h-3 w-3" />
+                        Edit
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );
