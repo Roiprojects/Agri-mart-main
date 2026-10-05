@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import {
   Plus,
@@ -89,6 +89,22 @@ export default function AffiliatesPage() {
 
   // Affiliates Data State (Keeping the example customer data as requested)
   const [affiliates, setAffiliates] = useState<AffiliateItem[]>(initialAffiliates);
+
+  const fetchAffiliates = async () => {
+    try {
+      const res = await fetch('/api/admin/promotions/affiliates');
+      const json = await res.json();
+      if (json.success && Array.isArray(json.data) && json.data.length > 0) {
+        setAffiliates(json.data);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  useEffect(() => {
+    fetchAffiliates();
+  }, []);
 
   // Add / Edit Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -208,14 +224,13 @@ export default function AffiliatesPage() {
       {/* ── TOP HEADER: Affiliates + Add new button (Matching media_1791177044711.png) ── */}
       <div className="flex items-center justify-between gap-4 pt-1">
         <h1 className="text-2xl font-normal text-slate-800 tracking-tight">Affiliates</h1>
-        <button
-          type="button"
-          onClick={handleOpenAdd}
+        <Link
+          href="/admin/promotions/affiliates/new"
           className="bg-[#2489c5] hover:bg-[#1f72a3] text-white text-xs font-semibold px-3.5 py-1.5 rounded flex items-center gap-1.5 shadow-2xs transition cursor-pointer"
         >
           <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
           <span>Add new</span>
-        </button>
+        </Link>
       </div>
 
       {/* ── SEARCH CARD (Matching media_1791177044711.png) ── */}
