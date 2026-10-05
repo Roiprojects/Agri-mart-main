@@ -1,6 +1,8 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
+import Link from 'next/link';
 import {
   RotateCw,
   Trash2,
@@ -8,6 +10,7 @@ import {
   Search,
   ChevronDown,
   ChevronUp,
+  ArrowLeft,
 } from 'lucide-react';
 
 interface NewsCommentItem {
@@ -20,17 +23,55 @@ interface NewsCommentItem {
 }
 
 const initialComments: NewsCommentItem[] = [
-  { id: '1', newsTitle: 'Kharif MSP Rates Announced for 2026-27 Season', customerName: 'Suresh Gowda', comment: 'Are pulses and oilseeds covered under the revision as well?', createdOn: '5/29/2026 11:20 AM', approved: true },
-  { id: '2', newsTitle: 'Government Launches Subsidized Solar Pump Direct Scheme', customerName: 'Vijay Kumar', comment: 'Where can we submit the land registration certificate for this?', createdOn: '7/16/2026 9:40 AM', approved: true },
-  { id: '3', newsTitle: 'Monsoon Pest Watch Advisory Issued for Paddy & Cotton', customerName: 'Anand Patil', comment: 'Very useful advisory on avoiding high doses of nitrogen during rain spells.', createdOn: '8/02/2026 3:15 PM', approved: true },
+  {
+    id: '1',
+    newsTitle: 'Check out our latest offers',
+    customerName: 'Suresh Gowda',
+    comment: 'Great offers on seasonal fertilizers and drip irrigation sets!',
+    createdOn: '04/04/2019 11:20 AM',
+    approved: true,
+  },
+  {
+    id: '2',
+    newsTitle: 'Find out about our products',
+    customerName: 'Vijay Kumar',
+    comment: 'Where can we submit the bulk enquiry for certified hybrid seeds?',
+    createdOn: '04/05/2019 9:40 AM',
+    approved: true,
+  },
+  {
+    id: '3',
+    newsTitle: 'Visit our new store',
+    customerName: 'Anand Patil',
+    comment: 'Delighted to have a local Agri-Mart depot in our district!',
+    createdOn: '04/06/2019 3:15 PM',
+    approved: true,
+  },
+  {
+    id: '4',
+    newsTitle: 'Kharif MSP Rates Announced for 2026-27 Season',
+    customerName: 'Ramesh Patel',
+    comment: 'Are pulses and oilseeds covered under the revision as well?',
+    createdOn: '5/29/2026 11:20 AM',
+    approved: true,
+  },
 ];
 
-export default function NewsCommentsPage() {
+function NewsCommentsContent() {
+  const searchParams = useSearchParams();
+  const initialNewsTitle = searchParams.get('newsTitle') || '';
+
   const [comments, setComments] = useState<NewsCommentItem[]>(initialComments);
-  const [searchKeywords, setSearchKeywords] = useState('');
+  const [searchKeywords, setSearchKeywords] = useState(initialNewsTitle);
   const [pageSize, setPageSize] = useState(15);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchOpen, setSearchOpen] = useState(true);
+
+  useEffect(() => {
+    if (initialNewsTitle) {
+      setSearchKeywords(initialNewsTitle);
+    }
+  }, [initialNewsTitle]);
 
   const filteredComments = comments.filter((c) =>
     c.newsTitle.toLowerCase().includes(searchKeywords.toLowerCase()) ||
@@ -49,7 +90,18 @@ export default function NewsCommentsPage() {
     <div className="space-y-4 max-w-full text-slate-800 pb-16 font-sans">
       {/* ── HEADER ── */}
       <div className="flex items-center justify-between gap-4 pt-1">
-        <h1 className="text-2xl font-normal text-slate-800 tracking-tight">News comments</h1>
+        <div className="flex items-center gap-3">
+          <Link
+            href="/admin/content/news"
+            className="p-1 rounded hover:bg-slate-200 text-slate-600 transition"
+            title="Back to news items"
+          >
+            <ArrowLeft className="w-5 h-5" />
+          </Link>
+          <h1 className="text-2xl font-normal text-slate-800 tracking-tight">
+            News comments {initialNewsTitle && <span className="text-sm text-slate-500 font-normal">({initialNewsTitle})</span>}
+          </h1>
+        </div>
       </div>
 
       {/* ── SEARCH CARD ── */}
@@ -71,7 +123,7 @@ export default function NewsCommentsPage() {
               <label className="md:col-span-3 text-xs font-semibold text-slate-700 md:text-right">
                 Keywords
               </label>
-              <div className="md:col-span-9 max-w-md">
+              <div className="md:col-span-9 max-w-md flex gap-2">
                 <input
                   type="text"
                   value={searchKeywords}
@@ -82,6 +134,15 @@ export default function NewsCommentsPage() {
                   placeholder="Search by customer, comment, or news item"
                   className="w-full border border-[#d2d6de] focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none rounded-xs px-2.5 py-1.5 text-xs text-slate-800 bg-white"
                 />
+                {searchKeywords && (
+                  <button
+                    type="button"
+                    onClick={() => setSearchKeywords('')}
+                    className="px-3 py-1 bg-slate-100 hover:bg-slate-200 text-xs rounded border border-[#d2d6de] text-slate-600 transition"
+                  >
+                    Clear
+                  </button>
+                )}
               </div>
             </div>
           </div>
@@ -114,15 +175,15 @@ export default function NewsCommentsPage() {
                   <tr key={c.id} className="hover:bg-slate-50/70 transition-colors">
                     <td className="px-4 py-3 font-semibold text-slate-900">{c.newsTitle}</td>
                     <td className="px-4 py-3 text-[#2489c5] font-semibold">{c.customerName}</td>
-                    <td className="px-4 py-3 text-slate-600 max-w-xs truncate">{c.comment}</td>
+                    <td className="px-4 py-3 text-slate-600 max-w-xs">{c.comment}</td>
                     <td className="px-4 py-3 text-slate-500 font-mono text-[11px]">{c.createdOn}</td>
                     <td className="px-4 py-3 text-center">
-                      <Check className="w-4 h-4 text-emerald-600 inline-block stroke-[2.5]" />
+                      <Check className="w-4 h-4 text-[#2489c5] inline-block stroke-[2.5]" />
                     </td>
                     <td className="px-4 py-3 text-center">
                       <button
                         type="button"
-                        onClick={() => setComments(comments.filter(item => item.id !== c.id))}
+                        onClick={() => setComments(comments.filter((item) => item.id !== c.id))}
                         className="inline-flex items-center gap-1 px-2.5 py-1 rounded border border-red-200 bg-white text-red-600 hover:bg-red-50 text-xs font-semibold shadow-2xs transition cursor-pointer"
                       >
                         <Trash2 className="h-3 w-3" />
@@ -192,5 +253,13 @@ export default function NewsCommentsPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function NewsCommentsPage() {
+  return (
+    <Suspense fallback={<div className="p-4 text-xs text-slate-500">Loading comments...</div>}>
+      <NewsCommentsContent />
+    </Suspense>
   );
 }
