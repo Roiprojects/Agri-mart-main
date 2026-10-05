@@ -51,15 +51,26 @@ export async function POST(request: Request) {
 
     const newTopic = {
       id: body.id || `topic-${Date.now()}`,
-      name: body.name.trim(),
-      published: Boolean(body.published),
-      passwordProtected: Boolean(body.passwordProtected),
-      includeInSitemap: Boolean(body.includeInSitemap),
-      displayOrder: Number(body.displayOrder) || 0,
+      name: (body.systemName || body.name || 'NewTopic').trim(),
+      systemName: (body.systemName || body.name || 'NewTopic').trim(),
+      title: body.title?.trim() || body.systemName || body.name || '',
       body: body.body || '',
+      published: body.published !== undefined ? Boolean(body.published) : true,
+      availabilityStartDate: body.availabilityStartDate || '',
+      availabilityEndDate: body.availabilityEndDate || '',
+      includeInSitemap: Boolean(body.includeInSitemap),
+      passwordProtected: Boolean(body.passwordProtected),
+      limitedToCustomerRoles: body.limitedToCustomerRoles || '',
+      limitedToStores: body.limitedToStores || '',
+      accessibleWhenStoreClosed: Boolean(body.accessibleWhenStoreClosed),
+      displayOrder: Number(body.displayOrder) !== undefined ? Number(body.displayOrder) : 1,
+      seName: body.seName || '',
+      metaTitle: body.metaTitle || '',
+      metaKeywords: body.metaKeywords || '',
+      metaDescription: body.metaDescription || '',
     };
 
-    (devDb as any).data.topics.push(newTopic);
+    (devDb as any).data.topics.unshift(newTopic);
     try {
       (devDb as any).save?.();
     } catch (e) {}
