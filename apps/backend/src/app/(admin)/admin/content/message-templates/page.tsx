@@ -403,14 +403,13 @@ export default function MessageTemplatesPage() {
                     </td>
                     <td className="px-4 py-3 text-slate-700 font-normal">{t.limitedToStores}</td>
                     <td className="px-4 py-3 text-center">
-                      <button
-                        type="button"
-                        onClick={() => handleOpenEdit(t)}
+                      <Link
+                        href={`/admin/content/message-templates/${t.id}`}
                         className="inline-flex items-center gap-1.5 px-3 py-1 rounded border border-[#d2d6de] bg-white text-slate-700 hover:bg-slate-50 text-xs font-semibold shadow-2xs transition cursor-pointer"
                       >
                         <Edit className="h-3 w-3 text-slate-600" />
                         <span>Edit</span>
-                      </button>
+                      </Link>
                     </td>
                   </tr>
                 ))
