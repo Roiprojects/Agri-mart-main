@@ -1,224 +1,276 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import {
-  Send,
   Plus,
-  Search,
-  Check,
-  X,
+  RotateCw,
   Edit,
-  Mail,
+  X,
   Calendar,
-  Clock,
+  CheckCircle2,
+  AlertCircle,
 } from 'lucide-react';
 
 interface CampaignItem {
   id: string;
   name: string;
-  subject: string;
+  subject?: string;
   createdOn: string;
-  dontSendBefore: string;
-  targetRole: string;
-  status: 'Draft' | 'Scheduled' | 'Sent';
+  plannedDateOfSending: string;
+  body?: string;
 }
 
-const initialCampaigns: CampaignItem[] = [
+const initialDemoCampaigns: CampaignItem[] = [
   {
     id: 'camp-1',
     name: 'Kharif Pre-Monsoon Machinery Advisory',
     subject: 'Book heavy tillers and seeders before seasonal surge',
-    createdOn: '2026-05-20',
-    dontSendBefore: '2026-05-25 08:00',
-    targetRole: 'All Farmers',
-    status: 'Sent',
+    createdOn: '5/20/2026 8:30:00 AM',
+    plannedDateOfSending: '5/25/2026 8:00:00 AM',
+    body: 'Dear Farmer, prepare your fields with verified heavy equipment before seasonal demand peak.',
   },
   {
     id: 'camp-2',
     name: 'Monsoon Fungicide Special Broadcast',
     subject: 'Protect your crops with tested bio-fungicides & copper sprayers',
-    createdOn: '2026-07-10',
-    dontSendBefore: '2026-07-15 09:30',
-    targetRole: 'Horticulture & Vegetable Growers',
-    status: 'Sent',
+    createdOn: '7/10/2026 10:15:00 AM',
+    plannedDateOfSending: '7/15/2026 9:30:00 AM',
+    body: 'Safeguard your horticultural crops against fungal blast with government approved bio-inputs.',
   },
   {
     id: 'camp-3',
     name: 'Drip Irrigation Subsidy Notification',
     subject: 'Avail government aligned drip kit packages at 15% discount',
-    createdOn: '2026-09-01',
-    dontSendBefore: '2026-09-05 10:00',
-    targetRole: 'Registered Landowners',
-    status: 'Scheduled',
+    createdOn: '9/1/2026 11:00:00 AM',
+    plannedDateOfSending: '9/5/2026 10:00:00 AM',
+    body: 'Special PMKSY aligned subsidy kits available for direct farmer online booking.',
   },
   {
     id: 'camp-4',
     name: 'Harvest Season Drone Spraying Bookings Open',
     subject: 'Drone crop spray bookings now live across 14 districts',
-    createdOn: '2026-10-01',
-    dontSendBefore: '2026-10-10 07:00',
-    targetRole: 'All Customers',
-    status: 'Draft',
+    createdOn: '10/1/2026 9:00:00 AM',
+    plannedDateOfSending: '10/10/2026 7:00:00 AM',
+    body: 'Book high-precision aerial spraying for paddy and cotton harvest protection.',
   },
 ];
 
 export default function CampaignsPage() {
-  const [campaigns, setCampaigns] = useState<CampaignItem[]>(initialCampaigns);
-  const [searchName, setSearchName] = useState('');
-  const [statusFilter, setStatusFilter] = useState('All');
+  const [campaigns, setCampaigns] = useState<CampaignItem[]>(initialDemoCampaigns);
+  const [pageSize, setPageSize] = useState(15);
+  const [currentPage, setCurrentPage] = useState(1);
 
-  const filteredCampaigns = campaigns.filter((c) => {
-    const matchesSearch =
-      c.name.toLowerCase().includes(searchName.toLowerCase()) ||
-      c.subject.toLowerCase().includes(searchName.toLowerCase());
-    const matchesStatus = statusFilter === 'All' || c.status === statusFilter;
-
-    return matchesSearch && matchesStatus;
+  // Add / Edit Modal State
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingCampaign, setEditingCampaign] = useState<CampaignItem | null>(null);
+  const [modalForm, setModalForm] = useState({
+    name: '',
+    subject: '',
+    plannedDateOfSending: '',
+    body: '',
   });
 
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+
+  const showToast = (message: string, type: 'success' | 'error' = 'success') => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 3500);
+  };
+
+  const fetchCampaigns = async () => {
+    try {
+      const res = await fetch('/api/admin/promotions/campaigns');
+      const json = await res.json();
+      if (json.success && Array.isArray(json.data) && json.data.length > 0) {
+        setCampaigns(json.data);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  useEffect(() => {
+    fetchCampaigns();
+  }, []);
+
+  const totalRecords = campaigns.length;
+  const totalPages = Math.ceil(totalRecords / pageSize) || 1;
+  const paginatedData = campaigns.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  );
+
+  const handleOpenAdd = () => {
+    setEditingCampaign(null);
+    setModalForm({
+      name: '',
+      subject: '',
+      plannedDateOfSending: '',
+      body: '',
+    });
+    setIsModalOpen(true);
+  };
+
+  const handleOpenEdit = (c: CampaignItem) => {
+    setEditingCampaign(c);
+    setModalForm({
+      name: c.name,
+      subject: c.subject || c.name,
+      plannedDateOfSending: c.plannedDateOfSending !== '—' ? c.plannedDateOfSending : '',
+      body: c.body || '',
+    });
+    setIsModalOpen(true);
+  };
+
+  const handleSaveModal = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!modalForm.name.trim()) return;
+
+    try {
+      if (editingCampaign) {
+        // Edit
+        const res = await fetch(`/api/admin/promotions/campaigns/${editingCampaign.id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: modalForm.name.trim(),
+            subject: modalForm.subject.trim(),
+            plannedDateOfSending: modalForm.plannedDateOfSending.trim() || '—',
+            body: modalForm.body.trim(),
+          }),
+        });
+        const json = await res.json();
+        if (json.success) {
+          showToast('Campaign has been updated successfully.', 'success');
+          setCampaigns((prev) =>
+            prev.map((item) =>
+              item.id === editingCampaign.id
+                ? {
+                    ...item,
+                    name: modalForm.name.trim(),
+                    subject: modalForm.subject.trim(),
+                    plannedDateOfSending: modalForm.plannedDateOfSending.trim() || '—',
+                    body: modalForm.body.trim(),
+                  }
+                : item
+            )
+          );
+        } else {
+          showToast(json.error || 'Failed to update campaign', 'error');
+        }
+      } else {
+        // Add
+        const res = await fetch('/api/admin/promotions/campaigns', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: modalForm.name.trim(),
+            subject: modalForm.subject.trim(),
+            plannedDateOfSending: modalForm.plannedDateOfSending.trim() || '—',
+            body: modalForm.body.trim(),
+          }),
+        });
+        const json = await res.json();
+        if (json.success) {
+          showToast('The new campaign has been added successfully.', 'success');
+          setCampaigns((prev) => [json.data, ...prev]);
+        } else {
+          showToast(json.error || 'Failed to add campaign', 'error');
+        }
+      }
+    } catch (err: any) {
+      showToast(err.message, 'error');
+    } finally {
+      setIsModalOpen(false);
+    }
+  };
+
   return (
-    <div className="space-y-6 max-w-7xl">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-2.5">
-            <div className="p-2 rounded-lg bg-emerald-50 text-emerald-600">
-              <Mail className="h-5 w-5" />
-            </div>
-            <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Campaigns</h1>
-          </div>
-          <p className="text-xs text-slate-500 mt-1">
-            Manage promotional email broadcasts, seasonal push advisories, and SMS campaigns to farmers.
-          </p>
+    <div className="space-y-4 max-w-full text-slate-800 pb-16 font-sans">
+      {/* Toast Notification */}
+      {toast && (
+        <div
+          className={`fixed top-4 right-4 z-50 px-4 py-2.5 rounded shadow-lg text-white text-xs font-semibold flex items-center gap-2 animate-fadeIn ${
+            toast.type === 'success' ? 'bg-[#00a65a]' : 'bg-[#dd4b39]'
+          }`}
+        >
+          {toast.type === 'success' ? (
+            <CheckCircle2 className="w-4 h-4 shrink-0" />
+          ) : (
+            <AlertCircle className="w-4 h-4 shrink-0" />
+          )}
+          <span>{toast.message}</span>
         </div>
+      )}
+
+      {/* ── TOP HEADER: Campaigns + Add new button (Matching media_1791180337566.png) ── */}
+      <div className="flex items-center justify-between gap-4 pt-1">
+        <h1 className="text-2xl font-normal text-slate-800 tracking-tight">Campaigns</h1>
         <button
           type="button"
-          onClick={() => alert('Add campaign modal / form will be configured with your custom fields.')}
-          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold shadow-xs transition cursor-pointer self-start sm:self-auto"
+          onClick={handleOpenAdd}
+          className="bg-[#2489c5] hover:bg-[#1f72a3] text-white text-xs font-semibold px-3.5 py-1.5 rounded flex items-center gap-1.5 shadow-2xs transition cursor-pointer"
         >
-          <Plus className="h-4 w-4" />
-          Add new
+          <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
+          <span>Add new</span>
         </button>
       </div>
 
-      {/* Search Filter Panel */}
-      <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-xs space-y-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1">
-              Campaign Name or Subject
-            </label>
-            <input
-              type="text"
-              value={searchName}
-              onChange={(e) => setSearchName(e.target.value)}
-              placeholder="Search by campaign name or subject…"
-              className="w-full rounded-lg bg-white border border-slate-300 px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 shadow-2xs"
-            />
-          </div>
-
-          <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1">
-              Delivery Status
-            </label>
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className="w-full rounded-lg bg-white border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 shadow-2xs"
-            >
-              <option value="All">All Statuses</option>
-              <option value="Draft">Draft</option>
-              <option value="Scheduled">Scheduled</option>
-              <option value="Sent">Sent</option>
-            </select>
-          </div>
+      {/* ── TABLE CARD (Matching media_1791180337566.png) ── */}
+      <div className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden">
+        {/* Top Info link matching screenshot */}
+        <div className="px-4 py-3 text-xs text-slate-600 border-b border-[#f4f4f4]">
+          Learn more about{' '}
+          <a
+            href="https://docs.nopcommerce.com/en/running-your-store/promotions/campaigns.html"
+            target="_blank"
+            rel="noreferrer"
+            className="text-[#3c8dbc] hover:underline"
+          >
+            email campaigns
+          </a>
         </div>
 
-        <div className="flex justify-end gap-2 pt-1 border-t border-slate-100">
-          <button
-            type="button"
-            onClick={() => {
-              setSearchName('');
-              setStatusFilter('All');
-            }}
-            className="px-3 py-1.5 rounded-lg border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold transition"
-          >
-            Reset
-          </button>
-          <button
-            type="button"
-            className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold transition shadow-xs"
-          >
-            <Search className="h-3.5 w-3.5" />
-            Search
-          </button>
-        </div>
-      </div>
-
-      {/* Table */}
-      <div className="rounded-xl border border-slate-200 bg-white shadow-xs overflow-hidden">
+        {/* Table Content */}
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="border-b border-slate-200 bg-slate-50/75 text-[11px] font-bold uppercase tracking-wider text-slate-600">
-                <th className="px-4 py-3">Campaign Name</th>
-                <th className="px-4 py-3">Subject</th>
-                <th className="px-4 py-3">Created On</th>
-                <th className="px-4 py-3">Don't Send Before</th>
-                <th className="px-4 py-3">Target Customer Role</th>
-                <th className="px-4 py-3 text-center">Status</th>
-                <th className="px-4 py-3 text-right">Actions</th>
+              <tr className="border-b border-[#e5e7eb] bg-[#f9fafc] text-xs font-bold text-slate-700">
+                <th className="px-4 py-2.5">Name</th>
+                <th className="px-4 py-2.5">Created on</th>
+                <th className="px-4 py-2.5">Planned date of sending</th>
+                <th className="px-4 py-2.5 text-center">Edit</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100 text-xs text-slate-700">
-              {filteredCampaigns.length === 0 ? (
+            <tbody className="divide-y divide-[#f4f4f4] text-xs text-slate-700">
+              {paginatedData.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="py-8 text-center text-slate-400 text-xs">
-                    No campaigns found.
+                  <td
+                    colSpan={4}
+                    className="py-6 text-center text-slate-600 text-xs bg-white"
+                  >
+                    No data available in table
                   </td>
                 </tr>
               ) : (
-                filteredCampaigns.map((camp) => (
-                  <tr key={camp.id} className="hover:bg-slate-50/60 transition-colors">
-                    <td className="px-4 py-3 font-semibold text-slate-900">
-                      {camp.name}
+                paginatedData.map((c) => (
+                  <tr key={c.id} className="hover:bg-slate-50/70 transition-colors">
+                    <td className="px-4 py-3 font-semibold text-slate-900">{c.name}</td>
+                    <td className="px-4 py-3 text-slate-500 font-mono text-[11px]">
+                      {c.createdOn}
                     </td>
-                    <td className="px-4 py-3 text-slate-600 max-w-xs truncate">
-                      {camp.subject}
-                    </td>
-                    <td className="px-4 py-3 font-mono text-[11px] text-slate-500">
-                      {camp.createdOn}
-                    </td>
-                    <td className="px-4 py-3 font-mono text-[11px] text-slate-500">
-                      {camp.dontSendBefore}
-                    </td>
-                    <td className="px-4 py-3">
-                      <span className="inline-block px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 font-medium text-[11px]">
-                        {camp.targetRole}
-                      </span>
+                    <td className="px-4 py-3 text-slate-500 font-mono text-[11px]">
+                      {c.plannedDateOfSending}
                     </td>
                     <td className="px-4 py-3 text-center">
-                      <span
-                        className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase ${
-                          camp.status === 'Sent'
-                            ? 'bg-emerald-100 text-emerald-800'
-                            : camp.status === 'Scheduled'
-                            ? 'bg-sky-100 text-sky-800'
-                            : 'bg-slate-100 text-slate-700'
-                        }`}
-                      >
-                        {camp.status}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-right">
                       <button
                         type="button"
-                        onClick={() => alert(`Edit campaign ${camp.name}`)}
-                        className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200 font-semibold transition text-xs"
+                        onClick={() => handleOpenEdit(c)}
+                        className="inline-flex items-center gap-1 px-3 py-1 rounded border border-[#d2d6de] bg-white text-slate-700 hover:bg-slate-50 text-xs font-semibold shadow-2xs transition cursor-pointer"
                       >
-                        <Edit className="h-3 w-3" />
-                        Edit
+                        <Edit className="h-3 w-3 text-slate-500" />
+                        <span>Edit</span>
                       </button>
                     </td>
                   </tr>
@@ -227,7 +279,160 @@ export default function CampaignsPage() {
             </tbody>
           </table>
         </div>
+
+        {/* Table Footer / Pagination matching media_1791180337566.png */}
+        <div className="px-4 py-3 border-t border-[#f4f4f4] flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-600">
+          {/* Previous / Next */}
+          <div className="flex items-center gap-1">
+            <button
+              type="button"
+              disabled={currentPage <= 1}
+              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+              className="px-3 py-1 rounded border border-[#d2d6de] bg-white text-slate-600 hover:bg-slate-50 disabled:text-slate-300 disabled:hover:bg-white transition cursor-pointer disabled:cursor-not-allowed"
+            >
+              Previous
+            </button>
+            <button
+              type="button"
+              disabled={currentPage >= totalPages}
+              onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+              className="px-3 py-1 rounded border border-[#d2d6de] bg-white text-slate-600 hover:bg-slate-50 disabled:text-slate-300 disabled:hover:bg-white transition cursor-pointer disabled:cursor-not-allowed"
+            >
+              Next
+            </button>
+          </div>
+
+          {/* Show [15] items */}
+          <div className="flex items-center gap-1.5">
+            <span>Show</span>
+            <select
+              value={pageSize}
+              onChange={(e) => {
+                setPageSize(Number(e.target.value));
+                setCurrentPage(1);
+              }}
+              className="border border-[#d2d6de] rounded px-2 py-1 bg-white text-xs text-slate-700 focus:outline-none focus:border-[#3c8dbc]"
+            >
+              <option value={15}>15</option>
+              <option value={25}>25</option>
+              <option value={50}>50</option>
+              <option value={100}>100</option>
+            </select>
+            <span>items</span>
+          </div>
+
+          {/* Records & Refresh */}
+          <div className="flex items-center gap-3">
+            <span>
+              {totalRecords === 0
+                ? 'No records'
+                : `${(currentPage - 1) * pageSize + 1}-${Math.min(
+                    currentPage * pageSize,
+                    totalRecords
+                  )} of ${totalRecords} items`}
+            </span>
+            <button
+              type="button"
+              onClick={fetchCampaigns}
+              title="Refresh"
+              className="p-1 rounded border border-[#d2d6de] bg-white hover:bg-slate-50 text-slate-600 transition cursor-pointer"
+            >
+              <RotateCw className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        </div>
       </div>
+
+      {/* ── ADD / EDIT CAMPAIGN MODAL ── */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-2xs">
+          <div className="bg-white rounded-lg border border-[#d2d6de] shadow-xl w-full max-w-lg overflow-hidden animate-fadeIn">
+            {/* Modal Header */}
+            <div className="px-5 py-3.5 border-b border-[#f4f4f4] flex items-center justify-between bg-slate-50">
+              <h2 className="text-sm font-semibold text-slate-800">
+                {editingCampaign ? 'Edit Campaign' : 'Add New Campaign'}
+              </h2>
+              <button
+                type="button"
+                onClick={() => setIsModalOpen(false)}
+                className="text-slate-400 hover:text-slate-600 p-1 cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Modal Form */}
+            <form onSubmit={handleSaveModal} className="p-5 space-y-3.5 text-xs">
+              <div>
+                <label className="block font-semibold text-slate-700 mb-1">
+                  Name <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={modalForm.name}
+                  onChange={(e) => setModalForm((f) => ({ ...f, name: e.target.value }))}
+                  placeholder="e.g. Rabi Season Seed Sowing Advisory"
+                  className="w-full border border-[#d2d6de] rounded px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-[#3c8dbc]"
+                />
+              </div>
+
+              <div>
+                <label className="block font-semibold text-slate-700 mb-1">Subject</label>
+                <input
+                  type="text"
+                  value={modalForm.subject}
+                  onChange={(e) => setModalForm((f) => ({ ...f, subject: e.target.value }))}
+                  placeholder="e.g. Special seed subsidies live this week"
+                  className="w-full border border-[#d2d6de] rounded px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-[#3c8dbc]"
+                />
+              </div>
+
+              <div>
+                <label className="block font-semibold text-slate-700 mb-1">
+                  Planned Date of Sending
+                </label>
+                <input
+                  type="text"
+                  value={modalForm.plannedDateOfSending}
+                  onChange={(e) =>
+                    setModalForm((f) => ({ ...f, plannedDateOfSending: e.target.value }))
+                  }
+                  placeholder="e.g. 10/15/2026 8:00:00 AM"
+                  className="w-full border border-[#d2d6de] rounded px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-[#3c8dbc] font-mono"
+                />
+              </div>
+
+              <div>
+                <label className="block font-semibold text-slate-700 mb-1">Body / Message</label>
+                <textarea
+                  rows={4}
+                  value={modalForm.body}
+                  onChange={(e) => setModalForm((f) => ({ ...f, body: e.target.value }))}
+                  placeholder="Write the campaign message for farmers..."
+                  className="w-full border border-[#d2d6de] rounded px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-[#3c8dbc] resize-y"
+                />
+              </div>
+
+              <div className="flex items-center justify-end gap-2 pt-3 border-t border-[#f4f4f4]">
+                <button
+                  type="button"
+                  onClick={() => setIsModalOpen(false)}
+                  className="px-3.5 py-1.5 border border-[#d2d6de] rounded bg-white hover:bg-slate-50 text-slate-700 transition cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-1.5 rounded bg-[#2489c5] hover:bg-[#1f72a3] text-white font-semibold shadow-xs transition cursor-pointer"
+                >
+                  {editingCampaign ? 'Update Campaign' : 'Save Campaign'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
