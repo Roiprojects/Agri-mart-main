@@ -13,6 +13,8 @@ import {
   UserCircle,
   AlignJustify,
   ArrowUp,
+  ChevronUp,
+  Contact,
   MapPin,
   RotateCw,
   Trash2,
@@ -40,6 +42,7 @@ export default function CustomerSettingsPage() {
   const [accountOpen, setAccountOpen] = useState(true);
   const [profileOpen, setProfileOpen] = useState(true);
   const [formFieldsOpen, setFormFieldsOpen] = useState(true);
+  const [addressFormFieldsOpen, setAddressFormFieldsOpen] = useState(true);
 
   // 1. Common Fields (media_1791260472478.png)
   const [registrationMethod, setRegistrationMethod] = useState('Standard account creation');
@@ -96,20 +99,19 @@ export default function CustomerSettingsPage() {
   const [dobEnabled, setDobEnabled] = useState(true);
   const [dobRequired, setDobRequired] = useState(true);
   const [customerMinimumAge, setCustomerMinimumAge] = useState('');
+  // 6. Address form fields (media_1791269493977.png & media_1791269496714.png)
   const [companyEnabled, setCompanyEnabled] = useState(true);
-  const [companyRequired, setCompanyRequired] = useState(true);
+  const [companyRequired, setCompanyRequired] = useState(false);
   const [streetAddressEnabled, setStreetAddressEnabled] = useState(true);
   const [streetAddressRequired, setStreetAddressRequired] = useState(true);
   const [streetAddress2Enabled, setStreetAddress2Enabled] = useState(true);
-  const [streetAddress2Required, setStreetAddress2Required] = useState(true);
+  const [streetAddress2Required, setStreetAddress2Required] = useState(false);
   const [zipCodeEnabled, setZipCodeEnabled] = useState(true);
   const [zipCodeRequired, setZipCodeRequired] = useState(true);
   const [cityEnabled, setCityEnabled] = useState(true);
   const [cityRequired, setCityRequired] = useState(true);
-  const [countyRegionEnabled, setCountyRegionEnabled] = useState(true);
-  const [countyRegionRequired, setCountyRegionRequired] = useState(true);
+  const [countyRegionEnabled, setCountyRegionEnabled] = useState(false);
   const [countryEnabled, setCountryEnabled] = useState(true);
-  const [countryRequired, setCountryRequired] = useState(true);
   const [defaultCountry, setDefaultCountry] = useState('');
   const [stateProvinceEnabled, setStateProvinceEnabled] = useState(true);
   const [phoneNumberEnabled, setPhoneNumberEnabled] = useState(true);
@@ -1105,6 +1107,31 @@ export default function CustomerSettingsPage() {
                 />
               </div>
             </div>
+          </div>
+        )}
+      </div>
+
+      {/* ── CARD 6: ADDRESS FORM FIELDS (Matching media_1791269493977.png & media_1791269496714.png) ── */}
+      <div className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden border-t-3 border-t-[#00c0ef]">
+        <div
+          onClick={() => setAddressFormFieldsOpen(!addressFormFieldsOpen)}
+          className="px-4 py-2.5 bg-white border-b border-[#f4f4f4] flex items-center justify-between cursor-pointer select-none text-xs font-semibold text-slate-700 hover:bg-slate-50/70 transition"
+        >
+          <div className="flex items-center gap-2">
+            <Contact className="w-4 h-4 text-slate-600" />
+            <span className="text-sm font-normal text-slate-800">Address form fields</span>
+          </div>
+          <button type="button" className="text-slate-400 hover:text-slate-600">
+            {addressFormFieldsOpen ? <Minus className="w-4 h-4 stroke-[2]" /> : <Plus className="w-4 h-4 stroke-[2]" />}
+          </button>
+        </div>
+
+        {addressFormFieldsOpen && (
+          <div className="p-5 space-y-4 text-xs text-slate-700">
+            {/* Note */}
+            <p className="text-xs text-slate-500 italic pb-1">
+              You can create and manage the address form fields available during checkout.
+            </p>
 
             {/* 'Company' enabled */}
             <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
@@ -1266,7 +1293,7 @@ export default function CustomerSettingsPage() {
               </div>
             </div>
 
-            {/* 'County / region' enabled */}
+            {/* 'County / region' enabled (media_1791269493977.png: unchecked) */}
             <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
               <label className="md:col-span-4 text-xs font-semibold text-slate-700 md:text-right flex items-center md:justify-end gap-1">
                 <span>&apos;County / region&apos; enabled</span>
@@ -1282,98 +1309,76 @@ export default function CustomerSettingsPage() {
               </div>
             </div>
 
-            {/* 'County / region' required */}
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
-              <label className="md:col-span-4 text-xs font-semibold text-slate-700 md:text-right flex items-center md:justify-end gap-1">
-                <span>&apos;County / region&apos; required</span>
-                <HelpTooltip text="Require county/region." />
-              </label>
-              <div className="md:col-span-8 flex items-center">
-                <input
-                  type="checkbox"
-                  checked={countyRegionRequired}
-                  onChange={(e) => setCountyRegionRequired(e.target.checked)}
-                  className="w-4 h-4 text-[#3c8dbc] border-[#d2d6de] rounded focus:ring-0 cursor-pointer accent-[#3c8dbc]"
-                />
+            {/* 'Country' enabled with branch lines to Default country & State/province (media_1791269493977.png & media_1791269496714.png) */}
+            <div className="relative">
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                <label className="md:col-span-4 text-xs font-semibold text-slate-700 md:text-right flex items-center md:justify-end gap-1">
+                  <span>&apos;Country&apos; enabled</span>
+                  <HelpTooltip text="Enable country selection dropdown." />
+                </label>
+                <div className="md:col-span-8 flex items-center">
+                  <input
+                    type="checkbox"
+                    checked={countryEnabled}
+                    onChange={(e) => setCountryEnabled(e.target.checked)}
+                    className="w-4 h-4 text-[#3c8dbc] border-[#d2d6de] rounded focus:ring-0 cursor-pointer accent-[#3c8dbc]"
+                  />
+                </div>
               </div>
-            </div>
 
-            {/* 'Country' enabled */}
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
-              <label className="md:col-span-4 text-xs font-semibold text-slate-700 md:text-right flex items-center md:justify-end gap-1">
-                <span>&apos;Country&apos; enabled</span>
-                <HelpTooltip text="Enable country selection dropdown." />
-              </label>
-              <div className="md:col-span-8 flex items-center">
-                <input
-                  type="checkbox"
-                  checked={countryEnabled}
-                  onChange={(e) => setCountryEnabled(e.target.checked)}
-                  className="w-4 h-4 text-[#3c8dbc] border-[#d2d6de] rounded focus:ring-0 cursor-pointer accent-[#3c8dbc]"
-                />
-              </div>
-            </div>
+              {/* Branch container */}
+              <div className="relative">
+                {/* Vertical tree trunk connecting Country checkbox down through the branch */}
+                <div className="hidden md:block absolute left-[33.9%] top-0 bottom-3 w-px bg-slate-300 pointer-events-none" />
 
-            {/* 'Country' required */}
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
-              <label className="md:col-span-4 text-xs font-semibold text-slate-700 md:text-right flex items-center md:justify-end gap-1">
-                <span>&apos;Country&apos; required</span>
-                <HelpTooltip text="Require country selection." />
-              </label>
-              <div className="md:col-span-8 flex items-center">
-                <input
-                  type="checkbox"
-                  checked={countryRequired}
-                  onChange={(e) => setCountryRequired(e.target.checked)}
-                  className="w-4 h-4 text-[#3c8dbc] border-[#d2d6de] rounded focus:ring-0 cursor-pointer accent-[#3c8dbc]"
-                />
-              </div>
-            </div>
+                {/* Default country branch row */}
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center mt-3">
+                  <label className="md:col-span-4 text-xs font-semibold text-slate-700 md:text-right flex items-center md:justify-end gap-1">
+                    <span>Default country</span>
+                    <HelpTooltip text="Default country selected during registration and checkout." />
+                  </label>
+                  <div className="md:col-span-8 max-w-xl relative flex items-center">
+                    <div className="hidden md:block absolute -left-4 w-4 h-px bg-slate-300 pointer-events-none" />
+                    <div className="relative w-full">
+                      <select
+                        value={defaultCountry}
+                        onChange={(e) => setDefaultCountry(e.target.value)}
+                        className="w-full border border-[#d2d6de] focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none rounded px-3 py-1.5 text-xs text-slate-800 bg-white appearance-none pr-8 cursor-pointer"
+                      >
+                        <option value="">Select country</option>
+                        <option value="India">India</option>
+                        <option value="United States">United States</option>
+                        <option value="United Kingdom">United Kingdom</option>
+                        <option value="Germany">Germany</option>
+                        <option value="France">France</option>
+                        <option value="Canada">Canada</option>
+                        <option value="Australia">Australia</option>
+                      </select>
+                      <ChevronDown className="w-3.5 h-3.5 text-slate-500 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                    </div>
+                  </div>
+                </div>
 
-            {/* Default country */}
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
-              <label className="md:col-span-4 text-xs font-semibold text-slate-700 md:text-right flex items-center md:justify-end gap-1">
-                <span>Default country</span>
-                <HelpTooltip text="Default country selected during registration and checkout." />
-              </label>
-              <div className="md:col-span-8 max-w-xl">
-                <div className="relative">
-                  <select
-                    value={defaultCountry}
-                    onChange={(e) => setDefaultCountry(e.target.value)}
-                    className="w-full border border-[#d2d6de] focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none rounded px-3 py-1.5 text-xs text-slate-800 bg-white appearance-none pr-8 cursor-pointer"
-                  >
-                    <option value="">Select country</option>
-                    <option value="India">India</option>
-                    <option value="United States">United States</option>
-                    <option value="United Kingdom">United Kingdom</option>
-                    <option value="Germany">Germany</option>
-                    <option value="France">France</option>
-                    <option value="Canada">Canada</option>
-                    <option value="Australia">Australia</option>
-                  </select>
-                  <ChevronDown className="w-3.5 h-3.5 text-slate-500 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                {/* 'State/province' enabled branch row */}
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center mt-3">
+                  <label className="md:col-span-4 text-xs font-semibold text-slate-700 md:text-right flex items-center md:justify-end gap-1">
+                    <span>&apos;State/province&apos; enabled</span>
+                    <HelpTooltip text="Enable state/province selection." />
+                  </label>
+                  <div className="md:col-span-8 flex items-center relative">
+                    <div className="hidden md:block absolute -left-4 w-4 h-px bg-slate-300 pointer-events-none" />
+                    <input
+                      type="checkbox"
+                      checked={stateProvinceEnabled}
+                      onChange={(e) => setStateProvinceEnabled(e.target.checked)}
+                      className="w-4 h-4 text-[#3c8dbc] border-[#d2d6de] rounded focus:ring-0 cursor-pointer accent-[#3c8dbc]"
+                    />
+                  </div>
                 </div>
               </div>
             </div>
 
-            {/* 'State/province' enabled (media_1791263446972.png) */}
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
-              <label className="md:col-span-4 text-xs font-semibold text-slate-700 md:text-right flex items-center md:justify-end gap-1">
-                <span>&apos;State/province&apos; enabled</span>
-                <HelpTooltip text="Enable state/province selection." />
-              </label>
-              <div className="md:col-span-8 flex items-center">
-                <input
-                  type="checkbox"
-                  checked={stateProvinceEnabled}
-                  onChange={(e) => setStateProvinceEnabled(e.target.checked)}
-                  className="w-4 h-4 text-[#3c8dbc] border-[#d2d6de] rounded focus:ring-0 cursor-pointer accent-[#3c8dbc]"
-                />
-              </div>
-            </div>
-
-            {/* 'Phone number' enabled & required (media_1791263446972.png) */}
+            {/* 'Phone number' enabled & required branch (media_1791269496714.png) */}
             <div className="relative">
               <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
                 <label className="md:col-span-4 text-xs font-semibold text-slate-700 md:text-right flex items-center md:justify-end gap-1">
@@ -1391,24 +1396,27 @@ export default function CustomerSettingsPage() {
               </div>
 
               {/* 'Phone number' required branch */}
-              <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center mt-3">
-                <label className="md:col-span-4 text-xs font-semibold text-slate-700 md:text-right flex items-center md:justify-end gap-1">
-                  <span>&apos;Phone number&apos; required</span>
-                  <HelpTooltip text="Require customer phone number." />
-                </label>
-                <div className="md:col-span-8 flex items-center relative">
-                  <div className="absolute -top-4 left-2 w-px h-4 bg-slate-300 pointer-events-none" />
-                  <input
-                    type="checkbox"
-                    checked={phoneNumberRequired}
-                    onChange={(e) => setPhoneNumberRequired(e.target.checked)}
-                    className="w-4 h-4 text-[#3c8dbc] border-[#d2d6de] rounded focus:ring-0 cursor-pointer accent-[#3c8dbc]"
-                  />
+              <div className="relative">
+                <div className="hidden md:block absolute left-[33.9%] top-0 bottom-3 w-px bg-slate-300 pointer-events-none" />
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center mt-3">
+                  <label className="md:col-span-4 text-xs font-semibold text-slate-700 md:text-right flex items-center md:justify-end gap-1">
+                    <span>&apos;Phone number&apos; required</span>
+                    <HelpTooltip text="Require customer phone number." />
+                  </label>
+                  <div className="md:col-span-8 flex items-center relative">
+                    <div className="hidden md:block absolute -left-4 w-4 h-px bg-slate-300 pointer-events-none" />
+                    <input
+                      type="checkbox"
+                      checked={phoneNumberRequired}
+                      onChange={(e) => setPhoneNumberRequired(e.target.checked)}
+                      className="w-4 h-4 text-[#3c8dbc] border-[#d2d6de] rounded focus:ring-0 cursor-pointer accent-[#3c8dbc]"
+                    />
+                  </div>
                 </div>
               </div>
             </div>
 
-            {/* 'Fax number' enabled & required (media_1791263446972.png) */}
+            {/* 'Fax number' enabled & required branch (media_1791269496714.png) */}
             <div className="relative">
               <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
                 <label className="md:col-span-4 text-xs font-semibold text-slate-700 md:text-right flex items-center md:justify-end gap-1">
@@ -1426,19 +1434,22 @@ export default function CustomerSettingsPage() {
               </div>
 
               {/* 'Fax number' required branch */}
-              <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center mt-3">
-                <label className="md:col-span-4 text-xs font-semibold text-slate-700 md:text-right flex items-center md:justify-end gap-1">
-                  <span>&apos;Fax number&apos; required</span>
-                  <HelpTooltip text="Require customer fax number." />
-                </label>
-                <div className="md:col-span-8 flex items-center relative">
-                  <div className="absolute -top-4 left-2 w-px h-4 bg-slate-300 pointer-events-none" />
-                  <input
-                    type="checkbox"
-                    checked={faxNumberRequired}
-                    onChange={(e) => setFaxNumberRequired(e.target.checked)}
-                    className="w-4 h-4 text-[#3c8dbc] border-[#d2d6de] rounded focus:ring-0 cursor-pointer accent-[#3c8dbc]"
-                  />
+              <div className="relative">
+                <div className="hidden md:block absolute left-[33.9%] top-0 bottom-3 w-px bg-slate-300 pointer-events-none" />
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center mt-3">
+                  <label className="md:col-span-4 text-xs font-semibold text-slate-700 md:text-right flex items-center md:justify-end gap-1">
+                    <span>&apos;Fax number&apos; required</span>
+                    <HelpTooltip text="Require customer fax number." />
+                  </label>
+                  <div className="md:col-span-8 flex items-center relative">
+                    <div className="hidden md:block absolute -left-4 w-4 h-px bg-slate-300 pointer-events-none" />
+                    <input
+                      type="checkbox"
+                      checked={faxNumberRequired}
+                      onChange={(e) => setFaxNumberRequired(e.target.checked)}
+                      className="w-4 h-4 text-[#3c8dbc] border-[#d2d6de] rounded focus:ring-0 cursor-pointer accent-[#3c8dbc]"
+                    />
+                  </div>
                 </div>
               </div>
             </div>
@@ -1446,7 +1457,7 @@ export default function CustomerSettingsPage() {
         )}
       </div>
 
-      {/* ── CARD 6: CUSTOM ADDRESS ATTRIBUTES (Matching media_1791263520305.png) ── */}
+      {/* ── CARD 7: CUSTOM ADDRESS ATTRIBUTES (Matching media_1791269499059.png) ── */}
       <div className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden">
         <div className="px-5 py-4 bg-white border-b border-[#f4f4f4]">
           <h3 className="text-sm md:text-base font-normal text-slate-800">Custom address attributes</h3>
@@ -1594,14 +1605,31 @@ export default function CustomerSettingsPage() {
         </div>
       </div>
 
-      {/* ── FLOATING SCROLL TO TOP BUTTON (Matching media_1791261747223.png & media_1791261809473.png) ── */}
+      {/* ── PAGE FOOTER (Matching media_1791269499059.png) ── */}
+      <footer className="mt-8 border-t border-[#d2d6de] pt-4 text-xs text-slate-500 flex flex-col sm:flex-row items-center justify-between gap-2">
+        <div>
+          Powered by{' '}
+          <a
+            href="https://www.nopcommerce.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[#3c8dbc] hover:underline"
+          >
+            nopCommerce
+          </a>
+        </div>
+        <div>Tuesday, October 6, 2026 8:01 AM</div>
+        <div>nopCommerce version 4.90.0</div>
+      </footer>
+
+      {/* ── FLOATING SCROLL TO TOP BUTTON (Matching media_1791269493977.png & media_1791269499059.png) ── */}
       <button
         type="button"
         onClick={scrollToTop}
         title="Scroll to top"
-        className="fixed bottom-6 right-6 z-40 bg-[#00a65a] hover:bg-[#008d4c] text-white p-2.5 rounded shadow-lg transition cursor-pointer select-none"
+        className="fixed bottom-6 right-6 z-40 bg-[#00a65a] hover:bg-[#008d4c] text-white p-3 rounded shadow-lg transition cursor-pointer select-none"
       >
-        <ArrowUp className="w-5 h-5 stroke-[2.5]" />
+        <ChevronUp className="w-5 h-5 stroke-[3]" />
       </button>
     </div>
   );
