@@ -34,7 +34,7 @@ function HelpTooltip({ text }: { text: string }) {
 }
 
 export default function CustomerSettingsPage() {
-  const [isAdvanced, setIsAdvanced] = useState(true);
+  const [isAdvanced, setIsAdvanced] = useState(false);
 
   // Collapsible cards state
   const [commonOpen, setCommonOpen] = useState(true);
@@ -99,6 +99,19 @@ export default function CustomerSettingsPage() {
   const [dobEnabled, setDobEnabled] = useState(true);
   const [dobRequired, setDobRequired] = useState(true);
   const [customerMinimumAge, setCustomerMinimumAge] = useState('');
+  const [customerCompanyEnabled, setCustomerCompanyEnabled] = useState(true);
+  const [customerCompanyRequired, setCustomerCompanyRequired] = useState(false);
+  const [customerStreetAddressEnabled, setCustomerStreetAddressEnabled] = useState(true);
+  const [customerStreetAddress2Enabled, setCustomerStreetAddress2Enabled] = useState(true);
+  const [customerZipCodeEnabled, setCustomerZipCodeEnabled] = useState(true);
+  const [customerCityEnabled, setCustomerCityEnabled] = useState(true);
+  const [customerCountyRegionEnabled, setCustomerCountyRegionEnabled] = useState(false);
+  const [customerCountryEnabled, setCustomerCountryEnabled] = useState(true);
+  const [customerPhoneNumberEnabled, setCustomerPhoneNumberEnabled] = useState(true);
+  const [customerFaxNumberEnabled, setCustomerFaxNumberEnabled] = useState(true);
+  const [acceptPrivacyPolicyEnabled, setAcceptPrivacyPolicyEnabled] = useState(true);
+  const [newsletterEnabled, setNewsletterEnabled] = useState(true);
+
   // 6. Address form fields (media_1791269493977.png & media_1791269496714.png)
   const [companyEnabled, setCompanyEnabled] = useState(true);
   const [companyRequired, setCompanyRequired] = useState(false);
@@ -118,11 +131,18 @@ export default function CustomerSettingsPage() {
   const [phoneNumberRequired, setPhoneNumberRequired] = useState(true);
   const [faxNumberEnabled, setFaxNumberEnabled] = useState(true);
   const [faxNumberRequired, setFaxNumberRequired] = useState(false);
+
+  // Custom customer attributes state (media_1791270059148.png & media_1791270123059.png)
+  const [customCustomerAttributes, setCustomCustomerAttributes] = useState<AddressAttributeData[]>([]);
+  const [customerAttrPageSize, setCustomerAttrPageSize] = useState(15);
+  const [customerAttrPage, setCustomerAttrPage] = useState(1);
+
   // Custom address attributes state (media_1791263520305.png & media_1791266119175.png)
   const [customAddressAttributes, setCustomAddressAttributes] = useState<AddressAttributeData[]>([]);
   const [attrPageSize, setAttrPageSize] = useState(15);
   const [attrPage, setAttrPage] = useState(1);
   const [viewMode, setViewMode] = useState<'list' | 'add-attribute' | 'edit-attribute'>('list');
+  const [attributeType, setAttributeType] = useState<'customer' | 'address'>('address');
   const [selectedAttribute, setSelectedAttribute] = useState<AddressAttributeData | null>(null);
 
   // Toast & Saving
@@ -146,52 +166,76 @@ export default function CustomerSettingsPage() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // Render Add / Edit address attribute view matching media_1791266119175.png
+  // Render Add / Edit attribute view matching media_1791266119175.png
   if (viewMode === 'add-attribute' || viewMode === 'edit-attribute') {
+    const isCustomer = attributeType === 'customer';
     return (
       <AddressAttributeForm
+        entityType={attributeType}
         isEdit={viewMode === 'edit-attribute'}
         initialValues={
           selectedAttribute || {
-            displayOrder: customAddressAttributes.length + 1,
+            displayOrder:
+              (isCustomer ? customCustomerAttributes.length : customAddressAttributes.length) + 1,
             controlType: 'Drop-down list',
             isRequired: false,
           }
         }
         onBack={() => setViewMode('list')}
         onSave={(data, continueEditing) => {
-          if (viewMode === 'edit-attribute' && selectedAttribute?.id) {
-            setCustomAddressAttributes((prev) =>
-              prev.map((a) => (a.id === selectedAttribute.id ? { ...a, ...data } : a))
-            );
-            showToast('The address attribute has been updated successfully.');
-            if (continueEditing) {
-              setSelectedAttribute(data);
+          if (isCustomer) {
+            if (viewMode === 'edit-attribute' && selectedAttribute?.id) {
+              setCustomCustomerAttributes((prev) =>
+                prev.map((a) => (a.id === selectedAttribute.id ? { ...a, ...data } : a))
+              );
+              showToast('The customer attribute has been updated successfully.');
             } else {
-              setViewMode('list');
+              const newAttr: AddressAttributeData = {
+                id: data.id || Date.now().toString(),
+                name: data.name,
+                controlType: data.controlType,
+                isRequired: data.isRequired,
+                displayOrder: data.displayOrder,
+                values: data.values || [],
+              };
+              setCustomCustomerAttributes((prev) => [...prev, newAttr]);
+              showToast('The new customer attribute has been added successfully.');
             }
           } else {
-            const newAttr: AddressAttributeData = {
-              id: data.id || Date.now().toString(),
-              name: data.name,
-              controlType: data.controlType,
-              isRequired: data.isRequired,
-              displayOrder: data.displayOrder,
-              values: data.values || [],
-            };
-            setCustomAddressAttributes((prev) => [...prev, newAttr]);
-            showToast('The new address attribute has been added successfully.');
-            if (continueEditing) {
-              setSelectedAttribute(newAttr);
-              setViewMode('edit-attribute');
+            if (viewMode === 'edit-attribute' && selectedAttribute?.id) {
+              setCustomAddressAttributes((prev) =>
+                prev.map((a) => (a.id === selectedAttribute.id ? { ...a, ...data } : a))
+              );
+              showToast('The address attribute has been updated successfully.');
             } else {
-              setViewMode('list');
+              const newAttr: AddressAttributeData = {
+                id: data.id || Date.now().toString(),
+                name: data.name,
+                controlType: data.controlType,
+                isRequired: data.isRequired,
+                displayOrder: data.displayOrder,
+                values: data.values || [],
+              };
+              setCustomAddressAttributes((prev) => [...prev, newAttr]);
+              showToast('The new address attribute has been added successfully.');
             }
+          }
+
+          if (continueEditing) {
+            setSelectedAttribute(data);
+            setViewMode('edit-attribute');
+          } else {
+            setViewMode('list');
           }
         }}
         onDelete={(id) => {
-          setCustomAddressAttributes((prev) => prev.filter((a) => a.id !== id));
-          showToast('The address attribute has been deleted.');
+          if (isCustomer) {
+            setCustomCustomerAttributes((prev) => prev.filter((a) => a.id !== id));
+            showToast('The customer attribute has been deleted.');
+          } else {
+            setCustomAddressAttributes((prev) => prev.filter((a) => a.id !== id));
+            showToast('The address attribute has been deleted.');
+          }
           setViewMode('list');
         }}
       />
@@ -233,23 +277,28 @@ export default function CustomerSettingsPage() {
         </div>
       </div>
 
-      {/* ── MODE BUTTON: Advanced / Basic Toggle ── */}
+      {/* ── MODE BUTTON: Advanced / Basic Toggle (Matching media_1791270050798.png & media_1791270054166.png) ── */}
       <div className="pt-0.5">
         <button
           type="button"
           onClick={() => setIsAdvanced(!isAdvanced)}
-          className={`inline-flex items-center gap-2.5 px-3 py-1.5 rounded text-xs font-medium transition cursor-pointer select-none shadow-2xs ${
+          className={`inline-flex items-center justify-between px-2.5 py-1 rounded-[3px] text-xs font-normal border transition-colors duration-150 cursor-pointer select-none w-[92px] h-[28px] shadow-2xs ${
             isAdvanced
-              ? 'bg-[#2489c5] hover:bg-[#1f72a3] text-white'
-              : 'bg-white hover:bg-slate-50 border border-[#d2d6de] text-slate-700'
+              ? 'bg-[#2489c5] border-[#2080b9] text-white hover:bg-[#1f72a3]'
+              : 'bg-white border-[#2489c5] text-[#2489c5] hover:bg-slate-50'
           }`}
+          title="Toggle Basic / Advanced mode"
         >
-          {!isAdvanced && (
-            <span className="w-2.5 h-4.5 rounded-full border border-[#d2d6de] bg-white shadow-2xs inline-block shrink-0" />
-          )}
-          <span>{isAdvanced ? 'Advanced' : 'Basic'}</span>
-          {isAdvanced && (
-            <span className="w-2.5 h-4.5 rounded-full bg-white shadow-2xs inline-block shrink-0" />
+          {isAdvanced ? (
+            <>
+              <span className="text-white text-xs font-normal pl-0.5">advanced</span>
+              <span className="w-3.5 h-[18px] rounded-[2px] bg-white shadow-2xs" />
+            </>
+          ) : (
+            <>
+              <span className="w-3.5 h-[18px] rounded-[2px] bg-white border border-[#2489c5] shadow-2xs" />
+              <span className="text-[#2489c5] text-xs font-normal pr-0.5">basic</span>
+            </>
           )}
         </button>
       </div>
@@ -310,118 +359,125 @@ export default function CustomerSettingsPage() {
               </div>
             </div>
 
-            {/* Require registration for downloadable products */}
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
-              <label className="md:col-span-4 text-xs font-semibold text-slate-700 md:text-right flex items-center md:justify-end gap-1">
-                <span className="text-right">Require registration for downloadable products</span>
-                <HelpTooltip text="Check if customers must be registered and logged in before purchasing downloadable products." />
-              </label>
-              <div className="md:col-span-8 flex items-center">
-                <input
-                  type="checkbox"
-                  checked={requireRegistrationForDownloadable}
-                  onChange={(e) => setRequireRegistrationForDownloadable(e.target.checked)}
-                  className="w-4 h-4 text-[#3c8dbc] border-[#d2d6de] rounded focus:ring-0 cursor-pointer accent-[#3c8dbc]"
-                />
-              </div>
-            </div>
-
-            {/* Allow customers to check gift card balance */}
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
-              <label className="md:col-span-4 text-xs font-semibold text-slate-700 md:text-right flex items-center md:justify-end gap-1">
-                <span className="text-right">Allow customers to check gift card balance</span>
-                <HelpTooltip text="Determines whether customers can check their gift card balance." />
-              </label>
-              <div className="md:col-span-8 flex items-center">
-                <input
-                  type="checkbox"
-                  checked={allowCheckGiftCardBalance}
-                  onChange={(e) => setAllowCheckGiftCardBalance(e.target.checked)}
-                  className="w-4 h-4 text-[#3c8dbc] border-[#d2d6de] rounded focus:ring-0 cursor-pointer accent-[#3c8dbc]"
-                />
-              </div>
-            </div>
-
-            {/* Allow customers to select time zone */}
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
-              <label className="md:col-span-4 text-xs font-semibold text-slate-700 md:text-right flex items-center md:justify-end gap-1">
-                <span className="text-right">Allow customers to select time zone</span>
-                <HelpTooltip text="Determines whether customers can select their time zone in account settings." />
-              </label>
-              <div className="md:col-span-8 flex items-center">
-                <input
-                  type="checkbox"
-                  checked={allowSelectTimeZone}
-                  onChange={(e) => setAllowSelectTimeZone(e.target.checked)}
-                  className="w-4 h-4 text-[#3c8dbc] border-[#d2d6de] rounded focus:ring-0 cursor-pointer accent-[#3c8dbc]"
-                />
-              </div>
-            </div>
-
-            {/* Default store time zone */}
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
-              <label className="md:col-span-4 text-xs font-semibold text-slate-700 md:text-right flex items-center md:justify-end gap-1">
-                <span>Default store time zone</span>
-                <HelpTooltip text="Default store time zone for registered customers." />
-              </label>
-              <div className="md:col-span-8 max-w-xl">
-                <div className="relative">
-                  <select
-                    value={defaultStoreTimeZone}
-                    onChange={(e) => setDefaultStoreTimeZone(e.target.value)}
-                    className="w-full border border-[#d2d6de] focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none rounded px-3 py-1.5 text-xs text-slate-800 bg-white appearance-none pr-8 cursor-pointer"
-                  >
-                    <option value="(UTC+01:00) Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna">
-                      (UTC+01:00) Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna
-                    </option>
-                    <option value="(UTC+05:30) Chennai, Kolkata, Mumbai, New Delhi">
-                      (UTC+05:30) Chennai, Kolkata, Mumbai, New Delhi
-                    </option>
-                    <option value="(UTC+00:00) Dublin, Edinburgh, Lisbon, London">
-                      (UTC+00:00) Dublin, Edinburgh, Lisbon, London
-                    </option>
-                    <option value="(UTC-05:00) Eastern Time (US & Canada)">
-                      (UTC-05:00) Eastern Time (US & Canada)
-                    </option>
-                    <option value="(UTC-08:00) Pacific Time (US & Canada)">
-                      (UTC-08:00) Pacific Time (US & Canada)
-                    </option>
-                    <option value="(UTC+08:00) Beijing, Chongqing, Hong Kong, Singapore">
-                      (UTC+08:00) Beijing, Chongqing, Hong Kong, Singapore
-                    </option>
-                    <option value="(UTC+09:00) Osaka, Sapporo, Tokyo">
-                      (UTC+09:00) Osaka, Sapporo, Tokyo
-                    </option>
-                    <option value="(UTC+04:00) Abu Dhabi, Muscat">
-                      (UTC+04:00) Abu Dhabi, Muscat
-                    </option>
-                  </select>
-                  <ChevronDown className="w-3.5 h-3.5 text-slate-500 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+            {isAdvanced && (
+              <>
+                {/* Require registration for downloadable products */}
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                  <label className="md:col-span-4 text-xs font-semibold text-slate-700 md:text-right flex items-center md:justify-end gap-1">
+                    <span className="text-right">Require registration for downloadable products</span>
+                    <HelpTooltip text="Check if customers must be registered and logged in before purchasing downloadable products." />
+                  </label>
+                  <div className="md:col-span-8 flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={requireRegistrationForDownloadable}
+                      onChange={(e) => setRequireRegistrationForDownloadable(e.target.checked)}
+                      className="w-4 h-4 text-[#3c8dbc] border-[#d2d6de] rounded focus:ring-0 cursor-pointer accent-[#3c8dbc]"
+                    />
+                  </div>
                 </div>
-              </div>
-            </div>
 
-            {/* Allow customers to remove associations */}
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
-              <label className="md:col-span-4 text-xs font-semibold text-slate-700 md:text-right flex items-center md:justify-end gap-1">
-                <span className="text-right">Allow customers to remove associations</span>
-                <HelpTooltip text="Determines whether customers can remove external authentication records associated with their accounts." />
-              </label>
-              <div className="md:col-span-8 flex items-center">
-                <input
-                  type="checkbox"
-                  checked={allowRemoveAssociations}
-                  onChange={(e) => setAllowRemoveAssociations(e.target.checked)}
-                  className="w-4 h-4 text-[#3c8dbc] border-[#d2d6de] rounded focus:ring-0 cursor-pointer accent-[#3c8dbc]"
-                />
-              </div>
-            </div>
+                {/* Allow customers to check gift card balance */}
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                  <label className="md:col-span-4 text-xs font-semibold text-slate-700 md:text-right flex items-center md:justify-end gap-1">
+                    <span className="text-right">Allow customers to check gift card balance</span>
+                    <HelpTooltip text="Determines whether customers can check their gift card balance." />
+                  </label>
+                  <div className="md:col-span-8 flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={allowCheckGiftCardBalance}
+                      onChange={(e) => setAllowCheckGiftCardBalance(e.target.checked)}
+                      className="w-4 h-4 text-[#3c8dbc] border-[#d2d6de] rounded focus:ring-0 cursor-pointer accent-[#3c8dbc]"
+                    />
+                  </div>
+                </div>
+
+                {/* Allow customers to select time zone */}
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                  <label className="md:col-span-4 text-xs font-semibold text-slate-700 md:text-right flex items-center md:justify-end gap-1">
+                    <span className="text-right">Allow customers to select time zone</span>
+                    <HelpTooltip text="Determines whether customers can select their time zone in account settings." />
+                  </label>
+                  <div className="md:col-span-8 flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={allowSelectTimeZone}
+                      onChange={(e) => setAllowSelectTimeZone(e.target.checked)}
+                      className="w-4 h-4 text-[#3c8dbc] border-[#d2d6de] rounded focus:ring-0 cursor-pointer accent-[#3c8dbc]"
+                    />
+                  </div>
+                </div>
+
+                {/* Default store time zone */}
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                  <label className="md:col-span-4 text-xs font-semibold text-slate-700 md:text-right flex items-center md:justify-end gap-1">
+                    <span>Default store time zone</span>
+                    <HelpTooltip text="Default store time zone for registered customers." />
+                  </label>
+                  <div className="md:col-span-8 max-w-xl">
+                    <div className="relative">
+                      <select
+                        value={defaultStoreTimeZone}
+                        onChange={(e) => setDefaultStoreTimeZone(e.target.value)}
+                        className="w-full border border-[#d2d6de] focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none rounded px-3 py-1.5 text-xs text-slate-800 bg-white appearance-none pr-8 cursor-pointer"
+                      >
+                        <option value="(UTC+01:00) Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna">
+                          (UTC+01:00) Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna
+                        </option>
+                        <option value="(UTC+05:30) Chennai, Kolkata, Mumbai, New Delhi">
+                          (UTC+05:30) Chennai, Kolkata, Mumbai, New Delhi
+                        </option>
+                        <option value="(UTC+00:00) Dublin, Edinburgh, Lisbon, London">
+                          (UTC+00:00) Dublin, Edinburgh, Lisbon, London
+                        </option>
+                        <option value="(UTC-05:00) Eastern Time (US & Canada)">
+                          (UTC-05:00) Eastern Time (US & Canada)
+                        </option>
+                        <option value="(UTC-08:00) Pacific Time (US & Canada)">
+                          (UTC-08:00) Pacific Time (US & Canada)
+                        </option>
+                        <option value="(UTC+08:00) Beijing, Chongqing, Hong Kong, Singapore">
+                          (UTC+08:00) Beijing, Chongqing, Hong Kong, Singapore
+                        </option>
+                        <option value="(UTC+09:00) Osaka, Sapporo, Tokyo">
+                          (UTC+09:00) Osaka, Sapporo, Tokyo
+                        </option>
+                        <option value="(UTC+04:00) Abu Dhabi, Muscat">
+                          (UTC+04:00) Abu Dhabi, Muscat
+                        </option>
+                      </select>
+                      <ChevronDown className="w-3.5 h-3.5 text-slate-500 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Allow customers to remove associations */}
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                  <label className="md:col-span-4 text-xs font-semibold text-slate-700 md:text-right flex items-center md:justify-end gap-1">
+                    <span className="text-right">Allow customers to remove associations</span>
+                    <HelpTooltip text="Determines whether customers can remove external authentication records associated with their accounts." />
+                  </label>
+                  <div className="md:col-span-8 flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={allowRemoveAssociations}
+                      onChange={(e) => setAllowRemoveAssociations(e.target.checked)}
+                      className="w-4 h-4 text-[#3c8dbc] border-[#d2d6de] rounded focus:ring-0 cursor-pointer accent-[#3c8dbc]"
+                    />
+                  </div>
+                </div>
+              </>
+            )}
           </div>
         )}
       </div>
 
-      {/* ── CARD 2: PASSWORD AND SECURITY (media_1791261732784.png & media_1791261747223.png) ── */}
-      <div className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden border-t-3 border-t-[#00c0ef]">
+      {/* ── ADVANCED ONLY CARDS: Password, Account, Profile ── */}
+      {isAdvanced && (
+        <>
+          {/* ── CARD 2: PASSWORD AND SECURITY (media_1791261732784.png & media_1791261747223.png) ── */}
+          <div className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden border-t-3 border-t-[#00c0ef]">
         <div
           onClick={() => setPasswordSecurityOpen(!passwordSecurityOpen)}
           className="px-4 py-2.5 bg-white border-b border-[#f4f4f4] flex items-center justify-between cursor-pointer select-none text-xs font-semibold text-slate-700 hover:bg-slate-50/70 transition"
@@ -940,6 +996,8 @@ export default function CustomerSettingsPage() {
           </div>
         )}
       </div>
+        </>
+      )}
 
       {/* ── CARD 5: CUSTOMER FORM FIELDS (media_1791261809473.png & media_1791261822749.png) ── */}
       <div className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden border-t-3 border-t-[#00c0ef]">
@@ -963,152 +1021,518 @@ export default function CustomerSettingsPage() {
               You can create and manage the customer form fields available during registration below.
             </p>
 
-            {/* 'Gender' enabled */}
+            {/* 'Gender' enabled with 'Neutral' branch */}
+            <div className="relative">
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                <label className="md:col-span-4 text-xs font-semibold text-slate-700 md:text-right flex items-center md:justify-end gap-1">
+                  <span>&apos;Gender&apos; enabled</span>
+                  <HelpTooltip text="Enable gender radio button on registration page." />
+                </label>
+                <div className="md:col-span-8 flex items-center">
+                  <input
+                    type="checkbox"
+                    checked={genderEnabled}
+                    onChange={(e) => setGenderEnabled(e.target.checked)}
+                    className="w-4 h-4 text-[#3c8dbc] border-[#d2d6de] rounded focus:ring-0 cursor-pointer accent-[#3c8dbc]"
+                  />
+                </div>
+              </div>
+
+              {/* Branch container */}
+              <div className="relative">
+                <div className="hidden md:block absolute left-[33.9%] top-0 bottom-3 w-px bg-slate-300 pointer-events-none" />
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center mt-3">
+                  <label className="md:col-span-4 text-xs font-semibold text-slate-700 md:text-right flex items-center md:justify-end gap-1">
+                    <span>&apos;Neutral&apos; option enabled</span>
+                    <HelpTooltip text="Adds a third gender neutral choice." />
+                  </label>
+                  <div className="md:col-span-8 flex items-center relative">
+                    <div className="hidden md:block absolute -left-4 w-4 h-px bg-slate-300 pointer-events-none" />
+                    <input
+                      type="checkbox"
+                      checked={neutralOptionEnabled}
+                      onChange={(e) => setNeutralOptionEnabled(e.target.checked)}
+                      className="w-4 h-4 text-[#3c8dbc] border-[#d2d6de] rounded focus:ring-0 cursor-pointer accent-[#3c8dbc]"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* 'First name' enabled with 'First name' required branch */}
+            <div className="relative">
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                <label className="md:col-span-4 text-xs font-semibold text-slate-700 md:text-right flex items-center md:justify-end gap-1">
+                  <span>&apos;First name&apos; enabled</span>
+                  <HelpTooltip text="Enable first name input during registration." />
+                </label>
+                <div className="md:col-span-8 flex items-center">
+                  <input
+                    type="checkbox"
+                    checked={firstNameEnabled}
+                    onChange={(e) => setFirstNameEnabled(e.target.checked)}
+                    className="w-4 h-4 text-[#3c8dbc] border-[#d2d6de] rounded focus:ring-0 cursor-pointer accent-[#3c8dbc]"
+                  />
+                </div>
+              </div>
+
+              <div className="relative">
+                <div className="hidden md:block absolute left-[33.9%] top-0 bottom-3 w-px bg-slate-300 pointer-events-none" />
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center mt-3">
+                  <label className="md:col-span-4 text-xs font-semibold text-slate-700 md:text-right flex items-center md:justify-end gap-1">
+                    <span>&apos;First name&apos; required</span>
+                    <HelpTooltip text="Makes first name a mandatory field." />
+                  </label>
+                  <div className="md:col-span-8 flex items-center relative">
+                    <div className="hidden md:block absolute -left-4 w-4 h-px bg-slate-300 pointer-events-none" />
+                    <input
+                      type="checkbox"
+                      checked={firstNameRequired}
+                      onChange={(e) => setFirstNameRequired(e.target.checked)}
+                      className="w-4 h-4 text-[#3c8dbc] border-[#d2d6de] rounded focus:ring-0 cursor-pointer accent-[#3c8dbc]"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* 'Last name' enabled with 'Last name' required branch */}
+            <div className="relative">
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                <label className="md:col-span-4 text-xs font-semibold text-slate-700 md:text-right flex items-center md:justify-end gap-1">
+                  <span>&apos;Last name&apos; enabled</span>
+                  <HelpTooltip text="Enable last name input." />
+                </label>
+                <div className="md:col-span-8 flex items-center">
+                  <input
+                    type="checkbox"
+                    checked={lastNameEnabled}
+                    onChange={(e) => setLastNameEnabled(e.target.checked)}
+                    className="w-4 h-4 text-[#3c8dbc] border-[#d2d6de] rounded focus:ring-0 cursor-pointer accent-[#3c8dbc]"
+                  />
+                </div>
+              </div>
+
+              <div className="relative">
+                <div className="hidden md:block absolute left-[33.9%] top-0 bottom-3 w-px bg-slate-300 pointer-events-none" />
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center mt-3">
+                  <label className="md:col-span-4 text-xs font-semibold text-slate-700 md:text-right flex items-center md:justify-end gap-1">
+                    <span>&apos;Last name&apos; required</span>
+                    <HelpTooltip text="Makes last name mandatory." />
+                  </label>
+                  <div className="md:col-span-8 flex items-center relative">
+                    <div className="hidden md:block absolute -left-4 w-4 h-px bg-slate-300 pointer-events-none" />
+                    <input
+                      type="checkbox"
+                      checked={lastNameRequired}
+                      onChange={(e) => setLastNameRequired(e.target.checked)}
+                      className="w-4 h-4 text-[#3c8dbc] border-[#d2d6de] rounded focus:ring-0 cursor-pointer accent-[#3c8dbc]"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* 'Date of Birth' enabled with 'Date of Birth' required branch */}
+            <div className="relative">
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                <label className="md:col-span-4 text-xs font-semibold text-slate-700 md:text-right flex items-center md:justify-end gap-1">
+                  <span>&apos;Date of Birth&apos; enabled</span>
+                  <HelpTooltip text="Enable date of birth date picker." />
+                </label>
+                <div className="md:col-span-8 flex items-center">
+                  <input
+                    type="checkbox"
+                    checked={dobEnabled}
+                    onChange={(e) => setDobEnabled(e.target.checked)}
+                    className="w-4 h-4 text-[#3c8dbc] border-[#d2d6de] rounded focus:ring-0 cursor-pointer accent-[#3c8dbc]"
+                  />
+                </div>
+              </div>
+
+              <div className="relative">
+                <div className="hidden md:block absolute left-[33.9%] top-0 bottom-3 w-px bg-slate-300 pointer-events-none" />
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center mt-3">
+                  <label className="md:col-span-4 text-xs font-semibold text-slate-700 md:text-right flex items-center md:justify-end gap-1">
+                    <span>&apos;Date of Birth&apos; required</span>
+                    <HelpTooltip text="Requires customer to provide date of birth." />
+                  </label>
+                  <div className="md:col-span-8 flex items-center relative">
+                    <div className="hidden md:block absolute -left-4 w-4 h-px bg-slate-300 pointer-events-none" />
+                    <input
+                      type="checkbox"
+                      checked={dobRequired}
+                      onChange={(e) => setDobRequired(e.target.checked)}
+                      className="w-4 h-4 text-[#3c8dbc] border-[#d2d6de] rounded focus:ring-0 cursor-pointer accent-[#3c8dbc]"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Customer minimum age (Advanced only) */}
+            {isAdvanced && (
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                <label className="md:col-span-4 text-xs font-semibold text-slate-700 md:text-right flex items-center md:justify-end gap-1">
+                  <span>Customer minimum age</span>
+                  <HelpTooltip text="Minimum required age to complete registration. Leave blank if not required." />
+                </label>
+                <div className="md:col-span-8 max-w-xl">
+                  <input
+                    type="number"
+                    value={customerMinimumAge}
+                    onChange={(e) => setCustomerMinimumAge(e.target.value)}
+                    placeholder=""
+                    className="w-full border border-[#d2d6de] focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none rounded px-3 py-1.5 text-xs text-slate-800 bg-white"
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* 'Company' enabled with 'Company' required branch */}
+            <div className="relative">
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                <label className="md:col-span-4 text-xs font-semibold text-slate-700 md:text-right flex items-center md:justify-end gap-1">
+                  <span>&apos;Company&apos; enabled</span>
+                  <HelpTooltip text="Enable company name field during customer registration." />
+                </label>
+                <div className="md:col-span-8 flex items-center">
+                  <input
+                    type="checkbox"
+                    checked={customerCompanyEnabled}
+                    onChange={(e) => setCustomerCompanyEnabled(e.target.checked)}
+                    className="w-4 h-4 text-[#3c8dbc] border-[#d2d6de] rounded focus:ring-0 cursor-pointer accent-[#3c8dbc]"
+                  />
+                </div>
+              </div>
+
+              <div className="relative">
+                <div className="hidden md:block absolute left-[33.9%] top-0 bottom-3 w-px bg-slate-300 pointer-events-none" />
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center mt-3">
+                  <label className="md:col-span-4 text-xs font-semibold text-slate-700 md:text-right flex items-center md:justify-end gap-1">
+                    <span>&apos;Company&apos; required</span>
+                    <HelpTooltip text="Require company name during registration." />
+                  </label>
+                  <div className="md:col-span-8 flex items-center relative">
+                    <div className="hidden md:block absolute -left-4 w-4 h-px bg-slate-300 pointer-events-none" />
+                    <input
+                      type="checkbox"
+                      checked={customerCompanyRequired}
+                      onChange={(e) => setCustomerCompanyRequired(e.target.checked)}
+                      className="w-4 h-4 text-[#3c8dbc] border-[#d2d6de] rounded focus:ring-0 cursor-pointer accent-[#3c8dbc]"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* 'Street address' enabled */}
             <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
               <label className="md:col-span-4 text-xs font-semibold text-slate-700 md:text-right flex items-center md:justify-end gap-1">
-                <span>&apos;Gender&apos; enabled</span>
-                <HelpTooltip text="Enable gender radio button on registration page." />
+                <span>&apos;Street address&apos; enabled</span>
+                <HelpTooltip text="Enable street address line 1 during customer registration." />
               </label>
               <div className="md:col-span-8 flex items-center">
                 <input
                   type="checkbox"
-                  checked={genderEnabled}
-                  onChange={(e) => setGenderEnabled(e.target.checked)}
+                  checked={customerStreetAddressEnabled}
+                  onChange={(e) => setCustomerStreetAddressEnabled(e.target.checked)}
                   className="w-4 h-4 text-[#3c8dbc] border-[#d2d6de] rounded focus:ring-0 cursor-pointer accent-[#3c8dbc]"
                 />
               </div>
             </div>
 
-            {/* 'Neutral' option enabled */}
+            {/* 'Street address 2' enabled */}
             <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
               <label className="md:col-span-4 text-xs font-semibold text-slate-700 md:text-right flex items-center md:justify-end gap-1">
-                <span>&apos;Neutral&apos; option enabled</span>
-                <HelpTooltip text="Adds a third gender neutral choice." />
+                <span>&apos;Street address 2&apos; enabled</span>
+                <HelpTooltip text="Enable street address line 2 during customer registration." />
               </label>
               <div className="md:col-span-8 flex items-center">
                 <input
                   type="checkbox"
-                  checked={neutralOptionEnabled}
-                  onChange={(e) => setNeutralOptionEnabled(e.target.checked)}
+                  checked={customerStreetAddress2Enabled}
+                  onChange={(e) => setCustomerStreetAddress2Enabled(e.target.checked)}
                   className="w-4 h-4 text-[#3c8dbc] border-[#d2d6de] rounded focus:ring-0 cursor-pointer accent-[#3c8dbc]"
                 />
               </div>
             </div>
 
-            {/* 'First name' enabled */}
+            {/* 'Zip / postal code' enabled */}
             <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
               <label className="md:col-span-4 text-xs font-semibold text-slate-700 md:text-right flex items-center md:justify-end gap-1">
-                <span>&apos;First name&apos; enabled</span>
-                <HelpTooltip text="Enable first name input during registration." />
+                <span>&apos;Zip / postal code&apos; enabled</span>
+                <HelpTooltip text="Enable zip/postal code during customer registration." />
               </label>
               <div className="md:col-span-8 flex items-center">
                 <input
                   type="checkbox"
-                  checked={firstNameEnabled}
-                  onChange={(e) => setFirstNameEnabled(e.target.checked)}
+                  checked={customerZipCodeEnabled}
+                  onChange={(e) => setCustomerZipCodeEnabled(e.target.checked)}
                   className="w-4 h-4 text-[#3c8dbc] border-[#d2d6de] rounded focus:ring-0 cursor-pointer accent-[#3c8dbc]"
                 />
               </div>
             </div>
 
-            {/* 'First name' required */}
+            {/* 'City' enabled */}
             <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
               <label className="md:col-span-4 text-xs font-semibold text-slate-700 md:text-right flex items-center md:justify-end gap-1">
-                <span>&apos;First name&apos; required</span>
-                <HelpTooltip text="Makes first name a mandatory field." />
+                <span>&apos;City&apos; enabled</span>
+                <HelpTooltip text="Enable city input during customer registration." />
               </label>
               <div className="md:col-span-8 flex items-center">
                 <input
                   type="checkbox"
-                  checked={firstNameRequired}
-                  onChange={(e) => setFirstNameRequired(e.target.checked)}
+                  checked={customerCityEnabled}
+                  onChange={(e) => setCustomerCityEnabled(e.target.checked)}
                   className="w-4 h-4 text-[#3c8dbc] border-[#d2d6de] rounded focus:ring-0 cursor-pointer accent-[#3c8dbc]"
                 />
               </div>
             </div>
 
-            {/* 'Last name' enabled */}
+            {/* 'County / region' enabled */}
             <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
               <label className="md:col-span-4 text-xs font-semibold text-slate-700 md:text-right flex items-center md:justify-end gap-1">
-                <span>&apos;Last name&apos; enabled</span>
-                <HelpTooltip text="Enable last name input." />
+                <span>&apos;County / region&apos; enabled</span>
+                <HelpTooltip text="Enable county or region input during customer registration." />
               </label>
               <div className="md:col-span-8 flex items-center">
                 <input
                   type="checkbox"
-                  checked={lastNameEnabled}
-                  onChange={(e) => setLastNameEnabled(e.target.checked)}
+                  checked={customerCountyRegionEnabled}
+                  onChange={(e) => setCustomerCountyRegionEnabled(e.target.checked)}
                   className="w-4 h-4 text-[#3c8dbc] border-[#d2d6de] rounded focus:ring-0 cursor-pointer accent-[#3c8dbc]"
                 />
               </div>
             </div>
 
-            {/* 'Last name' required */}
+            {/* 'Country' enabled */}
             <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
               <label className="md:col-span-4 text-xs font-semibold text-slate-700 md:text-right flex items-center md:justify-end gap-1">
-                <span>&apos;Last name&apos; required</span>
-                <HelpTooltip text="Makes last name mandatory." />
+                <span>&apos;Country&apos; enabled</span>
+                <HelpTooltip text="Enable country dropdown during customer registration." />
               </label>
               <div className="md:col-span-8 flex items-center">
                 <input
                   type="checkbox"
-                  checked={lastNameRequired}
-                  onChange={(e) => setLastNameRequired(e.target.checked)}
+                  checked={customerCountryEnabled}
+                  onChange={(e) => setCustomerCountryEnabled(e.target.checked)}
                   className="w-4 h-4 text-[#3c8dbc] border-[#d2d6de] rounded focus:ring-0 cursor-pointer accent-[#3c8dbc]"
                 />
               </div>
             </div>
 
-            {/* 'Date of Birth' enabled */}
+            {/* 'Phone number' enabled */}
             <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
               <label className="md:col-span-4 text-xs font-semibold text-slate-700 md:text-right flex items-center md:justify-end gap-1">
-                <span>&apos;Date of Birth&apos; enabled</span>
-                <HelpTooltip text="Enable date of birth date picker." />
+                <span>&apos;Phone number&apos; enabled</span>
+                <HelpTooltip text="Enable customer phone number during customer registration." />
               </label>
               <div className="md:col-span-8 flex items-center">
                 <input
                   type="checkbox"
-                  checked={dobEnabled}
-                  onChange={(e) => setDobEnabled(e.target.checked)}
+                  checked={customerPhoneNumberEnabled}
+                  onChange={(e) => setCustomerPhoneNumberEnabled(e.target.checked)}
                   className="w-4 h-4 text-[#3c8dbc] border-[#d2d6de] rounded focus:ring-0 cursor-pointer accent-[#3c8dbc]"
                 />
               </div>
             </div>
 
-            {/* 'Date of Birth' required */}
+            {/* 'Fax number' enabled */}
             <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
               <label className="md:col-span-4 text-xs font-semibold text-slate-700 md:text-right flex items-center md:justify-end gap-1">
-                <span>&apos;Date of Birth&apos; required</span>
-                <HelpTooltip text="Requires customer to provide date of birth." />
+                <span>&apos;Fax number&apos; enabled</span>
+                <HelpTooltip text="Enable customer fax number during customer registration." />
               </label>
               <div className="md:col-span-8 flex items-center">
                 <input
                   type="checkbox"
-                  checked={dobRequired}
-                  onChange={(e) => setDobRequired(e.target.checked)}
+                  checked={customerFaxNumberEnabled}
+                  onChange={(e) => setCustomerFaxNumberEnabled(e.target.checked)}
                   className="w-4 h-4 text-[#3c8dbc] border-[#d2d6de] rounded focus:ring-0 cursor-pointer accent-[#3c8dbc]"
                 />
               </div>
             </div>
 
-            {/* Customer minimum age */}
+            {/* 'Accept privacy policy' enabled */}
             <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
               <label className="md:col-span-4 text-xs font-semibold text-slate-700 md:text-right flex items-center md:justify-end gap-1">
-                <span>Customer minimum age</span>
-                <HelpTooltip text="Minimum required age to complete registration. Leave blank if not required." />
+                <span>&apos;Accept privacy policy&apos; enabled</span>
+                <HelpTooltip text="Determines whether customers must accept the privacy policy during registration." />
               </label>
-              <div className="md:col-span-8 max-w-xl">
+              <div className="md:col-span-8 flex items-center">
                 <input
-                  type="number"
-                  value={customerMinimumAge}
-                  onChange={(e) => setCustomerMinimumAge(e.target.value)}
-                  placeholder=""
-                  className="w-full border border-[#d2d6de] focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none rounded px-3 py-1.5 text-xs text-slate-800 bg-white"
+                  type="checkbox"
+                  checked={acceptPrivacyPolicyEnabled}
+                  onChange={(e) => setAcceptPrivacyPolicyEnabled(e.target.checked)}
+                  className="w-4 h-4 text-[#3c8dbc] border-[#d2d6de] rounded focus:ring-0 cursor-pointer accent-[#3c8dbc]"
+                />
+              </div>
+            </div>
+
+            {/* 'Newsletter' enabled */}
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+              <label className="md:col-span-4 text-xs font-semibold text-slate-700 md:text-right flex items-center md:justify-end gap-1">
+                <span>&apos;Newsletter&apos; enabled</span>
+                <HelpTooltip text="Determines whether a newsletter subscription option is displayed during registration." />
+              </label>
+              <div className="md:col-span-8 flex items-center">
+                <input
+                  type="checkbox"
+                  checked={newsletterEnabled}
+                  onChange={(e) => setNewsletterEnabled(e.target.checked)}
+                  className="w-4 h-4 text-[#3c8dbc] border-[#d2d6de] rounded focus:ring-0 cursor-pointer accent-[#3c8dbc]"
                 />
               </div>
             </div>
           </div>
         )}
+      </div>
+
+      {/* ── CARD: CUSTOM CUSTOMER ATTRIBUTES (Matching media_1791270059148.png & media_1791270123059.png) ── */}
+      <div className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden">
+        <div className="px-5 py-4 bg-white border-b border-[#f4f4f4]">
+          <h3 className="text-sm md:text-base font-normal text-slate-800">Custom customer attributes</h3>
+        </div>
+
+        <div className="p-5 space-y-4 text-xs text-slate-700">
+          <div className="border border-[#e5e7eb] rounded overflow-x-auto">
+            <table className="w-full text-left text-xs text-slate-700">
+              <thead className="bg-[#f9fafb] text-[12px] text-slate-700 border-b border-[#e5e7eb] font-bold">
+                <tr>
+                  <th className="px-4 py-3 font-bold border-r border-[#e5e7eb]">Name</th>
+                  <th className="px-4 py-3 font-bold border-r border-[#e5e7eb]">Control type</th>
+                  <th className="px-4 py-3 font-bold text-center border-r border-[#e5e7eb] w-36">Required</th>
+                  <th className="px-4 py-3 font-bold text-center border-r border-[#e5e7eb] w-36">Display order</th>
+                  <th className="px-4 py-3 font-bold text-center w-24">Edit</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-[#f4f4f4]">
+                {customCustomerAttributes.length === 0 ? (
+                  <tr>
+                    <td colSpan={5} className="py-4 px-4 text-center text-slate-500 text-xs">
+                      No data available in table
+                    </td>
+                  </tr>
+                ) : (
+                  customCustomerAttributes
+                    .slice((customerAttrPage - 1) * customerAttrPageSize, customerAttrPage * customerAttrPageSize)
+                    .map((attr) => (
+                      <tr key={attr.id} className="hover:bg-slate-50 transition">
+                        <td className="px-4 py-2.5 font-medium text-slate-800 border-r border-[#f4f4f4]">
+                          {attr.name}
+                        </td>
+                        <td className="px-4 py-2.5 text-slate-600 border-r border-[#f4f4f4]">
+                          {attr.controlType}
+                        </td>
+                        <td className="px-4 py-2.5 text-center border-r border-[#f4f4f4]">
+                          {attr.isRequired ? (
+                            <CheckCircle2 className="w-4 h-4 text-[#2489c5] inline-block" />
+                          ) : (
+                            <span className="text-slate-400">—</span>
+                          )}
+                        </td>
+                        <td className="px-4 py-2.5 text-center font-mono border-r border-[#f4f4f4]">
+                          {attr.displayOrder}
+                        </td>
+                        <td className="px-4 py-2.5 text-center">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setAttributeType('customer');
+                              setSelectedAttribute(attr);
+                              setViewMode('edit-attribute');
+                            }}
+                            className="px-2.5 py-1 rounded border border-[#d2d6de] bg-white text-slate-700 hover:bg-slate-50 text-xs font-semibold shadow-2xs transition cursor-pointer"
+                          >
+                            Edit
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                )}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Pagination bar matching media_1791270059148.png */}
+          <div className="flex flex-wrap items-center justify-between text-xs text-slate-600 pt-1 pb-1 gap-3">
+            <div className="inline-flex rounded shadow-2xs">
+              <button
+                type="button"
+                disabled={customerAttrPage === 1}
+                onClick={() => setCustomerAttrPage((p) => Math.max(1, p - 1))}
+                className="px-3 py-1.5 border border-[#d2d6de] rounded-l bg-white text-slate-600 disabled:text-slate-400 disabled:opacity-60 disabled:cursor-not-allowed hover:bg-slate-50"
+              >
+                Previous
+              </button>
+              <button
+                type="button"
+                disabled={
+                  customCustomerAttributes.length === 0 ||
+                  customerAttrPage * customerAttrPageSize >= customCustomerAttributes.length
+                }
+                onClick={() => setCustomerAttrPage((p) => p + 1)}
+                className="px-3 py-1.5 border-t border-b border-r border-[#d2d6de] rounded-r bg-white text-slate-600 disabled:text-slate-400 disabled:opacity-60 disabled:cursor-not-allowed hover:bg-slate-50"
+              >
+                Next
+              </button>
+            </div>
+
+            <div className="flex items-center gap-1.5">
+              <span>Show</span>
+              <select
+                value={customerAttrPageSize}
+                onChange={(e) => {
+                  setCustomerAttrPageSize(Number(e.target.value));
+                  setCustomerAttrPage(1);
+                }}
+                className="border border-[#d2d6de] bg-white rounded px-2 py-1 text-xs text-slate-700 focus:outline-none focus:border-[#3c8dbc]"
+              >
+                <option value={15}>15</option>
+                <option value={20}>20</option>
+                <option value={50}>50</option>
+                <option value={100}>100</option>
+              </select>
+              <span>items</span>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <span>
+                {customCustomerAttributes.length === 0
+                  ? 'No records'
+                  : `${(customerAttrPage - 1) * customerAttrPageSize + 1}-${Math.min(
+                      customerAttrPage * customerAttrPageSize,
+                      customCustomerAttributes.length
+                    )} of ${customCustomerAttributes.length} items`}
+              </span>
+              <button
+                type="button"
+                onClick={() => showToast('Refreshed customer attributes.')}
+                className="border border-[#d2d6de] bg-white hover:bg-slate-50 text-slate-600 p-1.5 rounded shadow-2xs cursor-pointer"
+                title="Refresh"
+              >
+                <RotateCw className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Panel Footer matching media_1791270059148.png */}
+        <div className="px-5 py-3.5 bg-[#f8f9fa] border-t border-[#f4f4f4] rounded-b">
+          <button
+            type="button"
+            onClick={() => {
+              setAttributeType('customer');
+              setSelectedAttribute(null);
+              setViewMode('add-attribute');
+            }}
+            className="bg-[#2489c5] hover:bg-[#1f72a3] text-white text-xs font-semibold px-3 py-1.5 rounded inline-flex items-center gap-1.5 shadow-2xs transition cursor-pointer"
+          >
+            <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
+            <span>Add new</span>
+          </button>
+        </div>
       </div>
 
       {/* ── CARD 6: ADDRESS FORM FIELDS (Matching media_1791269493977.png & media_1791269496714.png) ── */}

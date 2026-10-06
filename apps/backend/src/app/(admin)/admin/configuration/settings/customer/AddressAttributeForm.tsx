@@ -34,6 +34,7 @@ export interface AddressAttributeData {
 interface AddressAttributeFormProps {
   initialValues?: Partial<AddressAttributeData>;
   isEdit?: boolean;
+  entityType?: 'address' | 'customer';
   onBack: () => void;
   onSave: (data: AddressAttributeData, continueEditing?: boolean) => void;
   onDelete?: (id: string) => void;
@@ -54,6 +55,7 @@ function HelpTooltip({ text }: { text: string }) {
 export function AddressAttributeForm({
   initialValues,
   isEdit = false,
+  entityType = 'address',
   onBack,
   onSave,
   onDelete,
@@ -196,7 +198,9 @@ export function AddressAttributeForm({
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-2">
         <div className="flex flex-wrap items-baseline gap-2.5">
           <h1 className="text-xl md:text-2xl font-light text-slate-800">
-            {isEdit ? `Edit address attribute details - ${name}` : 'Add a new address attribute'}
+            {isEdit
+              ? `Edit ${entityType} attribute details - ${name}`
+              : `Add a new ${entityType} attribute`}
           </h1>
           <button
             type="button"
@@ -206,7 +210,7 @@ export function AddressAttributeForm({
             <span className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-[#2489c5] text-white text-[10px]">
               <ArrowLeft className="w-2.5 h-2.5 stroke-[3]" />
             </span>
-            <span>back to address attribute list</span>
+            <span>back to {entityType} attribute list</span>
           </button>
         </div>
 
@@ -410,7 +414,7 @@ export function AddressAttributeForm({
           <div className="p-5 text-xs text-slate-700">
             {!isEdit ? (
               <p className="text-slate-600">
-                You need to save the address attribute before you can add values for this address attribute page.
+                You need to save the {entityType} attribute before you can add values for this {entityType} attribute page.
               </p>
             ) : (
               <div className="space-y-4">

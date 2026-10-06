@@ -14340,13 +14340,13 @@
       "earnedTargetBonus": 0,
       "totalEarnedCommission": 160200,
       "clawbackDeductions": 4500,
-      "pendingPayoutBalance": 140700,
+      "pendingPayoutBalance": 155700,
       "disbursedLifetime": 605000,
       "serviceCentreName": "Hubballi Central Agri Workshop",
       "serviceRating": 4.8,
       "activeJobCardsCount": 4,
       "createdAt": "2025-01-15T10:00:00Z",
-      "updatedAt": "2026-09-18T05:51:21.842Z"
+      "updatedAt": "2026-10-06T07:12:55.522Z"
     },
     {
       "id": "dlr-02",
@@ -14382,7 +14382,7 @@
       "serviceRating": 4.6,
       "activeJobCardsCount": 3,
       "createdAt": "2025-01-20T10:00:00Z",
-      "updatedAt": "2026-09-18T05:51:21.837Z"
+      "updatedAt": "2026-10-06T07:12:55.522Z"
     },
     {
       "id": "dlr-03",
@@ -14418,7 +14418,7 @@
       "serviceRating": 4.7,
       "activeJobCardsCount": 2,
       "createdAt": "2025-02-01T10:00:00Z",
-      "updatedAt": "2026-09-18T05:51:21.837Z"
+      "updatedAt": "2026-10-06T07:12:55.522Z"
     },
     {
       "id": "dlr-04",
@@ -14454,7 +14454,7 @@
       "serviceRating": 4.5,
       "activeJobCardsCount": 1,
       "createdAt": "2025-02-15T10:00:00Z",
-      "updatedAt": "2026-09-18T05:51:21.837Z"
+      "updatedAt": "2026-10-06T07:12:55.522Z"
     },
     {
       "id": "dlr-05",
@@ -14490,7 +14490,7 @@
       "serviceRating": 4.4,
       "activeJobCardsCount": 0,
       "createdAt": "2025-03-01T10:00:00Z",
-      "updatedAt": "2026-09-18T05:51:21.837Z"
+      "updatedAt": "2026-10-06T07:12:55.522Z"
     }
   ],
   "commissionTargets": [
@@ -14513,7 +14513,7 @@
       "refundClawback": 4500,
       "netPayableCommission": 155700,
       "status": "OPEN",
-      "updatedAt": "2026-09-18T05:51:21.837Z"
+      "updatedAt": "2026-10-06T07:12:55.522Z"
     },
     {
       "id": "ct-002",
@@ -14534,7 +14534,7 @@
       "refundClawback": 2400,
       "netPayableCommission": 122640,
       "status": "OPEN",
-      "updatedAt": "2026-09-18T05:51:21.837Z"
+      "updatedAt": "2026-10-06T07:12:55.522Z"
     },
     {
       "id": "ct-dlr-03-2026-03",
@@ -14555,7 +14555,7 @@
       "refundClawback": 2000,
       "netPayableCommission": 81200,
       "status": "OPEN",
-      "updatedAt": "2026-09-18T05:51:21.837Z"
+      "updatedAt": "2026-10-06T07:12:55.522Z"
     },
     {
       "id": "ct-dlr-04-2026-03",
@@ -14576,7 +14576,7 @@
       "refundClawback": 900,
       "netPayableCommission": 36300,
       "status": "OPEN",
-      "updatedAt": "2026-09-18T05:51:21.837Z"
+      "updatedAt": "2026-10-06T07:12:55.522Z"
     },
     {
       "id": "ct-dlr-05-2026-03",
@@ -14597,7 +14597,7 @@
       "refundClawback": 320,
       "netPayableCommission": 12080,
       "status": "OPEN",
-      "updatedAt": "2026-09-18T05:51:21.837Z"
+      "updatedAt": "2026-10-06T07:12:55.522Z"
     }
   ],
   "payoutRecords": [
