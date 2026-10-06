@@ -60,6 +60,18 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
     }, 1600);
   };
 
+  // Normalize target crops safely (supports array, comma-separated string, or undefined)
+  const cropsList: string[] = Array.isArray(product.targetCrops)
+    ? product.targetCrops
+    : typeof product.targetCrops === 'string'
+    ? (product.targetCrops as string).split(',').map((c) => c.trim()).filter(Boolean)
+    : [];
+
+  const productImage =
+    (product.images && product.images[0]) ||
+    (product as any).image ||
+    'https://images.unsplash.com/photo-1589923188900-85dae523342b?auto=format&fit=crop&w=600&q=80';
+
   return (
     <div className="bg-white rounded-2xl border border-agri-border overflow-hidden shadow-subtle card-hover flex flex-col group relative">
       {/* Product Image */}
@@ -68,13 +80,10 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
         className="relative aspect-4/3 w-full bg-agri-cream/60 overflow-hidden block"
       >
         <Image
-          src={
-            (product.images && product.images[0]) ||
-            (product as any).image ||
-            'https://images.unsplash.com/photo-1589923188900-85dae523342b?auto=format&fit=crop&w=600&q=80'
-          }
+          src={productImage}
           alt={product.name}
           fill
+          unoptimized
           className="object-cover img-zoom"
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
         />
@@ -112,23 +121,25 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
           <div className="flex items-center space-x-1.5 mb-2.5 text-xs text-agri-secondary">
             <div className="flex items-center text-agri-yellow-dark">
               <Star className="w-3.5 h-3.5 fill-current text-agri-yellow" />
-              <span className="font-bold ml-1 text-agri-dark text-xs">{product.rating}</span>
+              <span className="font-bold ml-1 text-agri-dark text-xs">{product.rating || 5}</span>
             </div>
             <span>&bull;</span>
-            <span>{product.reviewsCount} reviews</span>
+            <span>{product.reviewsCount || 0} reviews</span>
           </div>
 
           {/* Target Crops Pills */}
-          <div className="flex flex-wrap gap-1 mb-2">
-            {product.targetCrops.slice(0, 3).map((crop) => (
-              <span
-                key={crop}
-                className="text-[10px] bg-agri-pale text-agri-green-dark px-2 py-0.5 rounded-md font-medium border border-emerald-200/50"
-              >
-                {crop}
-              </span>
-            ))}
-          </div>
+          {cropsList.length > 0 && (
+            <div className="flex flex-wrap gap-1 mb-2">
+              {cropsList.slice(0, 3).map((crop) => (
+                <span
+                  key={crop}
+                  className="text-[10px] bg-agri-pale text-agri-green-dark px-2 py-0.5 rounded-md font-medium border border-emerald-200/50"
+                >
+                  {crop}
+                </span>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Price & Action */}

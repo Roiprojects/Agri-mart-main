@@ -2105,15 +2105,25 @@ class PersistentDevDatabase {
     return this.data.products.filter((p) => {
       if (filters?.onlyPublished !== false && (!p.isPublished || p.isDraft)) return false;
       if (filters?.categoryId && p.categoryId !== filters.categoryId) return false;
-      if (filters?.crop && !p.targetCrops.toLowerCase().includes(filters.crop.toLowerCase())) return false;
-      if (filters?.stage && !p.cropStages.split(',').map((s) => parseInt(s.trim())).includes(filters.stage)) return false;
+      if (filters?.crop) {
+        const cropsStr = Array.isArray(p.targetCrops)
+          ? (p.targetCrops as string[]).join(', ')
+          : (p.targetCrops || '');
+        if (!cropsStr.toLowerCase().includes(filters.crop.toLowerCase())) return false;
+      }
+      if (filters?.stage) {
+        const stages = Array.isArray(p.cropStages)
+          ? (p.cropStages as any[]).map(Number)
+          : (p.cropStages ? String(p.cropStages).split(',').map((s) => parseInt(s.trim())) : []);
+        if (!stages.includes(filters.stage)) return false;
+      }
       if (filters?.isFeatured !== undefined && p.isFeatured !== filters.isFeatured) return false;
       if (filters?.isBestSeller !== undefined && p.isBestSeller !== filters.isBestSeller) return false;
       if (filters?.search) {
         const q = filters.search.toLowerCase();
-        const matchesName = p.name.toLowerCase().includes(q) || (p.nameKn && p.nameKn.toLowerCase().includes(q));
-        const matchesSku = p.sku.toLowerCase().includes(q);
-        const matchesDesc = p.description.toLowerCase().includes(q);
+        const matchesName = (p.name || '').toLowerCase().includes(q) || (p.nameKn && p.nameKn.toLowerCase().includes(q));
+        const matchesSku = (p.sku || '').toLowerCase().includes(q);
+        const matchesDesc = (p.description || '').toLowerCase().includes(q);
         if (!matchesName && !matchesSku && !matchesDesc) return false;
       }
       return true;

@@ -114,7 +114,7 @@ export default function HeroBannerSlider() {
 
   // Connect to backend banner management if published banners are available
   useEffect(() => {
-    fetch('/api/content/banners')
+    fetch('/api/content/banners', { cache: 'no-store' })
       .then((r) => r.json())
       .then((res) => {
         if (res.success && Array.isArray(res.data) && res.data.length > 0) {

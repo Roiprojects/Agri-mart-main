@@ -19,8 +19,8 @@ export default function ShopPage() {
   const fetchCatalogue = () => {
     setLoading(true);
     Promise.all([
-      fetch('/api/products').then((r) => r.json()),
-      fetch('/api/categories').then((r) => r.json()),
+      fetch('/api/products', { cache: 'no-store' }).then((r) => r.json()),
+      fetch('/api/categories', { cache: 'no-store' }).then((r) => r.json()),
     ])
       .then(([prodData, catData]) => {
         if (prodData.success) setProducts(prodData.data);

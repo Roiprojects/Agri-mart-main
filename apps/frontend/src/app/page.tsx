@@ -9,6 +9,7 @@ import {
   SEED_RENTAL_PRODUCTS,
   SEED_BLOG_POSTS,
 } from '@/lib/seed-data';
+import { ApiClient } from '@/lib/api-client';
 import FieldContourDecoration from '@/components/home/FieldContourDecoration';
 import HeroBannerSlider from '@/components/home/HeroBannerSlider';
 import CropStageFilter from '@/components/home/CropStageFilter';
@@ -56,9 +57,33 @@ export const metadata: Metadata = {
   },
 };
 
-export default function HomePage() {
-  const featuredProducts = SEED_PRODUCTS.slice(0, 4);
-  const featuredRentals = SEED_RENTAL_PRODUCTS;
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
+export default async function HomePage() {
+  const [productsRes, categoriesRes, rentalsRes] = await Promise.all([
+    ApiClient.getProducts().catch(() => null),
+    ApiClient.getCategories().catch(() => null),
+    ApiClient.getRentals().catch(() => null),
+  ]);
+
+  const featuredProducts = productsRes?.data && productsRes.data.length > 0
+    ? productsRes.data.slice(0, 4)
+    : SEED_PRODUCTS.slice(0, 4);
+
+  const displayCategories = categoriesRes?.data && categoriesRes.data.length > 0
+    ? categoriesRes.data.slice(0, 6).map((c: any) => ({
+        id: c.id,
+        name: c.name,
+        slug: c.slug,
+        image: c.image || 'https://images.unsplash.com/photo-1592982537447-6f2a6a0c7c18?auto=format&fit=crop&w=600&q=80',
+      }))
+    : SEED_CATEGORIES.slice(0, 6);
+
+  const featuredRentals = rentalsRes?.data && rentalsRes.data.length > 0
+    ? rentalsRes.data.slice(0, 3)
+    : SEED_RENTAL_PRODUCTS;
+
   const topServices = SITE_CONFIG.services.slice(0, 4);
   const blogs = SEED_BLOG_POSTS;
 
@@ -145,7 +170,7 @@ export default function HomePage() {
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-          {SEED_CATEGORIES.map((category) => (
+          {displayCategories.map((category) => (
             <Link
               key={category.id}
               href={`/categories/${category.slug}`}
