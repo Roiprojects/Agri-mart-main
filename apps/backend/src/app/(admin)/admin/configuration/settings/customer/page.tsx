@@ -14,6 +14,9 @@ import {
   AlignJustify,
   ArrowUp,
   MapPin,
+  RotateCw,
+  Trash2,
+  X,
 } from 'lucide-react';
 
 function HelpTooltip({ text }: { text: string }) {
@@ -112,10 +115,79 @@ export default function CustomerSettingsPage() {
   const [phoneNumberRequired, setPhoneNumberRequired] = useState(true);
   const [faxNumberEnabled, setFaxNumberEnabled] = useState(true);
   const [faxNumberRequired, setFaxNumberRequired] = useState(false);
-  const [addressAttributesOpen, setAddressAttributesOpen] = useState(true);
-  const [customAddressAttributes, setCustomAddressAttributes] = useState([
-    { id: '1', name: 'Landmark / Alternate Contact', controlType: 'TextBox', isRequired: false, displayOrder: 1 },
-  ]);
+  // Custom address attributes state (media_1791263520305.png)
+  const [customAddressAttributes, setCustomAddressAttributes] = useState<
+    Array<{ id: string; name: string; controlType: string; isRequired: boolean; displayOrder: number }>
+  >([]);
+  const [attrPageSize, setAttrPageSize] = useState(15);
+  const [attrPage, setAttrPage] = useState(1);
+  const [attrModalOpen, setAttrModalOpen] = useState(false);
+  const [editingAttrId, setEditingAttrId] = useState<string | null>(null);
+  const [attrForm, setAttrForm] = useState({
+    name: '',
+    controlType: 'Drop-down list',
+    isRequired: false,
+    displayOrder: 1,
+  });
+
+  const openNewAttrModal = () => {
+    setEditingAttrId(null);
+    setAttrForm({
+      name: '',
+      controlType: 'Drop-down list',
+      isRequired: false,
+      displayOrder: customAddressAttributes.length + 1,
+    });
+    setAttrModalOpen(true);
+  };
+
+  const openEditAttrModal = (attr: {
+    id: string;
+    name: string;
+    controlType: string;
+    isRequired: boolean;
+    displayOrder: number;
+  }) => {
+    setEditingAttrId(attr.id);
+    setAttrForm({
+      name: attr.name,
+      controlType: attr.controlType,
+      isRequired: attr.isRequired,
+      displayOrder: attr.displayOrder,
+    });
+    setAttrModalOpen(true);
+  };
+
+  const saveAttrModal = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!attrForm.name.trim()) {
+      showToast('Please enter an attribute name.', 'error');
+      return;
+    }
+
+    if (editingAttrId) {
+      setCustomAddressAttributes((prev) =>
+        prev.map((a) => (a.id === editingAttrId ? { ...a, ...attrForm } : a))
+      );
+      showToast('Address attribute updated successfully.');
+    } else {
+      const newAttr = {
+        id: Date.now().toString(),
+        ...attrForm,
+      };
+      setCustomAddressAttributes((prev) => [...prev, newAttr]);
+      showToast('Address attribute added successfully.');
+    }
+    setAttrModalOpen(false);
+  };
+
+  const deleteAttrModal = (id: string) => {
+    if (confirm('Are you sure you want to delete this attribute?')) {
+      setCustomAddressAttributes((prev) => prev.filter((a) => a.id !== id));
+      showToast('Address attribute deleted.');
+      setAttrModalOpen(false);
+    }
+  };
 
   // Toast & Saving
   const [saving, setSaving] = useState(false);
@@ -1388,90 +1460,258 @@ export default function CustomerSettingsPage() {
         )}
       </div>
 
-      {/* ── CARD 6: CUSTOM ADDRESS ATTRIBUTES (Matching bottom of media_1791263446972.png) ── */}
-      <div className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden border-t-3 border-t-[#00c0ef]">
-        <div
-          onClick={() => setAddressAttributesOpen(!addressAttributesOpen)}
-          className="px-4 py-2.5 bg-white border-b border-[#f4f4f4] flex items-center justify-between cursor-pointer select-none text-xs font-semibold text-slate-700 hover:bg-slate-50/70 transition"
-        >
-          <div className="flex items-center gap-2">
-            <MapPin className="w-4 h-4 text-slate-600" />
-            <span className="text-sm font-normal text-slate-800">Custom address attributes</span>
-          </div>
-          <button type="button" className="text-slate-400 hover:text-slate-600">
-            {addressAttributesOpen ? <Minus className="w-4 h-4 stroke-[2]" /> : <Plus className="w-4 h-4 stroke-[2]" />}
-          </button>
+      {/* ── CARD 6: CUSTOM ADDRESS ATTRIBUTES (Matching media_1791263520305.png) ── */}
+      <div className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden">
+        <div className="px-5 py-4 bg-white border-b border-[#f4f4f4]">
+          <h3 className="text-sm md:text-base font-normal text-slate-800">Custom address attributes</h3>
         </div>
 
-        {addressAttributesOpen && (
-          <div className="p-5 space-y-4 text-xs text-slate-700">
-            <div className="flex justify-end">
+        <div className="p-5 space-y-4 text-xs text-slate-700">
+          <p className="text-xs md:text-sm italic text-slate-600">
+            If the default form fields are not enough for your needs, then you can manage additional address attributes below.
+          </p>
+
+          <div className="border border-[#e5e7eb] rounded overflow-x-auto">
+            <table className="w-full text-left text-xs text-slate-700">
+              <thead className="bg-[#f9fafb] text-[12px] text-slate-700 border-b border-[#e5e7eb] font-bold">
+                <tr>
+                  <th className="px-4 py-3 font-bold border-r border-[#e5e7eb]">Name</th>
+                  <th className="px-4 py-3 font-bold border-r border-[#e5e7eb]">Control type</th>
+                  <th className="px-4 py-3 font-bold text-center border-r border-[#e5e7eb] w-36">Required</th>
+                  <th className="px-4 py-3 font-bold text-center border-r border-[#e5e7eb] w-36">Display order</th>
+                  <th className="px-4 py-3 font-bold text-center w-24">Edit</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-[#f4f4f4]">
+                {customAddressAttributes.length === 0 ? (
+                  <tr>
+                    <td colSpan={5} className="py-4 px-4 text-center text-slate-500 text-xs">
+                      No data available in table
+                    </td>
+                  </tr>
+                ) : (
+                  customAddressAttributes
+                    .slice((attrPage - 1) * attrPageSize, attrPage * attrPageSize)
+                    .map((attr) => (
+                      <tr key={attr.id} className="hover:bg-slate-50 transition">
+                        <td className="px-4 py-2.5 font-medium text-slate-800 border-r border-[#f4f4f4]">
+                          {attr.name}
+                        </td>
+                        <td className="px-4 py-2.5 text-slate-600 border-r border-[#f4f4f4]">
+                          {attr.controlType}
+                        </td>
+                        <td className="px-4 py-2.5 text-center border-r border-[#f4f4f4]">
+                          {attr.isRequired ? (
+                            <CheckCircle2 className="w-4 h-4 text-[#2489c5] inline-block" />
+                          ) : (
+                            <span className="text-slate-400">—</span>
+                          )}
+                        </td>
+                        <td className="px-4 py-2.5 text-center font-mono border-r border-[#f4f4f4]">
+                          {attr.displayOrder}
+                        </td>
+                        <td className="px-4 py-2.5 text-center">
+                          <button
+                            type="button"
+                            onClick={() => openEditAttrModal(attr)}
+                            className="px-2.5 py-1 rounded border border-[#d2d6de] bg-white text-slate-700 hover:bg-slate-50 text-xs font-semibold shadow-2xs transition cursor-pointer"
+                          >
+                            Edit
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                )}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Pagination bar matching media_1791263520305.png */}
+          <div className="flex flex-wrap items-center justify-between text-xs text-slate-600 pt-1 pb-1 gap-3">
+            <div className="inline-flex rounded shadow-2xs">
               <button
                 type="button"
-                onClick={() => {
-                  const name = prompt('Enter custom address attribute name:');
-                  if (name) {
-                    setCustomAddressAttributes([
-                      ...customAddressAttributes,
-                      {
-                        id: Date.now().toString(),
-                        name,
-                        controlType: 'TextBox',
-                        isRequired: false,
-                        displayOrder: customAddressAttributes.length + 1,
-                      },
-                    ]);
-                    showToast('Attribute added successfully.');
-                  }
-                }}
-                className="bg-[#2489c5] hover:bg-[#1f72a3] text-white text-xs font-semibold px-3 py-1.5 rounded flex items-center gap-1.5 shadow-2xs transition cursor-pointer"
+                disabled={attrPage === 1}
+                onClick={() => setAttrPage((p) => Math.max(1, p - 1))}
+                className="px-3 py-1.5 border border-[#d2d6de] rounded-l bg-white text-slate-600 disabled:text-slate-400 disabled:opacity-60 disabled:cursor-not-allowed hover:bg-slate-50"
               >
-                <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
-                <span>Add new attribute</span>
+                Previous
+              </button>
+              <button
+                type="button"
+                disabled={
+                  customAddressAttributes.length === 0 ||
+                  attrPage * attrPageSize >= customAddressAttributes.length
+                }
+                onClick={() => setAttrPage((p) => p + 1)}
+                className="px-3 py-1.5 border-t border-b border-r border-[#d2d6de] rounded-r bg-white text-slate-600 disabled:text-slate-400 disabled:opacity-60 disabled:cursor-not-allowed hover:bg-slate-50"
+              >
+                Next
               </button>
             </div>
 
-            <div className="border border-[#e5e7eb] rounded overflow-hidden">
-              <table className="w-full text-left text-xs text-slate-700">
-                <thead className="bg-[#f9fafb] text-[11px] uppercase tracking-wider text-slate-600 border-b border-[#e5e7eb] font-semibold">
-                  <tr>
-                    <th className="px-4 py-2.5 font-bold">Name</th>
-                    <th className="px-4 py-2.5 font-bold">Control type</th>
-                    <th className="px-4 py-2.5 font-bold text-center">Is required</th>
-                    <th className="px-4 py-2.5 font-bold text-center">Display order</th>
-                    <th className="px-4 py-2.5 font-bold text-center w-24">Edit</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-[#f4f4f4]">
-                  {customAddressAttributes.map((attr) => (
-                    <tr key={attr.id} className="hover:bg-slate-50 transition">
-                      <td className="px-4 py-2.5 font-medium text-slate-800">{attr.name}</td>
-                      <td className="px-4 py-2.5 text-slate-600">{attr.controlType}</td>
-                      <td className="px-4 py-2.5 text-center">
-                        {attr.isRequired ? (
-                          <CheckCircle2 className="w-4 h-4 text-[#2489c5] inline-block" />
-                        ) : (
-                          <span className="text-slate-400">—</span>
-                        )}
-                      </td>
-                      <td className="px-4 py-2.5 text-center font-mono">{attr.displayOrder}</td>
-                      <td className="px-4 py-2.5 text-center">
-                        <button
-                          type="button"
-                          onClick={() => alert(`Edit attribute: ${attr.name}`)}
-                          className="px-2.5 py-1 rounded border border-[#d2d6de] bg-white text-slate-700 hover:bg-slate-50 text-xs font-semibold shadow-2xs transition cursor-pointer"
-                        >
-                          Edit
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            <div className="flex items-center gap-1.5">
+              <span>Show</span>
+              <select
+                value={attrPageSize}
+                onChange={(e) => {
+                  setAttrPageSize(Number(e.target.value));
+                  setAttrPage(1);
+                }}
+                className="border border-[#d2d6de] bg-white rounded px-2 py-1 text-xs text-slate-700 focus:outline-none focus:border-[#3c8dbc]"
+              >
+                <option value={15}>15</option>
+                <option value={20}>20</option>
+                <option value={50}>50</option>
+                <option value={100}>100</option>
+              </select>
+              <span>items</span>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <span>
+                {customAddressAttributes.length === 0
+                  ? 'No records'
+                  : `${(attrPage - 1) * attrPageSize + 1}-${Math.min(
+                      attrPage * attrPageSize,
+                      customAddressAttributes.length
+                    )} of ${customAddressAttributes.length} items`}
+              </span>
+              <button
+                type="button"
+                onClick={() => showToast('Refreshed address attributes.')}
+                className="border border-[#d2d6de] bg-white hover:bg-slate-50 text-slate-600 p-1.5 rounded shadow-2xs cursor-pointer"
+                title="Refresh"
+              >
+                <RotateCw className="w-3.5 h-3.5" />
+              </button>
             </div>
           </div>
-        )}
+        </div>
+
+        {/* Panel Footer matching media_1791263520305.png */}
+        <div className="px-5 py-3.5 bg-[#f8f9fa] border-t border-[#f4f4f4] rounded-b">
+          <button
+            type="button"
+            onClick={openNewAttrModal}
+            className="bg-[#2489c5] hover:bg-[#1f72a3] text-white text-xs font-semibold px-3 py-1.5 rounded inline-flex items-center gap-1.5 shadow-2xs transition cursor-pointer"
+          >
+            <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
+            <span>Add new</span>
+          </button>
+        </div>
       </div>
+
+      {/* ── ATTRIBUTE MODAL (ADD / EDIT) ── */}
+      {attrModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-md shadow-xl w-full max-w-lg border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+            <div className="px-5 py-3.5 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
+              <h3 className="text-sm font-semibold text-slate-800">
+                {editingAttrId ? 'Edit Address Attribute' : 'Add New Address Attribute'}
+              </h3>
+              <button
+                type="button"
+                onClick={() => setAttrModalOpen(false)}
+                className="text-slate-400 hover:text-slate-600 transition"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <form onSubmit={saveAttrModal} className="p-5 space-y-4 text-xs text-slate-700">
+              <div>
+                <label className="block font-medium text-slate-700 mb-1">
+                  Name <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={attrForm.name}
+                  onChange={(e) => setAttrForm({ ...attrForm, name: e.target.value })}
+                  placeholder="e.g. Landmark / Alternate phone"
+                  className="w-full border border-[#d2d6de] rounded px-3 py-2 text-xs focus:outline-none focus:border-[#3c8dbc]"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block font-medium text-slate-700 mb-1">Control type</label>
+                <select
+                  value={attrForm.controlType}
+                  onChange={(e) => setAttrForm({ ...attrForm, controlType: e.target.value })}
+                  className="w-full border border-[#d2d6de] rounded px-3 py-2 text-xs focus:outline-none focus:border-[#3c8dbc] bg-white"
+                >
+                  <option value="Drop-down list">Drop-down list</option>
+                  <option value="Radio list">Radio list</option>
+                  <option value="Checkboxes">Checkboxes</option>
+                  <option value="TextBox">TextBox</option>
+                  <option value="Multiline textbox">Multiline textbox</option>
+                  <option value="Datepicker">Datepicker</option>
+                  <option value="File upload">File upload</option>
+                  <option value="Color squares">Color squares</option>
+                  <option value="Read-only checkboxes">Read-only checkboxes</option>
+                </select>
+              </div>
+
+              <div className="flex items-center gap-2 pt-1">
+                <input
+                  type="checkbox"
+                  id="attrIsRequired"
+                  checked={attrForm.isRequired}
+                  onChange={(e) => setAttrForm({ ...attrForm, isRequired: e.target.checked })}
+                  className="w-4 h-4 text-[#3c8dbc] border-[#d2d6de] rounded focus:ring-0 cursor-pointer accent-[#3c8dbc]"
+                />
+                <label htmlFor="attrIsRequired" className="font-medium text-slate-700 cursor-pointer select-none">
+                  Required
+                </label>
+              </div>
+
+              <div>
+                <label className="block font-medium text-slate-700 mb-1">Display order</label>
+                <input
+                  type="number"
+                  value={attrForm.displayOrder}
+                  onChange={(e) =>
+                    setAttrForm({ ...attrForm, displayOrder: parseInt(e.target.value) || 0 })
+                  }
+                  className="w-24 border border-[#d2d6de] rounded px-3 py-2 text-xs focus:outline-none focus:border-[#3c8dbc]"
+                />
+              </div>
+
+              <div className="flex items-center justify-between pt-3 border-t border-slate-100">
+                <div>
+                  {editingAttrId && (
+                    <button
+                      type="button"
+                      onClick={() => deleteAttrModal(editingAttrId)}
+                      className="bg-[#dd4b39] hover:bg-[#c23321] text-white text-xs font-semibold px-3 py-1.5 rounded inline-flex items-center gap-1.5 transition cursor-pointer"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                      <span>Delete</span>
+                    </button>
+                  )}
+                </div>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setAttrModalOpen(false)}
+                    className="border border-[#d2d6de] bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold px-3 py-1.5 rounded transition cursor-pointer"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="bg-[#2489c5] hover:bg-[#1f72a3] text-white text-xs font-semibold px-3.5 py-1.5 rounded inline-flex items-center gap-1.5 shadow-2xs transition cursor-pointer"
+                  >
+                    <Save className="w-3.5 h-3.5" />
+                    <span>Save</span>
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       {/* ── FLOATING SCROLL TO TOP BUTTON (Matching media_1791261747223.png & media_1791261809473.png) ── */}
       <button
