@@ -13,6 +13,7 @@ import {
   UserCircle,
   AlignJustify,
   ArrowUp,
+  MapPin,
 } from 'lucide-react';
 
 function HelpTooltip({ text }: { text: string }) {
@@ -106,6 +107,15 @@ export default function CustomerSettingsPage() {
   const [countryEnabled, setCountryEnabled] = useState(true);
   const [countryRequired, setCountryRequired] = useState(true);
   const [defaultCountry, setDefaultCountry] = useState('');
+  const [stateProvinceEnabled, setStateProvinceEnabled] = useState(true);
+  const [phoneNumberEnabled, setPhoneNumberEnabled] = useState(true);
+  const [phoneNumberRequired, setPhoneNumberRequired] = useState(true);
+  const [faxNumberEnabled, setFaxNumberEnabled] = useState(true);
+  const [faxNumberRequired, setFaxNumberRequired] = useState(false);
+  const [addressAttributesOpen, setAddressAttributesOpen] = useState(true);
+  const [customAddressAttributes, setCustomAddressAttributes] = useState([
+    { id: '1', name: 'Landmark / Alternate Contact', controlType: 'TextBox', isRequired: false, displayOrder: 1 },
+  ]);
 
   // Toast & Saving
   const [saving, setSaving] = useState(false);
@@ -1287,6 +1297,177 @@ export default function CustomerSettingsPage() {
                   <ChevronDown className="w-3.5 h-3.5 text-slate-500 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
                 </div>
               </div>
+            </div>
+
+            {/* 'State/province' enabled (media_1791263446972.png) */}
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+              <label className="md:col-span-4 text-xs font-semibold text-slate-700 md:text-right flex items-center md:justify-end gap-1">
+                <span>&apos;State/province&apos; enabled</span>
+                <HelpTooltip text="Enable state/province selection." />
+              </label>
+              <div className="md:col-span-8 flex items-center">
+                <input
+                  type="checkbox"
+                  checked={stateProvinceEnabled}
+                  onChange={(e) => setStateProvinceEnabled(e.target.checked)}
+                  className="w-4 h-4 text-[#3c8dbc] border-[#d2d6de] rounded focus:ring-0 cursor-pointer accent-[#3c8dbc]"
+                />
+              </div>
+            </div>
+
+            {/* 'Phone number' enabled & required (media_1791263446972.png) */}
+            <div className="relative">
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                <label className="md:col-span-4 text-xs font-semibold text-slate-700 md:text-right flex items-center md:justify-end gap-1">
+                  <span>&apos;Phone number&apos; enabled</span>
+                  <HelpTooltip text="Enable customer phone number." />
+                </label>
+                <div className="md:col-span-8 flex items-center">
+                  <input
+                    type="checkbox"
+                    checked={phoneNumberEnabled}
+                    onChange={(e) => setPhoneNumberEnabled(e.target.checked)}
+                    className="w-4 h-4 text-[#3c8dbc] border-[#d2d6de] rounded focus:ring-0 cursor-pointer accent-[#3c8dbc]"
+                  />
+                </div>
+              </div>
+
+              {/* 'Phone number' required branch */}
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center mt-3">
+                <label className="md:col-span-4 text-xs font-semibold text-slate-700 md:text-right flex items-center md:justify-end gap-1">
+                  <span>&apos;Phone number&apos; required</span>
+                  <HelpTooltip text="Require customer phone number." />
+                </label>
+                <div className="md:col-span-8 flex items-center relative">
+                  <div className="absolute -top-4 left-2 w-px h-4 bg-slate-300 pointer-events-none" />
+                  <input
+                    type="checkbox"
+                    checked={phoneNumberRequired}
+                    onChange={(e) => setPhoneNumberRequired(e.target.checked)}
+                    className="w-4 h-4 text-[#3c8dbc] border-[#d2d6de] rounded focus:ring-0 cursor-pointer accent-[#3c8dbc]"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* 'Fax number' enabled & required (media_1791263446972.png) */}
+            <div className="relative">
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                <label className="md:col-span-4 text-xs font-semibold text-slate-700 md:text-right flex items-center md:justify-end gap-1">
+                  <span>&apos;Fax number&apos; enabled</span>
+                  <HelpTooltip text="Enable customer fax number." />
+                </label>
+                <div className="md:col-span-8 flex items-center">
+                  <input
+                    type="checkbox"
+                    checked={faxNumberEnabled}
+                    onChange={(e) => setFaxNumberEnabled(e.target.checked)}
+                    className="w-4 h-4 text-[#3c8dbc] border-[#d2d6de] rounded focus:ring-0 cursor-pointer accent-[#3c8dbc]"
+                  />
+                </div>
+              </div>
+
+              {/* 'Fax number' required branch */}
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center mt-3">
+                <label className="md:col-span-4 text-xs font-semibold text-slate-700 md:text-right flex items-center md:justify-end gap-1">
+                  <span>&apos;Fax number&apos; required</span>
+                  <HelpTooltip text="Require customer fax number." />
+                </label>
+                <div className="md:col-span-8 flex items-center relative">
+                  <div className="absolute -top-4 left-2 w-px h-4 bg-slate-300 pointer-events-none" />
+                  <input
+                    type="checkbox"
+                    checked={faxNumberRequired}
+                    onChange={(e) => setFaxNumberRequired(e.target.checked)}
+                    className="w-4 h-4 text-[#3c8dbc] border-[#d2d6de] rounded focus:ring-0 cursor-pointer accent-[#3c8dbc]"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* ── CARD 6: CUSTOM ADDRESS ATTRIBUTES (Matching bottom of media_1791263446972.png) ── */}
+      <div className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden border-t-3 border-t-[#00c0ef]">
+        <div
+          onClick={() => setAddressAttributesOpen(!addressAttributesOpen)}
+          className="px-4 py-2.5 bg-white border-b border-[#f4f4f4] flex items-center justify-between cursor-pointer select-none text-xs font-semibold text-slate-700 hover:bg-slate-50/70 transition"
+        >
+          <div className="flex items-center gap-2">
+            <MapPin className="w-4 h-4 text-slate-600" />
+            <span className="text-sm font-normal text-slate-800">Custom address attributes</span>
+          </div>
+          <button type="button" className="text-slate-400 hover:text-slate-600">
+            {addressAttributesOpen ? <Minus className="w-4 h-4 stroke-[2]" /> : <Plus className="w-4 h-4 stroke-[2]" />}
+          </button>
+        </div>
+
+        {addressAttributesOpen && (
+          <div className="p-5 space-y-4 text-xs text-slate-700">
+            <div className="flex justify-end">
+              <button
+                type="button"
+                onClick={() => {
+                  const name = prompt('Enter custom address attribute name:');
+                  if (name) {
+                    setCustomAddressAttributes([
+                      ...customAddressAttributes,
+                      {
+                        id: Date.now().toString(),
+                        name,
+                        controlType: 'TextBox',
+                        isRequired: false,
+                        displayOrder: customAddressAttributes.length + 1,
+                      },
+                    ]);
+                    showToast('Attribute added successfully.');
+                  }
+                }}
+                className="bg-[#2489c5] hover:bg-[#1f72a3] text-white text-xs font-semibold px-3 py-1.5 rounded flex items-center gap-1.5 shadow-2xs transition cursor-pointer"
+              >
+                <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
+                <span>Add new attribute</span>
+              </button>
+            </div>
+
+            <div className="border border-[#e5e7eb] rounded overflow-hidden">
+              <table className="w-full text-left text-xs text-slate-700">
+                <thead className="bg-[#f9fafb] text-[11px] uppercase tracking-wider text-slate-600 border-b border-[#e5e7eb] font-semibold">
+                  <tr>
+                    <th className="px-4 py-2.5 font-bold">Name</th>
+                    <th className="px-4 py-2.5 font-bold">Control type</th>
+                    <th className="px-4 py-2.5 font-bold text-center">Is required</th>
+                    <th className="px-4 py-2.5 font-bold text-center">Display order</th>
+                    <th className="px-4 py-2.5 font-bold text-center w-24">Edit</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-[#f4f4f4]">
+                  {customAddressAttributes.map((attr) => (
+                    <tr key={attr.id} className="hover:bg-slate-50 transition">
+                      <td className="px-4 py-2.5 font-medium text-slate-800">{attr.name}</td>
+                      <td className="px-4 py-2.5 text-slate-600">{attr.controlType}</td>
+                      <td className="px-4 py-2.5 text-center">
+                        {attr.isRequired ? (
+                          <CheckCircle2 className="w-4 h-4 text-[#2489c5] inline-block" />
+                        ) : (
+                          <span className="text-slate-400">—</span>
+                        )}
+                      </td>
+                      <td className="px-4 py-2.5 text-center font-mono">{attr.displayOrder}</td>
+                      <td className="px-4 py-2.5 text-center">
+                        <button
+                          type="button"
+                          onClick={() => alert(`Edit attribute: ${attr.name}`)}
+                          className="px-2.5 py-1 rounded border border-[#d2d6de] bg-white text-slate-700 hover:bg-slate-50 text-xs font-semibold shadow-2xs transition cursor-pointer"
+                        >
+                          Edit
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </div>
         )}
