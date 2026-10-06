@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { Award, Plus, Edit2, Trash2, ExternalLink, RefreshCw, X } from 'lucide-react';
 import { DataTable, Column } from '@/components/admin/DataTable';
 import { ConfirmDialog } from '@/components/admin/ConfirmDialog';
+import { ImageEditorField } from '@/components/admin/ImageEditorField';
 
 interface Brand {
   id: string;
@@ -264,6 +265,15 @@ export default function AdminBrandsPage() {
                   value={form.website}
                   onChange={(e) => setForm({ ...form, website: e.target.value })}
                   className="w-full rounded-lg bg-white border border-slate-300 px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600"
+                />
+              </div>
+
+              <div>
+                <label className="text-xs font-semibold text-slate-700 block mb-1">Brand Logo (Local Device or Google / Website URL)</label>
+                <ImageEditorField
+                  value={form.logoUrl}
+                  onChange={(url) => setForm({ ...form, logoUrl: url })}
+                  previewHeight="h-20"
                 />
               </div>
 

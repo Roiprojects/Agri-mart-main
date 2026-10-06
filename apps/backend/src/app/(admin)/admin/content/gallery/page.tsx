@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Image as ImageIcon, Plus, Edit2, Trash2, RefreshCw, X } from 'lucide-react';
 import { ConfirmDialog } from '@/components/admin/ConfirmDialog';
+import { ImageEditorField } from '@/components/admin/ImageEditorField';
 
 interface GalleryItem {
   id: string;
@@ -245,15 +246,12 @@ export default function AdminGalleryPage() {
 
               <div>
                 <label className="text-xs font-semibold text-slate-700 block mb-1">
-                  Image URL *
+                  Photo (Local Device or Google / Website URL) *
                 </label>
-                <input
-                  type="url"
-                  required
-                  placeholder="https://images.unsplash.com/..."
+                <ImageEditorField
                   value={form.image}
-                  onChange={(e) => setForm({ ...form, image: e.target.value })}
-                  className="w-full rounded-lg bg-white border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600"
+                  onChange={(url) => setForm({ ...form, image: url })}
+                  previewHeight="h-32"
                 />
               </div>
 

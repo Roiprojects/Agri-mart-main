@@ -21,6 +21,7 @@ import {
   X,
 } from 'lucide-react';
 import { AddressAttributeForm, AddressAttributeData } from './AddressAttributeForm';
+import { ImageEditorField } from '@/components/admin/ImageEditorField';
 
 function HelpTooltip({ text }: { text: string }) {
   return (
@@ -77,6 +78,9 @@ export default function CustomerSettingsPage() {
   const [customerNameFormat, setCustomerNameFormat] = useState('Show first name');
   const [phoneNumberValidationEnabled, setPhoneNumberValidationEnabled] = useState(false);
   const [allowCustomersUploadAvatars, setAllowCustomersUploadAvatars] = useState(false);
+  const [defaultCustomerAvatar, setDefaultCustomerAvatar] = useState(
+    'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=200&q=80'
+  );
   const [hideDownloadableProductsTab, setHideDownloadableProductsTab] = useState(false);
   const [hideBackInStockSubscriptionsTab, setHideBackInStockSubscriptionsTab] = useState(false);
   const [hideNewsletterBox, setHideNewsletterBox] = useState(false);
@@ -829,6 +833,23 @@ export default function CustomerSettingsPage() {
                 />
               </div>
             </div>
+
+            {/* Default customer avatar (shown when avatar upload enabled) */}
+            {allowCustomersUploadAvatars && (
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-start pt-1">
+                <label className="md:col-span-4 text-xs font-semibold text-slate-700 md:text-right flex items-center md:justify-end gap-1 pt-2">
+                  <span>Default customer avatar</span>
+                  <HelpTooltip text="Default avatar image displayed for customers who haven't uploaded an avatar. Supports local device and Google/website image URLs." />
+                </label>
+                <div className="md:col-span-8 max-w-md">
+                  <ImageEditorField
+                    value={defaultCustomerAvatar}
+                    onChange={(url) => setDefaultCustomerAvatar(url)}
+                    shape="circle"
+                  />
+                </div>
+              </div>
+            )}
 
             {/* Hide 'Downloadable products' tab */}
             <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">

@@ -43,6 +43,7 @@ import {
   Trash2,
   RotateCw,
 } from 'lucide-react';
+import { ImageEditorField } from '@/components/admin/ImageEditorField';
 
 export interface ManufacturerFormData {
   id?: string;
@@ -828,101 +829,15 @@ export function ManufacturerForm({
                 <span>Picture</span>
                 <Tooltip text="The picture of the manufacturer." />
               </div>
-              <div className="sm:col-span-9 space-y-3">
-                {/* Dropzone matching screenshot */}
-                <div
-                  onClick={() => fileInputRef.current?.click()}
-                  className="bg-[#f4f4f4] hover:bg-[#eaeaea] border border-[#d2d6de] rounded-xs p-6 text-center cursor-pointer transition select-none"
-                >
-                  <p className="text-xs text-slate-700 font-medium">
-                    Drop files here to upload /{' '}
-                    <span className="text-[#3c8dbc] hover:underline">Browse</span>
-                  </p>
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageFileChange}
-                    className="hidden"
-                  />
-                </div>
-
-                {/* Picture Preview */}
-                <div className="flex items-center gap-4 pt-1">
-                  {displayPicture ? (
-                    <div className="relative group w-24 h-24 rounded border border-slate-300 overflow-hidden bg-white shadow-2xs">
-                      <img
-                        src={displayPicture}
-                        alt="Manufacturer logo"
-                        className="w-full h-full object-contain p-1"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => {
-                          handleChange('picture', '');
-                          handleChange('logoUrl', '');
-                        }}
-                        className="absolute top-1 right-1 p-1 bg-red-600 text-white rounded-full opacity-80 hover:opacity-100 transition shadow-xs cursor-pointer"
-                        title="Remove image"
-                      >
-                        <X className="w-3 h-3" />
-                      </button>
-                    </div>
-                  ) : (
-                    /* Circular NO IMAGE placeholder matching screenshot */
-                    <div className="w-20 h-20 rounded-full border border-slate-300 bg-slate-100 flex flex-col items-center justify-center text-slate-400 select-none shadow-2xs">
-                      <Camera className="w-5 h-5 text-slate-300 mb-0.5" />
-                      <span className="text-[9px] font-bold tracking-wider text-slate-400 uppercase">
-                        No Image
-                      </span>
-                    </div>
-                  )}
-
-                  {/* Or enter Image URL */}
-                  <div>
-                    {!imageInputOpen ? (
-                      <button
-                        type="button"
-                        onClick={() => setImageInputOpen(true)}
-                        className="text-[11px] text-[#3c8dbc] hover:underline flex items-center gap-1 cursor-pointer"
-                      >
-                        <LinkIcon className="w-3 h-3" />
-                        <span>Or enter image URL</span>
-                      </button>
-                    ) : (
-                      <div className="flex items-center gap-2">
-                        <input
-                          type="text"
-                          placeholder="https://example.com/logo.jpg"
-                          value={imageUrlDraft}
-                          onChange={(e) => setImageUrlDraft(e.target.value)}
-                          className="text-xs px-2.5 py-1 rounded border border-[#d2d6de] w-64 bg-white"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => {
-                            if (imageUrlDraft.trim()) {
-                              handleChange('picture', imageUrlDraft.trim());
-                              handleChange('logoUrl', imageUrlDraft.trim());
-                              setImageInputOpen(false);
-                              setImageUrlDraft('');
-                            }
-                          }}
-                          className="px-2.5 py-1 bg-[#3c8dbc] text-white text-xs rounded hover:bg-[#367fa9]"
-                        >
-                          Apply
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setImageInputOpen(false)}
-                          className="text-xs text-slate-500 hover:text-slate-700"
-                        >
-                          Cancel
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                </div>
+              <div className="sm:col-span-9">
+                <ImageEditorField
+                  value={displayPicture || ''}
+                  onChange={(url) => {
+                    handleChange('picture', url);
+                    handleChange('logoUrl', url);
+                  }}
+                  previewHeight="h-28"
+                />
               </div>
             </div>
           </div>

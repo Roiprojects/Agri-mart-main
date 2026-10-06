@@ -154,6 +154,33 @@
       "displayOrder": 6,
       "createdAt": "2026-09-17T11:18:16.948Z",
       "updatedAt": "2026-09-17T11:18:16.948Z"
+    },
+    {
+      "id": "cat-1791272154805",
+      "name": "demo ",
+      "slug": "demo",
+      "description": "",
+      "image": "https://thumbs.dreamstime.com/b/autumn-nature-landscape-colorful-forest-autumn-nature-landscape-colorful-forest-morning-sunlight-131400332.jpg?w=992",
+      "parentId": "cat-seeds",
+      "displayOrder": 7,
+      "published": true,
+      "isPublished": true,
+      "restrictFromVendors": false,
+      "showOnHomePage": false,
+      "allowCustomersToSelectPageSize": true,
+      "pageSizeOptions": "6, 3, 9",
+      "priceRangeFiltering": true,
+      "manuallyPriceRange": true,
+      "priceFrom": 0,
+      "priceTo": 9999,
+      "customerRoles": "",
+      "limitedToStores": "",
+      "seName": "demo",
+      "metaTitle": "",
+      "metaKeywords": "",
+      "metaDescription": "",
+      "createdAt": "2026-10-06T07:35:54.805Z",
+      "updatedAt": "2026-10-06T07:35:54.805Z"
     }
   ],
   "products": [

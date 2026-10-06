@@ -41,6 +41,7 @@ import {
   Gift,
   Calendar,
 } from 'lucide-react';
+import { ImageEditorField } from '@/components/admin/ImageEditorField';
 
 export interface ProductFormData {
   id?: string;
@@ -1982,51 +1983,70 @@ export function ProductForm({
 
           {/* Pictures & Media Card */}
           <div className="bg-white rounded border border-[#d2d6de] shadow-2xs p-4 sm:p-6 space-y-4">
-            <h3 className="font-semibold text-slate-800 text-sm border-b pb-2 flex items-center gap-2">
-              <ImageIcon className="w-4 h-4 text-purple-600" /> Product Pictures &amp; Gallery
-            </h3>
-            <div className="flex gap-2">
-              <input
-                type="text"
-                value={newImageUrl}
-                onChange={(e) => setNewImageUrl(e.target.value)}
-                placeholder="Enter image URL..."
-                className="flex-1 text-xs px-2.5 py-1.5 border border-slate-300 rounded outline-none"
-              />
-              <button
-                type="button"
-                onClick={() => {
-                  if (newImageUrl.trim()) {
+            <div className="flex items-center justify-between border-b pb-2">
+              <h3 className="font-semibold text-slate-800 text-sm flex items-center gap-2">
+                <ImageIcon className="w-4 h-4 text-purple-600" /> Product Pictures &amp; Gallery
+              </h3>
+              <span className="text-xs text-slate-500 font-medium">
+                {formData.images?.length || 0} picture(s)
+              </span>
+            </div>
+
+            {/* Add New Picture with ImageEditorField */}
+            <div className="border border-dashed border-slate-300 rounded-lg p-3 bg-slate-50/60 space-y-2">
+              <span className="text-xs font-semibold text-slate-700 block">
+                Add New Picture (From Local Device or Google / Website URL):
+              </span>
+              <ImageEditorField
+                value=""
+                onChange={(url) => {
+                  if (url) {
                     setFormData((prev) => ({
                       ...prev,
-                      images: [...(prev.images || []), newImageUrl.trim()],
+                      images: [...(prev.images || []), url],
                     }));
-                    setNewImageUrl('');
                   }
                 }}
-                className="bg-[#2585be] text-white px-3 py-1.5 rounded text-xs font-semibold"
-              >
-                Add Picture
-              </button>
+              />
             </div>
-            <div className="flex flex-wrap gap-3 pt-2">
-              {formData.images?.map((img, i) => (
-                <div key={i} className="relative group w-20 h-20 rounded border border-slate-200 overflow-hidden bg-slate-50">
-                  <img src={img} alt="" className="w-full h-full object-cover" />
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setFormData((prev) => ({
-                        ...prev,
-                        images: prev.images?.filter((_, idx) => idx !== i),
-                      }))
-                    }
-                    className="absolute top-1 right-1 bg-red-600 text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition"
-                  >
-                    <X className="w-3 h-3" />
-                  </button>
+
+            {/* List of Existing Product Images with Edit / Crop / Change / Remove */}
+            <div className="space-y-2 pt-2">
+              <span className="text-xs font-semibold text-slate-700 block">
+                Current Gallery Pictures (Click Edit to crop, rotate, or adjust):
+              </span>
+              {(!formData.images || formData.images.length === 0) ? (
+                <p className="text-xs text-slate-400 italic">No pictures uploaded yet for this product.</p>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {formData.images.map((img, i) => (
+                    <div key={i} className="border border-slate-200 rounded-lg p-3 bg-white shadow-2xs space-y-2">
+                      <div className="flex items-center justify-between text-[11px] font-semibold text-slate-500">
+                        <span>Picture #{i + 1} {i === 0 && <strong className="text-[#3c8dbc]">(Main)</strong>}</span>
+                      </div>
+                      <ImageEditorField
+                        value={img}
+                        onChange={(newUrl) => {
+                          if (!newUrl) {
+                            // remove
+                            setFormData((prev) => ({
+                              ...prev,
+                              images: prev.images?.filter((_, idx) => idx !== i),
+                            }));
+                          } else {
+                            // update
+                            setFormData((prev) => ({
+                              ...prev,
+                              images: prev.images?.map((item, idx) => (idx === i ? newUrl : item)),
+                            }));
+                          }
+                        }}
+                        previewHeight="h-28"
+                      />
+                    </div>
+                  ))}
                 </div>
-              ))}
+              )}
             </div>
           </div>
 

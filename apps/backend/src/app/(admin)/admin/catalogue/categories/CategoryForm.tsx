@@ -43,6 +43,7 @@ import {
   Trash2,
   RotateCw,
 } from 'lucide-react';
+import { ImageEditorField } from '@/components/admin/ImageEditorField';
 
 export interface CategoryFormData {
   id?: string;
@@ -796,69 +797,12 @@ export function CategoryForm({
                 <span>Picture</span>
                 <Tooltip text="The category picture." />
               </div>
-              <div className="sm:col-span-9 space-y-3">
-                {/* Drag and Drop Zone matching screenshot */}
-                <div
-                  onClick={() => setImageInputOpen(!imageInputOpen)}
-                  className="border border-[#d2d6de] rounded bg-[#f5f5f5] hover:bg-[#ebebeb] p-6 text-center text-xs text-slate-600 cursor-pointer transition select-none"
-                >
-                  <span>Drop files here to upload / </span>
-                  <span className="text-[#3c8dbc] hover:underline font-semibold">Browse</span>
-                </div>
-
-                {/* Direct URL input if opened or user prefers */}
-                {imageInputOpen && (
-                  <div className="flex gap-2 animate-fadeIn">
-                    <input
-                      type="text"
-                      value={imageUrlDraft}
-                      onChange={(e) => setImageUrlDraft(e.target.value)}
-                      placeholder="Paste image URL (e.g. https://images.unsplash.com/...)"
-                      className="flex-1 text-xs px-2.5 py-1.5 rounded border border-[#d2d6de] outline-none focus:border-[#3c8dbc]"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => {
-                        if (imageUrlDraft.trim()) {
-                          handleChange('image', imageUrlDraft.trim());
-                          setImageUrlDraft('');
-                          setImageInputOpen(false);
-                        }
-                      }}
-                      className="bg-[#2585be] text-white text-xs px-3 py-1.5 rounded font-semibold hover:bg-[#1f72a3] cursor-pointer"
-                    >
-                      Apply
-                    </button>
-                  </div>
-                )}
-
-                {/* Thumbnail Preview Area matching NO IMAGE icon */}
-                <div className="pt-1">
-                  {formData.image ? (
-                    <div className="relative inline-block border border-slate-200 rounded p-1 bg-white shadow-2xs">
-                      <img
-                        src={formData.image}
-                        alt="Category preview"
-                        className="w-24 h-24 object-cover rounded"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => handleChange('image', '')}
-                        title="Remove image"
-                        className="absolute -top-1.5 -right-1.5 bg-red-600 text-white rounded-full p-1 shadow-sm hover:bg-red-700 transition"
-                      >
-                        <X className="w-3 h-3" />
-                      </button>
-                    </div>
-                  ) : (
-                    <div className="w-20 h-20 rounded-full border border-slate-300 bg-slate-100/60 flex flex-col items-center justify-center text-slate-400 select-none shadow-2xs">
-                      <Camera className="w-6 h-6 stroke-[1.5]" />
-                      <span className="text-[8px] font-bold uppercase tracking-wider text-slate-400 mt-0.5">
-                        NO IMAGE
-                      </span>
-                    </div>
-                  )}
-                </div>
+              <div className="sm:col-span-9">
+                <ImageEditorField
+                  value={formData.image || ''}
+                  onChange={(url) => handleChange('image', url)}
+                  previewHeight="h-28"
+                />
               </div>
             </div>
 

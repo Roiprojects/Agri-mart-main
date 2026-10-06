@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, Save, AlertCircle } from 'lucide-react';
 import { FormSection } from '@/components/admin/FormSection';
+import { ImageEditorField } from '@/components/admin/ImageEditorField';
 
 export default function NewBlogPostPage() {
   const router = useRouter();
@@ -142,13 +143,13 @@ export default function NewBlogPostPage() {
           </div>
 
           <div>
-            <label className="text-xs font-semibold text-slate-700 block mb-1">Cover Image URL</label>
-            <input
-              type="url"
-              placeholder="https://images.unsplash.com/..."
+            <label className="text-xs font-semibold text-slate-700 block mb-1">
+              Cover Image (Local Device or Google / Website URL)
+            </label>
+            <ImageEditorField
               value={form.coverImageUrl}
-              onChange={(e) => setForm({ ...form, coverImageUrl: e.target.value })}
-              className="w-full rounded-lg bg-white border border-slate-300 px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600"
+              onChange={(url) => setForm({ ...form, coverImageUrl: url })}
+              previewHeight="h-36"
             />
           </div>
 
