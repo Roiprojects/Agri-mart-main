@@ -67,11 +67,26 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
     ? (product.targetCrops as string).split(',').map((c) => c.trim()).filter(Boolean)
     : [];
 
-  const productImages: string[] =
-    product.images && product.images.length > 0
-      ? product.images
-      : [(product as any).image || 'https://images.unsplash.com/photo-1589923188900-85dae523342b?auto=format&fit=crop&w=600&q=80'];
-  const primaryImage = productImages[0];
+  // Resolve image list with safe fallbacks
+  const rawImages: string[] = [];
+  if (Array.isArray(product.images) && product.images.length > 0) {
+    product.images.forEach((img) => {
+      if (img && typeof img === 'string') rawImages.push(img);
+    });
+  }
+  if (rawImages.length === 0 && (product as any).image) {
+    rawImages.push((product as any).image);
+  }
+  if (rawImages.length === 0 && Array.isArray((product as any).media)) {
+    (product as any).media.forEach((m: any) => {
+      if (m?.url) rawImages.push(m.url);
+    });
+  }
+
+  const defaultImage =
+    'https://images.unsplash.com/photo-1589923188900-85dae523342b?auto=format&fit=crop&w=800&q=80';
+  const productImages = rawImages.length > 0 ? rawImages : [defaultImage];
+  const primaryImage = productImages[0] || defaultImage;
   const secondaryImage = productImages[1] || primaryImage;
 
   return (
@@ -79,7 +94,7 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
       {/* Product Image */}
       <Link
         href={`/products/${product.slug}`}
-        className="relative aspect-4/3 w-full bg-agri-cream/60 overflow-hidden block"
+        className="relative aspect-[4/3] min-h-[190px] sm:min-h-[210px] w-full bg-slate-100 overflow-hidden block"
       >
         <Image
           src={primaryImage}
@@ -87,7 +102,7 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
           fill
           unoptimized
           className={`object-cover img-zoom ${productImages.length > 1 ? 'group-hover:opacity-0 transition-opacity duration-300' : ''}`}
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
         />
 
         {productImages.length > 1 && (
@@ -97,7 +112,7 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
             fill
             unoptimized
             className="object-cover img-zoom absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
         )}
 

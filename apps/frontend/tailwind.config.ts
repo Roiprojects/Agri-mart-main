@@ -37,6 +37,10 @@ export default {
         '2xl': '1rem',
         '3xl': '1.5rem',
       },
+      aspectRatio: {
+        '4/3': '4 / 3',
+        '16/10': '16 / 10',
+      },
       keyframes: {
         fadeIn: {
           '0%': { opacity: '0' },
