@@ -18,6 +18,7 @@ import {
   Trash2,
   X,
 } from 'lucide-react';
+import { AddressAttributeForm, AddressAttributeData } from './AddressAttributeForm';
 
 function HelpTooltip({ text }: { text: string }) {
   return (
@@ -115,79 +116,12 @@ export default function CustomerSettingsPage() {
   const [phoneNumberRequired, setPhoneNumberRequired] = useState(true);
   const [faxNumberEnabled, setFaxNumberEnabled] = useState(true);
   const [faxNumberRequired, setFaxNumberRequired] = useState(false);
-  // Custom address attributes state (media_1791263520305.png)
-  const [customAddressAttributes, setCustomAddressAttributes] = useState<
-    Array<{ id: string; name: string; controlType: string; isRequired: boolean; displayOrder: number }>
-  >([]);
+  // Custom address attributes state (media_1791263520305.png & media_1791266119175.png)
+  const [customAddressAttributes, setCustomAddressAttributes] = useState<AddressAttributeData[]>([]);
   const [attrPageSize, setAttrPageSize] = useState(15);
   const [attrPage, setAttrPage] = useState(1);
-  const [attrModalOpen, setAttrModalOpen] = useState(false);
-  const [editingAttrId, setEditingAttrId] = useState<string | null>(null);
-  const [attrForm, setAttrForm] = useState({
-    name: '',
-    controlType: 'Drop-down list',
-    isRequired: false,
-    displayOrder: 1,
-  });
-
-  const openNewAttrModal = () => {
-    setEditingAttrId(null);
-    setAttrForm({
-      name: '',
-      controlType: 'Drop-down list',
-      isRequired: false,
-      displayOrder: customAddressAttributes.length + 1,
-    });
-    setAttrModalOpen(true);
-  };
-
-  const openEditAttrModal = (attr: {
-    id: string;
-    name: string;
-    controlType: string;
-    isRequired: boolean;
-    displayOrder: number;
-  }) => {
-    setEditingAttrId(attr.id);
-    setAttrForm({
-      name: attr.name,
-      controlType: attr.controlType,
-      isRequired: attr.isRequired,
-      displayOrder: attr.displayOrder,
-    });
-    setAttrModalOpen(true);
-  };
-
-  const saveAttrModal = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!attrForm.name.trim()) {
-      showToast('Please enter an attribute name.', 'error');
-      return;
-    }
-
-    if (editingAttrId) {
-      setCustomAddressAttributes((prev) =>
-        prev.map((a) => (a.id === editingAttrId ? { ...a, ...attrForm } : a))
-      );
-      showToast('Address attribute updated successfully.');
-    } else {
-      const newAttr = {
-        id: Date.now().toString(),
-        ...attrForm,
-      };
-      setCustomAddressAttributes((prev) => [...prev, newAttr]);
-      showToast('Address attribute added successfully.');
-    }
-    setAttrModalOpen(false);
-  };
-
-  const deleteAttrModal = (id: string) => {
-    if (confirm('Are you sure you want to delete this attribute?')) {
-      setCustomAddressAttributes((prev) => prev.filter((a) => a.id !== id));
-      showToast('Address attribute deleted.');
-      setAttrModalOpen(false);
-    }
-  };
+  const [viewMode, setViewMode] = useState<'list' | 'add-attribute' | 'edit-attribute'>('list');
+  const [selectedAttribute, setSelectedAttribute] = useState<AddressAttributeData | null>(null);
 
   // Toast & Saving
   const [saving, setSaving] = useState(false);
@@ -209,6 +143,58 @@ export default function CustomerSettingsPage() {
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
+
+  // Render Add / Edit address attribute view matching media_1791266119175.png
+  if (viewMode === 'add-attribute' || viewMode === 'edit-attribute') {
+    return (
+      <AddressAttributeForm
+        isEdit={viewMode === 'edit-attribute'}
+        initialValues={
+          selectedAttribute || {
+            displayOrder: customAddressAttributes.length + 1,
+            controlType: 'Drop-down list',
+            isRequired: false,
+          }
+        }
+        onBack={() => setViewMode('list')}
+        onSave={(data, continueEditing) => {
+          if (viewMode === 'edit-attribute' && selectedAttribute?.id) {
+            setCustomAddressAttributes((prev) =>
+              prev.map((a) => (a.id === selectedAttribute.id ? { ...a, ...data } : a))
+            );
+            showToast('The address attribute has been updated successfully.');
+            if (continueEditing) {
+              setSelectedAttribute(data);
+            } else {
+              setViewMode('list');
+            }
+          } else {
+            const newAttr: AddressAttributeData = {
+              id: data.id || Date.now().toString(),
+              name: data.name,
+              controlType: data.controlType,
+              isRequired: data.isRequired,
+              displayOrder: data.displayOrder,
+              values: data.values || [],
+            };
+            setCustomAddressAttributes((prev) => [...prev, newAttr]);
+            showToast('The new address attribute has been added successfully.');
+            if (continueEditing) {
+              setSelectedAttribute(newAttr);
+              setViewMode('edit-attribute');
+            } else {
+              setViewMode('list');
+            }
+          }
+        }}
+        onDelete={(id) => {
+          setCustomAddressAttributes((prev) => prev.filter((a) => a.id !== id));
+          showToast('The address attribute has been deleted.');
+          setViewMode('list');
+        }}
+      />
+    );
+  }
 
   return (
     <div className="space-y-4 max-w-full text-slate-800 pb-20 font-sans relative">
@@ -1513,7 +1499,10 @@ export default function CustomerSettingsPage() {
                         <td className="px-4 py-2.5 text-center">
                           <button
                             type="button"
-                            onClick={() => openEditAttrModal(attr)}
+                            onClick={() => {
+                              setSelectedAttribute(attr);
+                              setViewMode('edit-attribute');
+                            }}
                             className="px-2.5 py-1 rounded border border-[#d2d6de] bg-white text-slate-700 hover:bg-slate-50 text-xs font-semibold shadow-2xs transition cursor-pointer"
                           >
                             Edit
@@ -1593,7 +1582,10 @@ export default function CustomerSettingsPage() {
         <div className="px-5 py-3.5 bg-[#f8f9fa] border-t border-[#f4f4f4] rounded-b">
           <button
             type="button"
-            onClick={openNewAttrModal}
+            onClick={() => {
+              setSelectedAttribute(null);
+              setViewMode('add-attribute');
+            }}
             className="bg-[#2489c5] hover:bg-[#1f72a3] text-white text-xs font-semibold px-3 py-1.5 rounded inline-flex items-center gap-1.5 shadow-2xs transition cursor-pointer"
           >
             <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
@@ -1601,117 +1593,6 @@ export default function CustomerSettingsPage() {
           </button>
         </div>
       </div>
-
-      {/* ── ATTRIBUTE MODAL (ADD / EDIT) ── */}
-      {attrModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-md shadow-xl w-full max-w-lg border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
-            <div className="px-5 py-3.5 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
-              <h3 className="text-sm font-semibold text-slate-800">
-                {editingAttrId ? 'Edit Address Attribute' : 'Add New Address Attribute'}
-              </h3>
-              <button
-                type="button"
-                onClick={() => setAttrModalOpen(false)}
-                className="text-slate-400 hover:text-slate-600 transition"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            <form onSubmit={saveAttrModal} className="p-5 space-y-4 text-xs text-slate-700">
-              <div>
-                <label className="block font-medium text-slate-700 mb-1">
-                  Name <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  value={attrForm.name}
-                  onChange={(e) => setAttrForm({ ...attrForm, name: e.target.value })}
-                  placeholder="e.g. Landmark / Alternate phone"
-                  className="w-full border border-[#d2d6de] rounded px-3 py-2 text-xs focus:outline-none focus:border-[#3c8dbc]"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block font-medium text-slate-700 mb-1">Control type</label>
-                <select
-                  value={attrForm.controlType}
-                  onChange={(e) => setAttrForm({ ...attrForm, controlType: e.target.value })}
-                  className="w-full border border-[#d2d6de] rounded px-3 py-2 text-xs focus:outline-none focus:border-[#3c8dbc] bg-white"
-                >
-                  <option value="Drop-down list">Drop-down list</option>
-                  <option value="Radio list">Radio list</option>
-                  <option value="Checkboxes">Checkboxes</option>
-                  <option value="TextBox">TextBox</option>
-                  <option value="Multiline textbox">Multiline textbox</option>
-                  <option value="Datepicker">Datepicker</option>
-                  <option value="File upload">File upload</option>
-                  <option value="Color squares">Color squares</option>
-                  <option value="Read-only checkboxes">Read-only checkboxes</option>
-                </select>
-              </div>
-
-              <div className="flex items-center gap-2 pt-1">
-                <input
-                  type="checkbox"
-                  id="attrIsRequired"
-                  checked={attrForm.isRequired}
-                  onChange={(e) => setAttrForm({ ...attrForm, isRequired: e.target.checked })}
-                  className="w-4 h-4 text-[#3c8dbc] border-[#d2d6de] rounded focus:ring-0 cursor-pointer accent-[#3c8dbc]"
-                />
-                <label htmlFor="attrIsRequired" className="font-medium text-slate-700 cursor-pointer select-none">
-                  Required
-                </label>
-              </div>
-
-              <div>
-                <label className="block font-medium text-slate-700 mb-1">Display order</label>
-                <input
-                  type="number"
-                  value={attrForm.displayOrder}
-                  onChange={(e) =>
-                    setAttrForm({ ...attrForm, displayOrder: parseInt(e.target.value) || 0 })
-                  }
-                  className="w-24 border border-[#d2d6de] rounded px-3 py-2 text-xs focus:outline-none focus:border-[#3c8dbc]"
-                />
-              </div>
-
-              <div className="flex items-center justify-between pt-3 border-t border-slate-100">
-                <div>
-                  {editingAttrId && (
-                    <button
-                      type="button"
-                      onClick={() => deleteAttrModal(editingAttrId)}
-                      className="bg-[#dd4b39] hover:bg-[#c23321] text-white text-xs font-semibold px-3 py-1.5 rounded inline-flex items-center gap-1.5 transition cursor-pointer"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                      <span>Delete</span>
-                    </button>
-                  )}
-                </div>
-                <div className="flex items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setAttrModalOpen(false)}
-                    className="border border-[#d2d6de] bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold px-3 py-1.5 rounded transition cursor-pointer"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    className="bg-[#2489c5] hover:bg-[#1f72a3] text-white text-xs font-semibold px-3.5 py-1.5 rounded inline-flex items-center gap-1.5 shadow-2xs transition cursor-pointer"
-                  >
-                    <Save className="w-3.5 h-3.5" />
-                    <span>Save</span>
-                  </button>
-                </div>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
 
       {/* ── FLOATING SCROLL TO TOP BUTTON (Matching media_1791261747223.png & media_1791261809473.png) ── */}
       <button
