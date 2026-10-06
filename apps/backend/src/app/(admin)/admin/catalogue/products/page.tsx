@@ -136,9 +136,9 @@ export default function AdminProductsPage() {
     try {
       setLoading(true);
       const [prodRes, catRes, brandRes] = await Promise.all([
-        fetch('/api/admin/catalogue/products').then((r) => r.json()),
-        fetch('/api/admin/catalogue/categories').then((r) => r.json()),
-        fetch('/api/admin/brands').then((r) => r.json()),
+        fetch('/api/admin/catalogue/products', { cache: 'no-store' }).then((r) => r.json()),
+        fetch('/api/admin/catalogue/categories', { cache: 'no-store' }).then((r) => r.json()),
+        fetch('/api/admin/brands', { cache: 'no-store' }).then((r) => r.json()),
       ]);
 
       let loadedProducts: Product[] = [];
@@ -1146,17 +1146,31 @@ export default function AdminProductsPage() {
 
                       {/* Picture */}
                       <td className="py-2.5 px-3 text-center">
-                        {thumb ? (
-                          <img
-                            src={thumb}
-                            alt={p.name}
-                            className="w-12 h-12 rounded object-cover border border-slate-200 bg-white mx-auto shadow-2xs"
-                          />
-                        ) : (
-                          <div className="w-12 h-12 rounded bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-400 mx-auto">
-                            <Package className="w-5 h-5" />
+                        <Link
+                          href={`/admin/catalogue/products/${p.id}/edit`}
+                          className="relative group/pic inline-block"
+                          title="Click to view & edit pictures"
+                        >
+                          {thumb ? (
+                            <img
+                              src={thumb}
+                              alt={p.name}
+                              className="w-12 h-12 rounded object-cover border border-slate-200 bg-white mx-auto shadow-2xs group-hover/pic:opacity-80 transition"
+                            />
+                          ) : (
+                            <div className="w-12 h-12 rounded bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-400 mx-auto">
+                              <Package className="w-5 h-5" />
+                            </div>
+                          )}
+                          <div className="absolute inset-0 bg-black/40 rounded opacity-0 group-hover/pic:opacity-100 flex items-center justify-center text-white text-[9px] font-bold transition">
+                            Edit
                           </div>
-                        )}
+                          {p.images && p.images.length > 1 && (
+                            <span className="absolute -bottom-1 -right-1 bg-purple-600 text-white text-[9px] font-extrabold px-1.5 py-0.2 rounded-full shadow">
+                              {p.images.length}
+                            </span>
+                          )}
+                        </Link>
                       </td>
 
                       {/* Product Name */}

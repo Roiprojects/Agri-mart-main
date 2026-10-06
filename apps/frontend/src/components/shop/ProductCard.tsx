@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { ProductType } from '@/lib/seed-data';
-import { Star, ShoppingCart, CheckCircle2, Lock } from 'lucide-react';
+import { Star, ShoppingCart, CheckCircle2, Lock, Camera } from 'lucide-react';
 import { Badge } from '@/components/ui/Badge';
 import { useAuth } from '@/lib/auth-client';
 
@@ -67,10 +67,12 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
     ? (product.targetCrops as string).split(',').map((c) => c.trim()).filter(Boolean)
     : [];
 
-  const productImage =
-    (product.images && product.images[0]) ||
-    (product as any).image ||
-    'https://images.unsplash.com/photo-1589923188900-85dae523342b?auto=format&fit=crop&w=600&q=80';
+  const productImages: string[] =
+    product.images && product.images.length > 0
+      ? product.images
+      : [(product as any).image || 'https://images.unsplash.com/photo-1589923188900-85dae523342b?auto=format&fit=crop&w=600&q=80'];
+  const primaryImage = productImages[0];
+  const secondaryImage = productImages[1] || primaryImage;
 
   return (
     <div className="bg-white rounded-2xl border border-agri-border overflow-hidden shadow-subtle card-hover flex flex-col group relative">
@@ -80,13 +82,24 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
         className="relative aspect-4/3 w-full bg-agri-cream/60 overflow-hidden block"
       >
         <Image
-          src={productImage}
+          src={primaryImage}
           alt={product.name}
           fill
           unoptimized
-          className="object-cover img-zoom"
+          className={`object-cover img-zoom ${productImages.length > 1 ? 'group-hover:opacity-0 transition-opacity duration-300' : ''}`}
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
         />
+
+        {productImages.length > 1 && (
+          <Image
+            src={secondaryImage}
+            alt={`${product.name} alternate view`}
+            fill
+            unoptimized
+            className="object-cover img-zoom absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+          />
+        )}
 
         {/* Floating Badges */}
         <div className="absolute top-2.5 left-2.5 flex flex-col gap-1.5 z-10">
@@ -101,6 +114,14 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
             </Badge>
           )}
         </div>
+
+        {/* Multiple Photos Pill */}
+        {productImages.length > 1 && (
+          <div className="absolute bottom-2 right-2 bg-slate-900/60 backdrop-blur-xs text-white text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1 z-10">
+            <Camera className="w-3 h-3 text-agri-yellow" />
+            <span>{productImages.length}</span>
+          </div>
+        )}
       </Link>
 
       {/* Content */}

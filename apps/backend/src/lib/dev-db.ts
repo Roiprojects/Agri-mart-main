@@ -2027,6 +2027,17 @@ class PersistentDevDatabase {
     }
   }
 
+  reload(): void {
+    if (fs.existsSync(DATA_FILE_PATH)) {
+      try {
+        const raw = fs.readFileSync(DATA_FILE_PATH, 'utf-8');
+        this.data = JSON.parse(raw);
+      } catch (err) {
+        console.error('[DEV_DB] Error reloading dev database file', err);
+      }
+    }
+  }
+
   // Brands
   getBrands(): DbBrand[] {
     return this.data.brands;
@@ -2145,12 +2156,43 @@ class PersistentDevDatabase {
     const brand = this.data.brands.find((b) => b.id === product.brandId);
     const category = this.data.categories.find((c) => c.id === product.categoryId);
     const variants = this.data.variants.filter((v) => v.productId === product.id);
-    const media = this.data.media.filter((m) => m.productId === product.id).sort((a, b) => a.displayOrder - b.displayOrder);
+    let media = this.data.media.filter((m) => m.productId === product.id).sort((a, b) => a.displayOrder - b.displayOrder);
     const specifications = this.data.specifications.filter((s) => s.productId === product.id).sort((a, b) => a.displayOrder - b.displayOrder);
     const reviews = this.data.reviews.filter((r) => r.productId === product.id && r.status === 'APPROVED');
     const warehouseStocks = this.data.warehouseStocks.filter((ws) => ws.productId === product.id);
 
-    const images = media.map((m) => m.url);
+    let images = media.map((m) => m.url);
+
+    // If media is empty but product has embedded images, use them
+    if (images.length === 0 && Array.isArray((product as any).images) && (product as any).images.length > 0) {
+      images = (product as any).images;
+      media = images.map((url: string, idx: number) => ({
+        id: `med-${product.id}-${idx + 1}`,
+        productId: product.id,
+        url,
+        altText: `${product.name} - Picture ${idx + 1}`,
+        type: 'IMAGE',
+        isPrimary: idx === 0,
+        displayOrder: idx + 1,
+        createdAt: product.createdAt || new Date().toISOString(),
+      }));
+    }
+
+    // Default fallback if still empty
+    if (images.length === 0) {
+      const fallbackUrl = 'https://images.unsplash.com/photo-1589923188900-85dae523342b?auto=format&fit=crop&w=800&q=80';
+      images = [fallbackUrl];
+      media = [{
+        id: `med-${product.id}-default`,
+        productId: product.id,
+        url: fallbackUrl,
+        altText: product.name,
+        type: 'IMAGE',
+        isPrimary: true,
+        displayOrder: 1,
+        createdAt: new Date().toISOString(),
+      }];
+    }
 
     return {
       ...product,
@@ -2158,7 +2200,7 @@ class PersistentDevDatabase {
       category,
       variants,
       media,
-      images: images.length > 0 ? images : ['https://images.unsplash.com/photo-1589923188900-85dae523342b?auto=format&fit=crop&w=800&q=80'],
+      images,
       specifications,
       reviews,
       warehouseStocks,
@@ -2186,6 +2228,25 @@ class PersistentDevDatabase {
         if (pVars.length > 0) {
           pVars[0].stockQuantity = Number((product as any).stockQuantity) || 0;
         }
+      }
+
+      // Synchronize images with media collection
+      if (Array.isArray((product as any).images)) {
+        this.data.media = this.data.media.filter((m) => m.productId !== updated.id);
+        (product as any).images.forEach((imgUrl: string, idx: number) => {
+          if (imgUrl && typeof imgUrl === 'string' && imgUrl.trim()) {
+            this.data.media.push({
+              id: `med-${updated.id}-${idx + 1}-${Date.now()}`,
+              productId: updated.id,
+              url: imgUrl.trim(),
+              altText: `${updated.name} - Picture ${idx + 1}`,
+              type: 'IMAGE',
+              isPrimary: idx === 0,
+              displayOrder: idx + 1,
+              createdAt: now,
+            });
+          }
+        });
       }
 
       this.save();
@@ -2288,9 +2349,53 @@ class PersistentDevDatabase {
         reorderThreshold: 5,
       });
 
+      // Synchronize images with media collection
+      if (Array.isArray((product as any).images)) {
+        (product as any).images.forEach((imgUrl: string, idx: number) => {
+          if (imgUrl && typeof imgUrl === 'string' && imgUrl.trim()) {
+            this.data.media.push({
+              id: `med-${created.id}-${idx + 1}-${Date.now()}`,
+              productId: created.id,
+              url: imgUrl.trim(),
+              altText: `${created.name} - Picture ${idx + 1}`,
+              type: 'IMAGE',
+              isPrimary: idx === 0,
+              displayOrder: idx + 1,
+              createdAt: now,
+            });
+          }
+        });
+      }
+
       this.save();
       return created;
     }
+  }
+
+  updateProductMedia(productId: string, imageUrls: string[]): DbMedia[] {
+    const product = this.getProductById(productId);
+    if (!product) return [];
+    const now = new Date().toISOString();
+    this.data.media = this.data.media.filter((m) => m.productId !== productId);
+    const newMedia: DbMedia[] = [];
+    imageUrls.forEach((url, idx) => {
+      if (url && typeof url === 'string' && url.trim()) {
+        const item: DbMedia = {
+          id: `med-${productId}-${idx + 1}-${Date.now()}`,
+          productId,
+          url: url.trim(),
+          altText: `${product.name} - Picture ${idx + 1}`,
+          type: 'IMAGE',
+          isPrimary: idx === 0,
+          displayOrder: idx + 1,
+          createdAt: now,
+        };
+        this.data.media.push(item);
+        newMedia.push(item);
+      }
+    });
+    this.save();
+    return newMedia;
   }
 
   deleteProduct(id: string): boolean {
@@ -5305,5 +5410,5 @@ class PersistentDevDatabase {
 
 // Global singleton instance for hot reload persistence
 const globalForDevDb = global as unknown as { devDb: PersistentDevDatabase };
-export const devDb = globalForDevDb.devDb || new PersistentDevDatabase();
-if (process.env.NODE_ENV !== 'production') globalForDevDb.devDb = devDb;
+export const devDb = new PersistentDevDatabase();
+globalForDevDb.devDb = devDb;

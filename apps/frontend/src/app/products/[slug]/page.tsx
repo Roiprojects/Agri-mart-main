@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import ProductCard from '@/components/shop/ProductCard';
 import ProductDetailClient from '@/components/shop/ProductDetailClient';
+import ProductImageGallery from '@/components/shop/ProductImageGallery';
 
 interface ProductDetailPageProps {
   params: Promise<{ slug: string }>;
@@ -212,30 +213,13 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
 
       {/* Main Info Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
-        {/* Gallery */}
-        <div className="lg:col-span-6 space-y-4">
-          <div className="relative aspect-square w-full bg-slate-100 rounded-3xl overflow-hidden border border-slate-200 shadow-sm">
-            <Image
-              src={mainImage}
-              alt={product.name}
-              fill
-              className="object-cover"
-              priority
-            />
-          </div>
-
-          {images.length > 1 && (
-            <div className="grid grid-cols-4 gap-3">
-              {images.map((img: string, idx: number) => (
-                <div
-                  key={idx}
-                  className="relative aspect-square rounded-2xl overflow-hidden border border-slate-200 bg-slate-50"
-                >
-                  <Image src={img} alt="" fill className="object-cover" />
-                </div>
-              ))}
-            </div>
-          )}
+        {/* Interactive Gallery */}
+        <div className="lg:col-span-6 space-y-6">
+          <ProductImageGallery
+            images={images}
+            productName={product.name}
+            badge={product.isBestSeller ? 'Best Seller' : product.isFeatured ? 'Featured Input' : undefined}
+          />
 
           {/* Description Box */}
           <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-3">
