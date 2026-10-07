@@ -16462,5 +16462,36 @@
       "limitedToStores": "All stores",
       "body": "Dear %Customer.FullName%,\n\nCertified drone pilot %Service.TechnicianName% has been assigned for your field spraying request on %Service.ScheduledDate%."
     }
-  ]
+  ],
+  "orderSettings": {
+    "checkoutDisabled": false,
+    "anonymousCheckoutAllowed": true,
+    "useOnePageCheckout": true,
+    "orderTotalsOnPaymentInfoTab": false,
+    "termsOfServiceShoppingCartPage": true,
+    "termsOfServiceConfirmOrderPage": false,
+    "disableBillingAddressStep": false,
+    "disableOrderCompletedPage": false,
+    "displayPickupInStoreOnShippingMethodPage": false,
+    "minOrderSubtotalAmount": 0,
+    "minOrderSubtotalAmountCurrency": "USD",
+    "calculateMinOrderSubtotalIncludingTax": false,
+    "minOrderTotalAmount": 0,
+    "autoUpdateOrderTotals": false,
+    "orderId": 77,
+    "orderNumberMask": "{ID}",
+    "isReOrderAllowed": true,
+    "completeOrderWhenDelivered": true,
+    "exportOrdersWithProducts": true,
+    "allowAdminsToBuyCallForPriceProducts": true,
+    "allowCustomersToCancelOrders": true,
+    "showProductThumbnailInOrderDetailsPage": true,
+    "attachPdfInvoiceOrderPlaced": false,
+    "attachPdfInvoiceOrderPaid": false,
+    "attachPdfInvoiceOrderProcessing": false,
+    "attachPdfInvoiceOrderCompleted": false,
+    "pdfInvoiceLogo": "https://images.unsplash.com/photo-1595246140625-573b715d11dc?auto=format&fit=crop&w=400&q=80",
+    "isAdvanced": true,
+    "updatedAt": "2026-10-07T03:52:45.052Z"
+  }
 }
