@@ -53,6 +53,7 @@ import FilterYmmSettingsPage from '../filter-ymm/page';
 import RewardPointsSettingsPage from '../reward-points/page';
 import GdprSettingsPage from '../gdpr/page';
 import VendorSettingsPage from '../vendor/page';
+import BlogSettingsPage from '../blog/page';
 
 export default function ConfigurationSectionPage({
   params,
@@ -91,6 +92,9 @@ export default function ConfigurationSectionPage({
   }
   if (section === 'vendor') {
     return <VendorSettingsPage />;
+  }
+  if (section === 'blog') {
+    return <BlogSettingsPage />;
   }
 
   const info = sectionTitles[section] || {

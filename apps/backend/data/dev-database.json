@@ -16753,5 +16753,16 @@
     "numberOfVendorsToDisplay": 0,
     "vendorAttributes": [],
     "isAdvanced": true
+  },
+  "blogSettings": {
+    "blogEnabled": true,
+    "postsPageSize": 10,
+    "numberOfTagsCloud": 15,
+    "displayBlogRssFeedLink": false,
+    "allowGuestsToLeaveComments": true,
+    "blogCommentsMustBeApproved": false,
+    "notifyAboutNewBlogComments": false,
+    "blogCommentsPerStore": false,
+    "isAdvanced": true
   }
 }
