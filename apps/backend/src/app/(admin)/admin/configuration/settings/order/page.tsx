@@ -38,7 +38,7 @@ interface ReturnRequestItem {
 }
 
 export default function OrderSettingsPage() {
-  const [isAdvanced, setIsAdvanced] = useState(true);
+  const [isAdvanced, setIsAdvanced] = useState(false);
 
   // Collapsible cards state
   const [checkoutOpen, setCheckoutOpen] = useState(true);
@@ -48,7 +48,7 @@ export default function OrderSettingsPage() {
   const [giftCardsOpen, setGiftCardsOpen] = useState(true);
   const [returnRequestOpen, setReturnRequestOpen] = useState(true);
 
-  // 1. Checkout fields (media_1791344861078.png)
+  // 1. Checkout fields (media_1791344861078.png & media_1791346211881.png)
   const [checkoutDisabled, setCheckoutDisabled] = useState(false);
   const [anonymousCheckoutAllowed, setAnonymousCheckoutAllowed] = useState(true);
   const [useOnePageCheckout, setUseOnePageCheckout] = useState(true);
@@ -60,14 +60,14 @@ export default function OrderSettingsPage() {
   const [displayPickupInStoreOnShippingMethodPage, setDisplayPickupInStoreOnShippingMethodPage] =
     useState(false);
 
-  // 2. Order totals fields (media_1791344863715.png)
+  // 2. Order totals fields (media_1791344863715.png - Advanced only)
   const [minOrderSubtotalAmount, setMinOrderSubtotalAmount] = useState<number | string>(0);
   const [calculateMinOrderSubtotalIncludingTax, setCalculateMinOrderSubtotalIncludingTax] =
     useState(false);
   const [minOrderTotalAmount, setMinOrderTotalAmount] = useState<number | string>(0);
   const [autoUpdateOrderTotals, setAutoUpdateOrderTotals] = useState(false);
 
-  // 3. Common fields (media_1791344870970.png)
+  // 3. Common fields (media_1791344870970.png - Advanced only)
   const [orderId, setOrderId] = useState<number | string>(77);
   const [orderNumberMask, setOrderNumberMask] = useState('{ID}');
   const [isReOrderAllowed, setIsReOrderAllowed] = useState(true);
@@ -79,7 +79,7 @@ export default function OrderSettingsPage() {
   const [showProductThumbnailInOrderDetailsPage, setShowProductThumbnailInOrderDetailsPage] =
     useState(true);
 
-  // 4. Pdf invoice fields (media_1791344873749.png)
+  // 4. Pdf invoice fields (media_1791344873749.png - Advanced only)
   const [attachPdfInvoiceOrderPlaced, setAttachPdfInvoiceOrderPlaced] = useState(false);
   const [attachPdfInvoiceOrderPaid, setAttachPdfInvoiceOrderPaid] = useState(false);
   const [attachPdfInvoiceOrderProcessing, setAttachPdfInvoiceOrderProcessing] = useState(false);
@@ -88,7 +88,7 @@ export default function OrderSettingsPage() {
     'https://images.unsplash.com/photo-1595246140625-573b715d11dc?auto=format&fit=crop&w=400&q=80'
   );
 
-  // 5. Gift cards fields (media_1791345470954.png)
+  // 5. Gift cards fields (media_1791345470954.png - Advanced only)
   const [activateGiftCardsAfterCompletingOrder, setActivateGiftCardsAfterCompletingOrder] =
     useState(false);
   const [deactivateGiftCardsAfterCancellingOrder, setDeactivateGiftCardsAfterCancellingOrder] =
@@ -100,7 +100,7 @@ export default function OrderSettingsPage() {
     setDeleteGiftCardUsageHistoryAfterOrderCancellation,
   ] = useState(false);
 
-  // 6. Return request settings fields (media_1791345474131.png & media_1791345475932.png)
+  // 6. Return request settings fields (media_1791345474131.png & media_1791346211881.png)
   const [enableReturnsSystem, setEnableReturnsSystem] = useState(true);
   const [returnRequestNumberMask, setReturnRequestNumberMask] = useState('{ID}');
   const [numberOfDaysReturnRequestAvailable, setNumberOfDaysReturnRequestAvailable] = useState<
@@ -108,17 +108,18 @@ export default function OrderSettingsPage() {
   >(365);
   const [allowFileUploads, setAllowFileUploads] = useState(false);
 
-  // Return request reasons & actions
+  // Return request reasons (media_1791346217146.png)
   const [returnRequestReasons, setReturnRequestReasons] = useState<ReturnRequestItem[]>([
     { id: 'rrr-1', name: 'Received Wrong Product', displayOrder: 1 },
     { id: 'rrr-2', name: 'Wrong Product Ordered', displayOrder: 2 },
     { id: 'rrr-3', name: 'There Was A Problem With The Product', displayOrder: 3 },
   ]);
 
+  // Return request actions (media_1791346240335.png: Repair, Replacement, Store Credit)
   const [returnRequestActions, setReturnRequestActions] = useState<ReturnRequestItem[]>([
-    { id: 'rra-1', name: 'Refund', displayOrder: 1 },
-    { id: 'rra-2', name: 'Repair', displayOrder: 2 },
-    { id: 'rra-3', name: 'Replacement', displayOrder: 3 },
+    { id: 'rra-1', name: 'Repair', displayOrder: 1 },
+    { id: 'rra-2', name: 'Replacement', displayOrder: 2 },
+    { id: 'rra-3', name: 'Store Credit', displayOrder: 3 },
   ]);
 
   // Modal state for editing/adding reasons or actions
@@ -362,9 +363,9 @@ export default function OrderSettingsPage() {
     ]);
 
     setReturnRequestActions([
-      { id: 'rra-1', name: 'Refund', displayOrder: 1 },
-      { id: 'rra-2', name: 'Repair', displayOrder: 2 },
-      { id: 'rra-3', name: 'Replacement', displayOrder: 3 },
+      { id: 'rra-1', name: 'Repair', displayOrder: 1 },
+      { id: 'rra-2', name: 'Replacement', displayOrder: 2 },
+      { id: 'rra-3', name: 'Store Credit', displayOrder: 3 },
     ]);
 
     showToast('Reset to default values. Click Save to apply.', 'success');
@@ -466,7 +467,7 @@ export default function OrderSettingsPage() {
         </div>
       )}
 
-      {/* ── HEADER (Matching media_1791344861078.png) ── */}
+      {/* ── HEADER (Matching media_1791346211881.png) ── */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
         <h1 className="text-2xl font-normal text-slate-800 tracking-tight">Order settings</h1>
 
@@ -483,15 +484,15 @@ export default function OrderSettingsPage() {
         </div>
       </div>
 
-      {/* ── MODE BUTTON: Advanced / Basic Toggle (Matching media_1791344861078.png) ── */}
+      {/* ── MODE BUTTON: Basic / Advanced Toggle (Matching media_1791346211881.png & media_1791344861078.png) ── */}
       <div className="pt-0.5">
         <button
           type="button"
           onClick={() => setIsAdvanced(!isAdvanced)}
-          className={`inline-flex items-center justify-between px-2.5 py-1 rounded-[3px] text-xs font-normal border transition-colors duration-150 cursor-pointer select-none w-[92px] h-[28px] shadow-2xs ${
+          className={`inline-flex items-center justify-between px-2.5 py-1 rounded-[3px] text-xs font-normal border transition-colors duration-150 cursor-pointer select-none w-[94px] h-[28px] shadow-2xs ${
             isAdvanced
               ? 'bg-[#2489c5] border-[#2080b9] text-white hover:bg-[#1f72a3]'
-              : 'bg-white border-[#2489c5] text-[#2489c5] hover:bg-slate-50'
+              : 'bg-[#f8fafc] border-[#2489c5] text-[#2489c5] hover:bg-slate-100'
           }`}
           title="Toggle Basic / Advanced mode"
         >
@@ -509,24 +510,8 @@ export default function OrderSettingsPage() {
         </button>
       </div>
 
-      {/* Basic Mode Notice */}
-      {!isAdvanced && (
-        <div className="bg-amber-50 border border-amber-200 text-amber-800 rounded px-3.5 py-2 text-xs flex items-center justify-between">
-          <span>
-            <strong>Basic mode active</strong>: Primary configurations are shown. Switch to{' '}
-            <strong>Advanced</strong> mode to see all granular checkout, gift card, and return rules.
-          </span>
-          <button
-            type="button"
-            onClick={() => setIsAdvanced(true)}
-            className="text-amber-900 underline font-semibold hover:text-amber-950 ml-2"
-          >
-            Switch to Advanced
-          </button>
-        </div>
-      )}
-
-      {/* ── CARD 1: CHECKOUT (Matching media_1791344861078.png) ── */}
+      {/* ── CARD 1: CHECKOUT ── */}
+      {/* In Basic mode (media_1791346211881.png): ONLY 'Anonymous checkout allowed' and 'Use one page checkout' are visible */}
       <div className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden border-t-3 border-t-[#00c0ef]">
         <div
           onClick={() => setCheckoutOpen(!checkoutOpen)}
@@ -543,7 +528,7 @@ export default function OrderSettingsPage() {
 
         {checkoutOpen && (
           <div className="p-5 space-y-4 text-xs text-slate-700">
-            {/* Checkout disabled */}
+            {/* Advanced only: Checkout disabled */}
             {isAdvanced && (
               <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
                 <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
@@ -561,7 +546,7 @@ export default function OrderSettingsPage() {
               </div>
             )}
 
-            {/* Anonymous checkout allowed */}
+            {/* Basic & Advanced: Anonymous checkout allowed (media_1791346211881.png) */}
             <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
               <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
                 <span>Anonymous checkout allowed</span>
@@ -577,7 +562,7 @@ export default function OrderSettingsPage() {
               </div>
             </div>
 
-            {/* Use one page checkout */}
+            {/* Basic & Advanced: Use one page checkout (media_1791346211881.png) */}
             <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
               <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
                 <span>Use one page checkout</span>
@@ -593,7 +578,7 @@ export default function OrderSettingsPage() {
               </div>
             </div>
 
-            {/* Order totals on payment info tab (Sub-item with tree connector from media_1791344861078.png) */}
+            {/* Advanced only: Order totals on payment info tab */}
             {isAdvanced && (
               <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
                 <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
@@ -616,23 +601,25 @@ export default function OrderSettingsPage() {
               </div>
             )}
 
-            {/* Terms of service (shopping cart page) */}
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
-              <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
-                <span>Terms of service (shopping cart page)</span>
-                <HelpTooltip text="Require customers to accept terms and conditions before proceeding to checkout from the shopping cart page." />
-              </label>
-              <div className="md:col-span-8 flex items-center">
-                <input
-                  type="checkbox"
-                  checked={termsOfServiceShoppingCartPage}
-                  onChange={(e) => setTermsOfServiceShoppingCartPage(e.target.checked)}
-                  className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
-                />
+            {/* Advanced only: Terms of service (shopping cart page) */}
+            {isAdvanced && (
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                  <span>Terms of service (shopping cart page)</span>
+                  <HelpTooltip text="Require customers to accept terms and conditions before proceeding to checkout from the shopping cart page." />
+                </label>
+                <div className="md:col-span-8 flex items-center">
+                  <input
+                    type="checkbox"
+                    checked={termsOfServiceShoppingCartPage}
+                    onChange={(e) => setTermsOfServiceShoppingCartPage(e.target.checked)}
+                    className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                  />
+                </div>
               </div>
-            </div>
+            )}
 
-            {/* Terms of service (confirm order page) */}
+            {/* Advanced only: Terms of service (confirm order page) */}
             {isAdvanced && (
               <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
                 <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
@@ -650,7 +637,7 @@ export default function OrderSettingsPage() {
               </div>
             )}
 
-            {/* Disable "Billing address" step */}
+            {/* Advanced only: Disable "Billing address" step */}
             {isAdvanced && (
               <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
                 <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
@@ -668,7 +655,7 @@ export default function OrderSettingsPage() {
               </div>
             )}
 
-            {/* Disable "Order completed" page */}
+            {/* Advanced only: Disable "Order completed" page */}
             {isAdvanced && (
               <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
                 <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
@@ -686,7 +673,7 @@ export default function OrderSettingsPage() {
               </div>
             )}
 
-            {/* Display "Pickup in store" on "Shipping method" page */}
+            {/* Advanced only: Display "Pickup in store" on "Shipping method" page */}
             {isAdvanced && (
               <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
                 <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
@@ -710,44 +697,44 @@ export default function OrderSettingsPage() {
         )}
       </div>
 
-      {/* ── CARD 2: ORDER TOTALS (Matching media_1791344863715.png) ── */}
-      <div className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden border-t-3 border-t-[#00c0ef]">
-        <div
-          onClick={() => setOrderTotalsOpen(!orderTotalsOpen)}
-          className="px-4 py-2.5 bg-white border-b border-[#f4f4f4] flex items-center justify-between cursor-pointer select-none text-xs font-semibold text-slate-700 hover:bg-slate-50/70 transition"
-        >
-          <div className="flex items-center gap-2">
-            <span className="font-mono font-bold text-slate-700 text-sm tracking-tighter">$=</span>
-            <span className="text-sm font-normal text-slate-800">Order totals</span>
-          </div>
-          <button type="button" className="text-slate-400 hover:text-slate-600">
-            {orderTotalsOpen ? <Minus className="w-4 h-4 stroke-[2]" /> : <Plus className="w-4 h-4 stroke-[2]" />}
-          </button>
-        </div>
-
-        {orderTotalsOpen && (
-          <div className="p-5 space-y-4 text-xs text-slate-700">
-            {/* Min order sub-total amount */}
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
-              <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
-                <span>Min order sub-total amount</span>
-                <HelpTooltip text="Enter the minimum cart subtotal required before a customer can place an order (0 to disable)." />
-              </label>
-              <div className="md:col-span-8 flex items-center gap-2">
-                <input
-                  type="number"
-                  min="0"
-                  step="any"
-                  value={minOrderSubtotalAmount}
-                  onChange={(e) => setMinOrderSubtotalAmount(e.target.value)}
-                  className="w-36 border border-[#d2d6de] focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none rounded px-3 py-1.5 text-xs text-slate-800 bg-white"
-                />
-                <span className="text-xs text-slate-700 font-medium">USD</span>
-              </div>
+      {/* ── CARD 2: ORDER TOTALS (Advanced Only) ── */}
+      {isAdvanced && (
+        <div className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden border-t-3 border-t-[#00c0ef]">
+          <div
+            onClick={() => setOrderTotalsOpen(!orderTotalsOpen)}
+            className="px-4 py-2.5 bg-white border-b border-[#f4f4f4] flex items-center justify-between cursor-pointer select-none text-xs font-semibold text-slate-700 hover:bg-slate-50/70 transition"
+          >
+            <div className="flex items-center gap-2">
+              <span className="font-mono font-bold text-slate-700 text-sm tracking-tighter">$=</span>
+              <span className="text-sm font-normal text-slate-800">Order totals</span>
             </div>
+            <button type="button" className="text-slate-400 hover:text-slate-600">
+              {orderTotalsOpen ? <Minus className="w-4 h-4 stroke-[2]" /> : <Plus className="w-4 h-4 stroke-[2]" />}
+            </button>
+          </div>
 
-            {/* Calculate 'Min order sub-total amount' including tax */}
-            {isAdvanced && (
+          {orderTotalsOpen && (
+            <div className="p-5 space-y-4 text-xs text-slate-700">
+              {/* Min order sub-total amount */}
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                  <span>Min order sub-total amount</span>
+                  <HelpTooltip text="Enter the minimum cart subtotal required before a customer can place an order (0 to disable)." />
+                </label>
+                <div className="md:col-span-8 flex items-center gap-2">
+                  <input
+                    type="number"
+                    min="0"
+                    step="any"
+                    value={minOrderSubtotalAmount}
+                    onChange={(e) => setMinOrderSubtotalAmount(e.target.value)}
+                    className="w-36 border border-[#d2d6de] focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none rounded px-3 py-1.5 text-xs text-slate-800 bg-white"
+                  />
+                  <span className="text-xs text-slate-700 font-medium">USD</span>
+                </div>
+              </div>
+
+              {/* Calculate 'Min order sub-total amount' including tax */}
               <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
                 <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
                   <span className="text-right">
@@ -765,28 +752,26 @@ export default function OrderSettingsPage() {
                   />
                 </div>
               </div>
-            )}
 
-            {/* Min order total amount */}
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
-              <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
-                <span>Min order total amount</span>
-                <HelpTooltip text="Enter the minimum final grand total (including shipping and tax) required to place an order (0 to disable)." />
-              </label>
-              <div className="md:col-span-8 flex items-center">
-                <input
-                  type="number"
-                  min="0"
-                  step="any"
-                  value={minOrderTotalAmount}
-                  onChange={(e) => setMinOrderTotalAmount(e.target.value)}
-                  className="w-36 border border-[#d2d6de] focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none rounded px-3 py-1.5 text-xs text-slate-800 bg-white"
-                />
+              {/* Min order total amount */}
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                  <span>Min order total amount</span>
+                  <HelpTooltip text="Enter the minimum final grand total (including shipping and tax) required to place an order (0 to disable)." />
+                </label>
+                <div className="md:col-span-8 flex items-center">
+                  <input
+                    type="number"
+                    min="0"
+                    step="any"
+                    value={minOrderTotalAmount}
+                    onChange={(e) => setMinOrderTotalAmount(e.target.value)}
+                    className="w-36 border border-[#d2d6de] focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none rounded px-3 py-1.5 text-xs text-slate-800 bg-white"
+                  />
+                </div>
               </div>
-            </div>
 
-            {/* Auto update order totals */}
-            {isAdvanced && (
+              {/* Auto update order totals */}
               <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
                 <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
                   <span>Auto update order totals</span>
@@ -801,85 +786,85 @@ export default function OrderSettingsPage() {
                   />
                 </div>
               </div>
-            )}
-          </div>
-        )}
-      </div>
-
-      {/* ── CARD 3: COMMON (Matching media_1791344870970.png) ── */}
-      <div className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden border-t-3 border-t-[#00c0ef]">
-        <div
-          onClick={() => setCommonOpen(!commonOpen)}
-          className="px-4 py-2.5 bg-white border-b border-[#f4f4f4] flex items-center justify-between cursor-pointer select-none text-xs font-semibold text-slate-700 hover:bg-slate-50/70 transition"
-        >
-          <div className="flex items-center gap-2">
-            <span className="font-serif italic font-bold text-slate-600 text-sm">i</span>
-            <span className="text-sm font-normal text-slate-800">Common</span>
-          </div>
-          <button type="button" className="text-slate-400 hover:text-slate-600">
-            {commonOpen ? <Minus className="w-4 h-4 stroke-[2]" /> : <Plus className="w-4 h-4 stroke-[2]" />}
-          </button>
-        </div>
-
-        {commonOpen && (
-          <div className="p-5 space-y-4 text-xs text-slate-700">
-            {/* Order ID */}
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
-              <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
-                <span>Order ID</span>
-                <HelpTooltip text="Current auto-incrementing order identifier sequence value." />
-              </label>
-              <div className="md:col-span-8 max-w-xl">
-                <input
-                  type="number"
-                  value={orderId}
-                  onChange={(e) => setOrderId(e.target.value)}
-                  className="w-full border border-[#d2d6de] focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none rounded px-3 py-1.5 text-xs text-slate-800 bg-white"
-                />
-              </div>
             </div>
+          )}
+        </div>
+      )}
 
-            {/* Order number mask */}
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-start">
-              <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5 pt-1.5">
-                <span>Order number mask</span>
-                <HelpTooltip text="Template mask for displaying friendly order numbers to customers and on invoices." />
-              </label>
-              <div className="md:col-span-8 max-w-xl space-y-1.5">
-                <input
-                  type="text"
-                  value={orderNumberMask}
-                  onChange={(e) => setOrderNumberMask(e.target.value)}
-                  className="w-full border border-[#d2d6de] focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none rounded px-3 py-1.5 text-xs text-slate-800 bg-white font-mono"
-                />
-                <div className="text-[11px] text-slate-500 font-sans leading-relaxed space-y-0.5 pt-0.5 select-none">
-                  <div>&#123;YYYY&#125; - year of order creation date</div>
-                  <div>&#123;YY&#125; - last two digits of year of order creation date</div>
-                  <div>&#123;MM&#125; - month of order creation date</div>
-                  <div>&#123;DD&#125; - day of order creation date</div>
-                  <div>&#123;ID&#125; - Order identifier</div>
+      {/* ── CARD 3: COMMON (Advanced Only) ── */}
+      {isAdvanced && (
+        <div className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden border-t-3 border-t-[#00c0ef]">
+          <div
+            onClick={() => setCommonOpen(!commonOpen)}
+            className="px-4 py-2.5 bg-white border-b border-[#f4f4f4] flex items-center justify-between cursor-pointer select-none text-xs font-semibold text-slate-700 hover:bg-slate-50/70 transition"
+          >
+            <div className="flex items-center gap-2">
+              <span className="font-serif italic font-bold text-slate-600 text-sm">i</span>
+              <span className="text-sm font-normal text-slate-800">Common</span>
+            </div>
+            <button type="button" className="text-slate-400 hover:text-slate-600">
+              {commonOpen ? <Minus className="w-4 h-4 stroke-[2]" /> : <Plus className="w-4 h-4 stroke-[2]" />}
+            </button>
+          </div>
+
+          {commonOpen && (
+            <div className="p-5 space-y-4 text-xs text-slate-700">
+              {/* Order ID */}
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                  <span>Order ID</span>
+                  <HelpTooltip text="Current auto-incrementing order identifier sequence value." />
+                </label>
+                <div className="md:col-span-8 max-w-xl">
+                  <input
+                    type="number"
+                    value={orderId}
+                    onChange={(e) => setOrderId(e.target.value)}
+                    className="w-full border border-[#d2d6de] focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none rounded px-3 py-1.5 text-xs text-slate-800 bg-white"
+                  />
                 </div>
               </div>
-            </div>
 
-            {/* Is re-order allowed */}
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
-              <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
-                <span>Is re-order allowed</span>
-                <HelpTooltip text="Allow customers to quickly re-order all items from past completed orders with a single click." />
-              </label>
-              <div className="md:col-span-8 flex items-center">
-                <input
-                  type="checkbox"
-                  checked={isReOrderAllowed}
-                  onChange={(e) => setIsReOrderAllowed(e.target.checked)}
-                  className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
-                />
+              {/* Order number mask */}
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-start">
+                <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5 pt-1.5">
+                  <span>Order number mask</span>
+                  <HelpTooltip text="Template mask for displaying friendly order numbers to customers and on invoices." />
+                </label>
+                <div className="md:col-span-8 max-w-xl space-y-1.5">
+                  <input
+                    type="text"
+                    value={orderNumberMask}
+                    onChange={(e) => setOrderNumberMask(e.target.value)}
+                    className="w-full border border-[#d2d6de] focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none rounded px-3 py-1.5 text-xs text-slate-800 bg-white font-mono"
+                  />
+                  <div className="text-[11px] text-slate-500 font-sans leading-relaxed space-y-0.5 pt-0.5 select-none">
+                    <div>&#123;YYYY&#125; - year of order creation date</div>
+                    <div>&#123;YY&#125; - last two digits of year of order creation date</div>
+                    <div>&#123;MM&#125; - month of order creation date</div>
+                    <div>&#123;DD&#125; - day of order creation date</div>
+                    <div>&#123;ID&#125; - Order identifier</div>
+                  </div>
+                </div>
               </div>
-            </div>
 
-            {/* Complete order when delivered */}
-            {isAdvanced && (
+              {/* Is re-order allowed */}
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                  <span>Is re-order allowed</span>
+                  <HelpTooltip text="Allow customers to quickly re-order all items from past completed orders with a single click." />
+                </label>
+                <div className="md:col-span-8 flex items-center">
+                  <input
+                    type="checkbox"
+                    checked={isReOrderAllowed}
+                    onChange={(e) => setIsReOrderAllowed(e.target.checked)}
+                    className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                  />
+                </div>
+              </div>
+
+              {/* Complete order when delivered */}
               <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
                 <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
                   <span>Complete order when delivered</span>
@@ -894,10 +879,8 @@ export default function OrderSettingsPage() {
                   />
                 </div>
               </div>
-            )}
 
-            {/* Export orders with products */}
-            {isAdvanced && (
+              {/* Export orders with products */}
               <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
                 <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
                   <span>Export orders with products</span>
@@ -912,10 +895,8 @@ export default function OrderSettingsPage() {
                   />
                 </div>
               </div>
-            )}
 
-            {/* Allow admins to buy "Call for price" products */}
-            {isAdvanced && (
+              {/* Allow admins to buy "Call for price" products */}
               <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
                 <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
                   <span className="text-right">
@@ -933,103 +914,103 @@ export default function OrderSettingsPage() {
                   />
                 </div>
               </div>
-            )}
 
-            {/* Allow customers to cancel orders */}
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
-              <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
-                <span>Allow customers to cancel orders</span>
-                <HelpTooltip text="Allow customers to submit order cancellation requests from their customer account portal while pending processing." />
-              </label>
-              <div className="md:col-span-8 flex items-center">
-                <input
-                  type="checkbox"
-                  checked={allowCustomersToCancelOrders}
-                  onChange={(e) => setAllowCustomersToCancelOrders(e.target.checked)}
-                  className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
-                />
+              {/* Allow customers to cancel orders */}
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                  <span>Allow customers to cancel orders</span>
+                  <HelpTooltip text="Allow customers to submit order cancellation requests from their customer account portal while pending processing." />
+                </label>
+                <div className="md:col-span-8 flex items-center">
+                  <input
+                    type="checkbox"
+                    checked={allowCustomersToCancelOrders}
+                    onChange={(e) => setAllowCustomersToCancelOrders(e.target.checked)}
+                    className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                  />
+                </div>
+              </div>
+
+              {/* Show product thumbnail in order details page */}
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                  <span className="text-right">
+                    Show product thumbnail in order
+                    <br className="hidden md:inline" /> details page
+                  </span>
+                  <HelpTooltip text="Display small product photos beside item titles on customer order confirmation and details screens." />
+                </label>
+                <div className="md:col-span-8 flex items-center">
+                  <input
+                    type="checkbox"
+                    checked={showProductThumbnailInOrderDetailsPage}
+                    onChange={(e) => setShowProductThumbnailInOrderDetailsPage(e.target.checked)}
+                    className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                  />
+                </div>
               </div>
             </div>
-
-            {/* Show product thumbnail in order details page */}
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
-              <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
-                <span className="text-right">
-                  Show product thumbnail in order
-                  <br className="hidden md:inline" /> details page
-                </span>
-                <HelpTooltip text="Display small product photos beside item titles on customer order confirmation and details screens." />
-              </label>
-              <div className="md:col-span-8 flex items-center">
-                <input
-                  type="checkbox"
-                  checked={showProductThumbnailInOrderDetailsPage}
-                  onChange={(e) => setShowProductThumbnailInOrderDetailsPage(e.target.checked)}
-                  className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
-                />
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* ── CARD 4: PDF INVOICE (Matching media_1791344873749.png) ── */}
-      <div className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden border-t-3 border-t-[#00c0ef]">
-        <div
-          onClick={() => setPdfInvoiceOpen(!pdfInvoiceOpen)}
-          className="px-4 py-2.5 bg-white border-b border-[#f4f4f4] flex items-center justify-between cursor-pointer select-none text-xs font-semibold text-slate-700 hover:bg-slate-50/70 transition"
-        >
-          <div className="flex items-center gap-2">
-            <FileText className="w-4 h-4 text-slate-700 stroke-[1.8]" />
-            <span className="text-sm font-normal text-slate-800">Pdf invoice</span>
-          </div>
-          <button type="button" className="text-slate-400 hover:text-slate-600">
-            {pdfInvoiceOpen ? <Minus className="w-4 h-4 stroke-[2]" /> : <Plus className="w-4 h-4 stroke-[2]" />}
-          </button>
+          )}
         </div>
+      )}
 
-        {pdfInvoiceOpen && (
-          <div className="p-5 space-y-4 text-xs text-slate-700">
-            {/* Attach PDF invoice ("order placed" email) */}
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
-              <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
-                <span className="text-right">
-                  Attach PDF invoice ("order placed"
-                  <br className="hidden md:inline" /> email)
-                </span>
-                <HelpTooltip text="Automatically generate and attach printable PDF tax invoice when customer receives 'Order Placed' confirmation email." />
-              </label>
-              <div className="md:col-span-8 flex items-center">
-                <input
-                  type="checkbox"
-                  checked={attachPdfInvoiceOrderPlaced}
-                  onChange={(e) => setAttachPdfInvoiceOrderPlaced(e.target.checked)}
-                  className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
-                />
-              </div>
+      {/* ── CARD 4: PDF INVOICE (Advanced Only) ── */}
+      {isAdvanced && (
+        <div className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden border-t-3 border-t-[#00c0ef]">
+          <div
+            onClick={() => setPdfInvoiceOpen(!pdfInvoiceOpen)}
+            className="px-4 py-2.5 bg-white border-b border-[#f4f4f4] flex items-center justify-between cursor-pointer select-none text-xs font-semibold text-slate-700 hover:bg-slate-50/70 transition"
+          >
+            <div className="flex items-center gap-2">
+              <FileText className="w-4 h-4 text-slate-700 stroke-[1.8]" />
+              <span className="text-sm font-normal text-slate-800">Pdf invoice</span>
             </div>
+            <button type="button" className="text-slate-400 hover:text-slate-600">
+              {pdfInvoiceOpen ? <Minus className="w-4 h-4 stroke-[2]" /> : <Plus className="w-4 h-4 stroke-[2]" />}
+            </button>
+          </div>
 
-            {/* Attach PDF invoice ("order paid" email) */}
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
-              <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
-                <span className="text-right">
-                  Attach PDF invoice ("order paid"
-                  <br className="hidden md:inline" /> email)
-                </span>
-                <HelpTooltip text="Attach official PDF receipt and invoice when payment has been verified and settled." />
-              </label>
-              <div className="md:col-span-8 flex items-center">
-                <input
-                  type="checkbox"
-                  checked={attachPdfInvoiceOrderPaid}
-                  onChange={(e) => setAttachPdfInvoiceOrderPaid(e.target.checked)}
-                  className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
-                />
+          {pdfInvoiceOpen && (
+            <div className="p-5 space-y-4 text-xs text-slate-700">
+              {/* Attach PDF invoice ("order placed" email) */}
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                  <span className="text-right">
+                    Attach PDF invoice ("order placed"
+                    <br className="hidden md:inline" /> email)
+                  </span>
+                  <HelpTooltip text="Automatically generate and attach printable PDF tax invoice when customer receives 'Order Placed' confirmation email." />
+                </label>
+                <div className="md:col-span-8 flex items-center">
+                  <input
+                    type="checkbox"
+                    checked={attachPdfInvoiceOrderPlaced}
+                    onChange={(e) => setAttachPdfInvoiceOrderPlaced(e.target.checked)}
+                    className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                  />
+                </div>
               </div>
-            </div>
 
-            {/* Attach PDF invoice ("order processing" email) */}
-            {isAdvanced && (
+              {/* Attach PDF invoice ("order paid" email) */}
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                  <span className="text-right">
+                    Attach PDF invoice ("order paid"
+                    <br className="hidden md:inline" /> email)
+                  </span>
+                  <HelpTooltip text="Attach official PDF receipt and invoice when payment has been verified and settled." />
+                </label>
+                <div className="md:col-span-8 flex items-center">
+                  <input
+                    type="checkbox"
+                    checked={attachPdfInvoiceOrderPaid}
+                    onChange={(e) => setAttachPdfInvoiceOrderPaid(e.target.checked)}
+                    className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                  />
+                </div>
+              </div>
+
+              {/* Attach PDF invoice ("order processing" email) */}
               <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
                 <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
                   <span className="text-right">
@@ -1047,157 +1028,159 @@ export default function OrderSettingsPage() {
                   />
                 </div>
               </div>
-            )}
 
-            {/* Attach PDF invoice ("order completed" email) */}
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
-              <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
-                <span className="text-right">
-                  Attach PDF invoice ("order completed"
-                  <br className="hidden md:inline" /> email)
-                </span>
-                <HelpTooltip text="Attach PDF final invoice and warranty documentation upon order fulfillment completion." />
-              </label>
-              <div className="md:col-span-8 flex items-center">
-                <input
-                  type="checkbox"
-                  checked={attachPdfInvoiceOrderCompleted}
-                  onChange={(e) => setAttachPdfInvoiceOrderCompleted(e.target.checked)}
-                  className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
-                />
-              </div>
-            </div>
-
-            {/* PDF Invoice Logo Editor (Supports local device upload, Google/web URL, rotate, zoom, crop) */}
-            <div className="border-t border-slate-100 pt-5 mt-3">
-              <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-start">
-                <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5 pt-2">
-                  <span>PDF invoice logo</span>
-                  <HelpTooltip text="Custom company logo rendered at the top-left of printed and emailed PDF invoices. Accepts local file uploads or external image URLs with full cropping and editing." />
+              {/* Attach PDF invoice ("order completed" email) */}
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                  <span className="text-right">
+                    Attach PDF invoice ("order completed"
+                    <br className="hidden md:inline" /> email)
+                  </span>
+                  <HelpTooltip text="Attach PDF final invoice and warranty documentation upon order fulfillment completion." />
                 </label>
-                <div className="md:col-span-8 max-w-xl">
-                  <ImageEditorField
-                    value={pdfInvoiceLogo}
-                    onChange={(newVal) => setPdfInvoiceLogo(newVal)}
-                    shape="rectangle"
-                    previewHeight="h-28"
+                <div className="md:col-span-8 flex items-center">
+                  <input
+                    type="checkbox"
+                    checked={attachPdfInvoiceOrderCompleted}
+                    onChange={(e) => setAttachPdfInvoiceOrderCompleted(e.target.checked)}
+                    className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
                   />
-                  <p className="text-[11px] text-slate-400 mt-1.5">
-                    Recommended resolution: 300x100px (PNG, SVG, or high-res JPG with transparent or light background).
-                  </p>
+                </div>
+              </div>
+
+              {/* PDF Invoice Logo Editor */}
+              <div className="border-t border-slate-100 pt-5 mt-3">
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-start">
+                  <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5 pt-2">
+                    <span>PDF invoice logo</span>
+                    <HelpTooltip text="Custom company logo rendered at the top-left of printed and emailed PDF invoices. Accepts local file uploads or external image URLs with full cropping and editing." />
+                  </label>
+                  <div className="md:col-span-8 max-w-xl">
+                    <ImageEditorField
+                      value={pdfInvoiceLogo}
+                      onChange={(newVal) => setPdfInvoiceLogo(newVal)}
+                      shape="rectangle"
+                      previewHeight="h-28"
+                    />
+                    <p className="text-[11px] text-slate-400 mt-1.5">
+                      Recommended resolution: 300x100px (PNG, SVG, or high-res JPG with transparent or light background).
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        )}
-      </div>
-
-      {/* ── CARD 5: GIFT CARDS (Matching media_1791345470954.png) ── */}
-      <div className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden border-t-3 border-t-[#00c0ef]">
-        <div
-          onClick={() => setGiftCardsOpen(!giftCardsOpen)}
-          className="px-4 py-2.5 bg-white border-b border-[#f4f4f4] flex items-center justify-between cursor-pointer select-none text-xs font-semibold text-slate-700 hover:bg-slate-50/70 transition"
-        >
-          <div className="flex items-center gap-2">
-            <Gift className="w-4 h-4 text-slate-700 stroke-[1.8]" />
-            <span className="text-sm font-normal text-slate-800">Gift cards</span>
-          </div>
-          <button type="button" className="text-slate-400 hover:text-slate-600">
-            {giftCardsOpen ? <Minus className="w-4 h-4 stroke-[2]" /> : <Plus className="w-4 h-4 stroke-[2]" />}
-          </button>
+          )}
         </div>
+      )}
 
-        {giftCardsOpen && (
-          <div className="p-5 space-y-4 text-xs text-slate-700">
-            {/* Activate gift cards after completing of an order */}
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
-              <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
-                <span className="text-right">
-                  Activate gift cards after completing of
-                  <br className="hidden md:inline" /> an order
-                </span>
-                <HelpTooltip text="Automatically activate gift cards purchased in an order once the order status is marked as 'Complete'." />
-              </label>
-              <div className="md:col-span-8 flex items-center">
-                <input
-                  type="checkbox"
-                  checked={activateGiftCardsAfterCompletingOrder}
-                  onChange={(e) => setActivateGiftCardsAfterCompletingOrder(e.target.checked)}
-                  className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
-                />
-              </div>
+      {/* ── CARD 5: GIFT CARDS (Advanced Only) ── */}
+      {isAdvanced && (
+        <div className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden border-t-3 border-t-[#00c0ef]">
+          <div
+            onClick={() => setGiftCardsOpen(!giftCardsOpen)}
+            className="px-4 py-2.5 bg-white border-b border-[#f4f4f4] flex items-center justify-between cursor-pointer select-none text-xs font-semibold text-slate-700 hover:bg-slate-50/70 transition"
+          >
+            <div className="flex items-center gap-2">
+              <Gift className="w-4 h-4 text-slate-700 stroke-[1.8]" />
+              <span className="text-sm font-normal text-slate-800">Gift cards</span>
             </div>
-
-            {/* Deactivate gift cards after cancelling of an order */}
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
-              <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
-                <span className="text-right">
-                  Deactivate gift cards after cancelling of
-                  <br className="hidden md:inline" /> an order
-                </span>
-                <HelpTooltip text="Automatically deactivate issued gift cards if the originating order is cancelled." />
-              </label>
-              <div className="md:col-span-8 flex items-center">
-                <input
-                  type="checkbox"
-                  checked={deactivateGiftCardsAfterCancellingOrder}
-                  onChange={(e) => setDeactivateGiftCardsAfterCancellingOrder(e.target.checked)}
-                  className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
-                />
-              </div>
-            </div>
-
-            {/* Deactivate gift cards after deleting of an order */}
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
-              <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
-                <span className="text-right">
-                  Deactivate gift cards after deleting of
-                  <br className="hidden md:inline" /> an order
-                </span>
-                <HelpTooltip text="Automatically deactivate purchased gift cards if the order record is deleted." />
-              </label>
-              <div className="md:col-span-8 flex items-center">
-                <input
-                  type="checkbox"
-                  checked={deactivateGiftCardsAfterDeletingOrder}
-                  onChange={(e) => setDeactivateGiftCardsAfterDeletingOrder(e.target.checked)}
-                  className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
-                />
-              </div>
-            </div>
-
-            {/* Delete gift card usage history after order cancellation */}
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
-              <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
-                <span className="text-right">
-                  Delete gift card usage history after
-                  <br className="hidden md:inline" /> order cancellation
-                </span>
-                <HelpTooltip text="Remove the redemption entry from gift card history and restore its available balance if the paid order is cancelled." />
-              </label>
-              <div className="md:col-span-8 flex items-center">
-                <input
-                  type="checkbox"
-                  checked={deleteGiftCardUsageHistoryAfterOrderCancellation}
-                  onChange={(e) =>
-                    setDeleteGiftCardUsageHistoryAfterOrderCancellation(e.target.checked)
-                  }
-                  className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
-                />
-              </div>
-            </div>
+            <button type="button" className="text-slate-400 hover:text-slate-600">
+              {giftCardsOpen ? <Minus className="w-4 h-4 stroke-[2]" /> : <Plus className="w-4 h-4 stroke-[2]" />}
+            </button>
           </div>
-        )}
-      </div>
 
-      {/* ── CARD 6: RETURN REQUEST SETTINGS (Matching media_1791345474131.png & media_1791345475932.png) ── */}
+          {giftCardsOpen && (
+            <div className="p-5 space-y-4 text-xs text-slate-700">
+              {/* Activate gift cards after completing of an order */}
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                  <span className="text-right">
+                    Activate gift cards after completing of
+                    <br className="hidden md:inline" /> an order
+                  </span>
+                  <HelpTooltip text="Automatically activate gift cards purchased in an order once the order status is marked as 'Complete'." />
+                </label>
+                <div className="md:col-span-8 flex items-center">
+                  <input
+                    type="checkbox"
+                    checked={activateGiftCardsAfterCompletingOrder}
+                    onChange={(e) => setActivateGiftCardsAfterCompletingOrder(e.target.checked)}
+                    className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                  />
+                </div>
+              </div>
+
+              {/* Deactivate gift cards after cancelling of an order */}
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                  <span className="text-right">
+                    Deactivate gift cards after cancelling of
+                    <br className="hidden md:inline" /> an order
+                  </span>
+                  <HelpTooltip text="Automatically deactivate issued gift cards if the originating order is cancelled." />
+                </label>
+                <div className="md:col-span-8 flex items-center">
+                  <input
+                    type="checkbox"
+                    checked={deactivateGiftCardsAfterCancellingOrder}
+                    onChange={(e) => setDeactivateGiftCardsAfterCancellingOrder(e.target.checked)}
+                    className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                  />
+                </div>
+              </div>
+
+              {/* Deactivate gift cards after deleting of an order */}
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                  <span className="text-right">
+                    Deactivate gift cards after deleting of
+                    <br className="hidden md:inline" /> an order
+                  </span>
+                  <HelpTooltip text="Automatically deactivate purchased gift cards if the order record is deleted." />
+                </label>
+                <div className="md:col-span-8 flex items-center">
+                  <input
+                    type="checkbox"
+                    checked={deactivateGiftCardsAfterDeletingOrder}
+                    onChange={(e) => setDeactivateGiftCardsAfterDeletingOrder(e.target.checked)}
+                    className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                  />
+                </div>
+              </div>
+
+              {/* Delete gift card usage history after order cancellation */}
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                  <span className="text-right">
+                    Delete gift card usage history after
+                    <br className="hidden md:inline" /> order cancellation
+                  </span>
+                  <HelpTooltip text="Remove the redemption entry from gift card history and restore its available balance if the paid order is cancelled." />
+                </label>
+                <div className="md:col-span-8 flex items-center">
+                  <input
+                    type="checkbox"
+                    checked={deleteGiftCardUsageHistoryAfterOrderCancellation}
+                    onChange={(e) =>
+                      setDeleteGiftCardUsageHistoryAfterOrderCancellation(e.target.checked)
+                    }
+                    className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ── CARD 6: RETURN REQUEST SETTINGS ── */}
+      {/* In Basic mode (media_1791346211881.png): ONLY 'Enable Returns System', 'Return request reasons', and 'Return request actions' are shown */}
       <div className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden border-t-3 border-t-[#00c0ef]">
         <div
           onClick={() => setReturnRequestOpen(!returnRequestOpen)}
           className="px-4 py-2.5 bg-white border-b border-[#f4f4f4] flex items-center justify-between cursor-pointer select-none text-xs font-semibold text-slate-700 hover:bg-slate-50/70 transition"
         >
           <div className="flex items-center gap-2">
-            {/* Backward double arrow / rewind icon from screenshot */}
             <div className="flex items-center text-slate-700 -space-x-1">
               <span className="text-xs font-bold font-mono">◀◀</span>
             </div>
@@ -1214,7 +1197,7 @@ export default function OrderSettingsPage() {
 
         {returnRequestOpen && (
           <div className="p-5 space-y-6 text-xs text-slate-700">
-            {/* Description text matching media_1791345474131.png */}
+            {/* Description text matching media_1791346211881.png */}
             <div className="text-xs text-slate-600 leading-relaxed space-y-1">
               <p>
                 The returns system will allow your customers to request a return on items they've
@@ -1225,7 +1208,7 @@ export default function OrderSettingsPage() {
               </p>
             </div>
 
-            {/* Enable Returns System */}
+            {/* Basic & Advanced: Enable Returns System (media_1791346211881.png) */}
             <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
               <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
                 <span>Enable Returns System</span>
@@ -1241,66 +1224,72 @@ export default function OrderSettingsPage() {
               </div>
             </div>
 
-            {/* Return request number mask */}
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-start">
-              <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5 pt-1.5">
-                <span>Return request number mask</span>
-                <HelpTooltip text="Template mask for displaying friendly return request numbers to customers and store staff." />
-              </label>
-              <div className="md:col-span-8 max-w-xl space-y-1.5">
-                <input
-                  type="text"
-                  value={returnRequestNumberMask}
-                  onChange={(e) => setReturnRequestNumberMask(e.target.value)}
-                  className="w-full border border-[#d2d6de] focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none rounded px-3 py-1.5 text-xs text-slate-800 bg-white font-mono"
-                />
-                <div className="text-[11px] text-slate-500 font-sans leading-relaxed space-y-0.5 pt-0.5 select-none">
-                  <div>&#123;ID&#125; - Return request identifier</div>
-                  <div>&#123;YYYY&#125; - year of return request creation date</div>
-                  <div>&#123;YY&#125; - last two digits of year of return request creation date</div>
-                  <div>&#123;MM&#125; - month of return request creation date</div>
-                  <div>&#123;DD&#125; - day of return request creation date</div>
+            {/* Advanced only: Return request number mask */}
+            {isAdvanced && (
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-start">
+                <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5 pt-1.5">
+                  <span>Return request number mask</span>
+                  <HelpTooltip text="Template mask for displaying friendly return request numbers to customers and store staff." />
+                </label>
+                <div className="md:col-span-8 max-w-xl space-y-1.5">
+                  <input
+                    type="text"
+                    value={returnRequestNumberMask}
+                    onChange={(e) => setReturnRequestNumberMask(e.target.value)}
+                    className="w-full border border-[#d2d6de] focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none rounded px-3 py-1.5 text-xs text-slate-800 bg-white font-mono"
+                  />
+                  <div className="text-[11px] text-slate-500 font-sans leading-relaxed space-y-0.5 pt-0.5 select-none">
+                    <div>&#123;ID&#125; - Return request identifier</div>
+                    <div>&#123;YYYY&#125; - year of return request creation date</div>
+                    <div>&#123;YY&#125; - last two digits of year of return request creation date</div>
+                    <div>&#123;MM&#125; - month of return request creation date</div>
+                    <div>&#123;DD&#125; - day of return request creation date</div>
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
 
-            {/* Number of days that the return request is available */}
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
-              <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
-                <span className="text-right">
-                  Number of days that the return
-                  <br className="hidden md:inline" /> request is available
-                </span>
-                <HelpTooltip text="The number of eligible days after order delivery during which a customer may file a return request." />
-              </label>
-              <div className="md:col-span-8 max-w-xl">
-                <input
-                  type="number"
-                  min="0"
-                  value={numberOfDaysReturnRequestAvailable}
-                  onChange={(e) => setNumberOfDaysReturnRequestAvailable(e.target.value)}
-                  className="w-full border border-[#d2d6de] focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none rounded px-3 py-1.5 text-xs text-slate-800 bg-white"
-                />
+            {/* Advanced only: Number of days that the return request is available */}
+            {isAdvanced && (
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                  <span className="text-right">
+                    Number of days that the return
+                    <br className="hidden md:inline" /> request is available
+                  </span>
+                  <HelpTooltip text="The number of eligible days after order delivery during which a customer may file a return request." />
+                </label>
+                <div className="md:col-span-8 max-w-xl">
+                  <input
+                    type="number"
+                    min="0"
+                    value={numberOfDaysReturnRequestAvailable}
+                    onChange={(e) => setNumberOfDaysReturnRequestAvailable(e.target.value)}
+                    className="w-full border border-[#d2d6de] focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none rounded px-3 py-1.5 text-xs text-slate-800 bg-white"
+                  />
+                </div>
               </div>
-            </div>
+            )}
 
-            {/* Allow file uploads */}
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
-              <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
-                <span>Allow file uploads</span>
-                <HelpTooltip text="Check to allow customers to upload damage photos or receipts when submitting a return request." />
-              </label>
-              <div className="md:col-span-8 flex items-center">
-                <input
-                  type="checkbox"
-                  checked={allowFileUploads}
-                  onChange={(e) => setAllowFileUploads(e.target.checked)}
-                  className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
-                />
+            {/* Advanced only: Allow file uploads */}
+            {isAdvanced && (
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                  <span>Allow file uploads</span>
+                  <HelpTooltip text="Check to allow customers to upload damage photos or receipts when submitting a return request." />
+                </label>
+                <div className="md:col-span-8 flex items-center">
+                  <input
+                    type="checkbox"
+                    checked={allowFileUploads}
+                    onChange={(e) => setAllowFileUploads(e.target.checked)}
+                    className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                  />
+                </div>
               </div>
-            </div>
+            )}
 
-            {/* ── SUB-PANEL 1: RETURN REQUEST REASONS (media_1791345475932.png) ── */}
+            {/* ── SUB-PANEL 1: RETURN REQUEST REASONS (media_1791346217146.png) ── */}
             <div className="border border-slate-200 rounded overflow-hidden pt-1">
               <div className="p-4 bg-slate-50/60 border-b border-slate-200">
                 <h3 className="text-xs font-semibold text-slate-800">Return request reasons</h3>
@@ -1348,7 +1337,7 @@ export default function OrderSettingsPage() {
                 </table>
               </div>
 
-              {/* Table footer / pagination bar matching media_1791345475932.png */}
+              {/* Table footer / pagination bar matching media_1791346217146.png */}
               <div className="p-3 bg-white border-t border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-slate-600">
                 <div className="flex items-center gap-1">
                   <button
@@ -1403,7 +1392,7 @@ export default function OrderSettingsPage() {
                 </div>
               </div>
 
-              {/* Add New Button matching media_1791345475932.png */}
+              {/* Add New Button matching media_1791346217146.png */}
               <div className="p-3.5 bg-slate-50/50 border-t border-slate-200">
                 <button
                   type="button"
@@ -1416,7 +1405,7 @@ export default function OrderSettingsPage() {
               </div>
             </div>
 
-            {/* ── SUB-PANEL 2: RETURN REQUEST ACTIONS (Matching bottom of media_1791345475932.png) ── */}
+            {/* ── SUB-PANEL 2: RETURN REQUEST ACTIONS (media_1791346240335.png) ── */}
             <div className="border border-slate-200 rounded overflow-hidden pt-1">
               <div className="p-4 bg-slate-50/60 border-b border-slate-200">
                 <h3 className="text-xs font-semibold text-slate-800">Return request actions</h3>
@@ -1464,7 +1453,7 @@ export default function OrderSettingsPage() {
                 </table>
               </div>
 
-              {/* Table footer / pagination bar */}
+              {/* Table footer / pagination bar matching media_1791346240335.png */}
               <div className="p-3 bg-white border-t border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-slate-600">
                 <div className="flex items-center gap-1">
                   <button
@@ -1519,7 +1508,7 @@ export default function OrderSettingsPage() {
                 </div>
               </div>
 
-              {/* Add New Button */}
+              {/* Add New Button matching media_1791346240335.png */}
               <div className="p-3.5 bg-slate-50/50 border-t border-slate-200">
                 <button
                   type="button"
@@ -1559,7 +1548,7 @@ export default function OrderSettingsPage() {
         </div>
       </div>
 
-      {/* ── FLOATING GREEN SCROLL-TO-TOP BUTTON (Matching media_1791345475932.png) ── */}
+      {/* ── FLOATING GREEN SCROLL-TO-TOP BUTTON ── */}
       <button
         type="button"
         onClick={scrollToTop}
@@ -1597,7 +1586,7 @@ export default function OrderSettingsPage() {
                   value={itemNameInput}
                   onChange={(e) => setItemNameInput(e.target.value)}
                   placeholder={
-                    modalMode === 'reason' ? 'e.g. Received Wrong Product' : 'e.g. Refund'
+                    modalMode === 'reason' ? 'e.g. Received Wrong Product' : 'e.g. Repair'
                   }
                   className="w-full border border-slate-300 rounded px-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc]"
                 />

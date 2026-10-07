@@ -117,9 +117,9 @@ export const DEFAULT_ORDER_SETTINGS: OrderSettingsData = {
     { id: 'rrr-3', name: 'There Was A Problem With The Product', displayOrder: 3 },
   ],
   returnRequestActions: [
-    { id: 'rra-1', name: 'Refund', displayOrder: 1 },
-    { id: 'rra-2', name: 'Repair', displayOrder: 2 },
-    { id: 'rra-3', name: 'Replacement', displayOrder: 3 },
+    { id: 'rra-1', name: 'Repair', displayOrder: 1 },
+    { id: 'rra-2', name: 'Replacement', displayOrder: 2 },
+    { id: 'rra-3', name: 'Store Credit', displayOrder: 3 },
   ],
 
   isAdvanced: true,
