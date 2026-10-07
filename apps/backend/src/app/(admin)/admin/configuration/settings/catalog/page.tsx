@@ -27,6 +27,9 @@ import {
   LayoutGrid,
   Tag,
   Percent,
+  ArrowLeftRight,
+  ArrowUpDown,
+  Check,
 } from 'lucide-react';
 import { ImageEditorField } from '@/components/admin/ImageEditorField';
 
@@ -49,6 +52,13 @@ interface ReviewTypeItem {
   displayOrder: number;
 }
 
+interface ProductSortingOption {
+  id: string;
+  name: string;
+  displayOrder: number;
+  isActive: boolean;
+}
+
 export default function CatalogSettingsPage() {
   const [isAdvanced, setIsAdvanced] = useState(true);
 
@@ -66,6 +76,8 @@ export default function CatalogSettingsPage() {
   const [shareOpen, setShareOpen] = useState(true);
   const [compareOpen, setCompareOpen] = useState(true);
   const [additionalSectionsOpen, setAdditionalSectionsOpen] = useState(true);
+  const [exportImportOpen, setExportImportOpen] = useState(true);
+  const [productSortingOpen, setProductSortingOpen] = useState(true);
 
   // Product fields (media_1791349415553.png)
   const [showSkuOnProductDetailsPage, setShowSkuOnProductDetailsPage] = useState(true);
@@ -246,6 +258,41 @@ export default function CatalogSettingsPage() {
   const [defaultCatalogPlaceholderImage, setDefaultCatalogPlaceholderImage] = useState(
     'https://images.unsplash.com/photo-1592982537447-6f2a6a0c7c18?auto=format&fit=crop&w=400&q=80'
   );
+
+  // 9. Export/Import fields (media_1791351690676.png)
+  const [exportImportProductsWithAttributes, setExportImportProductsWithAttributes] = useState(true);
+  const [exportImportProductsWithSpecificationAttributes, setExportImportProductsWithSpecificationAttributes] =
+    useState(true);
+  const [exportImportProductsWithTierPrices, setExportImportProductsWithTierPrices] = useState(true);
+  const [exportImportProductsWithCategoryBreadcrumb, setExportImportProductsWithCategoryBreadcrumb] =
+    useState(false);
+  const [exportImportCategoriesUsingNameOfCategory, setExportImportCategoriesUsingNameOfCategory] =
+    useState(false);
+  const [exportImportProductsAllowDownloadImages, setExportImportProductsAllowDownloadImages] =
+    useState(false);
+  const [exportImportProductsAllowSplittingFile, setExportImportProductsAllowSplittingFile] =
+    useState(false);
+  const [exportImportRelatedEntitiesUsingName, setExportImportRelatedEntitiesUsingName] = useState(true);
+  const [exportImportProductsWithLimitedToStores, setExportImportProductsWithLimitedToStores] =
+    useState(false);
+  const [exportImportCategoriesWithLimitedToStores, setExportImportCategoriesWithLimitedToStores] =
+    useState(false);
+
+  // 10. Product sorting fields (media_1791351715936.png)
+  const [allowProductSorting, setAllowProductSorting] = useState(true);
+  const [productSortingOptions, setProductSortingOptions] = useState<ProductSortingOption[]>([
+    { id: 'sort-1', name: 'Position', displayOrder: 0, isActive: true },
+    { id: 'sort-2', name: 'Name: A to Z', displayOrder: 5, isActive: true },
+    { id: 'sort-3', name: 'Name: Z to A', displayOrder: 6, isActive: true },
+    { id: 'sort-4', name: 'Price: Low to High', displayOrder: 10, isActive: true },
+    { id: 'sort-5', name: 'Price: High to Low', displayOrder: 11, isActive: true },
+    { id: 'sort-6', name: 'Created on', displayOrder: 15, isActive: true },
+  ]);
+  const [sortingModalOpen, setSortingModalOpen] = useState(false);
+  const [editingSortingOption, setEditingSortingOption] = useState<ProductSortingOption | null>(null);
+  const [sortNameInput, setSortNameInput] = useState('');
+  const [sortOrderInput, setSortOrderInput] = useState<number | string>(0);
+  const [sortActiveInput, setSortActiveInput] = useState(true);
 
   // Toast & Saving
   const [saving, setSaving] = useState(false);
@@ -520,6 +567,37 @@ export default function CatalogSettingsPage() {
         s.displayTaxShippingInfoOrderDetailsPage
       );
 
+    // Export/Import (media_1791351690676.png)
+    if (s.exportImportProductsWithAttributes !== undefined)
+      setExportImportProductsWithAttributes(s.exportImportProductsWithAttributes);
+    if (s.exportImportProductsWithSpecificationAttributes !== undefined)
+      setExportImportProductsWithSpecificationAttributes(s.exportImportProductsWithSpecificationAttributes);
+    if (s.exportImportProductsWithTierPrices !== undefined)
+      setExportImportProductsWithTierPrices(s.exportImportProductsWithTierPrices);
+    if (s.exportImportProductsWithCategoryBreadcrumb !== undefined)
+      setExportImportProductsWithCategoryBreadcrumb(s.exportImportProductsWithCategoryBreadcrumb);
+    if (s.exportImportCategoriesUsingNameOfCategory !== undefined)
+      setExportImportCategoriesUsingNameOfCategory(s.exportImportCategoriesUsingNameOfCategory);
+    if (s.exportImportProductsAllowDownloadImages !== undefined)
+      setExportImportProductsAllowDownloadImages(s.exportImportProductsAllowDownloadImages);
+    if (s.exportImportProductsAllowSplittingFile !== undefined)
+      setExportImportProductsAllowSplittingFile(s.exportImportProductsAllowSplittingFile);
+    if (s.exportImportRelatedEntitiesUsingName !== undefined)
+      setExportImportRelatedEntitiesUsingName(s.exportImportRelatedEntitiesUsingName);
+    if (s.exportImportProductsWithLimitedToStores !== undefined)
+      setExportImportProductsWithLimitedToStores(s.exportImportProductsWithLimitedToStores);
+    if (s.exportImportCategoriesWithLimitedToStores !== undefined)
+      setExportImportCategoriesWithLimitedToStores(s.exportImportCategoriesWithLimitedToStores);
+
+    // Product sorting (media_1791351715936.png)
+    if (s.allowProductSorting !== undefined)
+      setAllowProductSorting(s.allowProductSorting);
+    if (s.productSortingOptions && Array.isArray(s.productSortingOptions))
+      setProductSortingOptions(s.productSortingOptions);
+
+    if (s.defaultCatalogPlaceholderImage)
+      setDefaultCatalogPlaceholderImage(s.defaultCatalogPlaceholderImage);
+
     if (s.isAdvanced !== undefined) setIsAdvanced(s.isAdvanced);
   };
 
@@ -643,6 +721,22 @@ export default function CatalogSettingsPage() {
       displayTaxShippingInfoShoppingCart,
       displayTaxShippingInfoWishlist,
       displayTaxShippingInfoOrderDetailsPage,
+
+      // Export/Import (media_1791351690676.png)
+      exportImportProductsWithAttributes,
+      exportImportProductsWithSpecificationAttributes,
+      exportImportProductsWithTierPrices,
+      exportImportProductsWithCategoryBreadcrumb,
+      exportImportCategoriesUsingNameOfCategory,
+      exportImportProductsAllowDownloadImages,
+      exportImportProductsAllowSplittingFile,
+      exportImportRelatedEntitiesUsingName,
+      exportImportProductsWithLimitedToStores,
+      exportImportCategoriesWithLimitedToStores,
+
+      // Product sorting (media_1791351715936.png)
+      allowProductSorting,
+      productSortingOptions,
 
       defaultCatalogPlaceholderImage,
       isAdvanced,
@@ -785,7 +879,68 @@ export default function CatalogSettingsPage() {
     setDisplayTaxShippingInfoWishlist(false);
     setDisplayTaxShippingInfoOrderDetailsPage(false);
 
+    // Export/Import defaults (media_1791351690676.png)
+    setExportImportProductsWithAttributes(true);
+    setExportImportProductsWithSpecificationAttributes(true);
+    setExportImportProductsWithTierPrices(true);
+    setExportImportProductsWithCategoryBreadcrumb(false);
+    setExportImportCategoriesUsingNameOfCategory(false);
+    setExportImportProductsAllowDownloadImages(false);
+    setExportImportProductsAllowSplittingFile(false);
+    setExportImportRelatedEntitiesUsingName(true);
+    setExportImportProductsWithLimitedToStores(false);
+    setExportImportCategoriesWithLimitedToStores(false);
+
+    // Product sorting defaults (media_1791351715936.png)
+    setAllowProductSorting(true);
+    setProductSortingOptions([
+      { id: 'sort-1', name: 'Position', displayOrder: 0, isActive: true },
+      { id: 'sort-2', name: 'Name: A to Z', displayOrder: 5, isActive: true },
+      { id: 'sort-3', name: 'Name: Z to A', displayOrder: 6, isActive: true },
+      { id: 'sort-4', name: 'Price: Low to High', displayOrder: 10, isActive: true },
+      { id: 'sort-5', name: 'Price: High to Low', displayOrder: 11, isActive: true },
+      { id: 'sort-6', name: 'Created on', displayOrder: 15, isActive: true },
+    ]);
+
     showToast('Reset to default values. Click Save to apply.', 'success');
+  };
+
+  const openEditSorting = (item: ProductSortingOption) => {
+    setEditingSortingOption(item);
+    setSortNameInput(item.name);
+    setSortOrderInput(item.displayOrder);
+    setSortActiveInput(item.isActive);
+    setSortingModalOpen(true);
+  };
+
+  const saveSortingOption = () => {
+    if (!sortNameInput.trim()) {
+      alert('Please enter a sorting option name.');
+      return;
+    }
+    const order = Number(sortOrderInput) || 0;
+    if (editingSortingOption) {
+      setProductSortingOptions((prev) =>
+        prev.map((opt) =>
+          opt.id === editingSortingOption.id
+            ? {
+                ...opt,
+                name: sortNameInput.trim(),
+                displayOrder: order,
+                isActive: sortActiveInput,
+              }
+            : opt
+        )
+      );
+      showToast('Product sorting option updated.');
+    }
+    setSortingModalOpen(false);
+  };
+
+  const toggleSortingActive = (id: string) => {
+    setProductSortingOptions((prev) =>
+      prev.map((opt) => (opt.id === id ? { ...opt, isActive: !opt.isActive } : opt))
+    );
   };
 
   const openAddReviewType = () => {
@@ -932,6 +1087,8 @@ export default function CatalogSettingsPage() {
           { id: 'sec-share', label: 'Share' },
           { id: 'sec-compare', label: 'Compare products' },
           { id: 'sec-additional', label: 'Additional sections' },
+          { id: 'sec-export-import', label: 'Export/Import' },
+          { id: 'sec-product-sorting', label: 'Product sorting' },
         ].map((item) => (
           <a
             key={item.id}
@@ -3293,6 +3450,364 @@ export default function CatalogSettingsPage() {
         )}
       </div>
 
+      {/* ── CARD 9: EXPORT/IMPORT (Matching media_1791351690676.png) ── */}
+      <div id="sec-export-import" className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden border-t-3 border-t-[#00c0ef] scroll-mt-4">
+        <div
+          onClick={() => setExportImportOpen(!exportImportOpen)}
+          className="px-4 py-2.5 bg-white border-b border-[#f4f4f4] flex items-center justify-between cursor-pointer select-none text-xs font-semibold text-slate-700 hover:bg-slate-50/70 transition"
+        >
+          <div className="flex items-center gap-2">
+            <ArrowLeftRight className="w-4 h-4 text-slate-700 stroke-[1.8]" />
+            <span className="text-sm font-normal text-slate-800">Export/Import</span>
+          </div>
+          <button type="button" className="text-slate-400 hover:text-slate-600">
+            {exportImportOpen ? (
+              <Minus className="w-4 h-4 stroke-[2]" />
+            ) : (
+              <Plus className="w-4 h-4 stroke-[2]" />
+            )}
+          </button>
+        </div>
+
+        {exportImportOpen && (
+          <div className="p-5 space-y-4 text-xs text-slate-700">
+            {/* Export/Import products with attributes */}
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+              <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                <span>Export/Import products with attributes</span>
+                <HelpTooltip text="An option indicating whether to export/import product attributes (e.g., color, size variations)." />
+              </label>
+              <div className="md:col-span-8 flex items-center">
+                <input
+                  type="checkbox"
+                  checked={exportImportProductsWithAttributes}
+                  onChange={(e) => setExportImportProductsWithAttributes(e.target.checked)}
+                  className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                />
+              </div>
+            </div>
+
+            {/* Export/Import products with specification attributes */}
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+              <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                <span>Export/Import products with specification attributes</span>
+                <HelpTooltip text="An option indicating whether to export/import specification attributes." />
+              </label>
+              <div className="md:col-span-8 flex items-center">
+                <input
+                  type="checkbox"
+                  checked={exportImportProductsWithSpecificationAttributes}
+                  onChange={(e) =>
+                    setExportImportProductsWithSpecificationAttributes(e.target.checked)
+                  }
+                  className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                />
+              </div>
+            </div>
+
+            {/* Export/Import products with tier prices */}
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+              <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                <span>Export/Import products with tier prices</span>
+                <HelpTooltip text="An option indicating whether to export/import product tier prices." />
+              </label>
+              <div className="md:col-span-8 flex items-center">
+                <input
+                  type="checkbox"
+                  checked={exportImportProductsWithTierPrices}
+                  onChange={(e) => setExportImportProductsWithTierPrices(e.target.checked)}
+                  className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                />
+              </div>
+            </div>
+
+            {/* Export/Import products with category breadcrumb */}
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+              <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                <span>Export/Import products with category breadcrumb</span>
+                <HelpTooltip text="An option indicating whether to export/import category breadcrumb paths (e.g. Computers > Desktops)." />
+              </label>
+              <div className="md:col-span-8 flex items-center">
+                <input
+                  type="checkbox"
+                  checked={exportImportProductsWithCategoryBreadcrumb}
+                  onChange={(e) =>
+                    setExportImportProductsWithCategoryBreadcrumb(e.target.checked)
+                  }
+                  className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                />
+              </div>
+            </div>
+
+            {/* Export/Import categories using name of category */}
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+              <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                <span>Export/Import categories using name of category</span>
+                <HelpTooltip text="An option indicating whether to use category names instead of numeric category IDs when exporting/importing." />
+              </label>
+              <div className="md:col-span-8 flex items-center">
+                <input
+                  type="checkbox"
+                  checked={exportImportCategoriesUsingNameOfCategory}
+                  onChange={(e) =>
+                    setExportImportCategoriesUsingNameOfCategory(e.target.checked)
+                  }
+                  className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                />
+              </div>
+            </div>
+
+            {/* Export/Import products. Allow download images */}
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+              <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                <span>Export/Import products. Allow download images</span>
+                <HelpTooltip text="Check to automatically download remote product pictures during catalog Excel or XML import." />
+              </label>
+              <div className="md:col-span-8 flex items-center">
+                <input
+                  type="checkbox"
+                  checked={exportImportProductsAllowDownloadImages}
+                  onChange={(e) =>
+                    setExportImportProductsAllowDownloadImages(e.target.checked)
+                  }
+                  className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                />
+              </div>
+            </div>
+
+            {/* Export/Import products. Allow splitting file */}
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+              <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                <span>Export/Import products. Allow splitting file</span>
+                <HelpTooltip text="Check to split large catalog export datasets into multiple consecutive archive batches." />
+              </label>
+              <div className="md:col-span-8 flex items-center">
+                <input
+                  type="checkbox"
+                  checked={exportImportProductsAllowSplittingFile}
+                  onChange={(e) =>
+                    setExportImportProductsAllowSplittingFile(e.target.checked)
+                  }
+                  className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                />
+              </div>
+            </div>
+
+            {/* Export/Import related entities using name */}
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+              <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                <span>Export/Import related entities using name</span>
+                <HelpTooltip text="Check to reference related entities (such as manufacturers, vendors) by name rather than database IDs." />
+              </label>
+              <div className="md:col-span-8 flex items-center">
+                <input
+                  type="checkbox"
+                  checked={exportImportRelatedEntitiesUsingName}
+                  onChange={(e) =>
+                    setExportImportRelatedEntitiesUsingName(e.target.checked)
+                  }
+                  className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                />
+              </div>
+            </div>
+
+            {/* Export/Import products with "limited to stores" */}
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+              <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                <span>Export/Import products with &quot;limited to stores&quot;</span>
+                <HelpTooltip text="Export and import store mapping assignments per product." />
+              </label>
+              <div className="md:col-span-8 flex items-center">
+                <input
+                  type="checkbox"
+                  checked={exportImportProductsWithLimitedToStores}
+                  onChange={(e) =>
+                    setExportImportProductsWithLimitedToStores(e.target.checked)
+                  }
+                  className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                />
+              </div>
+            </div>
+
+            {/* Export / Import categories with "limited to stores" */}
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+              <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                <span>Export / Import categories with &quot;limited to stores&quot;</span>
+                <HelpTooltip text="Export and import store mapping assignments per category." />
+              </label>
+              <div className="md:col-span-8 flex items-center">
+                <input
+                  type="checkbox"
+                  checked={exportImportCategoriesWithLimitedToStores}
+                  onChange={(e) =>
+                    setExportImportCategoriesWithLimitedToStores(e.target.checked)
+                  }
+                  className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                />
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* ── CARD 10: PRODUCT SORTING (Matching media_1791351715936.png) ── */}
+      <div id="sec-product-sorting" className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden border-t-3 border-t-[#00c0ef] scroll-mt-4">
+        <div
+          onClick={() => setProductSortingOpen(!productSortingOpen)}
+          className="px-4 py-2.5 bg-white border-b border-[#f4f4f4] flex items-center justify-between cursor-pointer select-none text-xs font-semibold text-slate-700 hover:bg-slate-50/70 transition"
+        >
+          <div className="flex items-center gap-2">
+            <ArrowUpDown className="w-4 h-4 text-slate-700 stroke-[1.8]" />
+            <span className="text-sm font-normal text-slate-800">Product sorting</span>
+          </div>
+          <button type="button" className="text-slate-400 hover:text-slate-600">
+            {productSortingOpen ? (
+              <Minus className="w-4 h-4 stroke-[2]" />
+            ) : (
+              <Plus className="w-4 h-4 stroke-[2]" />
+            )}
+          </button>
+        </div>
+
+        {productSortingOpen && (
+          <div className="p-5 space-y-5 text-xs text-slate-700">
+            {/* Allow product sorting */}
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+              <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                <span>Allow product sorting</span>
+                <HelpTooltip text="Check to allow customers to choose product sorting order (position, price, name, etc.) on catalog pages." />
+              </label>
+              <div className="md:col-span-8 flex items-center">
+                <input
+                  type="checkbox"
+                  checked={allowProductSorting}
+                  onChange={(e) => setAllowProductSorting(e.target.checked)}
+                  className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                />
+              </div>
+            </div>
+
+            {/* Table of sorting options */}
+            {allowProductSorting && (
+              <div className="border border-[#e7e7e7] rounded overflow-hidden">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-xs text-left border-collapse">
+                    <thead>
+                      <tr className="bg-[#f9fafc] border-b border-[#e7e7e7] text-slate-700 font-semibold">
+                        <th className="py-2.5 px-4 text-left w-2/5">Name</th>
+                        <th className="py-2.5 px-4 text-center w-1/5">Display order</th>
+                        <th className="py-2.5 px-4 text-center w-1/5">Is active</th>
+                        <th className="py-2.5 px-4 text-center w-1/5">Edit</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-[#f4f4f4]">
+                      {productSortingOptions.map((opt) => (
+                        <tr key={opt.id} className="hover:bg-slate-50/80 transition">
+                          <td className="py-2.5 px-4 text-slate-800 font-normal">
+                            {opt.name}
+                          </td>
+                          <td className="py-2.5 px-4 text-center text-slate-700">
+                            {opt.displayOrder}
+                          </td>
+                          <td className="py-2.5 px-4 text-center">
+                            <button
+                              type="button"
+                              onClick={() => toggleSortingActive(opt.id)}
+                              className="inline-flex items-center justify-center cursor-pointer text-[#3c8dbc] hover:text-[#286090]"
+                              title="Click to toggle active state"
+                            >
+                              {opt.isActive ? (
+                                <Check className="w-4 h-4 stroke-[2.5] text-[#3c8dbc]" />
+                              ) : (
+                                <X className="w-4 h-4 stroke-[2.5] text-red-500" />
+                              )}
+                            </button>
+                          </td>
+                          <td className="py-2.5 px-4 text-center">
+                            <button
+                              type="button"
+                              onClick={() => openEditSorting(opt)}
+                              className="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-normal text-slate-700 bg-white border border-[#d2d6de] hover:bg-slate-50 hover:border-slate-400 rounded transition cursor-pointer shadow-2xs"
+                            >
+                              <Edit2 className="w-3.5 h-3.5 text-slate-600" />
+                              <span>Edit</span>
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Table footer / Pagination toolbar matching media_1791351715936.png */}
+                <div className="bg-[#f9fafc] border-t border-[#e7e7e7] px-4 py-2.5 flex flex-wrap items-center justify-between gap-3 text-xs text-slate-600">
+                  <div className="flex items-center gap-1">
+                    <button
+                      type="button"
+                      disabled
+                      className="px-2.5 py-1 text-slate-400 border border-[#e7e7e7] bg-white rounded cursor-not-allowed select-none text-[11px]"
+                    >
+                      Previous
+                    </button>
+                    <button
+                      type="button"
+                      className="px-2.5 py-1 text-white bg-[#337ab7] border border-[#337ab7] rounded font-semibold text-[11px]"
+                    >
+                      1
+                    </button>
+                    <button
+                      type="button"
+                      disabled
+                      className="px-2.5 py-1 text-slate-400 border border-[#e7e7e7] bg-white rounded cursor-not-allowed select-none text-[11px]"
+                    >
+                      Next
+                    </button>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <span className="text-[11px] text-slate-500">Show</span>
+                    <select
+                      value="15"
+                      disabled
+                      className="border border-[#d2d6de] rounded px-2 py-0.5 text-xs text-slate-700 bg-white outline-none cursor-pointer"
+                    >
+                      <option value="15">15</option>
+                      <option value="30">30</option>
+                      <option value="50">50</option>
+                    </select>
+                    <span className="text-[11px] text-slate-500">items</span>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <span className="text-[11px] text-slate-500">
+                      1-{productSortingOptions.length} of {productSortingOptions.length} items
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setProductSortingOptions([
+                          { id: 'sort-1', name: 'Position', displayOrder: 0, isActive: true },
+                          { id: 'sort-2', name: 'Name: A to Z', displayOrder: 5, isActive: true },
+                          { id: 'sort-3', name: 'Name: Z to A', displayOrder: 6, isActive: true },
+                          { id: 'sort-4', name: 'Price: Low to High', displayOrder: 10, isActive: true },
+                          { id: 'sort-5', name: 'Price: High to Low', displayOrder: 11, isActive: true },
+                          { id: 'sort-6', name: 'Created on', displayOrder: 15, isActive: true },
+                        ]);
+                        showToast('Sorting options refreshed.');
+                      }}
+                      className="text-slate-400 hover:text-slate-700 transition p-1"
+                      title="Refresh sorting options"
+                    >
+                      <RefreshCw className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
       {/* ── BOTTOM ACTIONS BAR ── */}
       <div className="flex items-center justify-between pt-2">
         <button
@@ -3428,6 +3943,75 @@ export default function CatalogSettingsPage() {
                   {editingReviewType ? 'Save changes' : 'Add item'}
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── MODAL FOR EDIT SORTING OPTION ── */}
+      {sortingModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-2xs p-4">
+          <div className="bg-white rounded border border-slate-300 shadow-xl max-w-md w-full overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+            <div className="px-5 py-3.5 bg-[#f4f6f9] border-b border-[#e5e7eb] flex items-center justify-between">
+              <h3 className="text-sm font-semibold text-slate-800">
+                Edit product sorting option
+              </h3>
+              <button
+                type="button"
+                onClick={() => setSortingModalOpen(false)}
+                className="text-slate-400 hover:text-slate-700 cursor-pointer"
+              >
+                <X className="w-4 h-4 stroke-[2]" />
+              </button>
+            </div>
+            <div className="p-5 space-y-4 text-xs">
+              <div>
+                <label className="block font-medium text-slate-700 mb-1">Name</label>
+                <input
+                  type="text"
+                  value={sortNameInput}
+                  onChange={(e) => setSortNameInput(e.target.value)}
+                  className="w-full border border-[#d2d6de] focus:border-[#3c8dbc] outline-none rounded px-3 py-1.5 text-xs text-slate-800"
+                  placeholder="Sorting name"
+                />
+              </div>
+              <div>
+                <label className="block font-medium text-slate-700 mb-1">Display order</label>
+                <input
+                  type="number"
+                  value={sortOrderInput}
+                  onChange={(e) => setSortOrderInput(e.target.value)}
+                  className="w-full border border-[#d2d6de] focus:border-[#3c8dbc] outline-none rounded px-3 py-1.5 text-xs text-slate-800"
+                />
+              </div>
+              <div className="flex items-center gap-2 pt-1">
+                <input
+                  type="checkbox"
+                  id="sortIsActiveCheck"
+                  checked={sortActiveInput}
+                  onChange={(e) => setSortActiveInput(e.target.checked)}
+                  className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                />
+                <label htmlFor="sortIsActiveCheck" className="text-slate-800 cursor-pointer">
+                  Is active
+                </label>
+              </div>
+            </div>
+            <div className="px-5 py-3 bg-[#f9fafc] border-t border-[#e5e7eb] flex items-center justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => setSortingModalOpen(false)}
+                className="px-4 py-1.5 text-xs text-slate-700 border border-[#d2d6de] rounded hover:bg-slate-100 transition cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={saveSortingOption}
+                className="px-4 py-1.5 text-xs font-semibold text-white bg-[#3c8dbc] hover:bg-[#367fa9] rounded transition cursor-pointer"
+              >
+                Save
+              </button>
             </div>
           </div>
         </div>

@@ -135,10 +135,33 @@ export interface CatalogSettingsData {
   displayTaxShippingInfoWishlist: boolean;
   displayTaxShippingInfoOrderDetailsPage: boolean;
 
+  // Export/Import (media_1791351690676.png)
+  exportImportProductsWithAttributes: boolean;
+  exportImportProductsWithSpecificationAttributes: boolean;
+  exportImportProductsWithTierPrices: boolean;
+  exportImportProductsWithCategoryBreadcrumb: boolean;
+  exportImportCategoriesUsingNameOfCategory: boolean;
+  exportImportProductsAllowDownloadImages: boolean;
+  exportImportProductsAllowSplittingFile: boolean;
+  exportImportRelatedEntitiesUsingName: boolean;
+  exportImportProductsWithLimitedToStores: boolean;
+  exportImportCategoriesWithLimitedToStores: boolean;
+
+  // Product sorting (media_1791351715936.png)
+  allowProductSorting: boolean;
+  productSortingOptions: ProductSortingOption[];
+
   // Catalog images & placeholder
   defaultCatalogPlaceholderImage?: string;
 
   isAdvanced: boolean;
+}
+
+export interface ProductSortingOption {
+  id: string;
+  name: string;
+  displayOrder: number;
+  isActive: boolean;
 }
 
 export const DEFAULT_CATALOG_SETTINGS: CatalogSettingsData = {
@@ -268,6 +291,29 @@ export const DEFAULT_CATALOG_SETTINGS: CatalogSettingsData = {
   displayTaxShippingInfoShoppingCart: false,
   displayTaxShippingInfoWishlist: false,
   displayTaxShippingInfoOrderDetailsPage: false,
+
+  // Export/Import defaults (media_1791351690676.png)
+  exportImportProductsWithAttributes: true,
+  exportImportProductsWithSpecificationAttributes: true,
+  exportImportProductsWithTierPrices: true,
+  exportImportProductsWithCategoryBreadcrumb: false,
+  exportImportCategoriesUsingNameOfCategory: false,
+  exportImportProductsAllowDownloadImages: false,
+  exportImportProductsAllowSplittingFile: false,
+  exportImportRelatedEntitiesUsingName: true,
+  exportImportProductsWithLimitedToStores: false,
+  exportImportCategoriesWithLimitedToStores: false,
+
+  // Product sorting defaults (media_1791351715936.png)
+  allowProductSorting: true,
+  productSortingOptions: [
+    { id: 'sort-1', name: 'Position', displayOrder: 0, isActive: true },
+    { id: 'sort-2', name: 'Name: A to Z', displayOrder: 5, isActive: true },
+    { id: 'sort-3', name: 'Name: Z to A', displayOrder: 6, isActive: true },
+    { id: 'sort-4', name: 'Price: Low to High', displayOrder: 10, isActive: true },
+    { id: 'sort-5', name: 'Price: High to Low', displayOrder: 11, isActive: true },
+    { id: 'sort-6', name: 'Created on', displayOrder: 15, isActive: true },
+  ],
 
   defaultCatalogPlaceholderImage:
     'https://images.unsplash.com/photo-1592982537447-6f2a6a0c7c18?auto=format&fit=crop&w=400&q=80',
