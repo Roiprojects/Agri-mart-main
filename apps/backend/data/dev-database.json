@@ -16711,5 +16711,23 @@
         "displayOrder": 3
       }
     ]
+  },
+  "rewardPointsSettings": {
+    "enabled": true,
+    "exchangeRate": 1,
+    "minimumRewardPointsToUse": 0,
+    "maximumRewardPointsToUsePerOrder": 0,
+    "maximumRedeemedRate": 0,
+    "pointsForPurchasesAmount": 10,
+    "pointsForPurchasesPoints": 1,
+    "purchasesPointsValidity": 45,
+    "minimumOrderTotal": 0,
+    "pointsForRegistration": 0,
+    "registrationPointsValidity": 30,
+    "activatePointsImmediately": true,
+    "displayHowMuchWillBeEarned": true,
+    "pointsAccumulatedForAllStores": true,
+    "pageSize": 10,
+    "isAdvanced": true
   }
 }

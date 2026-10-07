@@ -50,6 +50,7 @@ import ShippingSettingsPage from '../shipping/page';
 import TaxSettingsPage from '../tax/page';
 import ShoppingCartSettingsPage from '../shopping-cart/page';
 import FilterYmmSettingsPage from '../filter-ymm/page';
+import RewardPointsSettingsPage from '../reward-points/page';
 
 export default function ConfigurationSectionPage({
   params,
@@ -79,6 +80,9 @@ export default function ConfigurationSectionPage({
   }
   if (section === 'filter-ymm') {
     return <FilterYmmSettingsPage />;
+  }
+  if (section === 'reward-points') {
+    return <RewardPointsSettingsPage />;
   }
 
   const info = sectionTitles[section] || {
