@@ -55,6 +55,7 @@ import GdprSettingsPage from '../gdpr/page';
 import VendorSettingsPage from '../vendor/page';
 import BlogSettingsPage from '../blog/page';
 import NewsSettingsPage from '../news/page';
+import ForumSettingsPage from '../forum/page';
 
 export default function ConfigurationSectionPage({
   params,
@@ -99,6 +100,9 @@ export default function ConfigurationSectionPage({
   }
   if (section === 'news') {
     return <NewsSettingsPage />;
+  }
+  if (section === 'forum') {
+    return <ForumSettingsPage />;
   }
 
   const info = sectionTitles[section] || {

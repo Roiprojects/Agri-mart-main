@@ -16776,5 +16776,31 @@
     "notifyAboutNewNewsComments": false,
     "newsCommentsPerStore": false,
     "isAdvanced": true
+  },
+  "forumSettings": {
+    "forumsEnabled": false,
+    "relativeDateTimeFormatting": true,
+    "signatureEnabled": true,
+    "showCustomersPostCount": true,
+    "forumEditor": "BBCode editor",
+    "allowGuestsToCreatePosts": false,
+    "allowGuestsToCreateTopics": false,
+    "allowCustomersToEditPosts": false,
+    "allowCustomersToDeletePosts": false,
+    "allowCustomersToManageForumSubscriptions": false,
+    "allowUsersToVoteForPosts": true,
+    "maximumVotesPerDay": 30,
+    "allowPrivateMessages": true,
+    "showAlertForPM": false,
+    "notifyAboutPrivateMessages": false,
+    "topicsPageSize": 10,
+    "postsPageSize": 10,
+    "searchResultsPageSize": 10,
+    "activeDiscussionsPageSize": 50,
+    "forumFeedsEnabled": true,
+    "forumFeedCount": 10,
+    "activeDiscussionsFeedEnabled": true,
+    "activeDiscussionsFeedCount": 25,
+    "isAdvanced": true
   }
 }
