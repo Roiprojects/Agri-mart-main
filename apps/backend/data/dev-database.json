@@ -16802,5 +16802,27 @@
     "activeDiscussionsFeedEnabled": true,
     "activeDiscussionsFeedCount": 25,
     "isAdvanced": true
+  },
+  "mediaSettings": {
+    "pictureStorageTarget": "database",
+    "maximumImageSize": 1920,
+    "multipleThumbDirectories": false,
+    "defaultImageQuality": 80,
+    "importProductImagesUsingHash": true,
+    "pictureZoom": false,
+    "allowSvgUploadsInAdminArea": false,
+    "productDetailImageSize": 750,
+    "productThumbnailImageSizeCatalog": 400,
+    "productThumbnailImageSizeProductPage": 750,
+    "associatedProductImageSize": 350,
+    "defaultImageUrl": "",
+    "categoryThumbnailImageSize": 600,
+    "manufacturerThumbnailImageSize": 300,
+    "vendorThumbnailImageSize": 300,
+    "cartWishlistThumbnailImageSize": 90,
+    "orderThumbnailImageSize": 80,
+    "miniShoppingCartThumbnailImageSize": 70,
+    "avatarImageSize": 120,
+    "isAdvanced": true
   }
 }
