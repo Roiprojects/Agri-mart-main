@@ -27,6 +27,11 @@ const nextConfig: NextConfig = {
         source: '/api/:path((?!revalidate|package-of-practice).*)',
         destination: `${backendUrl}/api/:path*`,
       },
+      // Proxy admin routes to backend
+      {
+        source: '/admin/:path*',
+        destination: `${backendUrl}/admin/:path*`,
+      },
     ];
   },
   async redirects() {

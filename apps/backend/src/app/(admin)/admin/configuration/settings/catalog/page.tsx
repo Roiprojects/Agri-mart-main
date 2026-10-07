@@ -913,8 +913,38 @@ export default function CatalogSettingsPage() {
         </button>
       </div>
 
+      {/* ── QUICK JUMP NAVIGATION PILLS ── */}
+      <div className="bg-white border border-[#d2d6de] rounded p-2.5 shadow-2xs flex flex-wrap items-center gap-1.5 text-xs">
+        <span className="text-slate-500 font-semibold text-[11px] uppercase tracking-wider px-1">
+          Sections:
+        </span>
+        {[
+          { id: 'sec-ai', label: 'Artificial Intelligence' },
+          { id: 'sec-product-fields', label: 'Product fields' },
+          { id: 'sec-product-page', label: 'Product page' },
+          { id: 'sec-catalog-pages', label: 'Catalog pages' },
+          { id: 'sec-tags', label: 'Tags' },
+          { id: 'sec-tax', label: 'Tax' },
+          { id: 'sec-search', label: 'Search' },
+          { id: 'sec-reviews', label: 'Product reviews' },
+          { id: 'sec-review-types', label: 'Review types' },
+          { id: 'sec-performance', label: 'Performance' },
+          { id: 'sec-share', label: 'Share' },
+          { id: 'sec-compare', label: 'Compare products' },
+          { id: 'sec-additional', label: 'Additional sections' },
+        ].map((item) => (
+          <a
+            key={item.id}
+            href={`#${item.id}`}
+            className="px-2.5 py-1 rounded bg-slate-100 hover:bg-[#3c8dbc] hover:text-white text-slate-700 text-xs font-medium transition cursor-pointer border border-slate-200 shadow-2xs"
+          >
+            {item.label}
+          </a>
+        ))}
+      </div>
+
       {/* ── CARD 1: ARTIFICIAL INTELLIGENCE (Matching media_1791348103171.png & media_1791348106363.png) ── */}
-      <div className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden border-t-3 border-t-[#00c0ef]">
+      <div id="sec-ai" className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden border-t-3 border-t-[#00c0ef] scroll-mt-4">
         <div
           onClick={() => setAiOpen(!aiOpen)}
           className="px-4 py-2.5 bg-white border-b border-[#f4f4f4] flex items-center justify-between cursor-pointer select-none text-xs font-semibold text-slate-700 hover:bg-slate-50/70 transition"
@@ -1028,7 +1058,7 @@ export default function CatalogSettingsPage() {
                 </div>
 
                 {/* AI query to generate product description */}
-                {allowGenerateProductDescription && isAdvanced && (
+                {allowGenerateProductDescription && (
                   <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-start">
                     <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5 pt-1.5">
                       <span className="text-right">
@@ -1073,7 +1103,7 @@ export default function CatalogSettingsPage() {
                 </div>
 
                 {/* AI query to generate meta title */}
-                {allowGenerateMetaTitle && isAdvanced && (
+                {allowGenerateMetaTitle && (
                   <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-start">
                     <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5 pt-1.5">
                       <span>AI query to generate meta title</span>
@@ -1115,7 +1145,7 @@ export default function CatalogSettingsPage() {
                 </div>
 
                 {/* AI query to generate meta keywords */}
-                {allowGenerateMetaKeywords && isAdvanced && (
+                {allowGenerateMetaKeywords && (
                   <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-start">
                     <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5 pt-1.5">
                       <span>AI query to generate meta keywords</span>
@@ -1160,7 +1190,7 @@ export default function CatalogSettingsPage() {
                 </div>
 
                 {/* AI query to generate meta description */}
-                {allowGenerateMetaDescription && isAdvanced && (
+                {allowGenerateMetaDescription && (
                   <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-start">
                     <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5 pt-1.5">
                       <span className="text-right">
@@ -1190,7 +1220,7 @@ export default function CatalogSettingsPage() {
       </div>
 
       {/* ── CARD: PRODUCT FIELDS (Matching media_1791349415553.png) ── */}
-      <div className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden border-t-3 border-t-[#00c0ef]">
+      <div id="sec-product-fields" className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden border-t-3 border-t-[#00c0ef] scroll-mt-4">
         <div
           onClick={() => setProductFieldsOpen(!productFieldsOpen)}
           className="px-4 py-2.5 bg-white border-b border-[#f4f4f4] flex items-center justify-between cursor-pointer select-none text-xs font-semibold text-slate-700 hover:bg-slate-50/70 transition"
@@ -1227,86 +1257,82 @@ export default function CatalogSettingsPage() {
             </div>
 
             {/* Show SKU on catalog pages (indented) */}
-            {isAdvanced && (
-              <>
-                <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
-                  <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5 pl-6">
-                    <span>Show SKU on catalog pages</span>
-                    <HelpTooltip text="An option indicating whether to display SKU on catalog pages." />
-                  </label>
-                  <div className="md:col-span-8 flex items-center relative pl-5">
-                    <div
-                      className="absolute -top-3.5 left-0 w-3.5 h-5 border-l border-b border-slate-300 pointer-events-none"
-                      aria-hidden="true"
-                    />
-                    <input
-                      type="checkbox"
-                      checked={showSkuOnCatalogPages}
-                      onChange={(e) => setShowSkuOnCatalogPages(e.target.checked)}
-                      className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
-                    />
-                  </div>
-                </div>
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+              <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5 pl-6">
+                <span>Show SKU on catalog pages</span>
+                <HelpTooltip text="An option indicating whether to display SKU on catalog pages." />
+              </label>
+              <div className="md:col-span-8 flex items-center relative pl-5">
+                <div
+                  className="absolute -top-3.5 left-0 w-3.5 h-5 border-l border-b border-slate-300 pointer-events-none"
+                  aria-hidden="true"
+                />
+                <input
+                  type="checkbox"
+                  checked={showSkuOnCatalogPages}
+                  onChange={(e) => setShowSkuOnCatalogPages(e.target.checked)}
+                  className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                />
+              </div>
+            </div>
 
-                {/* Show GTIN (further indented) */}
-                <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
-                  <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5 pl-12">
-                    <span>Show GTIN</span>
-                    <HelpTooltip text="An option indicating whether to display GTIN on the product details page." />
-                  </label>
-                  <div className="md:col-span-8 flex items-center relative pl-10">
-                    <div
-                      className="absolute -top-3.5 left-5 w-3.5 h-5 border-l border-b border-slate-300 pointer-events-none"
-                      aria-hidden="true"
-                    />
-                    <input
-                      type="checkbox"
-                      checked={showGtin}
-                      onChange={(e) => setShowGtin(e.target.checked)}
-                      className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
-                    />
-                  </div>
-                </div>
+            {/* Show GTIN (further indented) */}
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+              <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5 pl-12">
+                <span>Show GTIN</span>
+                <HelpTooltip text="An option indicating whether to display GTIN on the product details page." />
+              </label>
+              <div className="md:col-span-8 flex items-center relative pl-10">
+                <div
+                  className="absolute -top-3.5 left-5 w-3.5 h-5 border-l border-b border-slate-300 pointer-events-none"
+                  aria-hidden="true"
+                />
+                <input
+                  type="checkbox"
+                  checked={showGtin}
+                  onChange={(e) => setShowGtin(e.target.checked)}
+                  className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                />
+              </div>
+            </div>
 
-                {/* Show manufacturer part number */}
-                <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
-                  <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5 pl-6">
-                    <span>Show manufacturer part number</span>
-                    <HelpTooltip text="An option indicating whether to display manufacturer part number." />
-                  </label>
-                  <div className="md:col-span-8 flex items-center">
-                    <input
-                      type="checkbox"
-                      checked={showManufacturerPartNumber}
-                      onChange={(e) => setShowManufacturerPartNumber(e.target.checked)}
-                      className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
-                    />
-                  </div>
-                </div>
+            {/* Show manufacturer part number */}
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+              <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5 pl-6">
+                <span>Show manufacturer part number</span>
+                <HelpTooltip text="An option indicating whether to display manufacturer part number." />
+              </label>
+              <div className="md:col-span-8 flex items-center">
+                <input
+                  type="checkbox"
+                  checked={showManufacturerPartNumber}
+                  onChange={(e) => setShowManufacturerPartNumber(e.target.checked)}
+                  className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                />
+              </div>
+            </div>
 
-                {/* Show short description on catalog pages */}
-                <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
-                  <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5 pl-6">
-                    <span className="text-right">Show short description on catalog pages</span>
-                    <HelpTooltip text="An option indicating whether to display short description on catalog pages." />
-                  </label>
-                  <div className="md:col-span-8 flex items-center">
-                    <input
-                      type="checkbox"
-                      checked={showShortDescriptionOnCatalogPages}
-                      onChange={(e) => setShowShortDescriptionOnCatalogPages(e.target.checked)}
-                      className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
-                    />
-                  </div>
-                </div>
-              </>
-            )}
+            {/* Show short description on catalog pages */}
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+              <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5 pl-6">
+                <span className="text-right">Show short description on catalog pages</span>
+                <HelpTooltip text="An option indicating whether to display short description on catalog pages." />
+              </label>
+              <div className="md:col-span-8 flex items-center">
+                <input
+                  type="checkbox"
+                  checked={showShortDescriptionOnCatalogPages}
+                  onChange={(e) => setShowShortDescriptionOnCatalogPages(e.target.checked)}
+                  className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                />
+              </div>
+            </div>
           </div>
         )}
       </div>
 
       {/* ── CARD: PRODUCT PAGE (Matching media_1791349415553.png) ── */}
-      <div className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden border-t-3 border-t-[#00c0ef]">
+      <div id="sec-product-page" className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden border-t-3 border-t-[#00c0ef] scroll-mt-4">
         <div
           onClick={() => setProductPageOpen(!productPageOpen)}
           className="px-4 py-2.5 bg-white border-b border-[#f4f4f4] flex items-center justify-between cursor-pointer select-none text-xs font-semibold text-slate-700 hover:bg-slate-50/70 transition"
@@ -1428,7 +1454,7 @@ export default function CatalogSettingsPage() {
       </div>
 
       {/* ── CARD: CATALOG PAGES (Matching media_1791349419550.png) ── */}
-      <div className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden border-t-3 border-t-[#00c0ef]">
+      <div id="sec-catalog-pages" className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden border-t-3 border-t-[#00c0ef] scroll-mt-4">
         <div
           onClick={() => setCatalogPagesOpen(!catalogPagesOpen)}
           className="px-4 py-2.5 bg-white border-b border-[#f4f4f4] flex items-center justify-between cursor-pointer select-none text-xs font-semibold text-slate-700 hover:bg-slate-50/70 transition"
@@ -1482,8 +1508,6 @@ export default function CatalogSettingsPage() {
               </div>
             </div>
 
-            {isAdvanced && (
-              <>
                 {/* Include products from subcategories */}
                 <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
                   <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
@@ -1675,14 +1699,12 @@ export default function CatalogSettingsPage() {
                     />
                   </div>
                 </div>
-              </>
-            )}
           </div>
         )}
       </div>
 
       {/* ── CARD: TAGS (Matching media_1791349495099.png) ── */}
-      <div className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden border-t-3 border-t-[#00c0ef]">
+      <div id="sec-tags" className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden border-t-3 border-t-[#00c0ef] scroll-mt-4">
         <div
           onClick={() => setTagsOpen(!tagsOpen)}
           className="px-4 py-2.5 bg-white border-b border-[#f4f4f4] flex items-center justify-between cursor-pointer select-none text-xs font-semibold text-slate-700 hover:bg-slate-50/70 transition"
@@ -1718,9 +1740,7 @@ export default function CatalogSettingsPage() {
               </div>
             </div>
 
-            {isAdvanced && (
-              <>
-                {/* Allow customers to select 'Products by tag' page size */}
+            {/* Allow customers to select 'Products by tag' page size */}
                 <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
                   <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
                     <span>Allow customers to select &apos;Products by tag&apos; page size</span>
@@ -1853,14 +1873,12 @@ export default function CatalogSettingsPage() {
                     )}
                   </>
                 )}
-              </>
-            )}
           </div>
         )}
       </div>
 
       {/* ── CARD: TAX (Matching media_1791349518173.png) ── */}
-      <div className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden border-t-3 border-t-[#00c0ef]">
+      <div id="sec-tax" className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden border-t-3 border-t-[#00c0ef] scroll-mt-4">
         <div
           onClick={() => setTaxOpen(!taxOpen)}
           className="px-4 py-2.5 bg-white border-b border-[#f4f4f4] flex items-center justify-between cursor-pointer select-none text-xs font-semibold text-slate-700 hover:bg-slate-50/70 transition"
@@ -1914,9 +1932,7 @@ export default function CatalogSettingsPage() {
               </div>
             </div>
 
-            {isAdvanced && (
-              <>
-                {/* Display tax/shipping info (product boxes) */}
+            {/* Display tax/shipping info (product boxes) */}
                 <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
                   <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
                     <span>Display tax/shipping info (product boxes)</span>
@@ -1985,14 +2001,12 @@ export default function CatalogSettingsPage() {
                     />
                   </div>
                 </div>
-              </>
-            )}
           </div>
         )}
       </div>
 
       {/* ── CARD 2: SEARCH (Matching media_1791348108093.png & media_1791348109836.png) ── */}
-      <div className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden border-t-3 border-t-[#00c0ef]">
+      <div id="sec-search" className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden border-t-3 border-t-[#00c0ef] scroll-mt-4">
         <div
           onClick={() => setSearchOpen(!searchOpen)}
           className="px-4 py-2.5 bg-white border-b border-[#f4f4f4] flex items-center justify-between cursor-pointer select-none text-xs font-semibold text-slate-700 hover:bg-slate-50/70 transition"
@@ -2025,7 +2039,7 @@ export default function CatalogSettingsPage() {
             </div>
 
             {/* Tree branch child 1: Show product categories for the search box */}
-            {searchEnabled && isAdvanced && (
+            {searchEnabled && (
               <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
                 <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
                   <span className="text-right">
@@ -2074,7 +2088,7 @@ export default function CatalogSettingsPage() {
             )}
 
             {/* Nested children under Search autocomplete enabled */}
-            {searchEnabled && searchAutocompleteEnabled && isAdvanced && (
+            {searchEnabled && searchAutocompleteEnabled && (
               <>
                 {/* Number of 'autocomplete' products to display */}
                 <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
@@ -2231,7 +2245,7 @@ export default function CatalogSettingsPage() {
             </div>
 
             {/* Tree branch child: Search page. Enter price range manually */}
-            {searchPagePriceRangeFiltering && isAdvanced && (
+            {searchPagePriceRangeFiltering && (
               <>
                 <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
                   <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
@@ -2331,33 +2345,31 @@ export default function CatalogSettingsPage() {
             </div>
 
             {/* Allow customers to search with category name */}
-            {isAdvanced && (
-              <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
-                <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
-                  <span className="text-right">
-                    Allow customers to search with
-                    <br className="hidden md:inline" /> category name
-                  </span>
-                  <HelpTooltip text="Include category labels and parent category names in search index." />
-                </label>
-                <div className="md:col-span-8 flex items-center">
-                  <input
-                    type="checkbox"
-                    checked={allowCustomersToSearchWithCategoryName}
-                    onChange={(e) =>
-                      setAllowCustomersToSearchWithCategoryName(e.target.checked)
-                    }
-                    className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
-                  />
-                </div>
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+              <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                <span className="text-right">
+                  Allow customers to search with
+                  <br className="hidden md:inline" /> category name
+                </span>
+                <HelpTooltip text="Include category labels and parent category names in search index." />
+              </label>
+              <div className="md:col-span-8 flex items-center">
+                <input
+                  type="checkbox"
+                  checked={allowCustomersToSearchWithCategoryName}
+                  onChange={(e) =>
+                    setAllowCustomersToSearchWithCategoryName(e.target.checked)
+                  }
+                  className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                />
               </div>
-            )}
+            </div>
           </div>
         )}
       </div>
 
       {/* ── CARD 3: PRODUCT REVIEWS (Matching media_1791348459764.png) ── */}
-      <div className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden border-t-3 border-t-[#00c0ef]">
+      <div id="sec-reviews" className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden border-t-3 border-t-[#00c0ef] scroll-mt-4">
         <div
           onClick={() => setReviewsOpen(!reviewsOpen)}
           className="px-4 py-2.5 bg-white border-b border-[#f4f4f4] flex items-center justify-between cursor-pointer select-none text-xs font-semibold text-slate-700 hover:bg-slate-50/70 transition"
@@ -2488,22 +2500,20 @@ export default function CatalogSettingsPage() {
             </div>
 
             {/* Reviews per store */}
-            {isAdvanced && (
-              <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
-                <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
-                  <span>Reviews per store</span>
-                  <HelpTooltip text="Display and filter product reviews on a per-multistore basis." />
-                </label>
-                <div className="md:col-span-8 flex items-center">
-                  <input
-                    type="checkbox"
-                    checked={reviewsPerStore}
-                    onChange={(e) => setReviewsPerStore(e.target.checked)}
-                    className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
-                  />
-                </div>
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+              <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                <span>Reviews per store</span>
+                <HelpTooltip text="Display and filter product reviews on a per-multistore basis." />
+              </label>
+              <div className="md:col-span-8 flex items-center">
+                <input
+                  type="checkbox"
+                  checked={reviewsPerStore}
+                  onChange={(e) => setReviewsPerStore(e.target.checked)}
+                  className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                />
               </div>
-            )}
+            </div>
 
             {/* Show product reviews tab on 'My account' page */}
             <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
@@ -2550,28 +2560,26 @@ export default function CatalogSettingsPage() {
             )}
 
             {/* Sort by ascending */}
-            {isAdvanced && (
-              <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
-                <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
-                  <span>Sort by ascending</span>
-                  <HelpTooltip text="Sort product reviews chronologically ascending (oldest first)." />
-                </label>
-                <div className="md:col-span-8 flex items-center">
-                  <input
-                    type="checkbox"
-                    checked={sortProductReviewsByAscending}
-                    onChange={(e) => setSortProductReviewsByAscending(e.target.checked)}
-                    className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
-                  />
-                </div>
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+              <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                <span>Sort by ascending</span>
+                <HelpTooltip text="Sort product reviews chronologically ascending (oldest first)." />
+              </label>
+              <div className="md:col-span-8 flex items-center">
+                <input
+                  type="checkbox"
+                  checked={sortProductReviewsByAscending}
+                  onChange={(e) => setSortProductReviewsByAscending(e.target.checked)}
+                  className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                />
               </div>
-            )}
+            </div>
           </div>
         )}
       </div>
 
       {/* ── CARD 4: REVIEW TYPES (Matching media_1791348557185.png) ── */}
-      <div className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden border-t-3 border-t-[#00c0ef]">
+      <div id="sec-review-types" className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden border-t-3 border-t-[#00c0ef] scroll-mt-4">
         <div
           onClick={() => setReviewTypesOpen(!reviewTypesOpen)}
           className="px-4 py-2.5 bg-white border-b border-[#f4f4f4] flex items-center justify-between cursor-pointer select-none text-xs font-semibold text-slate-700 hover:bg-slate-50/70 transition"
@@ -2710,7 +2718,7 @@ export default function CatalogSettingsPage() {
       </div>
 
       {/* ── CARD 5: PERFORMANCE (Matching media_1791348557185.png) ── */}
-      <div className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden border-t-3 border-t-[#00c0ef]">
+      <div id="sec-performance" className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden border-t-3 border-t-[#00c0ef] scroll-mt-4">
         <div
           onClick={() => setPerformanceOpen(!performanceOpen)}
           className="px-4 py-2.5 bg-white border-b border-[#f4f4f4] flex items-center justify-between cursor-pointer select-none text-xs font-semibold text-slate-700 hover:bg-slate-50/70 transition"
@@ -2764,64 +2772,58 @@ export default function CatalogSettingsPage() {
             </div>
 
             {/* Ignore discounts (sitewide) */}
-            {isAdvanced && (
-              <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
-                <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
-                  <span>Ignore discounts (sitewide)</span>
-                  <HelpTooltip text="Skip real-time catalog discount engine lookups for high-throughput traffic spikes." />
-                </label>
-                <div className="md:col-span-8 flex items-center">
-                  <input
-                    type="checkbox"
-                    checked={ignoreDiscountsSitewide}
-                    onChange={(e) => setIgnoreDiscountsSitewide(e.target.checked)}
-                    className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
-                  />
-                </div>
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+              <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                <span>Ignore discounts (sitewide)</span>
+                <HelpTooltip text="Skip real-time catalog discount engine lookups for high-throughput traffic spikes." />
+              </label>
+              <div className="md:col-span-8 flex items-center">
+                <input
+                  type="checkbox"
+                  checked={ignoreDiscountsSitewide}
+                  onChange={(e) => setIgnoreDiscountsSitewide(e.target.checked)}
+                  className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                />
               </div>
-            )}
+            </div>
 
             {/* Ignore featured products (sitewide) */}
-            {isAdvanced && (
-              <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
-                <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
-                  <span>Ignore featured products (sitewide)</span>
-                  <HelpTooltip text="Do not separate featured products at the top of category collection pages." />
-                </label>
-                <div className="md:col-span-8 flex items-center">
-                  <input
-                    type="checkbox"
-                    checked={ignoreFeaturedProductsSitewide}
-                    onChange={(e) => setIgnoreFeaturedProductsSitewide(e.target.checked)}
-                    className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
-                  />
-                </div>
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+              <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                <span>Ignore featured products (sitewide)</span>
+                <HelpTooltip text="Do not separate featured products at the top of category collection pages." />
+              </label>
+              <div className="md:col-span-8 flex items-center">
+                <input
+                  type="checkbox"
+                  checked={ignoreFeaturedProductsSitewide}
+                  onChange={(e) => setIgnoreFeaturedProductsSitewide(e.target.checked)}
+                  className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                />
               </div>
-            )}
+            </div>
 
             {/* Cache product prices */}
-            {isAdvanced && (
-              <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
-                <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
-                  <span>Cache product prices</span>
-                  <HelpTooltip text="Store computed product tier prices in in-memory Redis/RAM cache for maximum throughput." />
-                </label>
-                <div className="md:col-span-8 flex items-center">
-                  <input
-                    type="checkbox"
-                    checked={cacheProductPrices}
-                    onChange={(e) => setCacheProductPrices(e.target.checked)}
-                    className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
-                  />
-                </div>
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+              <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                <span>Cache product prices</span>
+                <HelpTooltip text="Store computed product tier prices in in-memory Redis/RAM cache for maximum throughput." />
+              </label>
+              <div className="md:col-span-8 flex items-center">
+                <input
+                  type="checkbox"
+                  checked={cacheProductPrices}
+                  onChange={(e) => setCacheProductPrices(e.target.checked)}
+                  className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                />
               </div>
-            )}
+            </div>
           </div>
         )}
       </div>
 
       {/* ── CARD 6: SHARE (Matching media_1791348612688.png) ── */}
-      <div className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden border-t-3 border-t-[#00c0ef]">
+      <div id="sec-share" className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden border-t-3 border-t-[#00c0ef] scroll-mt-4">
         <div
           onClick={() => setShareOpen(!shareOpen)}
           className="px-4 py-2.5 bg-white border-b border-[#f4f4f4] flex items-center justify-between cursor-pointer select-none text-xs font-semibold text-slate-700 hover:bg-slate-50/70 transition"
@@ -2888,7 +2890,7 @@ export default function CatalogSettingsPage() {
             </div>
 
             {/* Tree branch child: Allow anonymous users to email a friend */}
-            {emailAFriendEnabled && isAdvanced && (
+            {emailAFriendEnabled && (
               <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
                 <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
                   <span className="text-right">
@@ -2918,7 +2920,7 @@ export default function CatalogSettingsPage() {
       </div>
 
       {/* ── CARD 7: COMPARE PRODUCTS (Matching media_1791348612688.png) ── */}
-      <div className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden border-t-3 border-t-[#00c0ef]">
+      <div id="sec-compare" className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden border-t-3 border-t-[#00c0ef] scroll-mt-4">
         <div
           onClick={() => setCompareOpen(!compareOpen)}
           className="px-4 py-2.5 bg-white border-b border-[#f4f4f4] flex items-center justify-between cursor-pointer select-none text-xs font-semibold text-slate-700 hover:bg-slate-50/70 transition"
@@ -2951,7 +2953,7 @@ export default function CatalogSettingsPage() {
             </div>
 
             {/* Tree branch child 1: Include short description in compare products */}
-            {compareProductsEnabled && isAdvanced && (
+            {compareProductsEnabled && (
               <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
                 <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
                   <span className="text-right">
@@ -2978,7 +2980,7 @@ export default function CatalogSettingsPage() {
             )}
 
             {/* Tree branch child 2: Include full description in compare products */}
-            {compareProductsEnabled && isAdvanced && (
+            {compareProductsEnabled && (
               <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
                 <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
                   <span className="text-right">
@@ -3008,7 +3010,7 @@ export default function CatalogSettingsPage() {
       </div>
 
       {/* ── CARD 8: ADDITIONAL SECTIONS (Matching media_1791348625312.png & media_1791348701724.png) ── */}
-      <div className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden border-t-3 border-t-[#00c0ef]">
+      <div id="sec-additional" className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden border-t-3 border-t-[#00c0ef] scroll-mt-4">
         <div
           onClick={() => setAdditionalSectionsOpen(!additionalSectionsOpen)}
           className="px-4 py-2.5 bg-white border-b border-[#f4f4f4] flex items-center justify-between cursor-pointer select-none text-xs font-semibold text-slate-700 hover:bg-slate-50/70 transition"
@@ -3194,31 +3196,29 @@ export default function CatalogSettingsPage() {
             {newProductsPageEnabled && (
               <>
                 {/* 'New products' page. Allow customers to select page size */}
-                {isAdvanced && (
-                  <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
-                    <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
-                      <span className="text-right">
-                        'New products' page. Allow
-                        <br className="hidden md:inline" /> customers to select page size
-                      </span>
-                      <HelpTooltip text="Allow shoppers to choose items per page on the new products page." />
-                    </label>
-                    <div className="md:col-span-8 flex items-center relative pl-5">
-                      <div
-                        className="absolute -top-3.5 left-0 w-3.5 h-5 border-l border-b border-slate-300 pointer-events-none"
-                        aria-hidden="true"
-                      />
-                      <input
-                        type="checkbox"
-                        checked={newProductsPageAllowCustomersToSelectPageSize}
-                        onChange={(e) =>
-                          setNewProductsPageAllowCustomersToSelectPageSize(e.target.checked)
-                        }
-                        className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
-                      />
-                    </div>
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                  <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                    <span className="text-right">
+                      'New products' page. Allow
+                      <br className="hidden md:inline" /> customers to select page size
+                    </span>
+                    <HelpTooltip text="Allow shoppers to choose items per page on the new products page." />
+                  </label>
+                  <div className="md:col-span-8 flex items-center relative pl-5">
+                    <div
+                      className="absolute -top-3.5 left-0 w-3.5 h-5 border-l border-b border-slate-300 pointer-events-none"
+                      aria-hidden="true"
+                    />
+                    <input
+                      type="checkbox"
+                      checked={newProductsPageAllowCustomersToSelectPageSize}
+                      onChange={(e) =>
+                        setNewProductsPageAllowCustomersToSelectPageSize(e.target.checked)
+                      }
+                      className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                    />
                   </div>
-                )}
+                </div>
 
                 {/* Number of products on 'New products' page */}
                 <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
@@ -3249,27 +3249,25 @@ export default function CatalogSettingsPage() {
             )}
 
             {/* Display the date for a pre-order availability */}
-            {isAdvanced && (
-              <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
-                <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
-                  <span className="text-right">
-                    Display the date for a pre-order
-                    <br className="hidden md:inline" /> availability
-                  </span>
-                  <HelpTooltip text="Display estimated shipping/availability calendar date for pre-order merchandise." />
-                </label>
-                <div className="md:col-span-8 flex items-center">
-                  <input
-                    type="checkbox"
-                    checked={displayDateForPreOrderAvailability}
-                    onChange={(e) =>
-                      setDisplayDateForPreOrderAvailability(e.target.checked)
-                    }
-                    className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
-                  />
-                </div>
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+              <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                <span className="text-right">
+                  Display the date for a pre-order
+                  <br className="hidden md:inline" /> availability
+                </span>
+                <HelpTooltip text="Display estimated shipping/availability calendar date for pre-order merchandise." />
+              </label>
+              <div className="md:col-span-8 flex items-center">
+                <input
+                  type="checkbox"
+                  checked={displayDateForPreOrderAvailability}
+                  onChange={(e) =>
+                    setDisplayDateForPreOrderAvailability(e.target.checked)
+                  }
+                  className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                />
               </div>
-            )}
+            </div>
 
             {/* Image Editor for Catalog Placeholder Image */}
             <div className="border-t border-slate-100 pt-5 mt-3">

@@ -40,6 +40,12 @@ const sectionTitles: Record<string, { title: string; subtitle: string }> = {
   all: { title: 'All settings (advanced)', subtitle: 'Complete raw settings configuration dictionary for system administrators' },
 };
 
+import CatalogSettingsPage from '../catalog/page';
+import CustomerSettingsPage from '../customer/page';
+import OrderSettingsPage from '../order/page';
+import ShippingSettingsPage from '../shipping/page';
+import TaxSettingsPage from '../tax/page';
+
 export default function ConfigurationSectionPage({
   params,
 }: {
@@ -47,6 +53,22 @@ export default function ConfigurationSectionPage({
 }) {
   const unwrappedParams = use(params);
   const section = unwrappedParams.section || 'general';
+
+  if (section === 'catalog') {
+    return <CatalogSettingsPage />;
+  }
+  if (section === 'customer') {
+    return <CustomerSettingsPage />;
+  }
+  if (section === 'order') {
+    return <OrderSettingsPage />;
+  }
+  if (section === 'shipping') {
+    return <ShippingSettingsPage />;
+  }
+  if (section === 'tax') {
+    return <TaxSettingsPage />;
+  }
 
   const info = sectionTitles[section] || {
     title: `${section.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())} settings`,
