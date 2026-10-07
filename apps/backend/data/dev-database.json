@@ -16764,5 +16764,17 @@
     "notifyAboutNewBlogComments": false,
     "blogCommentsPerStore": false,
     "isAdvanced": true
+  },
+  "newsSettings": {
+    "newsEnabled": true,
+    "showOnHomePage": true,
+    "numberOfItemsToDisplay": 3,
+    "newsArchivePageSize": 10,
+    "displayNewsRssFeedLink": false,
+    "allowGuestsToLeaveComments": true,
+    "newsCommentsMustBeApproved": false,
+    "notifyAboutNewNewsComments": false,
+    "newsCommentsPerStore": false,
+    "isAdvanced": true
   }
 }

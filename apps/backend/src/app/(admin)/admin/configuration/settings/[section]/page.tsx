@@ -54,6 +54,7 @@ import RewardPointsSettingsPage from '../reward-points/page';
 import GdprSettingsPage from '../gdpr/page';
 import VendorSettingsPage from '../vendor/page';
 import BlogSettingsPage from '../blog/page';
+import NewsSettingsPage from '../news/page';
 
 export default function ConfigurationSectionPage({
   params,
@@ -95,6 +96,9 @@ export default function ConfigurationSectionPage({
   }
   if (section === 'blog') {
     return <BlogSettingsPage />;
+  }
+  if (section === 'news') {
+    return <NewsSettingsPage />;
   }
 
   const info = sectionTitles[section] || {
