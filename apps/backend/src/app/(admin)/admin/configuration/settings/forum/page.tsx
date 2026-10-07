@@ -248,7 +248,7 @@ export default function ForumSettingsPage() {
       </div>
 
       {/* Mode Switcher Pill */}
-      <div className="flex justify-end pt-1">
+      <div className="pt-0.5">
         <button
           type="button"
           onClick={() => setIsAdvanced(!isAdvanced)}
