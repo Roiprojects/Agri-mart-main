@@ -89,6 +89,52 @@ export interface CatalogSettingsData {
   numberOfProductsOnNewProductsPage: number;
   displayDateForPreOrderAvailability: boolean;
 
+  // Product fields (media_1791349415553.png)
+  showSkuOnProductDetailsPage: boolean;
+  showSkuOnCatalogPages: boolean;
+  showGtin: boolean;
+  showManufacturerPartNumber: boolean;
+  showShortDescriptionOnCatalogPages: boolean;
+
+  // Product page (media_1791349415553.png)
+  productUrlStructureType: string;
+  showFreeShippingIcon: boolean;
+  allowViewingOfUnpublishedProductDetailsPage: boolean;
+  discontinuedMessageForUnpublishedProducts: boolean;
+  displayTypeForAttributeValueWhenOutOfStock: string;
+
+  // Catalog pages (media_1791349419550.png)
+  allowViewModeChanging: boolean;
+  defaultViewMode: string;
+  includeProductsFromSubcategories: boolean;
+  showNumberOfDistinctProductsBesidesEachCategory: boolean;
+  includeSubcategoriesInDistinctProductsCount: boolean;
+  categoryBreadcrumbEnabled: boolean;
+  numberOfManufacturersToDisplay: number;
+  useAjaxProductsLoading: boolean;
+  enableManufacturerFiltering: boolean;
+  enableCatalogPriceRangeFiltering: boolean;
+  enableSpecificationAttributeFiltering: boolean;
+  displayAllPicturesOnCatalogPages: boolean;
+  displayFromPrices: boolean;
+
+  // Tags (media_1791349495099.png)
+  numberOfProductTags: number;
+  allowCustomersToSelectProductsByTagPageSize: boolean;
+  productsByTagPageSizeOptions: string;
+  productsByTagPriceRangeFiltering: boolean;
+  productsByTagEnterPriceRangeManually: boolean;
+  productsByTagPriceFrom: number;
+  productsByTagPriceTo: number;
+
+  // Tax (media_1791349518173.png)
+  displayTaxShippingInfoFooter: boolean;
+  displayTaxShippingInfoProductDetailsPage: boolean;
+  displayTaxShippingInfoProductBoxes: boolean;
+  displayTaxShippingInfoShoppingCart: boolean;
+  displayTaxShippingInfoWishlist: boolean;
+  displayTaxShippingInfoOrderDetailsPage: boolean;
+
   // Catalog images & placeholder
   defaultCatalogPlaceholderImage?: string;
 
@@ -176,6 +222,52 @@ export const DEFAULT_CATALOG_SETTINGS: CatalogSettingsData = {
   newProductsPageAllowCustomersToSelectPageSize: false,
   numberOfProductsOnNewProductsPage: 6,
   displayDateForPreOrderAvailability: false,
+
+  // Product fields defaults (media_1791349415553.png)
+  showSkuOnProductDetailsPage: true,
+  showSkuOnCatalogPages: false,
+  showGtin: false,
+  showManufacturerPartNumber: false,
+  showShortDescriptionOnCatalogPages: false,
+
+  // Product page defaults (media_1791349415553.png)
+  productUrlStructureType: '/Product',
+  showFreeShippingIcon: true,
+  allowViewingOfUnpublishedProductDetailsPage: true,
+  discontinuedMessageForUnpublishedProducts: true,
+  displayTypeForAttributeValueWhenOutOfStock: 'Disable',
+
+  // Catalog pages defaults (media_1791349419550.png)
+  allowViewModeChanging: true,
+  defaultViewMode: 'Grid',
+  includeProductsFromSubcategories: true,
+  showNumberOfDistinctProductsBesidesEachCategory: true,
+  includeSubcategoriesInDistinctProductsCount: false,
+  categoryBreadcrumbEnabled: true,
+  numberOfManufacturersToDisplay: 2,
+  useAjaxProductsLoading: true,
+  enableManufacturerFiltering: false,
+  enableCatalogPriceRangeFiltering: false,
+  enableSpecificationAttributeFiltering: false,
+  displayAllPicturesOnCatalogPages: false,
+  displayFromPrices: false,
+
+  // Tags defaults (media_1791349495099.png)
+  numberOfProductTags: 15,
+  allowCustomersToSelectProductsByTagPageSize: true,
+  productsByTagPageSizeOptions: '6, 3, 9, 18',
+  productsByTagPriceRangeFiltering: true,
+  productsByTagEnterPriceRangeManually: true,
+  productsByTagPriceFrom: 0,
+  productsByTagPriceTo: 0,
+
+  // Tax defaults (media_1791349518173.png)
+  displayTaxShippingInfoFooter: false,
+  displayTaxShippingInfoProductDetailsPage: false,
+  displayTaxShippingInfoProductBoxes: false,
+  displayTaxShippingInfoShoppingCart: false,
+  displayTaxShippingInfoWishlist: false,
+  displayTaxShippingInfoOrderDetailsPage: false,
 
   defaultCatalogPlaceholderImage:
     'https://images.unsplash.com/photo-1592982537447-6f2a6a0c7c18?auto=format&fit=crop&w=400&q=80',

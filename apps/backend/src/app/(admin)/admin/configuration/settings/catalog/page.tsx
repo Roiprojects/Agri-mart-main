@@ -22,6 +22,11 @@ import {
   Trash2,
   X,
   RefreshCw,
+  Menu,
+  FileText,
+  LayoutGrid,
+  Tag,
+  Percent,
 } from 'lucide-react';
 import { ImageEditorField } from '@/components/admin/ImageEditorField';
 
@@ -49,6 +54,11 @@ export default function CatalogSettingsPage() {
 
   // Collapsible cards state
   const [aiOpen, setAiOpen] = useState(true);
+  const [productFieldsOpen, setProductFieldsOpen] = useState(true);
+  const [productPageOpen, setProductPageOpen] = useState(true);
+  const [catalogPagesOpen, setCatalogPagesOpen] = useState(true);
+  const [tagsOpen, setTagsOpen] = useState(true);
+  const [taxOpen, setTaxOpen] = useState(true);
   const [searchOpen, setSearchOpen] = useState(true);
   const [reviewsOpen, setReviewsOpen] = useState(true);
   const [reviewTypesOpen, setReviewTypesOpen] = useState(true);
@@ -56,6 +66,60 @@ export default function CatalogSettingsPage() {
   const [shareOpen, setShareOpen] = useState(true);
   const [compareOpen, setCompareOpen] = useState(true);
   const [additionalSectionsOpen, setAdditionalSectionsOpen] = useState(true);
+
+  // Product fields (media_1791349415553.png)
+  const [showSkuOnProductDetailsPage, setShowSkuOnProductDetailsPage] = useState(true);
+  const [showSkuOnCatalogPages, setShowSkuOnCatalogPages] = useState(false);
+  const [showGtin, setShowGtin] = useState(false);
+  const [showManufacturerPartNumber, setShowManufacturerPartNumber] = useState(false);
+  const [showShortDescriptionOnCatalogPages, setShowShortDescriptionOnCatalogPages] = useState(false);
+
+  // Product page (media_1791349415553.png)
+  const [productUrlStructureType, setProductUrlStructureType] = useState('/Product');
+  const [showFreeShippingIcon, setShowFreeShippingIcon] = useState(true);
+  const [allowViewingOfUnpublishedProductDetailsPage, setAllowViewingOfUnpublishedProductDetailsPage] =
+    useState(true);
+  const [discontinuedMessageForUnpublishedProducts, setDiscontinuedMessageForUnpublishedProducts] =
+    useState(true);
+  const [displayTypeForAttributeValueWhenOutOfStock, setDisplayTypeForAttributeValueWhenOutOfStock] =
+    useState('Disable');
+
+  // Catalog pages (media_1791349419550.png)
+  const [allowViewModeChanging, setAllowViewModeChanging] = useState(true);
+  const [defaultViewMode, setDefaultViewMode] = useState('Grid');
+  const [includeProductsFromSubcategories, setIncludeProductsFromSubcategories] = useState(true);
+  const [showNumberOfDistinctProductsBesidesEachCategory, setShowNumberOfDistinctProductsBesidesEachCategory] =
+    useState(true);
+  const [includeSubcategoriesInDistinctProductsCount, setIncludeSubcategoriesInDistinctProductsCount] =
+    useState(false);
+  const [categoryBreadcrumbEnabled, setCategoryBreadcrumbEnabled] = useState(true);
+  const [numberOfManufacturersToDisplay, setNumberOfManufacturersToDisplay] = useState<number | string>(2);
+  const [useAjaxProductsLoading, setUseAjaxProductsLoading] = useState(true);
+  const [enableManufacturerFiltering, setEnableManufacturerFiltering] = useState(false);
+  const [enableCatalogPriceRangeFiltering, setEnableCatalogPriceRangeFiltering] = useState(false);
+  const [enableSpecificationAttributeFiltering, setEnableSpecificationAttributeFiltering] = useState(false);
+  const [displayAllPicturesOnCatalogPages, setDisplayAllPicturesOnCatalogPages] = useState(false);
+  const [displayFromPrices, setDisplayFromPrices] = useState(false);
+
+  // Tags (media_1791349495099.png)
+  const [numberOfProductTags, setNumberOfProductTags] = useState<number | string>(15);
+  const [allowCustomersToSelectProductsByTagPageSize, setAllowCustomersToSelectProductsByTagPageSize] =
+    useState(true);
+  const [productsByTagPageSizeOptions, setProductsByTagPageSizeOptions] = useState('6, 3, 9, 18');
+  const [productsByTagPriceRangeFiltering, setProductsByTagPriceRangeFiltering] = useState(true);
+  const [productsByTagEnterPriceRangeManually, setProductsByTagEnterPriceRangeManually] = useState(true);
+  const [productsByTagPriceFrom, setProductsByTagPriceFrom] = useState<number | string>(0);
+  const [productsByTagPriceTo, setProductsByTagPriceTo] = useState<number | string>(0);
+
+  // Tax (media_1791349518173.png)
+  const [displayTaxShippingInfoFooter, setDisplayTaxShippingInfoFooter] = useState(false);
+  const [displayTaxShippingInfoProductDetailsPage, setDisplayTaxShippingInfoProductDetailsPage] =
+    useState(false);
+  const [displayTaxShippingInfoProductBoxes, setDisplayTaxShippingInfoProductBoxes] = useState(false);
+  const [displayTaxShippingInfoShoppingCart, setDisplayTaxShippingInfoShoppingCart] = useState(false);
+  const [displayTaxShippingInfoWishlist, setDisplayTaxShippingInfoWishlist] = useState(false);
+  const [displayTaxShippingInfoOrderDetailsPage, setDisplayTaxShippingInfoOrderDetailsPage] =
+    useState(false);
 
   // 1. Artificial Intelligence fields (media_1791348103171.png & media_1791348106363.png)
   const [enableArtificialIntelligence, setEnableArtificialIntelligence] = useState(true);
@@ -357,6 +421,105 @@ export default function CatalogSettingsPage() {
     if (s.defaultCatalogPlaceholderImage)
       setDefaultCatalogPlaceholderImage(s.defaultCatalogPlaceholderImage);
 
+    // Product fields (media_1791349415553.png)
+    if (s.showSkuOnProductDetailsPage !== undefined)
+      setShowSkuOnProductDetailsPage(s.showSkuOnProductDetailsPage);
+    if (s.showSkuOnCatalogPages !== undefined)
+      setShowSkuOnCatalogPages(s.showSkuOnCatalogPages);
+    if (s.showGtin !== undefined) setShowGtin(s.showGtin);
+    if (s.showManufacturerPartNumber !== undefined)
+      setShowManufacturerPartNumber(s.showManufacturerPartNumber);
+    if (s.showShortDescriptionOnCatalogPages !== undefined)
+      setShowShortDescriptionOnCatalogPages(s.showShortDescriptionOnCatalogPages);
+
+    // Product page (media_1791349415553.png)
+    if (s.productUrlStructureType) setProductUrlStructureType(s.productUrlStructureType);
+    if (s.showFreeShippingIcon !== undefined)
+      setShowFreeShippingIcon(s.showFreeShippingIcon);
+    if (s.allowViewingOfUnpublishedProductDetailsPage !== undefined)
+      setAllowViewingOfUnpublishedProductDetailsPage(
+        s.allowViewingOfUnpublishedProductDetailsPage
+      );
+    if (s.discontinuedMessageForUnpublishedProducts !== undefined)
+      setDiscontinuedMessageForUnpublishedProducts(
+        s.discontinuedMessageForUnpublishedProducts
+      );
+    if (s.displayTypeForAttributeValueWhenOutOfStock)
+      setDisplayTypeForAttributeValueWhenOutOfStock(
+        s.displayTypeForAttributeValueWhenOutOfStock
+      );
+
+    // Catalog pages (media_1791349419550.png)
+    if (s.allowViewModeChanging !== undefined)
+      setAllowViewModeChanging(s.allowViewModeChanging);
+    if (s.defaultViewMode) setDefaultViewMode(s.defaultViewMode);
+    if (s.includeProductsFromSubcategories !== undefined)
+      setIncludeProductsFromSubcategories(s.includeProductsFromSubcategories);
+    if (s.showNumberOfDistinctProductsBesidesEachCategory !== undefined)
+      setShowNumberOfDistinctProductsBesidesEachCategory(
+        s.showNumberOfDistinctProductsBesidesEachCategory
+      );
+    if (s.includeSubcategoriesInDistinctProductsCount !== undefined)
+      setIncludeSubcategoriesInDistinctProductsCount(
+        s.includeSubcategoriesInDistinctProductsCount
+      );
+    if (s.categoryBreadcrumbEnabled !== undefined)
+      setCategoryBreadcrumbEnabled(s.categoryBreadcrumbEnabled);
+    if (s.numberOfManufacturersToDisplay !== undefined)
+      setNumberOfManufacturersToDisplay(s.numberOfManufacturersToDisplay);
+    if (s.useAjaxProductsLoading !== undefined)
+      setUseAjaxProductsLoading(s.useAjaxProductsLoading);
+    if (s.enableManufacturerFiltering !== undefined)
+      setEnableManufacturerFiltering(s.enableManufacturerFiltering);
+    if (s.enableCatalogPriceRangeFiltering !== undefined)
+      setEnableCatalogPriceRangeFiltering(s.enableCatalogPriceRangeFiltering);
+    if (s.enableSpecificationAttributeFiltering !== undefined)
+      setEnableSpecificationAttributeFiltering(
+        s.enableSpecificationAttributeFiltering
+      );
+    if (s.displayAllPicturesOnCatalogPages !== undefined)
+      setDisplayAllPicturesOnCatalogPages(s.displayAllPicturesOnCatalogPages);
+    if (s.displayFromPrices !== undefined)
+      setDisplayFromPrices(s.displayFromPrices);
+
+    // Tags (media_1791349495099.png)
+    if (s.numberOfProductTags !== undefined)
+      setNumberOfProductTags(s.numberOfProductTags);
+    if (s.allowCustomersToSelectProductsByTagPageSize !== undefined)
+      setAllowCustomersToSelectProductsByTagPageSize(
+        s.allowCustomersToSelectProductsByTagPageSize
+      );
+    if (s.productsByTagPageSizeOptions)
+      setProductsByTagPageSizeOptions(s.productsByTagPageSizeOptions);
+    if (s.productsByTagPriceRangeFiltering !== undefined)
+      setProductsByTagPriceRangeFiltering(s.productsByTagPriceRangeFiltering);
+    if (s.productsByTagEnterPriceRangeManually !== undefined)
+      setProductsByTagEnterPriceRangeManually(
+        s.productsByTagEnterPriceRangeManually
+      );
+    if (s.productsByTagPriceFrom !== undefined)
+      setProductsByTagPriceFrom(s.productsByTagPriceFrom);
+    if (s.productsByTagPriceTo !== undefined)
+      setProductsByTagPriceTo(s.productsByTagPriceTo);
+
+    // Tax (media_1791349518173.png)
+    if (s.displayTaxShippingInfoFooter !== undefined)
+      setDisplayTaxShippingInfoFooter(s.displayTaxShippingInfoFooter);
+    if (s.displayTaxShippingInfoProductDetailsPage !== undefined)
+      setDisplayTaxShippingInfoProductDetailsPage(
+        s.displayTaxShippingInfoProductDetailsPage
+      );
+    if (s.displayTaxShippingInfoProductBoxes !== undefined)
+      setDisplayTaxShippingInfoProductBoxes(s.displayTaxShippingInfoProductBoxes);
+    if (s.displayTaxShippingInfoShoppingCart !== undefined)
+      setDisplayTaxShippingInfoShoppingCart(s.displayTaxShippingInfoShoppingCart);
+    if (s.displayTaxShippingInfoWishlist !== undefined)
+      setDisplayTaxShippingInfoWishlist(s.displayTaxShippingInfoWishlist);
+    if (s.displayTaxShippingInfoOrderDetailsPage !== undefined)
+      setDisplayTaxShippingInfoOrderDetailsPage(
+        s.displayTaxShippingInfoOrderDetailsPage
+      );
+
     if (s.isAdvanced !== undefined) setIsAdvanced(s.isAdvanced);
   };
 
@@ -434,6 +597,52 @@ export default function CatalogSettingsPage() {
       newProductsPageAllowCustomersToSelectPageSize,
       numberOfProductsOnNewProductsPage: Number(numberOfProductsOnNewProductsPage) || 6,
       displayDateForPreOrderAvailability,
+
+      // Product fields (media_1791349415553.png)
+      showSkuOnProductDetailsPage,
+      showSkuOnCatalogPages,
+      showGtin,
+      showManufacturerPartNumber,
+      showShortDescriptionOnCatalogPages,
+
+      // Product page (media_1791349415553.png)
+      productUrlStructureType,
+      showFreeShippingIcon,
+      allowViewingOfUnpublishedProductDetailsPage,
+      discontinuedMessageForUnpublishedProducts,
+      displayTypeForAttributeValueWhenOutOfStock,
+
+      // Catalog pages (media_1791349419550.png)
+      allowViewModeChanging,
+      defaultViewMode,
+      includeProductsFromSubcategories,
+      showNumberOfDistinctProductsBesidesEachCategory,
+      includeSubcategoriesInDistinctProductsCount,
+      categoryBreadcrumbEnabled,
+      numberOfManufacturersToDisplay: Number(numberOfManufacturersToDisplay) || 2,
+      useAjaxProductsLoading,
+      enableManufacturerFiltering,
+      enableCatalogPriceRangeFiltering,
+      enableSpecificationAttributeFiltering,
+      displayAllPicturesOnCatalogPages,
+      displayFromPrices,
+
+      // Tags (media_1791349495099.png)
+      numberOfProductTags: Number(numberOfProductTags) || 15,
+      allowCustomersToSelectProductsByTagPageSize,
+      productsByTagPageSizeOptions,
+      productsByTagPriceRangeFiltering,
+      productsByTagEnterPriceRangeManually,
+      productsByTagPriceFrom: Number(productsByTagPriceFrom) || 0,
+      productsByTagPriceTo: Number(productsByTagPriceTo) || 0,
+
+      // Tax (media_1791349518173.png)
+      displayTaxShippingInfoFooter,
+      displayTaxShippingInfoProductDetailsPage,
+      displayTaxShippingInfoProductBoxes,
+      displayTaxShippingInfoShoppingCart,
+      displayTaxShippingInfoWishlist,
+      displayTaxShippingInfoOrderDetailsPage,
 
       defaultCatalogPlaceholderImage,
       isAdvanced,
@@ -534,6 +743,47 @@ export default function CatalogSettingsPage() {
     setNewProductsPageAllowCustomersToSelectPageSize(false);
     setNumberOfProductsOnNewProductsPage(6);
     setDisplayDateForPreOrderAvailability(false);
+
+    setShowSkuOnProductDetailsPage(true);
+    setShowSkuOnCatalogPages(false);
+    setShowGtin(false);
+    setShowManufacturerPartNumber(false);
+    setShowShortDescriptionOnCatalogPages(false);
+
+    setProductUrlStructureType('/Product');
+    setShowFreeShippingIcon(true);
+    setAllowViewingOfUnpublishedProductDetailsPage(true);
+    setDiscontinuedMessageForUnpublishedProducts(true);
+    setDisplayTypeForAttributeValueWhenOutOfStock('Disable');
+
+    setAllowViewModeChanging(true);
+    setDefaultViewMode('Grid');
+    setIncludeProductsFromSubcategories(true);
+    setShowNumberOfDistinctProductsBesidesEachCategory(true);
+    setIncludeSubcategoriesInDistinctProductsCount(false);
+    setCategoryBreadcrumbEnabled(true);
+    setNumberOfManufacturersToDisplay(2);
+    setUseAjaxProductsLoading(true);
+    setEnableManufacturerFiltering(false);
+    setEnableCatalogPriceRangeFiltering(false);
+    setEnableSpecificationAttributeFiltering(false);
+    setDisplayAllPicturesOnCatalogPages(false);
+    setDisplayFromPrices(false);
+
+    setNumberOfProductTags(15);
+    setAllowCustomersToSelectProductsByTagPageSize(true);
+    setProductsByTagPageSizeOptions('6, 3, 9, 18');
+    setProductsByTagPriceRangeFiltering(true);
+    setProductsByTagEnterPriceRangeManually(true);
+    setProductsByTagPriceFrom(0);
+    setProductsByTagPriceTo(0);
+
+    setDisplayTaxShippingInfoFooter(false);
+    setDisplayTaxShippingInfoProductDetailsPage(false);
+    setDisplayTaxShippingInfoProductBoxes(false);
+    setDisplayTaxShippingInfoShoppingCart(false);
+    setDisplayTaxShippingInfoWishlist(false);
+    setDisplayTaxShippingInfoOrderDetailsPage(false);
 
     showToast('Reset to default values. Click Save to apply.', 'success');
   };
@@ -933,6 +1183,808 @@ export default function CatalogSettingsPage() {
                     </div>
                   </div>
                 )}
+              </>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* ── CARD: PRODUCT FIELDS (Matching media_1791349415553.png) ── */}
+      <div className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden border-t-3 border-t-[#00c0ef]">
+        <div
+          onClick={() => setProductFieldsOpen(!productFieldsOpen)}
+          className="px-4 py-2.5 bg-white border-b border-[#f4f4f4] flex items-center justify-between cursor-pointer select-none text-xs font-semibold text-slate-700 hover:bg-slate-50/70 transition"
+        >
+          <div className="flex items-center gap-2">
+            <Menu className="w-4 h-4 text-slate-700 stroke-[1.8]" />
+            <span className="text-sm font-normal text-slate-800">Product fields</span>
+          </div>
+          <button type="button" className="text-slate-400 hover:text-slate-600">
+            {productFieldsOpen ? (
+              <Minus className="w-4 h-4 stroke-[2]" />
+            ) : (
+              <Plus className="w-4 h-4 stroke-[2]" />
+            )}
+          </button>
+        </div>
+
+        {productFieldsOpen && (
+          <div className="p-5 space-y-4 text-xs text-slate-700">
+            {/* Show SKU on product details page */}
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+              <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                <span>Show SKU on product details page</span>
+                <HelpTooltip text="An option indicating whether to display SKU on the product details page." />
+              </label>
+              <div className="md:col-span-8 flex items-center">
+                <input
+                  type="checkbox"
+                  checked={showSkuOnProductDetailsPage}
+                  onChange={(e) => setShowSkuOnProductDetailsPage(e.target.checked)}
+                  className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                />
+              </div>
+            </div>
+
+            {/* Show SKU on catalog pages (indented) */}
+            {isAdvanced && (
+              <>
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                  <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5 pl-6">
+                    <span>Show SKU on catalog pages</span>
+                    <HelpTooltip text="An option indicating whether to display SKU on catalog pages." />
+                  </label>
+                  <div className="md:col-span-8 flex items-center relative pl-5">
+                    <div
+                      className="absolute -top-3.5 left-0 w-3.5 h-5 border-l border-b border-slate-300 pointer-events-none"
+                      aria-hidden="true"
+                    />
+                    <input
+                      type="checkbox"
+                      checked={showSkuOnCatalogPages}
+                      onChange={(e) => setShowSkuOnCatalogPages(e.target.checked)}
+                      className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                    />
+                  </div>
+                </div>
+
+                {/* Show GTIN (further indented) */}
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                  <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5 pl-12">
+                    <span>Show GTIN</span>
+                    <HelpTooltip text="An option indicating whether to display GTIN on the product details page." />
+                  </label>
+                  <div className="md:col-span-8 flex items-center relative pl-10">
+                    <div
+                      className="absolute -top-3.5 left-5 w-3.5 h-5 border-l border-b border-slate-300 pointer-events-none"
+                      aria-hidden="true"
+                    />
+                    <input
+                      type="checkbox"
+                      checked={showGtin}
+                      onChange={(e) => setShowGtin(e.target.checked)}
+                      className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                    />
+                  </div>
+                </div>
+
+                {/* Show manufacturer part number */}
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                  <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5 pl-6">
+                    <span>Show manufacturer part number</span>
+                    <HelpTooltip text="An option indicating whether to display manufacturer part number." />
+                  </label>
+                  <div className="md:col-span-8 flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={showManufacturerPartNumber}
+                      onChange={(e) => setShowManufacturerPartNumber(e.target.checked)}
+                      className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                    />
+                  </div>
+                </div>
+
+                {/* Show short description on catalog pages */}
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                  <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5 pl-6">
+                    <span className="text-right">Show short description on catalog pages</span>
+                    <HelpTooltip text="An option indicating whether to display short description on catalog pages." />
+                  </label>
+                  <div className="md:col-span-8 flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={showShortDescriptionOnCatalogPages}
+                      onChange={(e) => setShowShortDescriptionOnCatalogPages(e.target.checked)}
+                      className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                    />
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* ── CARD: PRODUCT PAGE (Matching media_1791349415553.png) ── */}
+      <div className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden border-t-3 border-t-[#00c0ef]">
+        <div
+          onClick={() => setProductPageOpen(!productPageOpen)}
+          className="px-4 py-2.5 bg-white border-b border-[#f4f4f4] flex items-center justify-between cursor-pointer select-none text-xs font-semibold text-slate-700 hover:bg-slate-50/70 transition"
+        >
+          <div className="flex items-center gap-2">
+            <FileText className="w-4 h-4 text-slate-700 stroke-[1.8]" />
+            <span className="text-sm font-normal text-slate-800">Product page</span>
+          </div>
+          <button type="button" className="text-slate-400 hover:text-slate-600">
+            {productPageOpen ? (
+              <Minus className="w-4 h-4 stroke-[2]" />
+            ) : (
+              <Plus className="w-4 h-4 stroke-[2]" />
+            )}
+          </button>
+        </div>
+
+        {productPageOpen && (
+          <div className="p-5 space-y-4 text-xs text-slate-700">
+            {/* Product URL structure type */}
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+              <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                <span>Product URL structure type</span>
+                <HelpTooltip text="Choose the URL structure format for product pages." />
+              </label>
+              <div className="md:col-span-8 max-w-xl">
+                <select
+                  value={productUrlStructureType}
+                  onChange={(e) => setProductUrlStructureType(e.target.value)}
+                  className="w-full border border-[#d2d6de] focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none rounded px-3 py-1.5 text-xs text-slate-800 bg-white"
+                >
+                  <option value="/Product">/Product</option>
+                  <option value="/Product/Id">/Product/Id</option>
+                  <option value="/Product/SeoName">/Product/SeoName</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Show "free shipping" icon */}
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+              <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                <span>Show &quot;free shipping&quot; icon</span>
+                <HelpTooltip text="An option indicating whether to display the free shipping icon on the product details page." />
+              </label>
+              <div className="md:col-span-8 flex items-center">
+                <input
+                  type="checkbox"
+                  checked={showFreeShippingIcon}
+                  onChange={(e) => setShowFreeShippingIcon(e.target.checked)}
+                  className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                />
+              </div>
+            </div>
+
+            {/* Allow viewing of unpublished product details page */}
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+              <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                <span>Allow viewing of unpublished product details page</span>
+                <HelpTooltip text="An option indicating whether customers or administrators can view unpublished product details." />
+              </label>
+              <div className="md:col-span-8 flex items-center">
+                <input
+                  type="checkbox"
+                  checked={allowViewingOfUnpublishedProductDetailsPage}
+                  onChange={(e) =>
+                    setAllowViewingOfUnpublishedProductDetailsPage(e.target.checked)
+                  }
+                  className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                />
+              </div>
+            </div>
+
+            {/* Discontinued message for unpublished products (indented) */}
+            {allowViewingOfUnpublishedProductDetailsPage && (
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5 pl-6">
+                  <span>Discontinued message for unpublished products</span>
+                  <HelpTooltip text="An option indicating whether to display a discontinued message for unpublished products." />
+                </label>
+                <div className="md:col-span-8 flex items-center relative pl-5">
+                  <div
+                    className="absolute -top-3.5 left-0 w-3.5 h-5 border-l border-b border-slate-300 pointer-events-none"
+                    aria-hidden="true"
+                  />
+                  <input
+                    type="checkbox"
+                    checked={discontinuedMessageForUnpublishedProducts}
+                    onChange={(e) =>
+                      setDiscontinuedMessageForUnpublishedProducts(e.target.checked)
+                    }
+                    className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Display type for attribute value when out of stock */}
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+              <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                <span>Display type for attribute value when out of stock</span>
+                <HelpTooltip text="Choose how product attributes should appear when out of stock." />
+              </label>
+              <div className="md:col-span-8 max-w-xl">
+                <select
+                  value={displayTypeForAttributeValueWhenOutOfStock}
+                  onChange={(e) =>
+                    setDisplayTypeForAttributeValueWhenOutOfStock(e.target.value)
+                  }
+                  className="w-full border border-[#d2d6de] focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none rounded px-3 py-1.5 text-xs text-slate-800 bg-white"
+                >
+                  <option value="Disable">Disable</option>
+                  <option value="Hide">Hide</option>
+                  <option value="Display">Display</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* ── CARD: CATALOG PAGES (Matching media_1791349419550.png) ── */}
+      <div className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden border-t-3 border-t-[#00c0ef]">
+        <div
+          onClick={() => setCatalogPagesOpen(!catalogPagesOpen)}
+          className="px-4 py-2.5 bg-white border-b border-[#f4f4f4] flex items-center justify-between cursor-pointer select-none text-xs font-semibold text-slate-700 hover:bg-slate-50/70 transition"
+        >
+          <div className="flex items-center gap-2">
+            <LayoutGrid className="w-4 h-4 text-slate-700 stroke-[1.8]" />
+            <span className="text-sm font-normal text-slate-800">Catalog pages</span>
+          </div>
+          <button type="button" className="text-slate-400 hover:text-slate-600">
+            {catalogPagesOpen ? (
+              <Minus className="w-4 h-4 stroke-[2]" />
+            ) : (
+              <Plus className="w-4 h-4 stroke-[2]" />
+            )}
+          </button>
+        </div>
+
+        {catalogPagesOpen && (
+          <div className="p-5 space-y-4 text-xs text-slate-700">
+            {/* Allow view mode changing */}
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+              <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                <span>Allow view mode changing</span>
+                <HelpTooltip text="Check to allow customers to select view mode (grid or list)." />
+              </label>
+              <div className="md:col-span-8 flex items-center">
+                <input
+                  type="checkbox"
+                  checked={allowViewModeChanging}
+                  onChange={(e) => setAllowViewModeChanging(e.target.checked)}
+                  className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                />
+              </div>
+            </div>
+
+            {/* Default view mode */}
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+              <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                <span>Default view mode</span>
+                <HelpTooltip text="Choose the default view mode for catalog category and manufacturer pages." />
+              </label>
+              <div className="md:col-span-8 max-w-xl">
+                <select
+                  value={defaultViewMode}
+                  onChange={(e) => setDefaultViewMode(e.target.value)}
+                  className="w-full border border-[#d2d6de] focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none rounded px-3 py-1.5 text-xs text-slate-800 bg-white"
+                >
+                  <option value="Grid">Grid</option>
+                  <option value="List">List</option>
+                </select>
+              </div>
+            </div>
+
+            {isAdvanced && (
+              <>
+                {/* Include products from subcategories */}
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                  <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                    <span>Include products from subcategories</span>
+                    <HelpTooltip text="Check to include products from subcategories on parent category pages." />
+                  </label>
+                  <div className="md:col-span-8 flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={includeProductsFromSubcategories}
+                      onChange={(e) => setIncludeProductsFromSubcategories(e.target.checked)}
+                      className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                    />
+                  </div>
+                </div>
+
+                {/* Show the number of distinct products besides each category */}
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                  <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                    <span>Show the number of distinct products besides each category</span>
+                    <HelpTooltip text="Check to show the number of products next to each category name in navigation." />
+                  </label>
+                  <div className="md:col-span-8 flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={showNumberOfDistinctProductsBesidesEachCategory}
+                      onChange={(e) =>
+                        setShowNumberOfDistinctProductsBesidesEachCategory(e.target.checked)
+                      }
+                      className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                    />
+                  </div>
+                </div>
+
+                {/* Include subcategories (number of distinct products) - tree branch */}
+                {showNumberOfDistinctProductsBesidesEachCategory && (
+                  <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                    <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5 pl-6">
+                      <span>Include subcategories (number of distinct products)</span>
+                      <HelpTooltip text="Check to include subcategory products in the displayed count." />
+                    </label>
+                    <div className="md:col-span-8 flex items-center relative pl-5">
+                      <div
+                        className="absolute -top-3.5 left-0 w-3.5 h-5 border-l border-b border-slate-300 pointer-events-none"
+                        aria-hidden="true"
+                      />
+                      <input
+                        type="checkbox"
+                        checked={includeSubcategoriesInDistinctProductsCount}
+                        onChange={(e) =>
+                          setIncludeSubcategoriesInDistinctProductsCount(e.target.checked)
+                        }
+                        className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {/* Category breadcrumb enabled */}
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                  <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                    <span>Category breadcrumb enabled</span>
+                    <HelpTooltip text="Check to enable category breadcrumb trail navigation." />
+                  </label>
+                  <div className="md:col-span-8 flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={categoryBreadcrumbEnabled}
+                      onChange={(e) => setCategoryBreadcrumbEnabled(e.target.checked)}
+                      className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                    />
+                  </div>
+                </div>
+
+                {/* Number of manufacturers to display */}
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                  <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                    <span>Number of manufacturers to display</span>
+                    <HelpTooltip text="Set the number of manufacturers to display in catalog navigation." />
+                  </label>
+                  <div className="md:col-span-8 max-w-xl">
+                    <input
+                      type="number"
+                      value={numberOfManufacturersToDisplay}
+                      onChange={(e) => setNumberOfManufacturersToDisplay(e.target.value)}
+                      className="w-full border border-[#d2d6de] focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none rounded px-3 py-1.5 text-xs text-slate-800 bg-white"
+                    />
+                  </div>
+                </div>
+
+                {/* Use AJAX products loading */}
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                  <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                    <span>Use AJAX products loading</span>
+                    <HelpTooltip text="Check to enable asynchronous AJAX products loading on catalog pages." />
+                  </label>
+                  <div className="md:col-span-8 flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={useAjaxProductsLoading}
+                      onChange={(e) => setUseAjaxProductsLoading(e.target.checked)}
+                      className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                    />
+                  </div>
+                </div>
+
+                {/* Enable manufacturer filtering */}
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                  <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                    <span>Enable manufacturer filtering</span>
+                    <HelpTooltip text="Check to enable filtering products by manufacturer on category pages." />
+                  </label>
+                  <div className="md:col-span-8 flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={enableManufacturerFiltering}
+                      onChange={(e) => setEnableManufacturerFiltering(e.target.checked)}
+                      className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                    />
+                  </div>
+                </div>
+
+                {/* Enable price range filtering */}
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                  <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                    <span>Enable price range filtering</span>
+                    <HelpTooltip text="Check to enable filtering products by price range on catalog pages." />
+                  </label>
+                  <div className="md:col-span-8 flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={enableCatalogPriceRangeFiltering}
+                      onChange={(e) =>
+                        setEnableCatalogPriceRangeFiltering(e.target.checked)
+                      }
+                      className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                    />
+                  </div>
+                </div>
+
+                {/* Enable specification attribute filtering */}
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                  <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                    <span>Enable specification attribute filtering</span>
+                    <HelpTooltip text="Check to enable specification attribute filtering (e.g. color, size) on catalog pages." />
+                  </label>
+                  <div className="md:col-span-8 flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={enableSpecificationAttributeFiltering}
+                      onChange={(e) =>
+                        setEnableSpecificationAttributeFiltering(e.target.checked)
+                      }
+                      className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                    />
+                  </div>
+                </div>
+
+                {/* Display all pictures on catalog pages */}
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                  <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                    <span>Display all pictures on catalog pages</span>
+                    <HelpTooltip text="Check to display all pictures on catalog pages (e.g., thumbnail gallery)." />
+                  </label>
+                  <div className="md:col-span-8 flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={displayAllPicturesOnCatalogPages}
+                      onChange={(e) =>
+                        setDisplayAllPicturesOnCatalogPages(e.target.checked)
+                      }
+                      className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                    />
+                  </div>
+                </div>
+
+                {/* Display 'From' prices */}
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                  <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                    <span>Display &apos;From&apos; prices</span>
+                    <HelpTooltip text="Check to display 'From' before product prices if tiered or variable pricing applies." />
+                  </label>
+                  <div className="md:col-span-8 flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={displayFromPrices}
+                      onChange={(e) => setDisplayFromPrices(e.target.checked)}
+                      className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                    />
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* ── CARD: TAGS (Matching media_1791349495099.png) ── */}
+      <div className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden border-t-3 border-t-[#00c0ef]">
+        <div
+          onClick={() => setTagsOpen(!tagsOpen)}
+          className="px-4 py-2.5 bg-white border-b border-[#f4f4f4] flex items-center justify-between cursor-pointer select-none text-xs font-semibold text-slate-700 hover:bg-slate-50/70 transition"
+        >
+          <div className="flex items-center gap-2">
+            <Tag className="w-4 h-4 text-slate-700 stroke-[1.8]" />
+            <span className="text-sm font-normal text-slate-800">Tags</span>
+          </div>
+          <button type="button" className="text-slate-400 hover:text-slate-600">
+            {tagsOpen ? (
+              <Minus className="w-4 h-4 stroke-[2]" />
+            ) : (
+              <Plus className="w-4 h-4 stroke-[2]" />
+            )}
+          </button>
+        </div>
+
+        {tagsOpen && (
+          <div className="p-5 space-y-4 text-xs text-slate-700">
+            {/* Number of product tags (cloud) */}
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+              <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                <span>Number of product tags (cloud)</span>
+                <HelpTooltip text="Set the number of tags to display in the tag cloud." />
+              </label>
+              <div className="md:col-span-8 max-w-xl">
+                <input
+                  type="number"
+                  value={numberOfProductTags}
+                  onChange={(e) => setNumberOfProductTags(e.target.value)}
+                  className="w-full border border-[#d2d6de] focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none rounded px-3 py-1.5 text-xs text-slate-800 bg-white"
+                />
+              </div>
+            </div>
+
+            {isAdvanced && (
+              <>
+                {/* Allow customers to select 'Products by tag' page size */}
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                  <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                    <span>Allow customers to select &apos;Products by tag&apos; page size</span>
+                    <HelpTooltip text="Check to allow customers to choose the page size on 'Products by tag' page." />
+                  </label>
+                  <div className="md:col-span-8 flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={allowCustomersToSelectProductsByTagPageSize}
+                      onChange={(e) =>
+                        setAllowCustomersToSelectProductsByTagPageSize(e.target.checked)
+                      }
+                      className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                    />
+                  </div>
+                </div>
+
+                {/* 'Products by tag' page size options (tree branch) */}
+                {allowCustomersToSelectProductsByTagPageSize && (
+                  <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                    <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5 pl-6">
+                      <span>&apos;Products by tag&apos; page size options</span>
+                      <HelpTooltip text="Comma-separated page size options, e.g. 6, 3, 9, 18." />
+                    </label>
+                    <div className="md:col-span-8 max-w-xl relative pl-5">
+                      <div
+                        className="absolute -top-3.5 left-0 w-3.5 h-5 border-l border-b border-slate-300 pointer-events-none"
+                        aria-hidden="true"
+                      />
+                      <input
+                        type="text"
+                        value={productsByTagPageSizeOptions}
+                        onChange={(e) => setProductsByTagPageSizeOptions(e.target.value)}
+                        className="w-full border border-[#d2d6de] focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none rounded px-3 py-1.5 text-xs text-slate-800 bg-white"
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {/* 'Products by tag' page. Price range filtering */}
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                  <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                    <span>&apos;Products by tag&apos; page. Price range filtering</span>
+                    <HelpTooltip text="Check to enable price range filtering on 'Products by tag' page." />
+                  </label>
+                  <div className="md:col-span-8 flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={productsByTagPriceRangeFiltering}
+                      onChange={(e) =>
+                        setProductsByTagPriceRangeFiltering(e.target.checked)
+                      }
+                      className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                    />
+                  </div>
+                </div>
+
+                {/* 'Products by tag' page. Enter price range manually (tree branch) */}
+                {productsByTagPriceRangeFiltering && (
+                  <>
+                    <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                      <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5 pl-6">
+                        <span>&apos;Products by tag&apos; page. Enter price range manually</span>
+                        <HelpTooltip text="Check to allow manual price range inputs on 'Products by tag' page." />
+                      </label>
+                      <div className="md:col-span-8 flex items-center relative pl-5">
+                        <div
+                          className="absolute -top-3.5 left-0 w-3.5 h-5 border-l border-b border-slate-300 pointer-events-none"
+                          aria-hidden="true"
+                        />
+                        <input
+                          type="checkbox"
+                          checked={productsByTagEnterPriceRangeManually}
+                          onChange={(e) =>
+                            setProductsByTagEnterPriceRangeManually(e.target.checked)
+                          }
+                          className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                        />
+                      </div>
+                    </div>
+
+                    {/* 'Products by tag' page. Price 'from' */}
+                    {productsByTagEnterPriceRangeManually && (
+                      <>
+                        <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                          <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5 pl-12">
+                            <span>&apos;Products by tag&apos; page. Price &apos;from&apos;</span>
+                            <HelpTooltip text="Minimum price for manual range on 'Products by tag' page." />
+                          </label>
+                          <div className="md:col-span-8 max-w-xs flex items-center relative pl-5">
+                            <div
+                              className="absolute -top-3.5 left-0 w-3.5 h-5 border-l border-b border-slate-300 pointer-events-none"
+                              aria-hidden="true"
+                            />
+                            <input
+                              type="number"
+                              value={productsByTagPriceFrom}
+                              onChange={(e) => setProductsByTagPriceFrom(e.target.value)}
+                              className="w-full border border-r-0 border-[#d2d6de] focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none rounded-l px-3 py-1.5 text-xs text-slate-800 bg-white"
+                            />
+                            <span className="px-3 py-1.5 bg-[#eee] border border-[#d2d6de] text-slate-600 text-xs font-normal rounded-r">
+                              USD
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* 'Products by tag' page. Price 'to' */}
+                        <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                          <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5 pl-12">
+                            <span>&apos;Products by tag&apos; page. Price &apos;to&apos;</span>
+                            <HelpTooltip text="Maximum price for manual range on 'Products by tag' page." />
+                          </label>
+                          <div className="md:col-span-8 max-w-xs flex items-center relative pl-5">
+                            <div
+                              className="absolute -top-3.5 left-0 w-3.5 h-5 border-l border-b border-slate-300 pointer-events-none"
+                              aria-hidden="true"
+                            />
+                            <input
+                              type="number"
+                              value={productsByTagPriceTo}
+                              onChange={(e) => setProductsByTagPriceTo(e.target.value)}
+                              className="w-full border border-r-0 border-[#d2d6de] focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none rounded-l px-3 py-1.5 text-xs text-slate-800 bg-white"
+                            />
+                            <span className="px-3 py-1.5 bg-[#eee] border border-[#d2d6de] text-slate-600 text-xs font-normal rounded-r">
+                              USD
+                            </span>
+                          </div>
+                        </div>
+                      </>
+                    )}
+                  </>
+                )}
+              </>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* ── CARD: TAX (Matching media_1791349518173.png) ── */}
+      <div className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden border-t-3 border-t-[#00c0ef]">
+        <div
+          onClick={() => setTaxOpen(!taxOpen)}
+          className="px-4 py-2.5 bg-white border-b border-[#f4f4f4] flex items-center justify-between cursor-pointer select-none text-xs font-semibold text-slate-700 hover:bg-slate-50/70 transition"
+        >
+          <div className="flex items-center gap-2">
+            <Percent className="w-4 h-4 text-slate-700 stroke-[1.8]" />
+            <span className="text-sm font-normal text-slate-800">Tax</span>
+          </div>
+          <button type="button" className="text-slate-400 hover:text-slate-600">
+            {taxOpen ? (
+              <Minus className="w-4 h-4 stroke-[2]" />
+            ) : (
+              <Plus className="w-4 h-4 stroke-[2]" />
+            )}
+          </button>
+        </div>
+
+        {taxOpen && (
+          <div className="p-5 space-y-4 text-xs text-slate-700">
+            {/* Display tax/shipping info (footer) */}
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+              <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                <span>Display tax/shipping info (footer)</span>
+                <HelpTooltip text="An option indicating whether to display tax/shipping info in footer." />
+              </label>
+              <div className="md:col-span-8 flex items-center">
+                <input
+                  type="checkbox"
+                  checked={displayTaxShippingInfoFooter}
+                  onChange={(e) => setDisplayTaxShippingInfoFooter(e.target.checked)}
+                  className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                />
+              </div>
+            </div>
+
+            {/* Display tax/shipping info (product details page) */}
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+              <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                <span>Display tax/shipping info (product details page)</span>
+                <HelpTooltip text="An option indicating whether to display tax/shipping info on product details page." />
+              </label>
+              <div className="md:col-span-8 flex items-center">
+                <input
+                  type="checkbox"
+                  checked={displayTaxShippingInfoProductDetailsPage}
+                  onChange={(e) =>
+                    setDisplayTaxShippingInfoProductDetailsPage(e.target.checked)
+                  }
+                  className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                />
+              </div>
+            </div>
+
+            {isAdvanced && (
+              <>
+                {/* Display tax/shipping info (product boxes) */}
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                  <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                    <span>Display tax/shipping info (product boxes)</span>
+                    <HelpTooltip text="An option indicating whether to display tax/shipping info in product boxes." />
+                  </label>
+                  <div className="md:col-span-8 flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={displayTaxShippingInfoProductBoxes}
+                      onChange={(e) =>
+                        setDisplayTaxShippingInfoProductBoxes(e.target.checked)
+                      }
+                      className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                    />
+                  </div>
+                </div>
+
+                {/* Display tax/shipping info (shopping cart) */}
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                  <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                    <span>Display tax/shipping info (shopping cart)</span>
+                    <HelpTooltip text="An option indicating whether to display tax/shipping info in shopping cart." />
+                  </label>
+                  <div className="md:col-span-8 flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={displayTaxShippingInfoShoppingCart}
+                      onChange={(e) =>
+                        setDisplayTaxShippingInfoShoppingCart(e.target.checked)
+                      }
+                      className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                    />
+                  </div>
+                </div>
+
+                {/* Display tax/shipping info (wishlist) */}
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                  <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                    <span>Display tax/shipping info (wishlist)</span>
+                    <HelpTooltip text="An option indicating whether to display tax/shipping info in wishlist." />
+                  </label>
+                  <div className="md:col-span-8 flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={displayTaxShippingInfoWishlist}
+                      onChange={(e) => setDisplayTaxShippingInfoWishlist(e.target.checked)}
+                      className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                    />
+                  </div>
+                </div>
+
+                {/* Display tax/shipping info (order details page) */}
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                  <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                    <span>Display tax/shipping info (order details page)</span>
+                    <HelpTooltip text="An option indicating whether to display tax/shipping info on order details page." />
+                  </label>
+                  <div className="md:col-span-8 flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={displayTaxShippingInfoOrderDetailsPage}
+                      onChange={(e) =>
+                        setDisplayTaxShippingInfoOrderDetailsPage(e.target.checked)
+                      }
+                      className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                    />
+                  </div>
+                </div>
               </>
             )}
           </div>
