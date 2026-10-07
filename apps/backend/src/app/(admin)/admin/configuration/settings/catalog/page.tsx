@@ -31,6 +31,7 @@ import {
   ArrowLeftRight,
   ArrowUpDown,
   Check,
+  Ban,
 } from 'lucide-react';
 import { ImageEditorField } from '@/components/admin/ImageEditorField';
 
@@ -205,7 +206,17 @@ export default function CatalogSettingsPage() {
   const [sortProductReviewsByAscending, setSortProductReviewsByAscending] = useState(false);
 
   // 4. Review types fields (media_1791348557185.png)
-  const [reviewTypes, setReviewTypes] = useState<ReviewTypeItem[]>([]);
+  const defaultReviewTypes: ReviewTypeItem[] = [
+    { id: 'rt-1', name: 'Product Quality', isRequired: false, isVisibleToAllCustomers: true, displayOrder: 1 },
+    { id: 'rt-2', name: 'Customer Service', isRequired: false, isVisibleToAllCustomers: true, displayOrder: 2 },
+    { id: 'rt-3', name: 'Delivery speed', isRequired: false, isVisibleToAllCustomers: true, displayOrder: 3 },
+  ];
+  const [reviewTypes, setReviewTypes] = useState<ReviewTypeItem[]>(defaultReviewTypes);
+  const [editingReviewTypeId, setEditingReviewTypeId] = useState<string | null>(null);
+  const [inlineRtName, setInlineRtName] = useState<string>('');
+  const [inlineRtRequired, setInlineRtRequired] = useState<boolean>(false);
+  const [inlineRtVisible, setInlineRtVisible] = useState<boolean>(true);
+  const [inlineRtOrder, setInlineRtOrder] = useState<number>(1);
   const [reviewTypeModalOpen, setReviewTypeModalOpen] = useState(false);
   const [editingReviewType, setEditingReviewType] = useState<ReviewTypeItem | null>(null);
   const [rtNameInput, setRtNameInput] = useState('');
@@ -300,6 +311,10 @@ export default function CatalogSettingsPage() {
   const [sortNameInput, setSortNameInput] = useState('');
   const [sortOrderInput, setSortOrderInput] = useState<number | string>(0);
   const [sortActiveInput, setSortActiveInput] = useState(true);
+  const [editingSortingId, setEditingSortingId] = useState<string | null>(null);
+  const [inlineSortName, setInlineSortName] = useState<string>('');
+  const [inlineSortOrder, setInlineSortOrder] = useState<number>(0);
+  const [inlineSortActive, setInlineSortActive] = useState<boolean>(true);
 
   // Toast & Saving
   const [saving, setSaving] = useState(false);
@@ -416,7 +431,9 @@ export default function CatalogSettingsPage() {
     if (s.sortProductReviewsByAscending !== undefined)
       setSortProductReviewsByAscending(s.sortProductReviewsByAscending);
 
-    if (s.reviewTypes && Array.isArray(s.reviewTypes)) setReviewTypes(s.reviewTypes);
+    if (s.reviewTypes && Array.isArray(s.reviewTypes) && s.reviewTypes.length > 0) {
+      setReviewTypes(s.reviewTypes);
+    }
 
     // Performance
     if (s.ignoreAclRulesSitewide !== undefined)
@@ -913,41 +930,60 @@ export default function CatalogSettingsPage() {
   };
 
   const openEditSorting = (item: ProductSortingOption) => {
-    setEditingSortingOption(item);
-    setSortNameInput(item.name);
-    setSortOrderInput(item.displayOrder);
-    setSortActiveInput(item.isActive);
-    setSortingModalOpen(true);
+    startEditSorting(item);
   };
 
-  const saveSortingOption = () => {
-    if (!sortNameInput.trim()) {
-      alert('Please enter a sorting option name.');
+  const startEditSorting = (opt: ProductSortingOption) => {
+    setEditingSortingId(opt.id);
+    setInlineSortName(opt.name);
+    setInlineSortOrder(opt.displayOrder);
+    setInlineSortActive(opt.isActive);
+  };
+
+  const handleUpdateSorting = async (id: string) => {
+    if (!inlineSortName.trim()) {
+      showToast('Name is required.', 'error');
       return;
     }
-    const order = Number(sortOrderInput) || 0;
-    if (editingSortingOption) {
-      setProductSortingOptions((prev) =>
-        prev.map((opt) =>
-          opt.id === editingSortingOption.id
-            ? {
-                ...opt,
-                name: sortNameInput.trim(),
-                displayOrder: order,
-                isActive: sortActiveInput,
-              }
-            : opt
-        )
-      );
-      showToast('Product sorting option updated.');
+    const updatedList = productSortingOptions.map((opt) =>
+      opt.id === id
+        ? {
+            ...opt,
+            name: inlineSortName.trim(),
+            displayOrder: Number(inlineSortOrder) || 0,
+            isActive: inlineSortActive,
+          }
+        : opt
+    );
+    setProductSortingOptions(updatedList);
+    setEditingSortingId(null);
+
+    try {
+      const getRes = await fetch('/api/admin/settings/catalog');
+      let currentSettings: any = {};
+      if (getRes.ok) {
+        const json = await getRes.json();
+        currentSettings = json.settings || {};
+      }
+      const payload = {
+        ...currentSettings,
+        productSortingOptions: updatedList,
+      };
+      localStorage.setItem('agri_catalog_settings', JSON.stringify(payload));
+      await fetch('/api/admin/settings/catalog', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+    } catch (err) {
+      console.warn('Failed to sync inline sorting update to server:', err);
     }
-    setSortingModalOpen(false);
+
+    showToast('The sorting option has been updated successfully.');
   };
 
-  const toggleSortingActive = (id: string) => {
-    setProductSortingOptions((prev) =>
-      prev.map((opt) => (opt.id === id ? { ...opt, isActive: !opt.isActive } : opt))
-    );
+  const handleCancelSorting = () => {
+    setEditingSortingId(null);
   };
 
   const openAddReviewType = () => {
@@ -955,7 +991,62 @@ export default function CatalogSettingsPage() {
   };
 
   const openEditReviewType = (item: ReviewTypeItem) => {
-    router.push(`/admin/configuration/settings/catalog/review-types/edit/${item.id}`);
+    startEditReviewType(item);
+  };
+
+  const startEditReviewType = (item: ReviewTypeItem) => {
+    setEditingReviewTypeId(item.id);
+    setInlineRtName(item.name);
+    setInlineRtRequired(item.isRequired);
+    setInlineRtVisible(item.isVisibleToAllCustomers);
+    setInlineRtOrder(item.displayOrder);
+  };
+
+  const handleUpdateReviewType = async (id: string) => {
+    if (!inlineRtName.trim()) {
+      showToast('Name is required.', 'error');
+      return;
+    }
+    const updatedList = reviewTypes.map((r) =>
+      r.id === id
+        ? {
+            ...r,
+            name: inlineRtName.trim(),
+            isRequired: inlineRtRequired,
+            isVisibleToAllCustomers: inlineRtVisible,
+            displayOrder: Number(inlineRtOrder) || 0,
+          }
+        : r
+    );
+    setReviewTypes(updatedList);
+    setEditingReviewTypeId(null);
+
+    try {
+      const getRes = await fetch('/api/admin/settings/catalog');
+      let currentSettings: any = {};
+      if (getRes.ok) {
+        const json = await getRes.json();
+        currentSettings = json.settings || {};
+      }
+      const payload = {
+        ...currentSettings,
+        reviewTypes: updatedList,
+      };
+      localStorage.setItem('agri_catalog_settings', JSON.stringify(payload));
+      await fetch('/api/admin/settings/catalog', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+    } catch (err) {
+      console.warn('Failed to sync inline review type update to server:', err);
+    }
+
+    showToast('The review type has been updated successfully.');
+  };
+
+  const handleCancelReviewType = () => {
+    setEditingReviewTypeId(null);
   };
 
   const saveReviewType = () => {
@@ -2765,40 +2856,122 @@ export default function CatalogSettingsPage() {
                       <th className="py-2.5 px-4 text-center w-28">Required</th>
                       <th className="py-2.5 px-4 text-center w-44">Visible to all customers</th>
                       <th className="py-2.5 px-4 text-center w-32">Display order</th>
-                      <th className="py-2.5 px-4 text-center w-24">Edit</th>
+                      <th className="py-2.5 px-4 text-center w-40">Edit</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100 text-slate-800">
-                    {reviewTypes.map((item) => (
-                      <tr key={item.id} className="hover:bg-slate-50/80 transition">
-                        <td className="py-3 px-4 font-normal text-slate-800">{item.name}</td>
-                        <td className="py-3 px-4 text-center">
-                          {item.isRequired ? (
-                            <span className="text-emerald-600 font-semibold">Yes</span>
-                          ) : (
-                            <span className="text-slate-400">No</span>
-                          )}
-                        </td>
-                        <td className="py-3 px-4 text-center">
-                          {item.isVisibleToAllCustomers ? (
-                            <span className="text-emerald-600 font-semibold">Yes</span>
-                          ) : (
-                            <span className="text-slate-400">No</span>
-                          )}
-                        </td>
-                        <td className="py-3 px-4 text-center font-mono">{item.displayOrder}</td>
-                        <td className="py-3 px-4 text-center">
-                          <button
-                            type="button"
-                            onClick={() => openEditReviewType(item)}
-                            className="inline-flex items-center gap-1.5 px-3 py-1 rounded bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 hover:border-slate-400 text-xs font-normal shadow-2xs transition cursor-pointer"
-                          >
-                            <Edit2 className="w-3 h-3 text-slate-600" />
-                            <span>Edit</span>
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
+                    {reviewTypes.map((item) => {
+                      const isEditing = editingReviewTypeId === item.id;
+                      return (
+                        <tr
+                          key={item.id}
+                          className={isEditing ? 'bg-amber-50/50 transition' : 'hover:bg-slate-50/80 transition'}
+                        >
+                          <td className="py-2.5 px-4 font-normal text-slate-800">
+                            {isEditing ? (
+                              <input
+                                type="text"
+                                value={inlineRtName}
+                                onChange={(e) => setInlineRtName(e.target.value)}
+                                className="w-full max-w-sm px-2.5 py-1 text-xs border border-slate-300 rounded focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-hidden bg-white text-slate-800"
+                                autoFocus
+                              />
+                            ) : (
+                              <span
+                                onClick={() =>
+                                  router.push(
+                                    `/admin/configuration/settings/catalog/review-types/edit/${item.id}`
+                                  )
+                                }
+                                className="hover:text-[#3c8dbc] hover:underline cursor-pointer"
+                                title="Click to view/edit details"
+                              >
+                                {item.name}
+                              </span>
+                            )}
+                          </td>
+                          <td className="py-2.5 px-4 text-center">
+                            {isEditing ? (
+                              <div className="flex justify-center">
+                                <input
+                                  type="checkbox"
+                                  checked={inlineRtRequired}
+                                  onChange={(e) => setInlineRtRequired(e.target.checked)}
+                                  className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                                />
+                              </div>
+                            ) : item.isRequired ? (
+                              <span className="text-emerald-600 font-semibold">Yes</span>
+                            ) : (
+                              <span className="text-slate-400">No</span>
+                            )}
+                          </td>
+                          <td className="py-2.5 px-4 text-center">
+                            {isEditing ? (
+                              <div className="flex justify-center">
+                                <input
+                                  type="checkbox"
+                                  checked={inlineRtVisible}
+                                  onChange={(e) => setInlineRtVisible(e.target.checked)}
+                                  className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                                />
+                              </div>
+                            ) : item.isVisibleToAllCustomers ? (
+                              <span className="text-emerald-600 font-semibold">Yes</span>
+                            ) : (
+                              <span className="text-slate-400">No</span>
+                            )}
+                          </td>
+                          <td className="py-2.5 px-4 text-center font-mono">
+                            {isEditing ? (
+                              <div className="flex justify-center">
+                                <input
+                                  type="number"
+                                  value={inlineRtOrder}
+                                  onChange={(e) => setInlineRtOrder(Number(e.target.value) || 0)}
+                                  className="w-20 px-2 py-1 text-xs text-center border border-slate-300 rounded focus:border-[#3c8dbc] outline-hidden bg-white text-slate-800"
+                                />
+                              </div>
+                            ) : (
+                              item.displayOrder
+                            )}
+                          </td>
+                          <td className="py-2.5 px-4 text-center whitespace-nowrap">
+                            {isEditing ? (
+                              <div className="flex items-center justify-center gap-1.5">
+                                <button
+                                  type="button"
+                                  onClick={() => handleUpdateReviewType(item.id)}
+                                  className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-[#fafafa] hover:bg-[#f0f0f0] border border-[#d2d6de] text-slate-700 hover:text-slate-900 text-xs font-normal shadow-2xs transition cursor-pointer select-none active:bg-slate-200"
+                                  title="Update"
+                                >
+                                  <Check className="w-3.5 h-3.5 text-slate-800 stroke-[2.5]" />
+                                  <span>Update</span>
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={handleCancelReviewType}
+                                  className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-[#fafafa] hover:bg-[#f0f0f0] border border-[#d2d6de] text-slate-700 hover:text-slate-900 text-xs font-normal shadow-2xs transition cursor-pointer select-none active:bg-slate-200"
+                                  title="Cancel"
+                                >
+                                  <Ban className="w-3.5 h-3.5 text-slate-800 stroke-[2]" />
+                                  <span>Cancel</span>
+                                </button>
+                              </div>
+                            ) : (
+                              <button
+                                type="button"
+                                onClick={() => startEditReviewType(item)}
+                                className="inline-flex items-center gap-1.5 px-3 py-1 rounded bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 hover:border-slate-400 text-xs font-normal shadow-2xs transition cursor-pointer"
+                              >
+                                <Edit2 className="w-3 h-3 text-slate-600" />
+                                <span>Edit</span>
+                              </button>
+                            )}
+                          </td>
+                        </tr>
+                      );
+                    })}
                     {reviewTypes.length === 0 && (
                       <tr>
                         <td colSpan={5} className="py-6 text-center text-slate-400">
@@ -3698,40 +3871,103 @@ export default function CatalogSettingsPage() {
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-[#f4f4f4]">
-                      {productSortingOptions.map((opt) => (
-                        <tr key={opt.id} className="hover:bg-slate-50/80 transition">
-                          <td className="py-2.5 px-4 text-slate-800 font-normal">
-                            {opt.name}
-                          </td>
-                          <td className="py-2.5 px-4 text-center text-slate-700">
-                            {opt.displayOrder}
-                          </td>
-                          <td className="py-2.5 px-4 text-center">
-                            <button
-                              type="button"
-                              onClick={() => toggleSortingActive(opt.id)}
-                              className="inline-flex items-center justify-center cursor-pointer text-[#3c8dbc] hover:text-[#286090]"
-                              title="Click to toggle active state"
-                            >
-                              {opt.isActive ? (
-                                <Check className="w-4 h-4 stroke-[2.5] text-[#3c8dbc]" />
+                      {productSortingOptions.map((opt) => {
+                        const isEditing = editingSortingId === opt.id;
+                        return (
+                          <tr
+                            key={opt.id}
+                            className={isEditing ? 'bg-amber-50/50 transition' : 'hover:bg-slate-50/80 transition'}
+                          >
+                            <td className="py-2.5 px-4 text-slate-800 font-normal">
+                              {isEditing ? (
+                                <input
+                                  type="text"
+                                  value={inlineSortName}
+                                  onChange={(e) => setInlineSortName(e.target.value)}
+                                  className="w-full max-w-sm px-2.5 py-1 text-xs border border-slate-300 rounded focus:border-[#3c8dbc] outline-hidden bg-white text-slate-800"
+                                  autoFocus
+                                />
                               ) : (
-                                <X className="w-4 h-4 stroke-[2.5] text-red-500" />
+                                opt.name
                               )}
-                            </button>
-                          </td>
-                          <td className="py-2.5 px-4 text-center">
-                            <button
-                              type="button"
-                              onClick={() => openEditSorting(opt)}
-                              className="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-normal text-slate-700 bg-white border border-[#d2d6de] hover:bg-slate-50 hover:border-slate-400 rounded transition cursor-pointer shadow-2xs"
-                            >
-                              <Edit2 className="w-3.5 h-3.5 text-slate-600" />
-                              <span>Edit</span>
-                            </button>
-                          </td>
-                        </tr>
-                      ))}
+                            </td>
+                            <td className="py-2.5 px-4 text-center text-slate-700">
+                              {isEditing ? (
+                                <div className="flex justify-center">
+                                  <input
+                                    type="number"
+                                    value={inlineSortOrder}
+                                    onChange={(e) =>
+                                      setInlineSortOrder(Number(e.target.value) || 0)
+                                    }
+                                    className="w-20 px-2 py-1 text-xs text-center border border-slate-300 rounded focus:border-[#3c8dbc] outline-hidden bg-white text-slate-800"
+                                  />
+                                </div>
+                              ) : (
+                                opt.displayOrder
+                              )}
+                            </td>
+                            <td className="py-2.5 px-4 text-center">
+                              {isEditing ? (
+                                <div className="flex justify-center">
+                                  <input
+                                    type="checkbox"
+                                    checked={inlineSortActive}
+                                    onChange={(e) => setInlineSortActive(e.target.checked)}
+                                    className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                                  />
+                                </div>
+                              ) : (
+                                <button
+                                  type="button"
+                                  onClick={() => toggleSortingActive(opt.id)}
+                                  className="inline-flex items-center justify-center cursor-pointer text-[#3c8dbc] hover:text-[#286090]"
+                                  title="Click to toggle active state"
+                                >
+                                  {opt.isActive ? (
+                                    <Check className="w-4 h-4 stroke-[2.5] text-[#3c8dbc]" />
+                                  ) : (
+                                    <X className="w-4 h-4 stroke-[2.5] text-red-500" />
+                                  )}
+                                </button>
+                              )}
+                            </td>
+                            <td className="py-2.5 px-4 text-center whitespace-nowrap">
+                              {isEditing ? (
+                                <div className="flex items-center justify-center gap-1.5">
+                                  <button
+                                    type="button"
+                                    onClick={() => handleUpdateSorting(opt.id)}
+                                    className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-[#fafafa] hover:bg-[#f0f0f0] border border-[#d2d6de] text-slate-700 hover:text-slate-900 text-xs font-normal shadow-2xs transition cursor-pointer select-none active:bg-slate-200"
+                                    title="Update"
+                                  >
+                                    <Check className="w-3.5 h-3.5 text-slate-800 stroke-[2.5]" />
+                                    <span>Update</span>
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={handleCancelSorting}
+                                    className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-[#fafafa] hover:bg-[#f0f0f0] border border-[#d2d6de] text-slate-700 hover:text-slate-900 text-xs font-normal shadow-2xs transition cursor-pointer select-none active:bg-slate-200"
+                                    title="Cancel"
+                                  >
+                                    <Ban className="w-3.5 h-3.5 text-slate-800 stroke-[2]" />
+                                    <span>Cancel</span>
+                                  </button>
+                                </div>
+                              ) : (
+                                <button
+                                  type="button"
+                                  onClick={() => startEditSorting(opt)}
+                                  className="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-normal text-slate-700 bg-white border border-[#d2d6de] hover:bg-slate-50 hover:border-slate-400 rounded transition cursor-pointer shadow-2xs"
+                                >
+                                  <Edit2 className="w-3.5 h-3.5 text-slate-600" />
+                                  <span>Edit</span>
+                                </button>
+                              )}
+                            </td>
+                          </tr>
+                        );
+                      })}
                     </tbody>
                   </table>
                 </div>
