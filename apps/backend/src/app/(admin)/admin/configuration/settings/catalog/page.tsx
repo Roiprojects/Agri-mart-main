@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import {
   Save,
   Minus,
@@ -50,6 +51,11 @@ interface ReviewTypeItem {
   isRequired: boolean;
   isVisibleToAllCustomers: boolean;
   displayOrder: number;
+  description?: string;
+  locales?: {
+    en?: { name: string; description: string };
+    rtl?: { name: string; description: string };
+  };
 }
 
 interface ProductSortingOption {
@@ -60,6 +66,7 @@ interface ProductSortingOption {
 }
 
 export default function CatalogSettingsPage() {
+  const router = useRouter();
   const [isAdvanced, setIsAdvanced] = useState(true);
 
   // Collapsible cards state
@@ -944,21 +951,11 @@ export default function CatalogSettingsPage() {
   };
 
   const openAddReviewType = () => {
-    setEditingReviewType(null);
-    setRtNameInput('');
-    setRtRequiredInput(false);
-    setRtVisibleInput(true);
-    setRtOrderInput(reviewTypes.length + 1);
-    setReviewTypeModalOpen(true);
+    router.push('/admin/configuration/settings/catalog/review-types/new');
   };
 
   const openEditReviewType = (item: ReviewTypeItem) => {
-    setEditingReviewType(item);
-    setRtNameInput(item.name);
-    setRtRequiredInput(item.isRequired);
-    setRtVisibleInput(item.isVisibleToAllCustomers);
-    setRtOrderInput(item.displayOrder);
-    setReviewTypeModalOpen(true);
+    router.push(`/admin/configuration/settings/catalog/review-types/edit/${item.id}`);
   };
 
   const saveReviewType = () => {
