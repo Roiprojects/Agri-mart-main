@@ -24,6 +24,7 @@ import {
   ArrowRight,
 } from 'lucide-react';
 import { useAuth, setClientAuthUser } from '@/lib/auth-client';
+import { useShoppingCartSettings } from '@/lib/shopping-cart-settings';
 
 interface ProductDetailClientProps {
   product: any;
@@ -32,6 +33,7 @@ interface ProductDetailClientProps {
 export default function ProductDetailClient({ product }: ProductDetailClientProps) {
   const router = useRouter();
   const { user, isLoggedIn } = useAuth();
+  const { settings: cartSettings } = useShoppingCartSettings();
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [pendingAction, setPendingAction] = useState<'cart' | 'buy' | null>(null);
 
@@ -89,14 +91,19 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
       try {
         const stored = localStorage.getItem('agri_wishlist');
         let list: string[] = stored ? JSON.parse(stored) : [];
+        let justAdded = false;
         if (list.includes(product.id)) {
           list = list.filter((id) => id !== product.id);
           setIsWishlisted(false);
         } else {
           list.push(product.id);
           setIsWishlisted(true);
+          justAdded = true;
         }
         localStorage.setItem('agri_wishlist', JSON.stringify(list));
+        if (justAdded && cartSettings.displayWishlistAfterAddingProduct) {
+          router.push('/account/wishlist');
+        }
       } catch (e) {}
     }
   };
@@ -125,6 +132,12 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
           });
         }
         localStorage.setItem('agri_cart_items', JSON.stringify(cart));
+        window.dispatchEvent(new Event('cartUpdated'));
+
+        if (cartSettings.displayCartAfterAddingProduct) {
+          router.push('/cart');
+          return;
+        }
       } catch (e) {}
     }
     setTimeout(() => setAddedNotice(false), 2000);

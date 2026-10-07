@@ -465,7 +465,7 @@ export default function PackageOfPracticeForm() {
         villagePanchayat: '',
         state: 'Karnataka',
         name: user ? user.name : '',
-        mobileNumber: user ? user.mobile.replace(/^\+91\s*/, '') : '',
+        mobileNumber: user?.mobile ? user.mobile.replace(/^\+91\s*/, '') : '',
         vleFpoNo: '',
         date: new Date().toISOString().split('T')[0],
         address: '',

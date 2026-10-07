@@ -16658,5 +16658,32 @@
     "isAdvanced": true,
     "updatedAt": "2026-10-07T05:11:17.603Z",
     "showSkuOnProductDetailsPage": true
+  },
+  "shoppingCartSettings": {
+    "showDiscountBox": true,
+    "showGiftCardBox": true,
+    "vendorEnabled": false,
+    "vendorRequired": false,
+    "allowCartItemEditing": true,
+    "maximumShoppingCartItems": 1000,
+    "cartsSharedBetweenStores": false,
+    "showProductImagesOnShoppingCart": true,
+    "displayCartAfterAddingProduct": false,
+    "crossSellsNumber": 4,
+    "groupTierPricesForDistinctShoppingCartItems": false,
+    "roundPricesDuringCalculation": false,
+    "miniShoppingCartEnabled": true,
+    "miniShoppingCartProductNumber": 5,
+    "showProductImagesInMiniShoppingCart": true,
+    "maximumWishlistItems": 1000,
+    "showProductImagesOnWishList": true,
+    "emailWishlistEnabled": true,
+    "allowAnonymousUsersToEmailWishlist": false,
+    "allowMultipleWishlist": false,
+    "maximumNumberOfCustomWishlist": 10,
+    "allowOutOfStockItemsToBeAddedToWishlist": false,
+    "moveItemsFromWishlistToCart": true,
+    "displayWishlistAfterAddingProduct": false,
+    "isAdvanced": false
   }
 }

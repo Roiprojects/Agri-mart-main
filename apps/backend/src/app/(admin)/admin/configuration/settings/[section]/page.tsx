@@ -31,8 +31,11 @@ const sectionTitles: Record<string, { title: string; subtitle: string }> = {
   shipping: { title: 'Shipping settings', subtitle: 'Free shipping thresholds, calculation methods, and estimated delivery dates' },
   tax: { title: 'Tax settings', subtitle: 'Tax rates, prices displayed inclusive/exclusive of tax and default addresses' },
   catalog: { title: 'Catalog settings', subtitle: 'Search results, pagination, categories display, and reviews moderation' },
+  'filter-ymm': { title: 'Filter (YMM) settings', subtitle: 'Year, make, and model vehicle-farm machinery equipment filters' },
+  'shopping-cart': { title: 'Shopping cart settings', subtitle: 'Mini-shopping cart, wishlist, item limits and cart checkout behavior' },
   'reward-points': { title: 'Reward points settings', subtitle: 'Exchange rates, points expiration, and loyalty incentives' },
   gdpr: { title: 'GDPR settings', subtitle: 'Customer data consents, export tools, and right-to-be-forgotten rules' },
+  vendor: { title: 'Vendor settings', subtitle: 'Vendor registration, commissions, store pages, and multi-vendor restrictions' },
   blog: { title: 'Blog settings', subtitle: 'Allow blog comments, notifications, posts per page and RSS feeds' },
   news: { title: 'News settings', subtitle: 'Archive settings, comments approval, and news display limits' },
   forum: { title: 'Forum settings', subtitle: 'Topic limits, user signatures, attachments and moderation rules' },
@@ -45,6 +48,7 @@ import CustomerSettingsPage from '../customer/page';
 import OrderSettingsPage from '../order/page';
 import ShippingSettingsPage from '../shipping/page';
 import TaxSettingsPage from '../tax/page';
+import ShoppingCartSettingsPage from '../shopping-cart/page';
 
 export default function ConfigurationSectionPage({
   params,
@@ -68,6 +72,9 @@ export default function ConfigurationSectionPage({
   }
   if (section === 'tax') {
     return <TaxSettingsPage />;
+  }
+  if (section === 'shopping-cart') {
+    return <ShoppingCartSettingsPage />;
   }
 
   const info = sectionTitles[section] || {

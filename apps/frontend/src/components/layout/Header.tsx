@@ -22,12 +22,59 @@ import {
   Image as ImageIcon,
   BookOpen,
   ClipboardList,
+  ArrowRight,
 } from 'lucide-react';
+import { useShoppingCartSettings } from '@/lib/shopping-cart-settings';
 
 export default function Header() {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const { settings: cartSettings } = useShoppingCartSettings();
+  const [miniCartOpen, setMiniCartOpen] = useState(false);
+  const [cartItems, setCartItems] = useState<any[]>([
+    {
+      id: 'prod-001',
+      name: 'AgriPro 7HP Heavy-Duty Multi-Speed Power Weeder',
+      price: 36500,
+      quantity: 1,
+      image: 'https://images.unsplash.com/photo-1589923188900-85dae523342b?auto=format&fit=crop&w=600&q=80',
+    },
+    {
+      id: 'prod-003',
+      name: 'Bhoomi Sanjivani Organic Micro-Nutrient Bio-Fertilizer (5 Kg)',
+      price: 850,
+      quantity: 2,
+      image: 'https://images.unsplash.com/photo-1628352081506-83c43123ed6d?auto=format&fit=crop&w=600&q=80',
+    },
+  ]);
+
+  React.useEffect(() => {
+    const updateItems = () => {
+      if (typeof window !== 'undefined') {
+        const stored = localStorage.getItem('agri_cart_items');
+        if (stored) {
+          try {
+            const parsed = JSON.parse(stored);
+            if (Array.isArray(parsed) && parsed.length > 0) {
+              setCartItems(parsed);
+            }
+          } catch {}
+        }
+      }
+    };
+    updateItems();
+    window.addEventListener('cartUpdated', updateItems);
+    window.addEventListener('storage', updateItems);
+    return () => {
+      window.removeEventListener('cartUpdated', updateItems);
+      window.removeEventListener('storage', updateItems);
+    };
+  }, []);
+
+  const totalCartCount = cartItems.reduce((acc, item) => acc + (item.quantity || 1), 0);
+  const displayedItems = cartItems.slice(0, cartSettings.miniShoppingCartProductNumber || 5);
+  const miniCartSubtotal = cartItems.reduce((acc, item) => acc + (item.price || 0) * (item.quantity || 1), 0);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -157,17 +204,104 @@ export default function Header() {
               <User className="w-5 h-5" />
             </Link>
 
-            {/* Cart Link with Badge */}
-            <Link
-              href="/cart"
-              className="relative p-2 text-agri-dark hover:text-agri-green hover:bg-agri-cream rounded-xl transition focus-ring"
-              title="Shopping Cart"
+            {/* Cart Link with Badge & Mini-Shopping Cart */}
+            <div
+              className="relative"
+              onMouseEnter={() => cartSettings.miniShoppingCartEnabled && setMiniCartOpen(true)}
+              onMouseLeave={() => setMiniCartOpen(false)}
             >
-              <ShoppingCart className="w-5 h-5" />
-              <span className="absolute top-1 right-1 inline-flex items-center justify-center px-1.5 py-0.5 text-[10px] font-bold text-white bg-agri-green rounded-full shadow-xs">
-                2
-              </span>
-            </Link>
+              <Link
+                href="/cart"
+                onClick={() => setMiniCartOpen(false)}
+                className="relative p-2 text-agri-dark hover:text-agri-green hover:bg-agri-cream rounded-xl transition focus-ring block"
+                title="Shopping Cart"
+              >
+                <ShoppingCart className="w-5 h-5" />
+                {totalCartCount > 0 && (
+                  <span className="absolute top-1 right-1 inline-flex items-center justify-center px-1.5 py-0.5 text-[10px] font-bold text-white bg-agri-green rounded-full shadow-xs">
+                    {totalCartCount}
+                  </span>
+                )}
+              </Link>
+
+              {/* Mini-Shopping Cart Dropdown (nopCommerce MiniShoppingCartEnabled setting) */}
+              {cartSettings.miniShoppingCartEnabled && miniCartOpen && (
+                <div className="absolute right-0 top-full mt-2 w-80 sm:w-96 bg-white rounded-2xl shadow-xl border border-slate-200 z-50 p-4 space-y-3 animate-in fade-in slide-in-from-top-2 duration-150">
+                  <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+                    <span className="font-extrabold text-xs text-slate-800">
+                      Shopping Cart ({totalCartCount} {totalCartCount === 1 ? 'item' : 'items'})
+                    </span>
+                    <Link
+                      href="/cart"
+                      onClick={() => setMiniCartOpen(false)}
+                      className="text-[11px] font-bold text-agri-green hover:underline"
+                    >
+                      View Cart
+                    </Link>
+                  </div>
+
+                  {displayedItems.length > 0 ? (
+                    <>
+                      <div className="max-h-60 overflow-y-auto space-y-2 divide-y divide-slate-100 pr-1">
+                        {displayedItems.map((item, idx) => (
+                          <div key={item.id || idx} className="pt-2 first:pt-0 flex items-center gap-3">
+                            {cartSettings.showProductImagesInMiniShoppingCart && (
+                              <div className="relative w-12 h-12 rounded-xl bg-slate-100 overflow-hidden shrink-0 border border-slate-200">
+                                <Image
+                                  src={item.image || 'https://images.unsplash.com/photo-1589923188900-85dae523342b?auto=format&fit=crop&w=600&q=80'}
+                                  alt={item.name}
+                                  fill
+                                  className="object-cover"
+                                />
+                              </div>
+                            )}
+                            <div className="flex-1 min-w-0 text-left">
+                              <div className="font-bold text-xs text-slate-900 truncate">{item.name}</div>
+                              <div className="text-[11px] text-slate-500">
+                                {item.quantity || 1} × <span className="font-bold text-slate-800">₹{(item.price || 0).toLocaleString('en-IN')}</span>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+
+                      {cartItems.length > (cartSettings.miniShoppingCartProductNumber || 5) && (
+                        <div className="text-[10px] text-center text-slate-400">
+                          + {cartItems.length - (cartSettings.miniShoppingCartProductNumber || 5)} more items in cart
+                        </div>
+                      )}
+
+                      <div className="border-t border-slate-100 pt-2 flex items-center justify-between">
+                        <span className="text-xs text-slate-600 font-medium">Subtotal:</span>
+                        <span className="text-sm font-black text-slate-950">₹{miniCartSubtotal.toLocaleString('en-IN')}</span>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-2 pt-1">
+                        <Link
+                          href="/cart"
+                          onClick={() => setMiniCartOpen(false)}
+                          className="py-2 text-center text-xs font-bold text-slate-800 bg-slate-100 hover:bg-slate-200 rounded-xl transition"
+                        >
+                          View Cart
+                        </Link>
+                        <Link
+                          href="/checkout"
+                          onClick={() => setMiniCartOpen(false)}
+                          className="py-2 text-center text-xs font-bold text-white bg-agri-green hover:bg-agri-green-dark rounded-xl transition flex items-center justify-center gap-1"
+                        >
+                          <span>Checkout</span>
+                          <ArrowRight className="w-3.5 h-3.5" />
+                        </Link>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="py-6 text-center text-slate-400 text-xs">
+                      Your shopping cart is empty.
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
 
             {/* Mobile menu button */}
             <button

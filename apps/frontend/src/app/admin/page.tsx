@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { SITE_CONFIG } from '@/lib/config';
 import { dataStore } from '@/lib/store';
 import { SEED_WAREHOUSES } from '@/lib/seed-data';
