@@ -16679,12 +16679,12 @@
     "showProductImagesOnWishList": true,
     "emailWishlistEnabled": true,
     "allowAnonymousUsersToEmailWishlist": false,
-    "allowMultipleWishlist": false,
+    "allowMultipleWishlist": true,
     "maximumNumberOfCustomWishlist": 10,
     "allowOutOfStockItemsToBeAddedToWishlist": false,
     "moveItemsFromWishlistToCart": true,
     "displayWishlistAfterAddingProduct": false,
-    "isAdvanced": false
+    "isAdvanced": true
   },
   "filterYmmSettings": {
     "filterLevelEnabled": true,

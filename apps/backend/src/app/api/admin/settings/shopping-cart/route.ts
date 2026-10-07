@@ -41,7 +41,7 @@ export interface ShoppingCartSettingsData {
   isAdvanced: boolean;
 }
 
-export const DEFAULT_SHOPPING_CART_SETTINGS: ShoppingCartSettingsData = {
+const DEFAULT_SHOPPING_CART_SETTINGS: ShoppingCartSettingsData = {
   // Common defaults
   showDiscountBox: true,
   showGiftCardBox: true,
@@ -68,7 +68,7 @@ export const DEFAULT_SHOPPING_CART_SETTINGS: ShoppingCartSettingsData = {
   showProductImagesOnWishList: true,
   emailWishlistEnabled: true,
   allowAnonymousUsersToEmailWishlist: false,
-  allowMultipleWishlist: false,
+  allowMultipleWishlist: true,
   maximumNumberOfCustomWishlist: 10,
   allowOutOfStockItemsToBeAddedToWishlist: false,
   moveItemsFromWishlistToCart: true,
