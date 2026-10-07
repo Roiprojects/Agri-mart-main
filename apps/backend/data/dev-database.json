@@ -16685,5 +16685,31 @@
     "moveItemsFromWishlistToCart": true,
     "displayWishlistAfterAddingProduct": false,
     "isAdvanced": false
+  },
+  "filterYmmSettings": {
+    "filterLevelEnabled": true,
+    "displayOnHomePage": true,
+    "displayOnProductDetailsPage": true,
+    "isAdvanced": true,
+    "levels": [
+      {
+        "id": "lvl-1",
+        "name": "Year",
+        "enabled": true,
+        "displayOrder": 1
+      },
+      {
+        "id": "lvl-2",
+        "name": "Make",
+        "enabled": true,
+        "displayOrder": 2
+      },
+      {
+        "id": "lvl-3",
+        "name": "Model",
+        "enabled": true,
+        "displayOrder": 3
+      }
+    ]
   }
 }

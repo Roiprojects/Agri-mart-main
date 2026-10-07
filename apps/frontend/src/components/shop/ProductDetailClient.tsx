@@ -25,6 +25,7 @@ import {
 } from 'lucide-react';
 import { useAuth, setClientAuthUser } from '@/lib/auth-client';
 import { useShoppingCartSettings } from '@/lib/shopping-cart-settings';
+import { useFilterYmmSettings } from '@/lib/filter-ymm-settings';
 
 interface ProductDetailClientProps {
   product: any;
@@ -34,6 +35,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
   const router = useRouter();
   const { user, isLoggedIn } = useAuth();
   const { settings: cartSettings } = useShoppingCartSettings();
+  const { settings: ymmSettings } = useFilterYmmSettings();
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [pendingAction, setPendingAction] = useState<'cart' | 'buy' | null>(null);
 
@@ -413,6 +415,38 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
           </div>
         </div>
       </div>
+
+      {/* Equipment Compatibility Matrix (Controlled by Filter (YMM) settings: displayOnProductDetailsPage) */}
+      {ymmSettings.filterLevelEnabled && ymmSettings.displayOnProductDetailsPage && (
+        <div className="p-4 bg-emerald-50/70 rounded-2xl border border-emerald-200 space-y-2 text-xs">
+          <div className="flex items-center justify-between">
+            <div className="font-bold text-slate-900 flex items-center gap-1.5">
+              <Tractor className="w-4 h-4 text-agri-green" />
+              <span>Verified Equipment Compatibility ({ymmSettings.levels.filter(l => l.enabled).map(l => l.name).join(' / ')})</span>
+            </div>
+            <span className="text-[10px] font-bold text-agri-green bg-white px-2.5 py-0.5 rounded-full border border-emerald-300">
+              Guaranteed Fit
+            </span>
+          </div>
+          <p className="text-[11px] text-slate-600">
+            Engineered and factory-tested for seamless compatibility with multi-brand agricultural machinery:
+          </p>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 pt-1 text-[11px]">
+            <div className="bg-white p-2.5 rounded-xl border border-emerald-100/80">
+              <span className="font-bold text-slate-800">Years:</span>
+              <div className="text-slate-600">2020 – 2025 Current</div>
+            </div>
+            <div className="bg-white p-2.5 rounded-xl border border-emerald-100/80">
+              <span className="font-bold text-slate-800">Compatible Makes:</span>
+              <div className="text-slate-600">AgriPro, Mahindra, KisanKraft, Kubota</div>
+            </div>
+            <div className="bg-white p-2.5 rounded-xl border border-emerald-100/80">
+              <span className="font-bold text-slate-800">Compatible Models:</span>
+              <div className="text-slate-600">5HP - 55HP Tillers &amp; Tractors</div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Trust Badges */}
       <div className="grid grid-cols-2 gap-3 pt-2 text-xs text-slate-600 border-t border-slate-100">

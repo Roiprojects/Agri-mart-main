@@ -15,6 +15,7 @@ import HeroBannerSlider from '@/components/home/HeroBannerSlider';
 import CropStageFilter from '@/components/home/CropStageFilter';
 import CropJourneyTimeline from '@/components/home/CropJourneyTimeline';
 import ProductCard from '@/components/shop/ProductCard';
+import YmmFilterWidget from '@/components/shop/YmmFilterWidget';
 import { Accordion, AccordionItemData } from '@/components/ui/Accordion';
 import { Badge } from '@/components/ui/Badge';
 import {
@@ -147,6 +148,13 @@ export default async function HomePage() {
       <section className="relative w-full overflow-hidden border-b border-agri-border/60">
         <HeroBannerSlider />
       </section>
+
+      {/* =========================================================================
+          YMM FILTER WIDGET (Controlled by Filter (YMM) settings: displayOnHomePage)
+         ========================================================================= */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8 sm:-mt-12 relative z-20">
+        <YmmFilterWidget />
+      </div>
 
       {/* =========================================================================
           SECTION 2: SHOP BY CATEGORY (Asymmetrical Visual Tiles)

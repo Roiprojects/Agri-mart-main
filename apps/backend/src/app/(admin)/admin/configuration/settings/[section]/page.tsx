@@ -49,6 +49,7 @@ import OrderSettingsPage from '../order/page';
 import ShippingSettingsPage from '../shipping/page';
 import TaxSettingsPage from '../tax/page';
 import ShoppingCartSettingsPage from '../shopping-cart/page';
+import FilterYmmSettingsPage from '../filter-ymm/page';
 
 export default function ConfigurationSectionPage({
   params,
@@ -75,6 +76,9 @@ export default function ConfigurationSectionPage({
   }
   if (section === 'shopping-cart') {
     return <ShoppingCartSettingsPage />;
+  }
+  if (section === 'filter-ymm') {
+    return <FilterYmmSettingsPage />;
   }
 
   const info = sectionTitles[section] || {
