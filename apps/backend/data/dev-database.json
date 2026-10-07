@@ -16738,5 +16738,20 @@
     "deleteInactiveCustomersAfterMonths": 36,
     "consents": [],
     "isAdvanced": true
+  },
+  "vendorSettings": {
+    "allowCustomersToApplyForVendorAccount": true,
+    "termsOfServiceEnabled": false,
+    "allowVendorsToEditInfo": true,
+    "notifyAboutVendorInformationChanges": false,
+    "maximumNumberOfProducts": 3000,
+    "allowVendorsToImportProducts": false,
+    "allowCustomersToContactVendors": false,
+    "allowSearchByVendor": false,
+    "showVendorOnProductDetailsPage": false,
+    "showVendorNameOnOrderDetailsPage": false,
+    "numberOfVendorsToDisplay": 0,
+    "vendorAttributes": [],
+    "isAdvanced": true
   }
 }

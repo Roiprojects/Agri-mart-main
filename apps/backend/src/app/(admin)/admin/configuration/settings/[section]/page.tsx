@@ -52,6 +52,7 @@ import ShoppingCartSettingsPage from '../shopping-cart/page';
 import FilterYmmSettingsPage from '../filter-ymm/page';
 import RewardPointsSettingsPage from '../reward-points/page';
 import GdprSettingsPage from '../gdpr/page';
+import VendorSettingsPage from '../vendor/page';
 
 export default function ConfigurationSectionPage({
   params,
@@ -87,6 +88,9 @@ export default function ConfigurationSectionPage({
   }
   if (section === 'gdpr') {
     return <GdprSettingsPage />;
+  }
+  if (section === 'vendor') {
+    return <VendorSettingsPage />;
   }
 
   const info = sectionTitles[section] || {
