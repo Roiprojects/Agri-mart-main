@@ -206,7 +206,7 @@ export default function FilterYmmSettingsPage() {
             </>
           ) : (
             <>
-              <span className="w-3.5 h-[18px] rounded-[2px] bg-[#2489c5] shadow-2xs" />
+              <span className="w-3.5 h-[18px] rounded-full border border-slate-400 bg-white shadow-2xs" />
               <span className="text-[#2489c5] text-xs font-normal pr-0.5">Basic</span>
             </>
           )}
@@ -261,58 +261,61 @@ export default function FilterYmmSettingsPage() {
                   </div>
                 </div>
 
-                {/* Sub-tree branches with connecting line */}
-                <div className="relative pl-56">
-                  {/* Vertical tree stem line */}
-                  <div className="absolute left-[232px] top-[-8px] bottom-3 w-[1px] bg-slate-300" />
+                {/* Sub-tree branches with connecting line (Advanced only - Matching media_1791358506019.png) */}
+                {isAdvanced && (
+                  <div className="relative pl-56">
+                    {/* Vertical tree stem line */}
+                    <div className="absolute left-[232px] top-[-8px] bottom-3 w-[1px] bg-slate-300" />
 
-                  {/* 2. Display on home page */}
-                  <div className="relative flex items-center gap-4 py-2">
-                    {/* Horizontal branch line */}
-                    <div className="absolute left-[-8px] top-1/2 w-2 h-[1px] bg-slate-300" />
-                    <div className="w-48 flex items-center justify-end gap-1.5 text-right font-medium text-slate-700 text-xs">
-                      <span>Display on home page</span>
-                      <HelpTooltip text="An option indicating whether the Year-Make-Model machinery compatibility filter widget should appear on the homepage." />
+                    {/* 2. Display on home page */}
+                    <div className="relative flex items-center gap-4 py-2">
+                      {/* Horizontal branch line */}
+                      <div className="absolute left-[-8px] top-1/2 w-2 h-[1px] bg-slate-300" />
+                      <div className="w-48 flex items-center justify-end gap-1.5 text-right font-medium text-slate-700 text-xs">
+                        <span>Display on home page</span>
+                        <HelpTooltip text="An option indicating whether the Year-Make-Model machinery compatibility filter widget should appear on the homepage." />
+                      </div>
+                      <div>
+                        <input
+                          type="checkbox"
+                          disabled={!filterLevelEnabled}
+                          checked={displayOnHomePage}
+                          onChange={(e) => setDisplayOnHomePage(e.target.checked)}
+                          className="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer disabled:opacity-50"
+                        />
+                      </div>
                     </div>
-                    <div>
-                      <input
-                        type="checkbox"
-                        disabled={!filterLevelEnabled}
-                        checked={displayOnHomePage}
-                        onChange={(e) => setDisplayOnHomePage(e.target.checked)}
-                        className="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer disabled:opacity-50"
-                      />
+
+                    {/* 3. Display on product details page */}
+                    <div className="relative flex items-center gap-4 py-2">
+                      {/* Horizontal branch line */}
+                      <div className="absolute left-[-8px] top-1/2 w-2 h-[1px] bg-slate-300" />
+                      <div className="w-48 flex items-center justify-end gap-1.5 text-right font-medium text-slate-700 text-xs">
+                        <span>Display on product details page</span>
+                        <HelpTooltip text="An option indicating whether the equipment compatibility matrix tab should appear on product detail pages." />
+                      </div>
+                      <div>
+                        <input
+                          type="checkbox"
+                          disabled={!filterLevelEnabled}
+                          checked={displayOnProductDetailsPage}
+                          onChange={(e) => setDisplayOnProductDetailsPage(e.target.checked)}
+                          className="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer disabled:opacity-50"
+                        />
+                      </div>
                     </div>
                   </div>
-
-                  {/* 3. Display on product details page */}
-                  <div className="relative flex items-center gap-4 py-2">
-                    {/* Horizontal branch line */}
-                    <div className="absolute left-[-8px] top-1/2 w-2 h-[1px] bg-slate-300" />
-                    <div className="w-48 flex items-center justify-end gap-1.5 text-right font-medium text-slate-700 text-xs">
-                      <span>Display on product details page</span>
-                      <HelpTooltip text="An option indicating whether the equipment compatibility matrix tab should appear on product detail pages." />
-                    </div>
-                    <div>
-                      <input
-                        type="checkbox"
-                        disabled={!filterLevelEnabled}
-                        checked={displayOnProductDetailsPage}
-                        onChange={(e) => setDisplayOnProductDetailsPage(e.target.checked)}
-                        className="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer disabled:opacity-50"
-                      />
-                    </div>
-                  </div>
-                </div>
+                )}
               </div>
             </div>
           )}
         </div>
 
         {/* ========================================================================= */}
-        {/* CARD 2: LEVELS (Matching media_1791356854242.png)                         */}
+        {/* CARD 2: LEVELS (Advanced only - Matching media_1791358506019.png)          */}
         {/* ========================================================================= */}
-        <div className="bg-white rounded border border-slate-200 border-t-3 border-t-[#00c0ef] shadow-2xs overflow-hidden">
+        {isAdvanced && (
+          <div className="bg-white rounded border border-slate-200 border-t-3 border-t-[#00c0ef] shadow-2xs overflow-hidden">
           <div
             onClick={() => setLevelsOpen(!levelsOpen)}
             className="px-4 py-3 bg-white border-b border-slate-100 flex items-center justify-between cursor-pointer select-none"
@@ -426,6 +429,7 @@ export default function FilterYmmSettingsPage() {
             </div>
           )}
         </div>
+      )}
 
 
       {/* Edit Level Modal */}

@@ -19,7 +19,7 @@ export interface FilterYmmSettingsData {
   levels: FilterLevelItem[];
 }
 
-export const DEFAULT_FILTER_YMM_SETTINGS: FilterYmmSettingsData = {
+const DEFAULT_FILTER_YMM_SETTINGS: FilterYmmSettingsData = {
   filterLevelEnabled: true,
   displayOnHomePage: true,
   displayOnProductDetailsPage: true,

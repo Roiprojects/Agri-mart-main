@@ -275,7 +275,7 @@ export default function ShoppingCartSettingsPage() {
             </>
           ) : (
             <>
-              <span className="w-3.5 h-[18px] rounded-[2px] bg-[#2489c5] shadow-2xs" />
+              <span className="w-3.5 h-[18px] rounded-full border border-slate-400 bg-white shadow-2xs" />
               <span className="text-[#2489c5] text-xs font-normal pr-0.5">Basic</span>
             </>
           )}
