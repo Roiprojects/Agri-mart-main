@@ -197,7 +197,7 @@ export const DEFAULT_CATALOG_SETTINGS: CatalogSettingsData = {
   searchPagePriceFrom: 0,
   searchPagePriceTo: 0,
   allowCustomersToSearchWithManufacturerName: true,
-  allowCustomersToSearchWithCategoryName: false,
+  allowCustomersToSearchWithCategoryName: true,
 
   // Product reviews defaults
   productReviewsMustBeApproved: false,
@@ -205,7 +205,7 @@ export const DEFAULT_CATALOG_SETTINGS: CatalogSettingsData = {
   allowAnonymousUsersToWriteProductReviews: false,
   productReviewPossibleOnlyAfterPurchasing: false,
   notifyAboutNewProductReviews: false,
-  notifyCustomerAboutProductReviewReply: true,
+  notifyCustomerAboutProductReviewReply: false,
   reviewsPerStore: false,
   showProductReviewsTabOnMyAccountPage: true,
   productReviewsPageSize: 10,

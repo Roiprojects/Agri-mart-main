@@ -187,7 +187,7 @@ export default function CatalogSettingsPage() {
     setAllowCustomersToSearchWithManufacturerName,
   ] = useState(true);
   const [allowCustomersToSearchWithCategoryName, setAllowCustomersToSearchWithCategoryName] =
-    useState(false);
+    useState(true);
 
   // 3. Product reviews fields (media_1791348459764.png)
   const [productReviewsMustBeApproved, setProductReviewsMustBeApproved] = useState(false);
@@ -198,7 +198,7 @@ export default function CatalogSettingsPage() {
     useState(false);
   const [notifyAboutNewProductReviews, setNotifyAboutNewProductReviews] = useState(false);
   const [notifyCustomerAboutProductReviewReply, setNotifyCustomerAboutProductReviewReply] =
-    useState(true);
+    useState(false);
   const [reviewsPerStore, setReviewsPerStore] = useState(false);
   const [showProductReviewsTabOnMyAccountPage, setShowProductReviewsTabOnMyAccountPage] =
     useState(true);
@@ -1163,20 +1163,32 @@ export default function CatalogSettingsPage() {
         </span>
         {[
           { id: 'sec-ai', label: 'Artificial Intelligence' },
-          { id: 'sec-product-fields', label: 'Product fields' },
-          { id: 'sec-product-page', label: 'Product page' },
-          { id: 'sec-catalog-pages', label: 'Catalog pages' },
-          { id: 'sec-tags', label: 'Tags' },
-          { id: 'sec-tax', label: 'Tax' },
+          ...(isAdvanced
+            ? [
+                { id: 'sec-product-fields', label: 'Product fields' },
+                { id: 'sec-product-page', label: 'Product page' },
+                { id: 'sec-catalog-pages', label: 'Catalog pages' },
+                { id: 'sec-tags', label: 'Tags' },
+                { id: 'sec-tax', label: 'Tax' },
+              ]
+            : []),
           { id: 'sec-search', label: 'Search' },
           { id: 'sec-reviews', label: 'Product reviews' },
-          { id: 'sec-review-types', label: 'Review types' },
-          { id: 'sec-performance', label: 'Performance' },
+          ...(isAdvanced
+            ? [
+                { id: 'sec-review-types', label: 'Review types' },
+                { id: 'sec-performance', label: 'Performance' },
+              ]
+            : []),
           { id: 'sec-share', label: 'Share' },
-          { id: 'sec-compare', label: 'Compare products' },
+          ...(isAdvanced ? [{ id: 'sec-compare', label: 'Compare products' }] : []),
           { id: 'sec-additional', label: 'Additional sections' },
-          { id: 'sec-export-import', label: 'Export/Import' },
-          { id: 'sec-product-sorting', label: 'Product sorting' },
+          ...(isAdvanced
+            ? [
+                { id: 'sec-export-import', label: 'Export/Import' },
+                { id: 'sec-product-sorting', label: 'Product sorting' },
+              ]
+            : []),
         ].map((item) => (
           <a
             key={item.id}
@@ -1228,7 +1240,7 @@ export default function CatalogSettingsPage() {
             </div>
 
             {/* Tree branch children under Enable artificial intelligence */}
-            {enableArtificialIntelligence && (
+            {isAdvanced && enableArtificialIntelligence && (
               <>
                 {/* Provider type */}
                 <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
@@ -1465,7 +1477,8 @@ export default function CatalogSettingsPage() {
       </div>
 
       {/* ── CARD: PRODUCT FIELDS (Matching media_1791349415553.png) ── */}
-      <div id="sec-product-fields" className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden border-t-3 border-t-[#00c0ef] scroll-mt-4">
+      {isAdvanced && (
+        <div id="sec-product-fields" className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden border-t-3 border-t-[#00c0ef] scroll-mt-4">
         <div
           onClick={() => setProductFieldsOpen(!productFieldsOpen)}
           className="px-4 py-2.5 bg-white border-b border-[#f4f4f4] flex items-center justify-between cursor-pointer select-none text-xs font-semibold text-slate-700 hover:bg-slate-50/70 transition"
@@ -1575,9 +1588,11 @@ export default function CatalogSettingsPage() {
           </div>
         )}
       </div>
+      )}
 
       {/* ── CARD: PRODUCT PAGE (Matching media_1791349415553.png) ── */}
-      <div id="sec-product-page" className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden border-t-3 border-t-[#00c0ef] scroll-mt-4">
+      {isAdvanced && (
+        <div id="sec-product-page" className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden border-t-3 border-t-[#00c0ef] scroll-mt-4">
         <div
           onClick={() => setProductPageOpen(!productPageOpen)}
           className="px-4 py-2.5 bg-white border-b border-[#f4f4f4] flex items-center justify-between cursor-pointer select-none text-xs font-semibold text-slate-700 hover:bg-slate-50/70 transition"
@@ -1697,9 +1712,11 @@ export default function CatalogSettingsPage() {
           </div>
         )}
       </div>
+      )}
 
       {/* ── CARD: CATALOG PAGES (Matching media_1791349419550.png) ── */}
-      <div id="sec-catalog-pages" className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden border-t-3 border-t-[#00c0ef] scroll-mt-4">
+      {isAdvanced && (
+        <div id="sec-catalog-pages" className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden border-t-3 border-t-[#00c0ef] scroll-mt-4">
         <div
           onClick={() => setCatalogPagesOpen(!catalogPagesOpen)}
           className="px-4 py-2.5 bg-white border-b border-[#f4f4f4] flex items-center justify-between cursor-pointer select-none text-xs font-semibold text-slate-700 hover:bg-slate-50/70 transition"
@@ -1947,9 +1964,11 @@ export default function CatalogSettingsPage() {
           </div>
         )}
       </div>
+      )}
 
       {/* ── CARD: TAGS (Matching media_1791349495099.png) ── */}
-      <div id="sec-tags" className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden border-t-3 border-t-[#00c0ef] scroll-mt-4">
+      {isAdvanced && (
+        <div id="sec-tags" className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden border-t-3 border-t-[#00c0ef] scroll-mt-4">
         <div
           onClick={() => setTagsOpen(!tagsOpen)}
           className="px-4 py-2.5 bg-white border-b border-[#f4f4f4] flex items-center justify-between cursor-pointer select-none text-xs font-semibold text-slate-700 hover:bg-slate-50/70 transition"
@@ -2121,9 +2140,11 @@ export default function CatalogSettingsPage() {
           </div>
         )}
       </div>
+      )}
 
       {/* ── CARD: TAX (Matching media_1791349518173.png) ── */}
-      <div id="sec-tax" className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden border-t-3 border-t-[#00c0ef] scroll-mt-4">
+      {isAdvanced && (
+        <div id="sec-tax" className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden border-t-3 border-t-[#00c0ef] scroll-mt-4">
         <div
           onClick={() => setTaxOpen(!taxOpen)}
           className="px-4 py-2.5 bg-white border-b border-[#f4f4f4] flex items-center justify-between cursor-pointer select-none text-xs font-semibold text-slate-700 hover:bg-slate-50/70 transition"
@@ -2249,6 +2270,7 @@ export default function CatalogSettingsPage() {
           </div>
         )}
       </div>
+      )}
 
       {/* ── CARD 2: SEARCH (Matching media_1791348108093.png & media_1791348109836.png) ── */}
       <div id="sec-search" className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden border-t-3 border-t-[#00c0ef] scroll-mt-4">
@@ -2284,7 +2306,7 @@ export default function CatalogSettingsPage() {
             </div>
 
             {/* Tree branch child 1: Show product categories for the search box */}
-            {searchEnabled && (
+            {isAdvanced && searchEnabled && (
               <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
                 <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
                   <span className="text-right">
@@ -2333,7 +2355,7 @@ export default function CatalogSettingsPage() {
             )}
 
             {/* Nested children under Search autocomplete enabled */}
-            {searchEnabled && searchAutocompleteEnabled && (
+            {isAdvanced && searchEnabled && searchAutocompleteEnabled && (
               <>
                 {/* Number of 'autocomplete' products to display */}
                 <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
@@ -2413,8 +2435,10 @@ export default function CatalogSettingsPage() {
               </>
             )}
 
-            {/* Search term minimum length */}
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+            {isAdvanced && (
+              <>
+                {/* Search term minimum length */}
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
               <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
                 <span>Search term minimum length</span>
                 <HelpTooltip text="Minimum number of characters required before search execution or suggestions trigger." />
@@ -2567,6 +2591,8 @@ export default function CatalogSettingsPage() {
                 )}
               </>
             )}
+              </>
+            )}
 
             {/* Allow customers to search with manufacturer name */}
             <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
@@ -2665,47 +2691,51 @@ export default function CatalogSettingsPage() {
               </div>
             </div>
 
-            {/* Allow anonymous users to write product reviews */}
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
-              <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
-                <span className="text-right">
-                  Allow anonymous users to write
-                  <br className="hidden md:inline" /> product reviews
-                </span>
-                <HelpTooltip text="Allow unregistered guest visitors to submit product ratings and reviews." />
-              </label>
-              <div className="md:col-span-8 flex items-center">
-                <input
-                  type="checkbox"
-                  checked={allowAnonymousUsersToWriteProductReviews}
-                  onChange={(e) =>
-                    setAllowAnonymousUsersToWriteProductReviews(e.target.checked)
-                  }
-                  className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
-                />
-              </div>
-            </div>
+            {isAdvanced && (
+              <>
+                {/* Allow anonymous users to write product reviews */}
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                  <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                    <span className="text-right">
+                      Allow anonymous users to write
+                      <br className="hidden md:inline" /> product reviews
+                    </span>
+                    <HelpTooltip text="Allow unregistered guest visitors to submit product ratings and reviews." />
+                  </label>
+                  <div className="md:col-span-8 flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={allowAnonymousUsersToWriteProductReviews}
+                      onChange={(e) =>
+                        setAllowAnonymousUsersToWriteProductReviews(e.target.checked)
+                      }
+                      className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                    />
+                  </div>
+                </div>
 
-            {/* Product review possible only after product purchasing */}
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
-              <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
-                <span className="text-right">
-                  Product review possible only after
-                  <br className="hidden md:inline" /> product purchasing
-                </span>
-                <HelpTooltip text="Restrict review submissions exclusively to verified buyers who ordered the product." />
-              </label>
-              <div className="md:col-span-8 flex items-center">
-                <input
-                  type="checkbox"
-                  checked={productReviewPossibleOnlyAfterPurchasing}
-                  onChange={(e) =>
-                    setProductReviewPossibleOnlyAfterPurchasing(e.target.checked)
-                  }
-                  className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
-                />
-              </div>
-            </div>
+                {/* Product review possible only after product purchasing */}
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                  <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                    <span className="text-right">
+                      Product review possible only after
+                      <br className="hidden md:inline" /> product purchasing
+                    </span>
+                    <HelpTooltip text="Restrict review submissions exclusively to verified buyers who ordered the product." />
+                  </label>
+                  <div className="md:col-span-8 flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={productReviewPossibleOnlyAfterPurchasing}
+                      onChange={(e) =>
+                        setProductReviewPossibleOnlyAfterPurchasing(e.target.checked)
+                      }
+                      className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                    />
+                  </div>
+                </div>
+              </>
+            )}
 
             {/* Notify about new product reviews */}
             <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
@@ -2744,87 +2774,92 @@ export default function CatalogSettingsPage() {
               </div>
             </div>
 
-            {/* Reviews per store */}
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
-              <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
-                <span>Reviews per store</span>
-                <HelpTooltip text="Display and filter product reviews on a per-multistore basis." />
-              </label>
-              <div className="md:col-span-8 flex items-center">
-                <input
-                  type="checkbox"
-                  checked={reviewsPerStore}
-                  onChange={(e) => setReviewsPerStore(e.target.checked)}
-                  className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
-                />
-              </div>
-            </div>
-
-            {/* Show product reviews tab on 'My account' page */}
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
-              <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
-                <span className="text-right">
-                  Show product reviews tab on 'My
-                  <br className="hidden md:inline" /> account' page
-                </span>
-                <HelpTooltip text="Show customer reviews history tab inside customer account dashboard." />
-              </label>
-              <div className="md:col-span-8 flex items-center">
-                <input
-                  type="checkbox"
-                  checked={showProductReviewsTabOnMyAccountPage}
-                  onChange={(e) =>
-                    setShowProductReviewsTabOnMyAccountPage(e.target.checked)
-                  }
-                  className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
-                />
-              </div>
-            </div>
-
-            {/* Tree branch child: Product reviews page size */}
-            {showProductReviewsTabOnMyAccountPage && (
-              <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
-                <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
-                  <span>Product reviews page size</span>
-                  <HelpTooltip text="Number of reviews displayed per page in customer account history." />
-                </label>
-                <div className="md:col-span-8 max-w-xl relative pl-5">
-                  <div
-                    className="absolute -top-3.5 left-0 w-3.5 h-5 border-l border-b border-slate-300 pointer-events-none"
-                    aria-hidden="true"
-                  />
-                  <input
-                    type="number"
-                    min="1"
-                    value={productReviewsPageSize}
-                    onChange={(e) => setProductReviewsPageSize(e.target.value)}
-                    className="w-full border border-[#d2d6de] focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none rounded px-3 py-1.5 text-xs text-slate-800 bg-white"
-                  />
+            {isAdvanced && (
+              <>
+                {/* Reviews per store */}
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                  <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                    <span>Reviews per store</span>
+                    <HelpTooltip text="Display and filter product reviews on a per-multistore basis." />
+                  </label>
+                  <div className="md:col-span-8 flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={reviewsPerStore}
+                      onChange={(e) => setReviewsPerStore(e.target.checked)}
+                      className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                    />
+                  </div>
                 </div>
-              </div>
-            )}
 
-            {/* Sort by ascending */}
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
-              <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
-                <span>Sort by ascending</span>
-                <HelpTooltip text="Sort product reviews chronologically ascending (oldest first)." />
-              </label>
-              <div className="md:col-span-8 flex items-center">
-                <input
-                  type="checkbox"
-                  checked={sortProductReviewsByAscending}
-                  onChange={(e) => setSortProductReviewsByAscending(e.target.checked)}
-                  className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
-                />
-              </div>
-            </div>
+                {/* Show product reviews tab on 'My account' page */}
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                  <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                    <span className="text-right">
+                      Show product reviews tab on 'My
+                      <br className="hidden md:inline" /> account' page
+                    </span>
+                    <HelpTooltip text="Show customer reviews history tab inside customer account dashboard." />
+                  </label>
+                  <div className="md:col-span-8 flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={showProductReviewsTabOnMyAccountPage}
+                      onChange={(e) =>
+                        setShowProductReviewsTabOnMyAccountPage(e.target.checked)
+                      }
+                      className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                    />
+                  </div>
+                </div>
+
+                {/* Tree branch child: Product reviews page size */}
+                {showProductReviewsTabOnMyAccountPage && (
+                  <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                    <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                      <span>Product reviews page size</span>
+                      <HelpTooltip text="Number of reviews displayed per page in customer account history." />
+                    </label>
+                    <div className="md:col-span-8 max-w-xl relative pl-5">
+                      <div
+                        className="absolute -top-3.5 left-0 w-3.5 h-5 border-l border-b border-slate-300 pointer-events-none"
+                        aria-hidden="true"
+                      />
+                      <input
+                        type="number"
+                        min="1"
+                        value={productReviewsPageSize}
+                        onChange={(e) => setProductReviewsPageSize(e.target.value)}
+                        className="w-full border border-[#d2d6de] focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none rounded px-3 py-1.5 text-xs text-slate-800 bg-white"
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {/* Sort by ascending */}
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                  <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                    <span>Sort by ascending</span>
+                    <HelpTooltip text="Sort product reviews chronologically ascending (oldest first)." />
+                  </label>
+                  <div className="md:col-span-8 flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={sortProductReviewsByAscending}
+                      onChange={(e) => setSortProductReviewsByAscending(e.target.checked)}
+                      className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                    />
+                  </div>
+                </div>
+              </>
+            )}
           </div>
         )}
       </div>
 
       {/* ── CARD 4: REVIEW TYPES (Matching media_1791348557185.png) ── */}
-      <div id="sec-review-types" className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden border-t-3 border-t-[#00c0ef] scroll-mt-4">
+      {isAdvanced && (
+        <div id="sec-review-types" className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden border-t-3 border-t-[#00c0ef] scroll-mt-4">
         <div
           onClick={() => setReviewTypesOpen(!reviewTypesOpen)}
           className="px-4 py-2.5 bg-white border-b border-[#f4f4f4] flex items-center justify-between cursor-pointer select-none text-xs font-semibold text-slate-700 hover:bg-slate-50/70 transition"
@@ -3043,9 +3078,11 @@ export default function CatalogSettingsPage() {
           </div>
         )}
       </div>
+      )}
 
       {/* ── CARD 5: PERFORMANCE (Matching media_1791348557185.png) ── */}
-      <div id="sec-performance" className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden border-t-3 border-t-[#00c0ef] scroll-mt-4">
+      {isAdvanced && (
+        <div id="sec-performance" className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden border-t-3 border-t-[#00c0ef] scroll-mt-4">
         <div
           onClick={() => setPerformanceOpen(!performanceOpen)}
           className="px-4 py-2.5 bg-white border-b border-[#f4f4f4] flex items-center justify-between cursor-pointer select-none text-xs font-semibold text-slate-700 hover:bg-slate-50/70 transition"
@@ -3148,6 +3185,7 @@ export default function CatalogSettingsPage() {
           </div>
         )}
       </div>
+      )}
 
       {/* ── CARD 6: SHARE (Matching media_1791348612688.png) ── */}
       <div id="sec-share" className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden border-t-3 border-t-[#00c0ef] scroll-mt-4">
@@ -3183,7 +3221,7 @@ export default function CatalogSettingsPage() {
             </div>
 
             {/* Share button code */}
-            {showShareButton && (
+            {isAdvanced && showShareButton && (
               <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-start">
                 <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5 pt-1.5">
                   <span>Share button code</span>
@@ -3217,7 +3255,7 @@ export default function CatalogSettingsPage() {
             </div>
 
             {/* Tree branch child: Allow anonymous users to email a friend */}
-            {emailAFriendEnabled && (
+            {isAdvanced && emailAFriendEnabled && (
               <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
                 <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
                   <span className="text-right">
@@ -3247,7 +3285,8 @@ export default function CatalogSettingsPage() {
       </div>
 
       {/* ── CARD 7: COMPARE PRODUCTS (Matching media_1791348612688.png) ── */}
-      <div id="sec-compare" className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden border-t-3 border-t-[#00c0ef] scroll-mt-4">
+      {isAdvanced && (
+        <div id="sec-compare" className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden border-t-3 border-t-[#00c0ef] scroll-mt-4">
         <div
           onClick={() => setCompareOpen(!compareOpen)}
           className="px-4 py-2.5 bg-white border-b border-[#f4f4f4] flex items-center justify-between cursor-pointer select-none text-xs font-semibold text-slate-700 hover:bg-slate-50/70 transition"
@@ -3335,6 +3374,7 @@ export default function CatalogSettingsPage() {
           </div>
         )}
       </div>
+      )}
 
       {/* ── CARD 8: ADDITIONAL SECTIONS (Matching media_1791348625312.png & media_1791348701724.png) ── */}
       <div id="sec-additional" className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden border-t-3 border-t-[#00c0ef] scroll-mt-4">
@@ -3390,7 +3430,7 @@ export default function CatalogSettingsPage() {
             </div>
 
             {/* Tree branch child: Number of best sellers on home page */}
-            {showBestSellersOnHomePage && (
+            {isAdvanced && showBestSellersOnHomePage && (
               <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
                 <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
                   <span className="text-right">
@@ -3432,7 +3472,7 @@ export default function CatalogSettingsPage() {
             </div>
 
             {/* Tree branch child: Number of also purchased products to display */}
-            {productsAlsoPurchasedEnabled && (
+            {isAdvanced && productsAlsoPurchasedEnabled && (
               <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
                 <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
                   <span className="text-right">
@@ -3459,48 +3499,52 @@ export default function CatalogSettingsPage() {
               </div>
             )}
 
-            {/* 'Recently viewed products' enabled */}
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
-              <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
-                <span>'Recently viewed products' enabled</span>
-                <HelpTooltip text="Store customer browsing trail and show a list of recently viewed products." />
-              </label>
-              <div className="md:col-span-8 flex items-center">
-                <input
-                  type="checkbox"
-                  checked={recentlyViewedProductsEnabled}
-                  onChange={(e) => setRecentlyViewedProductsEnabled(e.target.checked)}
-                  className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
-                />
-              </div>
-            </div>
-
-            {/* Tree branch child: Number of 'Recently viewed products' */}
-            {recentlyViewedProductsEnabled && (
-              <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
-                <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
-                  <span className="text-right">
-                    Number of 'Recently viewed
-                    <br className="hidden md:inline" /> products'
-                  </span>
-                  <HelpTooltip text="Number of recently viewed products to remember and display." />
-                </label>
-                <div className="md:col-span-8 max-w-xl relative pl-5">
-                  <div
-                    className="absolute -top-3.5 left-0 w-3.5 h-5 border-l border-b border-slate-300 pointer-events-none"
-                    aria-hidden="true"
-                  />
-                  <input
-                    type="number"
-                    min="1"
-                    value={numberOfRecentlyViewedProducts}
-                    onChange={(e) =>
-                      setNumberOfRecentlyViewedProducts(e.target.value)
-                    }
-                    className="w-full border border-[#d2d6de] focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none rounded px-3 py-1.5 text-xs text-slate-800 bg-white"
-                  />
+            {isAdvanced && (
+              <>
+                {/* 'Recently viewed products' enabled */}
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                  <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                    <span>'Recently viewed products' enabled</span>
+                    <HelpTooltip text="Store customer browsing trail and show a list of recently viewed products." />
+                  </label>
+                  <div className="md:col-span-8 flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={recentlyViewedProductsEnabled}
+                      onChange={(e) => setRecentlyViewedProductsEnabled(e.target.checked)}
+                      className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                    />
+                  </div>
                 </div>
-              </div>
+
+                {/* Tree branch child: Number of 'Recently viewed products' */}
+                {recentlyViewedProductsEnabled && (
+                  <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                    <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                      <span className="text-right">
+                        Number of 'Recently viewed
+                        <br className="hidden md:inline" /> products'
+                      </span>
+                      <HelpTooltip text="Number of recently viewed products to remember and display." />
+                    </label>
+                    <div className="md:col-span-8 max-w-xl relative pl-5">
+                      <div
+                        className="absolute -top-3.5 left-0 w-3.5 h-5 border-l border-b border-slate-300 pointer-events-none"
+                        aria-hidden="true"
+                      />
+                      <input
+                        type="number"
+                        min="1"
+                        value={numberOfRecentlyViewedProducts}
+                        onChange={(e) =>
+                          setNumberOfRecentlyViewedProducts(e.target.value)
+                        }
+                        className="w-full border border-[#d2d6de] focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none rounded px-3 py-1.5 text-xs text-slate-800 bg-white"
+                      />
+                    </div>
+                  </div>
+                )}
+              </>
             )}
 
             {/* 'New products' page enabled */}
@@ -3597,31 +3641,34 @@ export default function CatalogSettingsPage() {
             </div>
 
             {/* Image Editor for Catalog Placeholder Image */}
-            <div className="border-t border-slate-100 pt-5 mt-3">
-              <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-start">
-                <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5 pt-2">
-                  <span>Default catalog image</span>
-                  <HelpTooltip text="Fallback product picture displayed when an item has no uploaded images. Accepts local file uploads and direct web image URLs." />
-                </label>
-                <div className="md:col-span-8 max-w-xl">
-                  <ImageEditorField
-                    value={defaultCatalogPlaceholderImage}
-                    onChange={(newVal) => setDefaultCatalogPlaceholderImage(newVal)}
-                    shape="rectangle"
-                    previewHeight="h-28"
-                  />
-                  <p className="text-[11px] text-slate-400 mt-1.5">
-                    Official default catalog asset used across search listings and category cards.
-                  </p>
+            {isAdvanced && (
+              <div className="border-t border-slate-100 pt-5 mt-3">
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-start">
+                  <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5 pt-2">
+                    <span>Default catalog image</span>
+                    <HelpTooltip text="Fallback product picture displayed when an item has no uploaded images. Accepts local file uploads and direct web image URLs." />
+                  </label>
+                  <div className="md:col-span-8 max-w-xl">
+                    <ImageEditorField
+                      value={defaultCatalogPlaceholderImage}
+                      onChange={(newVal) => setDefaultCatalogPlaceholderImage(newVal)}
+                      shape="rectangle"
+                      previewHeight="h-28"
+                    />
+                    <p className="text-[11px] text-slate-400 mt-1.5">
+                      Official default catalog asset used across search listings and category cards.
+                    </p>
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
           </div>
         )}
       </div>
 
       {/* ── CARD 9: EXPORT/IMPORT (Matching media_1791351690676.png) ── */}
-      <div id="sec-export-import" className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden border-t-3 border-t-[#00c0ef] scroll-mt-4">
+      {isAdvanced && (
+        <div id="sec-export-import" className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden border-t-3 border-t-[#00c0ef] scroll-mt-4">
         <div
           onClick={() => setExportImportOpen(!exportImportOpen)}
           className="px-4 py-2.5 bg-white border-b border-[#f4f4f4] flex items-center justify-between cursor-pointer select-none text-xs font-semibold text-slate-700 hover:bg-slate-50/70 transition"
@@ -3819,9 +3866,11 @@ export default function CatalogSettingsPage() {
           </div>
         )}
       </div>
+      )}
 
       {/* ── CARD 10: PRODUCT SORTING (Matching media_1791351715936.png) ── */}
-      <div id="sec-product-sorting" className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden border-t-3 border-t-[#00c0ef] scroll-mt-4">
+      {isAdvanced && (
+        <div id="sec-product-sorting" className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden border-t-3 border-t-[#00c0ef] scroll-mt-4">
         <div
           onClick={() => setProductSortingOpen(!productSortingOpen)}
           className="px-4 py-2.5 bg-white border-b border-[#f4f4f4] flex items-center justify-between cursor-pointer select-none text-xs font-semibold text-slate-700 hover:bg-slate-50/70 transition"
@@ -4040,6 +4089,7 @@ export default function CatalogSettingsPage() {
           </div>
         )}
       </div>
+      )}
 
       {/* ── BOTTOM ACTIONS BAR ── */}
       <div className="flex items-center justify-between pt-2">
