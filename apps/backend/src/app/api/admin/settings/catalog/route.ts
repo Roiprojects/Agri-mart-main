@@ -4,6 +4,14 @@ import path from 'path';
 
 const DB_PATH = path.join(process.cwd(), 'data', 'dev-database.json');
 
+export interface ReviewTypeItem {
+  id: string;
+  name: string;
+  isRequired: boolean;
+  isVisibleToAllCustomers: boolean;
+  displayOrder: number;
+}
+
 export interface CatalogSettingsData {
   // Artificial Intelligence (media_1791348103171.png & media_1791348106363.png)
   enableArtificialIntelligence: boolean;
@@ -34,6 +42,52 @@ export interface CatalogSettingsData {
   searchPagePriceTo: number;
   allowCustomersToSearchWithManufacturerName: boolean;
   allowCustomersToSearchWithCategoryName: boolean;
+
+  // Product reviews (media_1791348459764.png)
+  productReviewsMustBeApproved: boolean;
+  oneReviewPerProductFromCustomer: boolean;
+  allowAnonymousUsersToWriteProductReviews: boolean;
+  productReviewPossibleOnlyAfterPurchasing: boolean;
+  notifyAboutNewProductReviews: boolean;
+  notifyCustomerAboutProductReviewReply: boolean;
+  reviewsPerStore: boolean;
+  showProductReviewsTabOnMyAccountPage: boolean;
+  productReviewsPageSize: number;
+  sortProductReviewsByAscending: boolean;
+
+  // Review types (media_1791348557185.png)
+  reviewTypes: ReviewTypeItem[];
+
+  // Performance (media_1791348557185.png)
+  ignoreAclRulesSitewide: boolean;
+  ignoreLimitPerStoreRulesSitewide: boolean;
+  ignoreDiscountsSitewide: boolean;
+  ignoreFeaturedProductsSitewide: boolean;
+  cacheProductPrices: boolean;
+
+  // Share (media_1791348612688.png)
+  showShareButton: boolean;
+  shareButtonCode: string;
+  emailAFriendEnabled: boolean;
+  allowAnonymousUsersToEmailAFriend: boolean;
+
+  // Compare products (media_1791348612688.png)
+  compareProductsEnabled: boolean;
+  includeShortDescriptionInCompareProducts: boolean;
+  includeFullDescriptionInCompareProducts: boolean;
+
+  // Additional sections (media_1791348625312.png)
+  removeRequiredProducts: boolean;
+  showBestSellersOnHomePage: boolean;
+  numberOfBestSellersOnHomePage: number;
+  productsAlsoPurchasedEnabled: boolean;
+  numberOfAlsoPurchasedProductsToDisplay: number;
+  recentlyViewedProductsEnabled: boolean;
+  numberOfRecentlyViewedProducts: number;
+  newProductsPageEnabled: boolean;
+  newProductsPageAllowCustomersToSelectPageSize: boolean;
+  numberOfProductsOnNewProductsPage: number;
+  displayDateForPreOrderAvailability: boolean;
 
   // Catalog images & placeholder
   defaultCatalogPlaceholderImage?: string;
@@ -75,6 +129,53 @@ export const DEFAULT_CATALOG_SETTINGS: CatalogSettingsData = {
   searchPagePriceTo: 0,
   allowCustomersToSearchWithManufacturerName: true,
   allowCustomersToSearchWithCategoryName: false,
+
+  // Product reviews defaults
+  productReviewsMustBeApproved: false,
+  oneReviewPerProductFromCustomer: false,
+  allowAnonymousUsersToWriteProductReviews: false,
+  productReviewPossibleOnlyAfterPurchasing: false,
+  notifyAboutNewProductReviews: false,
+  notifyCustomerAboutProductReviewReply: true,
+  reviewsPerStore: false,
+  showProductReviewsTabOnMyAccountPage: true,
+  productReviewsPageSize: 10,
+  sortProductReviewsByAscending: false,
+
+  // Review types defaults
+  reviewTypes: [],
+
+  // Performance defaults
+  ignoreAclRulesSitewide: true,
+  ignoreLimitPerStoreRulesSitewide: true,
+  ignoreDiscountsSitewide: false,
+  ignoreFeaturedProductsSitewide: false,
+  cacheProductPrices: false,
+
+  // Share defaults
+  showShareButton: true,
+  shareButtonCode:
+    '</a><a class="addthis_button_preferred_2"></a><a class="addthis_button_preferred_3"></a><a class="addthis_button_preferred_4"></a><a class="addthis_button_compact"></a><a class="addthis_counter addthis_bubble_style"></a></div><script src="http://s7.addthis.com/js/250/addthis_widget.js#pubid=nopsolutions"></script><!-- AddThis Button END -->',
+  emailAFriendEnabled: true,
+  allowAnonymousUsersToEmailAFriend: false,
+
+  // Compare products defaults
+  compareProductsEnabled: true,
+  includeShortDescriptionInCompareProducts: false,
+  includeFullDescriptionInCompareProducts: false,
+
+  // Additional sections defaults
+  removeRequiredProducts: false,
+  showBestSellersOnHomePage: true,
+  numberOfBestSellersOnHomePage: 4,
+  productsAlsoPurchasedEnabled: true,
+  numberOfAlsoPurchasedProductsToDisplay: 5,
+  recentlyViewedProductsEnabled: true,
+  numberOfRecentlyViewedProducts: 3,
+  newProductsPageEnabled: true,
+  newProductsPageAllowCustomersToSelectPageSize: false,
+  numberOfProductsOnNewProductsPage: 6,
+  displayDateForPreOrderAvailability: false,
 
   defaultCatalogPlaceholderImage:
     'https://images.unsplash.com/photo-1592982537447-6f2a6a0c7c18?auto=format&fit=crop&w=400&q=80',

@@ -9,10 +9,19 @@ import {
   AlertCircle,
   Search,
   Sparkles,
-  Bot,
+  MessageSquare,
+  MessagesSquare,
+  TrendingUp,
+  Share2,
+  Scale,
+  PlusCircle,
   RotateCcw,
   ArrowUp,
   ChevronUp,
+  Edit2,
+  Trash2,
+  X,
+  RefreshCw,
 } from 'lucide-react';
 import { ImageEditorField } from '@/components/admin/ImageEditorField';
 
@@ -27,12 +36,26 @@ function HelpTooltip({ text }: { text: string }) {
   );
 }
 
+interface ReviewTypeItem {
+  id: string;
+  name: string;
+  isRequired: boolean;
+  isVisibleToAllCustomers: boolean;
+  displayOrder: number;
+}
+
 export default function CatalogSettingsPage() {
   const [isAdvanced, setIsAdvanced] = useState(true);
 
   // Collapsible cards state
   const [aiOpen, setAiOpen] = useState(true);
   const [searchOpen, setSearchOpen] = useState(true);
+  const [reviewsOpen, setReviewsOpen] = useState(true);
+  const [reviewTypesOpen, setReviewTypesOpen] = useState(true);
+  const [performanceOpen, setPerformanceOpen] = useState(true);
+  const [shareOpen, setShareOpen] = useState(true);
+  const [compareOpen, setCompareOpen] = useState(true);
+  const [additionalSectionsOpen, setAdditionalSectionsOpen] = useState(true);
 
   // 1. Artificial Intelligence fields (media_1791348103171.png & media_1791348106363.png)
   const [enableArtificialIntelligence, setEnableArtificialIntelligence] = useState(true);
@@ -80,6 +103,79 @@ export default function CatalogSettingsPage() {
     setAllowCustomersToSearchWithManufacturerName,
   ] = useState(true);
   const [allowCustomersToSearchWithCategoryName, setAllowCustomersToSearchWithCategoryName] =
+    useState(false);
+
+  // 3. Product reviews fields (media_1791348459764.png)
+  const [productReviewsMustBeApproved, setProductReviewsMustBeApproved] = useState(false);
+  const [oneReviewPerProductFromCustomer, setOneReviewPerProductFromCustomer] = useState(false);
+  const [allowAnonymousUsersToWriteProductReviews, setAllowAnonymousUsersToWriteProductReviews] =
+    useState(false);
+  const [productReviewPossibleOnlyAfterPurchasing, setProductReviewPossibleOnlyAfterPurchasing] =
+    useState(false);
+  const [notifyAboutNewProductReviews, setNotifyAboutNewProductReviews] = useState(false);
+  const [notifyCustomerAboutProductReviewReply, setNotifyCustomerAboutProductReviewReply] =
+    useState(true);
+  const [reviewsPerStore, setReviewsPerStore] = useState(false);
+  const [showProductReviewsTabOnMyAccountPage, setShowProductReviewsTabOnMyAccountPage] =
+    useState(true);
+  const [productReviewsPageSize, setProductReviewsPageSize] = useState<number | string>(10);
+  const [sortProductReviewsByAscending, setSortProductReviewsByAscending] = useState(false);
+
+  // 4. Review types fields (media_1791348557185.png)
+  const [reviewTypes, setReviewTypes] = useState<ReviewTypeItem[]>([]);
+  const [reviewTypeModalOpen, setReviewTypeModalOpen] = useState(false);
+  const [editingReviewType, setEditingReviewType] = useState<ReviewTypeItem | null>(null);
+  const [rtNameInput, setRtNameInput] = useState('');
+  const [rtRequiredInput, setRtRequiredInput] = useState(false);
+  const [rtVisibleInput, setRtVisibleInput] = useState(true);
+  const [rtOrderInput, setRtOrderInput] = useState<number | string>(1);
+
+  // 5. Performance fields (media_1791348557185.png)
+  const [ignoreAclRulesSitewide, setIgnoreAclRulesSitewide] = useState(true);
+  const [ignoreLimitPerStoreRulesSitewide, setIgnoreLimitPerStoreRulesSitewide] = useState(true);
+  const [ignoreDiscountsSitewide, setIgnoreDiscountsSitewide] = useState(false);
+  const [ignoreFeaturedProductsSitewide, setIgnoreFeaturedProductsSitewide] = useState(false);
+  const [cacheProductPrices, setCacheProductPrices] = useState(false);
+
+  // 6. Share fields (media_1791348612688.png)
+  const [showShareButton, setShowShareButton] = useState(true);
+  const [shareButtonCode, setShareButtonCode] = useState(
+    '</a><a class="addthis_button_preferred_2"></a><a class="addthis_button_preferred_3"></a><a class="addthis_button_preferred_4"></a><a class="addthis_button_compact"></a><a class="addthis_counter addthis_bubble_style"></a></div><script src="http://s7.addthis.com/js/250/addthis_widget.js#pubid=nopsolutions"></script><!-- AddThis Button END -->'
+  );
+  const [emailAFriendEnabled, setEmailAFriendEnabled] = useState(true);
+  const [allowAnonymousUsersToEmailAFriend, setAllowAnonymousUsersToEmailAFriend] = useState(false);
+
+  // 7. Compare products fields (media_1791348612688.png)
+  const [compareProductsEnabled, setCompareProductsEnabled] = useState(true);
+  const [includeShortDescriptionInCompareProducts, setIncludeShortDescriptionInCompareProducts] =
+    useState(false);
+  const [includeFullDescriptionInCompareProducts, setIncludeFullDescriptionInCompareProducts] =
+    useState(false);
+
+  // 8. Additional sections fields (media_1791348625312.png & media_1791348701724.png)
+  const [removeRequiredProducts, setRemoveRequiredProducts] = useState(false);
+  const [showBestSellersOnHomePage, setShowBestSellersOnHomePage] = useState(true);
+  const [numberOfBestSellersOnHomePage, setNumberOfBestSellersOnHomePage] = useState<number | string>(
+    4
+  );
+  const [productsAlsoPurchasedEnabled, setProductsAlsoPurchasedEnabled] = useState(true);
+  const [
+    numberOfAlsoPurchasedProductsToDisplay,
+    setNumberOfAlsoPurchasedProductsToDisplay,
+  ] = useState<number | string>(5);
+  const [recentlyViewedProductsEnabled, setRecentlyViewedProductsEnabled] = useState(true);
+  const [numberOfRecentlyViewedProducts, setNumberOfRecentlyViewedProducts] = useState<
+    number | string
+  >(3);
+  const [newProductsPageEnabled, setNewProductsPageEnabled] = useState(true);
+  const [
+    newProductsPageAllowCustomersToSelectPageSize,
+    setNewProductsPageAllowCustomersToSelectPageSize,
+  ] = useState(false);
+  const [numberOfProductsOnNewProductsPage, setNumberOfProductsOnNewProductsPage] = useState<
+    number | string
+  >(6);
+  const [displayDateForPreOrderAvailability, setDisplayDateForPreOrderAvailability] =
     useState(false);
 
   // Catalog placeholder image
@@ -181,6 +277,83 @@ export default function CatalogSettingsPage() {
     if (s.allowCustomersToSearchWithCategoryName !== undefined)
       setAllowCustomersToSearchWithCategoryName(s.allowCustomersToSearchWithCategoryName);
 
+    // Reviews
+    if (s.productReviewsMustBeApproved !== undefined)
+      setProductReviewsMustBeApproved(s.productReviewsMustBeApproved);
+    if (s.oneReviewPerProductFromCustomer !== undefined)
+      setOneReviewPerProductFromCustomer(s.oneReviewPerProductFromCustomer);
+    if (s.allowAnonymousUsersToWriteProductReviews !== undefined)
+      setAllowAnonymousUsersToWriteProductReviews(s.allowAnonymousUsersToWriteProductReviews);
+    if (s.productReviewPossibleOnlyAfterPurchasing !== undefined)
+      setProductReviewPossibleOnlyAfterPurchasing(s.productReviewPossibleOnlyAfterPurchasing);
+    if (s.notifyAboutNewProductReviews !== undefined)
+      setNotifyAboutNewProductReviews(s.notifyAboutNewProductReviews);
+    if (s.notifyCustomerAboutProductReviewReply !== undefined)
+      setNotifyCustomerAboutProductReviewReply(s.notifyCustomerAboutProductReviewReply);
+    if (s.reviewsPerStore !== undefined) setReviewsPerStore(s.reviewsPerStore);
+    if (s.showProductReviewsTabOnMyAccountPage !== undefined)
+      setShowProductReviewsTabOnMyAccountPage(s.showProductReviewsTabOnMyAccountPage);
+    if (s.productReviewsPageSize !== undefined)
+      setProductReviewsPageSize(s.productReviewsPageSize);
+    if (s.sortProductReviewsByAscending !== undefined)
+      setSortProductReviewsByAscending(s.sortProductReviewsByAscending);
+
+    if (s.reviewTypes && Array.isArray(s.reviewTypes)) setReviewTypes(s.reviewTypes);
+
+    // Performance
+    if (s.ignoreAclRulesSitewide !== undefined)
+      setIgnoreAclRulesSitewide(s.ignoreAclRulesSitewide);
+    if (s.ignoreLimitPerStoreRulesSitewide !== undefined)
+      setIgnoreLimitPerStoreRulesSitewide(s.ignoreLimitPerStoreRulesSitewide);
+    if (s.ignoreDiscountsSitewide !== undefined)
+      setIgnoreDiscountsSitewide(s.ignoreDiscountsSitewide);
+    if (s.ignoreFeaturedProductsSitewide !== undefined)
+      setIgnoreFeaturedProductsSitewide(s.ignoreFeaturedProductsSitewide);
+    if (s.cacheProductPrices !== undefined) setCacheProductPrices(s.cacheProductPrices);
+
+    // Share
+    if (s.showShareButton !== undefined) setShowShareButton(s.showShareButton);
+    if (s.shareButtonCode !== undefined) setShareButtonCode(s.shareButtonCode);
+    if (s.emailAFriendEnabled !== undefined) setEmailAFriendEnabled(s.emailAFriendEnabled);
+    if (s.allowAnonymousUsersToEmailAFriend !== undefined)
+      setAllowAnonymousUsersToEmailAFriend(s.allowAnonymousUsersToEmailAFriend);
+
+    // Compare
+    if (s.compareProductsEnabled !== undefined)
+      setCompareProductsEnabled(s.compareProductsEnabled);
+    if (s.includeShortDescriptionInCompareProducts !== undefined)
+      setIncludeShortDescriptionInCompareProducts(
+        s.includeShortDescriptionInCompareProducts
+      );
+    if (s.includeFullDescriptionInCompareProducts !== undefined)
+      setIncludeFullDescriptionInCompareProducts(s.includeFullDescriptionInCompareProducts);
+
+    // Additional sections
+    if (s.removeRequiredProducts !== undefined)
+      setRemoveRequiredProducts(s.removeRequiredProducts);
+    if (s.showBestSellersOnHomePage !== undefined)
+      setShowBestSellersOnHomePage(s.showBestSellersOnHomePage);
+    if (s.numberOfBestSellersOnHomePage !== undefined)
+      setNumberOfBestSellersOnHomePage(s.numberOfBestSellersOnHomePage);
+    if (s.productsAlsoPurchasedEnabled !== undefined)
+      setProductsAlsoPurchasedEnabled(s.productsAlsoPurchasedEnabled);
+    if (s.numberOfAlsoPurchasedProductsToDisplay !== undefined)
+      setNumberOfAlsoPurchasedProductsToDisplay(s.numberOfAlsoPurchasedProductsToDisplay);
+    if (s.recentlyViewedProductsEnabled !== undefined)
+      setRecentlyViewedProductsEnabled(s.recentlyViewedProductsEnabled);
+    if (s.numberOfRecentlyViewedProducts !== undefined)
+      setNumberOfRecentlyViewedProducts(s.numberOfRecentlyViewedProducts);
+    if (s.newProductsPageEnabled !== undefined)
+      setNewProductsPageEnabled(s.newProductsPageEnabled);
+    if (s.newProductsPageAllowCustomersToSelectPageSize !== undefined)
+      setNewProductsPageAllowCustomersToSelectPageSize(
+        s.newProductsPageAllowCustomersToSelectPageSize
+      );
+    if (s.numberOfProductsOnNewProductsPage !== undefined)
+      setNumberOfProductsOnNewProductsPage(s.numberOfProductsOnNewProductsPage);
+    if (s.displayDateForPreOrderAvailability !== undefined)
+      setDisplayDateForPreOrderAvailability(s.displayDateForPreOrderAvailability);
+
     if (s.defaultCatalogPlaceholderImage)
       setDefaultCatalogPlaceholderImage(s.defaultCatalogPlaceholderImage);
 
@@ -220,6 +393,47 @@ export default function CatalogSettingsPage() {
       searchPagePriceTo: Number(searchPagePriceTo) || 0,
       allowCustomersToSearchWithManufacturerName,
       allowCustomersToSearchWithCategoryName,
+
+      productReviewsMustBeApproved,
+      oneReviewPerProductFromCustomer,
+      allowAnonymousUsersToWriteProductReviews,
+      productReviewPossibleOnlyAfterPurchasing,
+      notifyAboutNewProductReviews,
+      notifyCustomerAboutProductReviewReply,
+      reviewsPerStore,
+      showProductReviewsTabOnMyAccountPage,
+      productReviewsPageSize: Number(productReviewsPageSize) || 10,
+      sortProductReviewsByAscending,
+
+      reviewTypes,
+
+      ignoreAclRulesSitewide,
+      ignoreLimitPerStoreRulesSitewide,
+      ignoreDiscountsSitewide,
+      ignoreFeaturedProductsSitewide,
+      cacheProductPrices,
+
+      showShareButton,
+      shareButtonCode,
+      emailAFriendEnabled,
+      allowAnonymousUsersToEmailAFriend,
+
+      compareProductsEnabled,
+      includeShortDescriptionInCompareProducts,
+      includeFullDescriptionInCompareProducts,
+
+      removeRequiredProducts,
+      showBestSellersOnHomePage,
+      numberOfBestSellersOnHomePage: Number(numberOfBestSellersOnHomePage) || 4,
+      productsAlsoPurchasedEnabled,
+      numberOfAlsoPurchasedProductsToDisplay:
+        Number(numberOfAlsoPurchasedProductsToDisplay) || 5,
+      recentlyViewedProductsEnabled,
+      numberOfRecentlyViewedProducts: Number(numberOfRecentlyViewedProducts) || 3,
+      newProductsPageEnabled,
+      newProductsPageAllowCustomersToSelectPageSize,
+      numberOfProductsOnNewProductsPage: Number(numberOfProductsOnNewProductsPage) || 6,
+      displayDateForPreOrderAvailability,
 
       defaultCatalogPlaceholderImage,
       isAdvanced,
@@ -282,7 +496,106 @@ export default function CatalogSettingsPage() {
     setAllowCustomersToSearchWithManufacturerName(true);
     setAllowCustomersToSearchWithCategoryName(false);
 
+    setProductReviewsMustBeApproved(false);
+    setOneReviewPerProductFromCustomer(false);
+    setAllowAnonymousUsersToWriteProductReviews(false);
+    setProductReviewPossibleOnlyAfterPurchasing(false);
+    setNotifyAboutNewProductReviews(false);
+    setNotifyCustomerAboutProductReviewReply(true);
+    setReviewsPerStore(false);
+    setShowProductReviewsTabOnMyAccountPage(true);
+    setProductReviewsPageSize(10);
+    setSortProductReviewsByAscending(false);
+
+    setReviewTypes([]);
+
+    setIgnoreAclRulesSitewide(true);
+    setIgnoreLimitPerStoreRulesSitewide(true);
+    setIgnoreDiscountsSitewide(false);
+    setIgnoreFeaturedProductsSitewide(false);
+    setCacheProductPrices(false);
+
+    setShowShareButton(true);
+    setEmailAFriendEnabled(true);
+    setAllowAnonymousUsersToEmailAFriend(false);
+
+    setCompareProductsEnabled(true);
+    setIncludeShortDescriptionInCompareProducts(false);
+    setIncludeFullDescriptionInCompareProducts(false);
+
+    setRemoveRequiredProducts(false);
+    setShowBestSellersOnHomePage(true);
+    setNumberOfBestSellersOnHomePage(4);
+    setProductsAlsoPurchasedEnabled(true);
+    setNumberOfAlsoPurchasedProductsToDisplay(5);
+    setRecentlyViewedProductsEnabled(true);
+    setNumberOfRecentlyViewedProducts(3);
+    setNewProductsPageEnabled(true);
+    setNewProductsPageAllowCustomersToSelectPageSize(false);
+    setNumberOfProductsOnNewProductsPage(6);
+    setDisplayDateForPreOrderAvailability(false);
+
     showToast('Reset to default values. Click Save to apply.', 'success');
+  };
+
+  const openAddReviewType = () => {
+    setEditingReviewType(null);
+    setRtNameInput('');
+    setRtRequiredInput(false);
+    setRtVisibleInput(true);
+    setRtOrderInput(reviewTypes.length + 1);
+    setReviewTypeModalOpen(true);
+  };
+
+  const openEditReviewType = (item: ReviewTypeItem) => {
+    setEditingReviewType(item);
+    setRtNameInput(item.name);
+    setRtRequiredInput(item.isRequired);
+    setRtVisibleInput(item.isVisibleToAllCustomers);
+    setRtOrderInput(item.displayOrder);
+    setReviewTypeModalOpen(true);
+  };
+
+  const saveReviewType = () => {
+    if (!rtNameInput.trim()) {
+      alert('Please enter a review type name.');
+      return;
+    }
+    const order = Number(rtOrderInput) || 1;
+    if (editingReviewType) {
+      setReviewTypes((prev) =>
+        prev.map((r) =>
+          r.id === editingReviewType.id
+            ? {
+                ...r,
+                name: rtNameInput.trim(),
+                isRequired: rtRequiredInput,
+                isVisibleToAllCustomers: rtVisibleInput,
+                displayOrder: order,
+              }
+            : r
+        )
+      );
+      showToast('Review type updated.');
+    } else {
+      const newItem: ReviewTypeItem = {
+        id: `rt-${Date.now()}`,
+        name: rtNameInput.trim(),
+        isRequired: rtRequiredInput,
+        isVisibleToAllCustomers: rtVisibleInput,
+        displayOrder: order,
+      };
+      setReviewTypes((prev) => [...prev, newItem]);
+      showToast('New review type added.');
+    }
+    setReviewTypeModalOpen(false);
+  };
+
+  const deleteReviewType = (id: string) => {
+    if (!confirm('Are you sure you want to delete this review type?')) return;
+    setReviewTypes((prev) => prev.filter((r) => r.id !== id));
+    showToast('Review type deleted.');
+    setReviewTypeModalOpen(false);
   };
 
   const scrollToTop = () => {
@@ -357,10 +670,7 @@ export default function CatalogSettingsPage() {
           className="px-4 py-2.5 bg-white border-b border-[#f4f4f4] flex items-center justify-between cursor-pointer select-none text-xs font-semibold text-slate-700 hover:bg-slate-50/70 transition"
         >
           <div className="flex items-center gap-2">
-            {/* Two gears icon from screenshot */}
-            <div className="flex items-center text-slate-700">
-              <Sparkles className="w-4 h-4 text-slate-700 stroke-[1.8]" />
-            </div>
+            <Sparkles className="w-4 h-4 text-slate-700 stroke-[1.8]" />
             <span className="text-sm font-normal text-slate-800">Artificial Intelligence</span>
           </div>
           <button type="button" className="text-slate-400 hover:text-slate-600">
@@ -370,7 +680,6 @@ export default function CatalogSettingsPage() {
 
         {aiOpen && (
           <div className="p-5 space-y-4 text-xs text-slate-700">
-            {/* Description text matching media_1791348103171.png */}
             <p className="text-xs text-slate-600 leading-relaxed">
               Artificial intelligence functionality allows you to use third-party AI services such
               as DeepSeek, Gemini or ChatGPT to automatically generate content. This could be either
@@ -440,15 +749,7 @@ export default function CatalogSettingsPage() {
                     />
                     <p className="text-[11px] text-slate-500 leading-normal">
                       To use the {providerType} API, you need an API key. You can create a key with a
-                      few clicks in{' '}
-                      <span className="text-[#3c8dbc] hover:underline cursor-pointer">
-                        {providerType === 'Gemini'
-                          ? 'Google AI Studio'
-                          : providerType === 'ChatGPT'
-                          ? 'OpenAI Platform'
-                          : 'DeepSeek Console'}
-                      </span>
-                      .
+                      few clicks in Google AI Studio.
                     </p>
                   </div>
                 </div>
@@ -543,7 +844,7 @@ export default function CatalogSettingsPage() {
                   </div>
                 )}
 
-                {/* Allow to generate meta keywords (media_1791348106363.png) */}
+                {/* Allow to generate meta keywords */}
                 <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
                   <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
                     <span>Allow to generate meta keywords</span>
@@ -585,7 +886,7 @@ export default function CatalogSettingsPage() {
                   </div>
                 )}
 
-                {/* Allow to generate meta description (media_1791348106363.png) */}
+                {/* Allow to generate meta description */}
                 <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
                   <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
                     <span className="text-right">
@@ -999,6 +1300,924 @@ export default function CatalogSettingsPage() {
                 </div>
               </div>
             )}
+          </div>
+        )}
+      </div>
+
+      {/* ── CARD 3: PRODUCT REVIEWS (Matching media_1791348459764.png) ── */}
+      <div className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden border-t-3 border-t-[#00c0ef]">
+        <div
+          onClick={() => setReviewsOpen(!reviewsOpen)}
+          className="px-4 py-2.5 bg-white border-b border-[#f4f4f4] flex items-center justify-between cursor-pointer select-none text-xs font-semibold text-slate-700 hover:bg-slate-50/70 transition"
+        >
+          <div className="flex items-center gap-2">
+            <MessageSquare className="w-4 h-4 text-slate-700 stroke-[1.8]" />
+            <span className="text-sm font-normal text-slate-800">Product reviews</span>
+          </div>
+          <button type="button" className="text-slate-400 hover:text-slate-600">
+            {reviewsOpen ? <Minus className="w-4 h-4 stroke-[2]" /> : <Plus className="w-4 h-4 stroke-[2]" />}
+          </button>
+        </div>
+
+        {reviewsOpen && (
+          <div className="p-5 space-y-4 text-xs text-slate-700">
+            {/* Product reviews must be approved */}
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+              <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                <span>Product reviews must be approved</span>
+                <HelpTooltip text="Check if product reviews must be moderated and approved by a store administrator before publishing." />
+              </label>
+              <div className="md:col-span-8 flex items-center">
+                <input
+                  type="checkbox"
+                  checked={productReviewsMustBeApproved}
+                  onChange={(e) => setProductReviewsMustBeApproved(e.target.checked)}
+                  className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                />
+              </div>
+            </div>
+
+            {/* One review per product from customer */}
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+              <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                <span className="text-right">
+                  One review per product from
+                  <br className="hidden md:inline" /> customer
+                </span>
+                <HelpTooltip text="Limit customers to leaving only a single review per product." />
+              </label>
+              <div className="md:col-span-8 flex items-center">
+                <input
+                  type="checkbox"
+                  checked={oneReviewPerProductFromCustomer}
+                  onChange={(e) => setOneReviewPerProductFromCustomer(e.target.checked)}
+                  className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                />
+              </div>
+            </div>
+
+            {/* Allow anonymous users to write product reviews */}
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+              <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                <span className="text-right">
+                  Allow anonymous users to write
+                  <br className="hidden md:inline" /> product reviews
+                </span>
+                <HelpTooltip text="Allow unregistered guest visitors to submit product ratings and reviews." />
+              </label>
+              <div className="md:col-span-8 flex items-center">
+                <input
+                  type="checkbox"
+                  checked={allowAnonymousUsersToWriteProductReviews}
+                  onChange={(e) =>
+                    setAllowAnonymousUsersToWriteProductReviews(e.target.checked)
+                  }
+                  className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                />
+              </div>
+            </div>
+
+            {/* Product review possible only after product purchasing */}
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+              <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                <span className="text-right">
+                  Product review possible only after
+                  <br className="hidden md:inline" /> product purchasing
+                </span>
+                <HelpTooltip text="Restrict review submissions exclusively to verified buyers who ordered the product." />
+              </label>
+              <div className="md:col-span-8 flex items-center">
+                <input
+                  type="checkbox"
+                  checked={productReviewPossibleOnlyAfterPurchasing}
+                  onChange={(e) =>
+                    setProductReviewPossibleOnlyAfterPurchasing(e.target.checked)
+                  }
+                  className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                />
+              </div>
+            </div>
+
+            {/* Notify about new product reviews */}
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+              <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                <span>Notify about new product reviews</span>
+                <HelpTooltip text="Send notification email to store admin upon customer submission of a new review." />
+              </label>
+              <div className="md:col-span-8 flex items-center">
+                <input
+                  type="checkbox"
+                  checked={notifyAboutNewProductReviews}
+                  onChange={(e) => setNotifyAboutNewProductReviews(e.target.checked)}
+                  className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                />
+              </div>
+            </div>
+
+            {/* Notify customer about product review reply */}
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+              <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                <span className="text-right">
+                  Notify customer about product review
+                  <br className="hidden md:inline" /> reply
+                </span>
+                <HelpTooltip text="Send notification email to review author when an official store reply is posted." />
+              </label>
+              <div className="md:col-span-8 flex items-center">
+                <input
+                  type="checkbox"
+                  checked={notifyCustomerAboutProductReviewReply}
+                  onChange={(e) =>
+                    setNotifyCustomerAboutProductReviewReply(e.target.checked)
+                  }
+                  className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                />
+              </div>
+            </div>
+
+            {/* Reviews per store */}
+            {isAdvanced && (
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                  <span>Reviews per store</span>
+                  <HelpTooltip text="Display and filter product reviews on a per-multistore basis." />
+                </label>
+                <div className="md:col-span-8 flex items-center">
+                  <input
+                    type="checkbox"
+                    checked={reviewsPerStore}
+                    onChange={(e) => setReviewsPerStore(e.target.checked)}
+                    className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Show product reviews tab on 'My account' page */}
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+              <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                <span className="text-right">
+                  Show product reviews tab on 'My
+                  <br className="hidden md:inline" /> account' page
+                </span>
+                <HelpTooltip text="Show customer reviews history tab inside customer account dashboard." />
+              </label>
+              <div className="md:col-span-8 flex items-center">
+                <input
+                  type="checkbox"
+                  checked={showProductReviewsTabOnMyAccountPage}
+                  onChange={(e) =>
+                    setShowProductReviewsTabOnMyAccountPage(e.target.checked)
+                  }
+                  className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                />
+              </div>
+            </div>
+
+            {/* Tree branch child: Product reviews page size */}
+            {showProductReviewsTabOnMyAccountPage && (
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                  <span>Product reviews page size</span>
+                  <HelpTooltip text="Number of reviews displayed per page in customer account history." />
+                </label>
+                <div className="md:col-span-8 max-w-xl relative pl-5">
+                  <div
+                    className="absolute -top-3.5 left-0 w-3.5 h-5 border-l border-b border-slate-300 pointer-events-none"
+                    aria-hidden="true"
+                  />
+                  <input
+                    type="number"
+                    min="1"
+                    value={productReviewsPageSize}
+                    onChange={(e) => setProductReviewsPageSize(e.target.value)}
+                    className="w-full border border-[#d2d6de] focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none rounded px-3 py-1.5 text-xs text-slate-800 bg-white"
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Sort by ascending */}
+            {isAdvanced && (
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                  <span>Sort by ascending</span>
+                  <HelpTooltip text="Sort product reviews chronologically ascending (oldest first)." />
+                </label>
+                <div className="md:col-span-8 flex items-center">
+                  <input
+                    type="checkbox"
+                    checked={sortProductReviewsByAscending}
+                    onChange={(e) => setSortProductReviewsByAscending(e.target.checked)}
+                    className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* ── CARD 4: REVIEW TYPES (Matching media_1791348557185.png) ── */}
+      <div className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden border-t-3 border-t-[#00c0ef]">
+        <div
+          onClick={() => setReviewTypesOpen(!reviewTypesOpen)}
+          className="px-4 py-2.5 bg-white border-b border-[#f4f4f4] flex items-center justify-between cursor-pointer select-none text-xs font-semibold text-slate-700 hover:bg-slate-50/70 transition"
+        >
+          <div className="flex items-center gap-2">
+            <MessagesSquare className="w-4 h-4 text-slate-700 stroke-[1.8]" />
+            <span className="text-sm font-normal text-slate-800">Review types</span>
+          </div>
+          <button type="button" className="text-slate-400 hover:text-slate-600">
+            {reviewTypesOpen ? <Minus className="w-4 h-4 stroke-[2]" /> : <Plus className="w-4 h-4 stroke-[2]" />}
+          </button>
+        </div>
+
+        {reviewTypesOpen && (
+          <div className="p-5 space-y-4 text-xs text-slate-700">
+            <p className="text-xs text-slate-600 leading-relaxed">
+              You can configure a list of review types if you think that a basic review is not enough.{' '}
+              <span className="text-[#3c8dbc] hover:underline cursor-pointer">
+                Learn more about product reviews
+              </span>
+            </p>
+
+            <div className="border border-slate-200 rounded overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse text-xs">
+                  <thead>
+                    <tr className="bg-slate-100/70 border-b border-slate-200 text-slate-700 font-semibold">
+                      <th className="py-2.5 px-4">Name</th>
+                      <th className="py-2.5 px-4 text-center w-28">Required</th>
+                      <th className="py-2.5 px-4 text-center w-44">Visible to all customers</th>
+                      <th className="py-2.5 px-4 text-center w-32">Display order</th>
+                      <th className="py-2.5 px-4 text-center w-24">Edit</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100 text-slate-800">
+                    {reviewTypes.map((item) => (
+                      <tr key={item.id} className="hover:bg-slate-50/80 transition">
+                        <td className="py-3 px-4 font-normal text-slate-800">{item.name}</td>
+                        <td className="py-3 px-4 text-center">
+                          {item.isRequired ? (
+                            <span className="text-emerald-600 font-semibold">Yes</span>
+                          ) : (
+                            <span className="text-slate-400">No</span>
+                          )}
+                        </td>
+                        <td className="py-3 px-4 text-center">
+                          {item.isVisibleToAllCustomers ? (
+                            <span className="text-emerald-600 font-semibold">Yes</span>
+                          ) : (
+                            <span className="text-slate-400">No</span>
+                          )}
+                        </td>
+                        <td className="py-3 px-4 text-center font-mono">{item.displayOrder}</td>
+                        <td className="py-3 px-4 text-center">
+                          <button
+                            type="button"
+                            onClick={() => openEditReviewType(item)}
+                            className="inline-flex items-center gap-1.5 px-3 py-1 rounded bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 hover:border-slate-400 text-xs font-normal shadow-2xs transition cursor-pointer"
+                          >
+                            <Edit2 className="w-3 h-3 text-slate-600" />
+                            <span>Edit</span>
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                    {reviewTypes.length === 0 && (
+                      <tr>
+                        <td colSpan={5} className="py-6 text-center text-slate-400">
+                          No data available in table
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Table footer / pagination bar */}
+              <div className="p-3 bg-white border-t border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-slate-600">
+                <div className="flex items-center gap-1">
+                  <button
+                    type="button"
+                    disabled
+                    className="px-2.5 py-1 border border-slate-300 rounded text-slate-400 bg-slate-50 cursor-not-allowed"
+                  >
+                    Previous
+                  </button>
+                  <button
+                    type="button"
+                    disabled
+                    className="px-2.5 py-1 border border-slate-300 rounded text-slate-400 bg-slate-50 cursor-not-allowed"
+                  >
+                    Next
+                  </button>
+                </div>
+
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-1.5">
+                    <span>Show</span>
+                    <select className="border border-slate-300 rounded px-2 py-0.5 bg-white text-xs text-slate-700">
+                      <option value={15}>15</option>
+                      <option value={20}>20</option>
+                      <option value={50}>50</option>
+                    </select>
+                    <span>items</span>
+                  </div>
+
+                  <span>
+                    {reviewTypes.length === 0 ? 'No records' : `1-${reviewTypes.length} of ${reviewTypes.length} items`}
+                  </span>
+
+                  <button
+                    type="button"
+                    onClick={() => showToast('Refreshed review types.')}
+                    className="p-1 border border-slate-300 rounded text-slate-500 hover:text-slate-700 hover:bg-slate-50 transition"
+                    title="Refresh"
+                  >
+                    <RefreshCw className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Add New Button */}
+              <div className="p-3.5 bg-slate-50/50 border-t border-slate-200">
+                <button
+                  type="button"
+                  onClick={openAddReviewType}
+                  className="bg-[#2489c5] hover:bg-[#1f72a3] text-white text-xs font-semibold px-3.5 py-1.5 rounded flex items-center gap-1.5 shadow-2xs transition cursor-pointer"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>Add new</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* ── CARD 5: PERFORMANCE (Matching media_1791348557185.png) ── */}
+      <div className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden border-t-3 border-t-[#00c0ef]">
+        <div
+          onClick={() => setPerformanceOpen(!performanceOpen)}
+          className="px-4 py-2.5 bg-white border-b border-[#f4f4f4] flex items-center justify-between cursor-pointer select-none text-xs font-semibold text-slate-700 hover:bg-slate-50/70 transition"
+        >
+          <div className="flex items-center gap-2">
+            <TrendingUp className="w-4 h-4 text-slate-700 stroke-[1.8]" />
+            <span className="text-sm font-normal text-slate-800">Performance</span>
+          </div>
+          <button type="button" className="text-slate-400 hover:text-slate-600">
+            {performanceOpen ? <Minus className="w-4 h-4 stroke-[2]" /> : <Plus className="w-4 h-4 stroke-[2]" />}
+          </button>
+        </div>
+
+        {performanceOpen && (
+          <div className="p-5 space-y-4 text-xs text-slate-700">
+            {/* Ignore ACL rules (sitewide) */}
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+              <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                <span>Ignore ACL rules (sitewide)</span>
+                <HelpTooltip text="Bypass customer role access control checks for catalog products to significantly accelerate SQL query performance." />
+              </label>
+              <div className="md:col-span-8 flex items-center">
+                <input
+                  type="checkbox"
+                  checked={ignoreAclRulesSitewide}
+                  onChange={(e) => setIgnoreAclRulesSitewide(e.target.checked)}
+                  className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                />
+              </div>
+            </div>
+
+            {/* Ignore "limit per store" rules (sitewide) */}
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+              <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                <span className="text-right">
+                  Ignore "limit per store" rules
+                  <br className="hidden md:inline" /> (sitewide)
+                </span>
+                <HelpTooltip text="Bypass multi-store mapping rules if running a single storefront deployment." />
+              </label>
+              <div className="md:col-span-8 flex items-center">
+                <input
+                  type="checkbox"
+                  checked={ignoreLimitPerStoreRulesSitewide}
+                  onChange={(e) =>
+                    setIgnoreLimitPerStoreRulesSitewide(e.target.checked)
+                  }
+                  className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                />
+              </div>
+            </div>
+
+            {/* Ignore discounts (sitewide) */}
+            {isAdvanced && (
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                  <span>Ignore discounts (sitewide)</span>
+                  <HelpTooltip text="Skip real-time catalog discount engine lookups for high-throughput traffic spikes." />
+                </label>
+                <div className="md:col-span-8 flex items-center">
+                  <input
+                    type="checkbox"
+                    checked={ignoreDiscountsSitewide}
+                    onChange={(e) => setIgnoreDiscountsSitewide(e.target.checked)}
+                    className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Ignore featured products (sitewide) */}
+            {isAdvanced && (
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                  <span>Ignore featured products (sitewide)</span>
+                  <HelpTooltip text="Do not separate featured products at the top of category collection pages." />
+                </label>
+                <div className="md:col-span-8 flex items-center">
+                  <input
+                    type="checkbox"
+                    checked={ignoreFeaturedProductsSitewide}
+                    onChange={(e) => setIgnoreFeaturedProductsSitewide(e.target.checked)}
+                    className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Cache product prices */}
+            {isAdvanced && (
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                  <span>Cache product prices</span>
+                  <HelpTooltip text="Store computed product tier prices in in-memory Redis/RAM cache for maximum throughput." />
+                </label>
+                <div className="md:col-span-8 flex items-center">
+                  <input
+                    type="checkbox"
+                    checked={cacheProductPrices}
+                    onChange={(e) => setCacheProductPrices(e.target.checked)}
+                    className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* ── CARD 6: SHARE (Matching media_1791348612688.png) ── */}
+      <div className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden border-t-3 border-t-[#00c0ef]">
+        <div
+          onClick={() => setShareOpen(!shareOpen)}
+          className="px-4 py-2.5 bg-white border-b border-[#f4f4f4] flex items-center justify-between cursor-pointer select-none text-xs font-semibold text-slate-700 hover:bg-slate-50/70 transition"
+        >
+          <div className="flex items-center gap-2">
+            <Share2 className="w-4 h-4 text-slate-700 stroke-[1.8]" />
+            <span className="text-sm font-normal text-slate-800">Share</span>
+          </div>
+          <button type="button" className="text-slate-400 hover:text-slate-600">
+            {shareOpen ? <Minus className="w-4 h-4 stroke-[2]" /> : <Plus className="w-4 h-4 stroke-[2]" />}
+          </button>
+        </div>
+
+        {shareOpen && (
+          <div className="p-5 space-y-4 text-xs text-slate-700">
+            {/* Show a share button */}
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+              <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                <span>Show a share button</span>
+                <HelpTooltip text="Render social media sharing buttons on product details pages." />
+              </label>
+              <div className="md:col-span-8 flex items-center">
+                <input
+                  type="checkbox"
+                  checked={showShareButton}
+                  onChange={(e) => setShowShareButton(e.target.checked)}
+                  className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                />
+              </div>
+            </div>
+
+            {/* Share button code */}
+            {showShareButton && (
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-start">
+                <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5 pt-1.5">
+                  <span>Share button code</span>
+                  <HelpTooltip text="Custom HTML / JavaScript widget code for third-party social share plugins (e.g. AddThis, ShareThis)." />
+                </label>
+                <div className="md:col-span-8 max-w-2xl">
+                  <textarea
+                    rows={4}
+                    value={shareButtonCode}
+                    onChange={(e) => setShareButtonCode(e.target.value)}
+                    className="w-full border border-[#d2d6de] focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none rounded px-3 py-1.5 text-xs text-slate-800 bg-white font-mono"
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* 'Email a friend' enabled */}
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+              <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                <span>'Email a friend' enabled</span>
+                <HelpTooltip text="Allow shoppers to send direct email referrals with product link." />
+              </label>
+              <div className="md:col-span-8 flex items-center">
+                <input
+                  type="checkbox"
+                  checked={emailAFriendEnabled}
+                  onChange={(e) => setEmailAFriendEnabled(e.target.checked)}
+                  className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                />
+              </div>
+            </div>
+
+            {/* Tree branch child: Allow anonymous users to email a friend */}
+            {emailAFriendEnabled && isAdvanced && (
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                  <span className="text-right">
+                    Allow anonymous users to email a
+                    <br className="hidden md:inline" /> friend
+                  </span>
+                  <HelpTooltip text="Allow unauthenticated guest visitors to utilize the referral email form." />
+                </label>
+                <div className="md:col-span-8 flex items-center relative pl-5">
+                  <div
+                    className="absolute -top-3.5 left-0 w-3.5 h-5 border-l border-b border-slate-300 pointer-events-none"
+                    aria-hidden="true"
+                  />
+                  <input
+                    type="checkbox"
+                    checked={allowAnonymousUsersToEmailAFriend}
+                    onChange={(e) =>
+                      setAllowAnonymousUsersToEmailAFriend(e.target.checked)
+                    }
+                    className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* ── CARD 7: COMPARE PRODUCTS (Matching media_1791348612688.png) ── */}
+      <div className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden border-t-3 border-t-[#00c0ef]">
+        <div
+          onClick={() => setCompareOpen(!compareOpen)}
+          className="px-4 py-2.5 bg-white border-b border-[#f4f4f4] flex items-center justify-between cursor-pointer select-none text-xs font-semibold text-slate-700 hover:bg-slate-50/70 transition"
+        >
+          <div className="flex items-center gap-2">
+            <Scale className="w-4 h-4 text-slate-700 stroke-[1.8]" />
+            <span className="text-sm font-normal text-slate-800">Compare products</span>
+          </div>
+          <button type="button" className="text-slate-400 hover:text-slate-600">
+            {compareOpen ? <Minus className="w-4 h-4 stroke-[2]" /> : <Plus className="w-4 h-4 stroke-[2]" />}
+          </button>
+        </div>
+
+        {compareOpen && (
+          <div className="p-5 space-y-4 text-xs text-slate-700">
+            {/* 'Compare Products' enabled */}
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+              <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                <span>'Compare Products' enabled</span>
+                <HelpTooltip text="Check to activate side-by-side product comparison matrix table on storefront." />
+              </label>
+              <div className="md:col-span-8 flex items-center">
+                <input
+                  type="checkbox"
+                  checked={compareProductsEnabled}
+                  onChange={(e) => setCompareProductsEnabled(e.target.checked)}
+                  className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                />
+              </div>
+            </div>
+
+            {/* Tree branch child 1: Include short description in compare products */}
+            {compareProductsEnabled && isAdvanced && (
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                  <span className="text-right">
+                    Include short description in compare
+                    <br className="hidden md:inline" /> products
+                  </span>
+                  <HelpTooltip text="Include product summary teaser column in compare table." />
+                </label>
+                <div className="md:col-span-8 flex items-center relative pl-5">
+                  <div
+                    className="absolute -top-3.5 left-0 w-3.5 h-5 border-l border-b border-slate-300 pointer-events-none"
+                    aria-hidden="true"
+                  />
+                  <input
+                    type="checkbox"
+                    checked={includeShortDescriptionInCompareProducts}
+                    onChange={(e) =>
+                      setIncludeShortDescriptionInCompareProducts(e.target.checked)
+                    }
+                    className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Tree branch child 2: Include full description in compare products */}
+            {compareProductsEnabled && isAdvanced && (
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                  <span className="text-right">
+                    Include full description in compare
+                    <br className="hidden md:inline" /> products
+                  </span>
+                  <HelpTooltip text="Include full HTML specification and description block in compare matrix." />
+                </label>
+                <div className="md:col-span-8 flex items-center relative pl-5">
+                  <div
+                    className="absolute -top-3.5 left-0 w-3.5 h-5 border-l border-b border-slate-300 pointer-events-none"
+                    aria-hidden="true"
+                  />
+                  <input
+                    type="checkbox"
+                    checked={includeFullDescriptionInCompareProducts}
+                    onChange={(e) =>
+                      setIncludeFullDescriptionInCompareProducts(e.target.checked)
+                    }
+                    className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* ── CARD 8: ADDITIONAL SECTIONS (Matching media_1791348625312.png & media_1791348701724.png) ── */}
+      <div className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden border-t-3 border-t-[#00c0ef]">
+        <div
+          onClick={() => setAdditionalSectionsOpen(!additionalSectionsOpen)}
+          className="px-4 py-2.5 bg-white border-b border-[#f4f4f4] flex items-center justify-between cursor-pointer select-none text-xs font-semibold text-slate-700 hover:bg-slate-50/70 transition"
+        >
+          <div className="flex items-center gap-2">
+            <Plus className="w-4 h-4 text-slate-700 stroke-[2.5]" />
+            <span className="text-sm font-normal text-slate-800">Additional sections</span>
+          </div>
+          <button type="button" className="text-slate-400 hover:text-slate-600">
+            {additionalSectionsOpen ? (
+              <Minus className="w-4 h-4 stroke-[2]" />
+            ) : (
+              <Plus className="w-4 h-4 stroke-[2]" />
+            )}
+          </button>
+        </div>
+
+        {additionalSectionsOpen && (
+          <div className="p-5 space-y-4 text-xs text-slate-700">
+            {/* Remove required products */}
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+              <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                <span>Remove required products</span>
+                <HelpTooltip text="Automatically remove prerequisite bundled accessories from cart if the parent item is removed." />
+              </label>
+              <div className="md:col-span-8 flex items-center">
+                <input
+                  type="checkbox"
+                  checked={removeRequiredProducts}
+                  onChange={(e) => setRemoveRequiredProducts(e.target.checked)}
+                  className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                />
+              </div>
+            </div>
+
+            {/* Show best sellers on home page */}
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+              <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                <span>Show best sellers on home page</span>
+                <HelpTooltip text="Display the top-selling products carousel on the main storefront homepage." />
+              </label>
+              <div className="md:col-span-8 flex items-center">
+                <input
+                  type="checkbox"
+                  checked={showBestSellersOnHomePage}
+                  onChange={(e) => setShowBestSellersOnHomePage(e.target.checked)}
+                  className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                />
+              </div>
+            </div>
+
+            {/* Tree branch child: Number of best sellers on home page */}
+            {showBestSellersOnHomePage && (
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                  <span className="text-right">
+                    Number of best sellers on home
+                    <br className="hidden md:inline" /> page
+                  </span>
+                  <HelpTooltip text="Total number of best seller products to display on home page." />
+                </label>
+                <div className="md:col-span-8 max-w-xl relative pl-5">
+                  <div
+                    className="absolute -top-3.5 left-0 w-3.5 h-5 border-l border-b border-slate-300 pointer-events-none"
+                    aria-hidden="true"
+                  />
+                  <input
+                    type="number"
+                    min="1"
+                    value={numberOfBestSellersOnHomePage}
+                    onChange={(e) => setNumberOfBestSellersOnHomePage(e.target.value)}
+                    className="w-full border border-[#d2d6de] focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none rounded px-3 py-1.5 text-xs text-slate-800 bg-white"
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* 'Products also purchased' enabled */}
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+              <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                <span>'Products also purchased' enabled</span>
+                <HelpTooltip text="Display 'Customers Who Bought This Also Bought' recommendation section on product pages." />
+              </label>
+              <div className="md:col-span-8 flex items-center">
+                <input
+                  type="checkbox"
+                  checked={productsAlsoPurchasedEnabled}
+                  onChange={(e) => setProductsAlsoPurchasedEnabled(e.target.checked)}
+                  className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                />
+              </div>
+            </div>
+
+            {/* Tree branch child: Number of also purchased products to display */}
+            {productsAlsoPurchasedEnabled && (
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                  <span className="text-right">
+                    Number of also purchased products to
+                    <br className="hidden md:inline" /> display
+                  </span>
+                  <HelpTooltip text="Number of cross-sell products to display in the also-purchased carousel." />
+                </label>
+                <div className="md:col-span-8 max-w-xl relative pl-5">
+                  <div
+                    className="absolute -top-3.5 left-0 w-3.5 h-5 border-l border-b border-slate-300 pointer-events-none"
+                    aria-hidden="true"
+                  />
+                  <input
+                    type="number"
+                    min="1"
+                    value={numberOfAlsoPurchasedProductsToDisplay}
+                    onChange={(e) =>
+                      setNumberOfAlsoPurchasedProductsToDisplay(e.target.value)
+                    }
+                    className="w-full border border-[#d2d6de] focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none rounded px-3 py-1.5 text-xs text-slate-800 bg-white"
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* 'Recently viewed products' enabled */}
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+              <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                <span>'Recently viewed products' enabled</span>
+                <HelpTooltip text="Store customer browsing trail and show a list of recently viewed products." />
+              </label>
+              <div className="md:col-span-8 flex items-center">
+                <input
+                  type="checkbox"
+                  checked={recentlyViewedProductsEnabled}
+                  onChange={(e) => setRecentlyViewedProductsEnabled(e.target.checked)}
+                  className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                />
+              </div>
+            </div>
+
+            {/* Tree branch child: Number of 'Recently viewed products' */}
+            {recentlyViewedProductsEnabled && (
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                  <span className="text-right">
+                    Number of 'Recently viewed
+                    <br className="hidden md:inline" /> products'
+                  </span>
+                  <HelpTooltip text="Number of recently viewed products to remember and display." />
+                </label>
+                <div className="md:col-span-8 max-w-xl relative pl-5">
+                  <div
+                    className="absolute -top-3.5 left-0 w-3.5 h-5 border-l border-b border-slate-300 pointer-events-none"
+                    aria-hidden="true"
+                  />
+                  <input
+                    type="number"
+                    min="1"
+                    value={numberOfRecentlyViewedProducts}
+                    onChange={(e) =>
+                      setNumberOfRecentlyViewedProducts(e.target.value)
+                    }
+                    className="w-full border border-[#d2d6de] focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none rounded px-3 py-1.5 text-xs text-slate-800 bg-white"
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* 'New products' page enabled */}
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+              <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                <span>'New products' page enabled</span>
+                <HelpTooltip text="Enable dedicated /new-products page listing recently added catalog inventory." />
+              </label>
+              <div className="md:col-span-8 flex items-center">
+                <input
+                  type="checkbox"
+                  checked={newProductsPageEnabled}
+                  onChange={(e) => setNewProductsPageEnabled(e.target.checked)}
+                  className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                />
+              </div>
+            </div>
+
+            {/* Tree branch children under 'New products' page enabled */}
+            {newProductsPageEnabled && (
+              <>
+                {/* 'New products' page. Allow customers to select page size */}
+                {isAdvanced && (
+                  <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                    <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                      <span className="text-right">
+                        'New products' page. Allow
+                        <br className="hidden md:inline" /> customers to select page size
+                      </span>
+                      <HelpTooltip text="Allow shoppers to choose items per page on the new products page." />
+                    </label>
+                    <div className="md:col-span-8 flex items-center relative pl-5">
+                      <div
+                        className="absolute -top-3.5 left-0 w-3.5 h-5 border-l border-b border-slate-300 pointer-events-none"
+                        aria-hidden="true"
+                      />
+                      <input
+                        type="checkbox"
+                        checked={newProductsPageAllowCustomersToSelectPageSize}
+                        onChange={(e) =>
+                          setNewProductsPageAllowCustomersToSelectPageSize(e.target.checked)
+                        }
+                        className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {/* Number of products on 'New products' page */}
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                  <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                    <span className="text-right">
+                      Number of products on 'New
+                      <br className="hidden md:inline" /> products' page
+                    </span>
+                    <HelpTooltip text="Maximum number of products displayed on the newly added products page." />
+                  </label>
+                  <div className="md:col-span-8 max-w-xl relative pl-5">
+                    <div
+                      className="absolute -top-3.5 left-0 w-3.5 h-5 border-l border-b border-slate-300 pointer-events-none"
+                      aria-hidden="true"
+                    />
+                    <input
+                      type="number"
+                      min="1"
+                      value={numberOfProductsOnNewProductsPage}
+                      onChange={(e) =>
+                        setNumberOfProductsOnNewProductsPage(e.target.value)
+                      }
+                      className="w-full border border-[#d2d6de] focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none rounded px-3 py-1.5 text-xs text-slate-800 bg-white"
+                    />
+                  </div>
+                </div>
+              </>
+            )}
+
+            {/* Display the date for a pre-order availability */}
+            {isAdvanced && (
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                  <span className="text-right">
+                    Display the date for a pre-order
+                    <br className="hidden md:inline" /> availability
+                  </span>
+                  <HelpTooltip text="Display estimated shipping/availability calendar date for pre-order merchandise." />
+                </label>
+                <div className="md:col-span-8 flex items-center">
+                  <input
+                    type="checkbox"
+                    checked={displayDateForPreOrderAvailability}
+                    onChange={(e) =>
+                      setDisplayDateForPreOrderAvailability(e.target.checked)
+                    }
+                    className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                  />
+                </div>
+              </div>
+            )}
 
             {/* Image Editor for Catalog Placeholder Image */}
             <div className="border-t border-slate-100 pt-5 mt-3">
@@ -1048,7 +2267,7 @@ export default function CatalogSettingsPage() {
         </div>
       </div>
 
-      {/* ── FLOATING GREEN SCROLL-TO-TOP BUTTON ── */}
+      {/* ── FLOATING GREEN SCROLL-TO-TOP BUTTON (Matching screenshots) ── */}
       <button
         type="button"
         onClick={scrollToTop}
@@ -1057,6 +2276,112 @@ export default function CatalogSettingsPage() {
       >
         <ChevronUp className="w-6 h-6 stroke-[2.5]" />
       </button>
+
+      {/* ── MODAL FOR ADD / EDIT REVIEW TYPE ── */}
+      {reviewTypeModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+            <div className="px-5 py-3.5 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
+              <h3 className="text-sm font-semibold text-slate-800">
+                {editingReviewType ? 'Edit review type' : 'Add new review type'}
+              </h3>
+              <button
+                type="button"
+                onClick={() => setReviewTypeModalOpen(false)}
+                className="text-slate-400 hover:text-slate-600 p-1"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="p-5 space-y-4 text-xs">
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  Name <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={rtNameInput}
+                  onChange={(e) => setRtNameInput(e.target.value)}
+                  placeholder="e.g. Quality, Delivery Speed, Value"
+                  className="w-full border border-slate-300 rounded px-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc]"
+                />
+              </div>
+
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  id="rt-required"
+                  checked={rtRequiredInput}
+                  onChange={(e) => setRtRequiredInput(e.target.checked)}
+                  className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                />
+                <label htmlFor="rt-required" className="text-xs text-slate-700 cursor-pointer">
+                  Required
+                </label>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  id="rt-visible"
+                  checked={rtVisibleInput}
+                  onChange={(e) => setRtVisibleInput(e.target.checked)}
+                  className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                />
+                <label htmlFor="rt-visible" className="text-xs text-slate-700 cursor-pointer">
+                  Visible to all customers
+                </label>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  Display order
+                </label>
+                <input
+                  type="number"
+                  min="1"
+                  value={rtOrderInput}
+                  onChange={(e) => setRtOrderInput(e.target.value)}
+                  className="w-full border border-slate-300 rounded px-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc]"
+                />
+              </div>
+            </div>
+
+            <div className="px-5 py-3 bg-slate-50 border-t border-slate-200 flex items-center justify-between">
+              {editingReviewType ? (
+                <button
+                  type="button"
+                  onClick={() => deleteReviewType(editingReviewType.id)}
+                  className="text-red-600 hover:text-red-700 text-xs font-semibold flex items-center gap-1"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                  <span>Delete</span>
+                </button>
+              ) : (
+                <div />
+              )}
+
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setReviewTypeModalOpen(false)}
+                  className="px-3 py-1.5 border border-slate-300 rounded text-slate-600 hover:bg-slate-100 text-xs font-medium transition"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={saveReviewType}
+                  className="px-4 py-1.5 bg-[#2489c5] hover:bg-[#1f72a3] text-white rounded text-xs font-semibold transition"
+                >
+                  {editingReviewType ? 'Save changes' : 'Add item'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
