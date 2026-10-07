@@ -16824,5 +16824,409 @@
     "miniShoppingCartThumbnailImageSize": 70,
     "avatarImageSize": 120,
     "isAdvanced": true
-  }
+  },
+  "allSettings": [
+    {
+      "id": "1",
+      "name": "adminareasettings.defaultgridpagesize",
+      "value": "15",
+      "store": "All"
+    },
+    {
+      "id": "2",
+      "name": "adminareasettings.gridpagesizes",
+      "value": "15, 20, 50, 100",
+      "store": "All"
+    },
+    {
+      "id": "3",
+      "name": "adminareasettings.userichtexteditor",
+      "value": "True",
+      "store": "All"
+    },
+    {
+      "id": "4",
+      "name": "blogsettings.allowgueststoleavecomments",
+      "value": "True",
+      "store": "All"
+    },
+    {
+      "id": "5",
+      "name": "blogsettings.blogcommentsmustbeapproved",
+      "value": "False",
+      "store": "All"
+    },
+    {
+      "id": "6",
+      "name": "blogsettings.enabled",
+      "value": "True",
+      "store": "All"
+    },
+    {
+      "id": "7",
+      "name": "blogsettings.numberoftags",
+      "value": "15",
+      "store": "All"
+    },
+    {
+      "id": "8",
+      "name": "blogsettings.postsizes",
+      "value": "10",
+      "store": "All"
+    },
+    {
+      "id": "9",
+      "name": "catalogsettings.allowproductreviews",
+      "value": "True",
+      "store": "All"
+    },
+    {
+      "id": "10",
+      "name": "catalogsettings.defaultproductratings",
+      "value": "5",
+      "store": "All"
+    },
+    {
+      "id": "11",
+      "name": "catalogsettings.defaultviewmode",
+      "value": "grid",
+      "store": "All"
+    },
+    {
+      "id": "12",
+      "name": "catalogsettings.displaytaxshippinginfoordersummary",
+      "value": "True",
+      "store": "All"
+    },
+    {
+      "id": "13",
+      "name": "catalogsettings.emailafriendenabled",
+      "value": "True",
+      "store": "All"
+    },
+    {
+      "id": "14",
+      "name": "catalogsettings.manufactureritemspagesize",
+      "value": "12",
+      "store": "All"
+    },
+    {
+      "id": "15",
+      "name": "catalogsettings.searchpagesize",
+      "value": "12",
+      "store": "All"
+    },
+    {
+      "id": "16",
+      "name": "catalogsettings.showsharebutton",
+      "value": "True",
+      "store": "All"
+    },
+    {
+      "id": "17",
+      "name": "commonsettings.displaydefaultmenuitem",
+      "value": "True",
+      "store": "All"
+    },
+    {
+      "id": "18",
+      "name": "commonsettings.enablejavascriptminification",
+      "value": "False",
+      "store": "All"
+    },
+    {
+      "id": "19",
+      "name": "commonsettings.popupfortermsandconditions",
+      "value": "True",
+      "store": "All"
+    },
+    {
+      "id": "20",
+      "name": "commonsettings.sitemapenabled",
+      "value": "True",
+      "store": "All"
+    },
+    {
+      "id": "21",
+      "name": "customersettings.allowcustomerscheckedorders",
+      "value": "True",
+      "store": "All"
+    },
+    {
+      "id": "22",
+      "name": "customersettings.allowcustomeruploadavatars",
+      "value": "True",
+      "store": "All"
+    },
+    {
+      "id": "23",
+      "name": "customersettings.customertitleenabled",
+      "value": "True",
+      "store": "All"
+    },
+    {
+      "id": "24",
+      "name": "customersettings.defaultpasswordformat",
+      "value": "Hashed",
+      "store": "All"
+    },
+    {
+      "id": "25",
+      "name": "customersettings.hidebacklistorders",
+      "value": "False",
+      "store": "All"
+    },
+    {
+      "id": "26",
+      "name": "customersettings.passwordminlength",
+      "value": "6",
+      "store": "All"
+    },
+    {
+      "id": "27",
+      "name": "customersettings.userregistrationtype",
+      "value": "Standard",
+      "store": "All"
+    },
+    {
+      "id": "28",
+      "name": "forumsettings.forumfeedsenabled",
+      "value": "True",
+      "store": "All"
+    },
+    {
+      "id": "29",
+      "name": "forumsettings.forumsenabled",
+      "value": "False",
+      "store": "All"
+    },
+    {
+      "id": "30",
+      "name": "forumsettings.postsizes",
+      "value": "10",
+      "store": "All"
+    },
+    {
+      "id": "31",
+      "name": "forumsettings.relativeformatting",
+      "value": "True",
+      "store": "All"
+    },
+    {
+      "id": "32",
+      "name": "forumsettings.topicsize",
+      "value": "10",
+      "store": "All"
+    },
+    {
+      "id": "33",
+      "name": "gdprsettings.gdpenabled",
+      "value": "True",
+      "store": "All"
+    },
+    {
+      "id": "34",
+      "name": "gdprsettings.logconsents",
+      "value": "True",
+      "store": "All"
+    },
+    {
+      "id": "35",
+      "name": "mediasettings.allowsvguploads",
+      "value": "False",
+      "store": "All"
+    },
+    {
+      "id": "36",
+      "name": "mediasettings.avatarimagesize",
+      "value": "120",
+      "store": "All"
+    },
+    {
+      "id": "37",
+      "name": "mediasettings.categorythumbnailimagesize",
+      "value": "600",
+      "store": "All"
+    },
+    {
+      "id": "38",
+      "name": "mediasettings.defaultimagequality",
+      "value": "80",
+      "store": "All"
+    },
+    {
+      "id": "39",
+      "name": "mediasettings.maximumimagesize",
+      "value": "1920",
+      "store": "All"
+    },
+    {
+      "id": "40",
+      "name": "mediasettings.productdetailimagesize",
+      "value": "750",
+      "store": "All"
+    },
+    {
+      "id": "41",
+      "name": "mediasettings.productthumbnailimagesizecatalog",
+      "value": "400",
+      "store": "All"
+    },
+    {
+      "id": "42",
+      "name": "newssettings.allowgueststoleavecomments",
+      "value": "True",
+      "store": "All"
+    },
+    {
+      "id": "43",
+      "name": "newssettings.enabled",
+      "value": "True",
+      "store": "All"
+    },
+    {
+      "id": "44",
+      "name": "ordersettings.anonymouscheckoutallowed",
+      "value": "True",
+      "store": "All"
+    },
+    {
+      "id": "45",
+      "name": "ordersettings.autoordercancelmin",
+      "value": "0",
+      "store": "All"
+    },
+    {
+      "id": "46",
+      "name": "ordersettings.minimumordertotalamount",
+      "value": "0",
+      "store": "All"
+    },
+    {
+      "id": "47",
+      "name": "ordersettings.orderidentenabled",
+      "value": "False",
+      "store": "All"
+    },
+    {
+      "id": "48",
+      "name": "rewardpointssettings.enabled",
+      "value": "True",
+      "store": "All"
+    },
+    {
+      "id": "49",
+      "name": "rewardpointssettings.exchangerate",
+      "value": "1",
+      "store": "All"
+    },
+    {
+      "id": "50",
+      "name": "rewardpointssettings.minimumrewardpoints",
+      "value": "0",
+      "store": "All"
+    },
+    {
+      "id": "51",
+      "name": "rewardpointssettings.pointstocurrencyratio",
+      "value": "0.1",
+      "store": "All"
+    },
+    {
+      "id": "52",
+      "name": "securitysettings.adminareasslrequired",
+      "value": "False",
+      "store": "All"
+    },
+    {
+      "id": "53",
+      "name": "securitysettings.allowgueststracking",
+      "value": "True",
+      "store": "All"
+    },
+    {
+      "id": "54",
+      "name": "securitysettings.encryptionkey",
+      "value": "agrimart-secure-key-2026",
+      "store": "All"
+    },
+    {
+      "id": "55",
+      "name": "securitysettings.honeypotenabled",
+      "value": "True",
+      "store": "All"
+    },
+    {
+      "id": "56",
+      "name": "shippingsettings.freeshippingoverxenabled",
+      "value": "True",
+      "store": "All"
+    },
+    {
+      "id": "57",
+      "name": "shippingsettings.freeshippingoverxvalue",
+      "value": "100",
+      "store": "All"
+    },
+    {
+      "id": "58",
+      "name": "shippingsettings.notifycustomeronshipping",
+      "value": "True",
+      "store": "All"
+    },
+    {
+      "id": "59",
+      "name": "shoppingcartsettings.allowanonymoususerscheckout",
+      "value": "True",
+      "store": "All"
+    },
+    {
+      "id": "60",
+      "name": "shoppingcartsettings.displaycartafteradding",
+      "value": "True",
+      "store": "All"
+    },
+    {
+      "id": "61",
+      "name": "shoppingcartsettings.maximumcartitems",
+      "value": "1000",
+      "store": "All"
+    },
+    {
+      "id": "62",
+      "name": "shoppingcartsettings.miniwidgetdisplaysize",
+      "value": "5",
+      "store": "All"
+    },
+    {
+      "id": "63",
+      "name": "taxsettings.pricesincludetax",
+      "value": "False",
+      "store": "All"
+    },
+    {
+      "id": "64",
+      "name": "taxsettings.shippingistaxable",
+      "value": "False",
+      "store": "All"
+    },
+    {
+      "id": "65",
+      "name": "taxsettings.taxdisplaytype",
+      "value": "ExcludingTax",
+      "store": "All"
+    },
+    {
+      "id": "66",
+      "name": "vendorsettings.allowcustomerstoapplyforvendoraccount",
+      "value": "True",
+      "store": "All"
+    },
+    {
+      "id": "67",
+      "name": "vendorsettings.maximumproductnumber",
+      "value": "1000",
+      "store": "All"
+    }
+  ]
 }

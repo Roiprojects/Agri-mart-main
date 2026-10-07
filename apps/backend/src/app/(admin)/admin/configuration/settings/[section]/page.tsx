@@ -57,6 +57,7 @@ import BlogSettingsPage from '../blog/page';
 import NewsSettingsPage from '../news/page';
 import ForumSettingsPage from '../forum/page';
 import MediaSettingsPage from '../media/page';
+import AllSettingsPage from '../all/page';
 
 export default function ConfigurationSectionPage({
   params,
@@ -107,6 +108,9 @@ export default function ConfigurationSectionPage({
   }
   if (section === 'media') {
     return <MediaSettingsPage />;
+  }
+  if (section === 'all') {
+    return <AllSettingsPage />;
   }
 
   const info = sectionTitles[section] || {
