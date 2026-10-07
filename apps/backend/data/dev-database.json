@@ -16492,6 +16492,93 @@
     "attachPdfInvoiceOrderCompleted": false,
     "pdfInvoiceLogo": "https://images.unsplash.com/photo-1595246140625-573b715d11dc?auto=format&fit=crop&w=400&q=80",
     "isAdvanced": true,
-    "updatedAt": "2026-10-07T03:52:45.052Z"
+    "updatedAt": "2026-10-07T04:08:07.428Z",
+    "activateGiftCardsAfterCompletingOrder": false,
+    "deactivateGiftCardsAfterCancellingOrder": false,
+    "deactivateGiftCardsAfterDeletingOrder": false,
+    "deleteGiftCardUsageHistoryAfterOrderCancellation": false,
+    "enableReturnsSystem": true,
+    "returnRequestNumberMask": "{ID}",
+    "numberOfDaysReturnRequestAvailable": 365,
+    "allowFileUploads": false,
+    "returnRequestReasons": [
+      {
+        "id": "rrr-1",
+        "name": "Received Wrong Product",
+        "displayOrder": 1
+      },
+      {
+        "id": "rrr-2",
+        "name": "Wrong Product Ordered",
+        "displayOrder": 2
+      },
+      {
+        "id": "rrr-3",
+        "name": "There Was A Problem With The Product",
+        "displayOrder": 3
+      }
+    ],
+    "returnRequestActions": [
+      {
+        "id": "rra-1",
+        "name": "Refund",
+        "displayOrder": 1
+      },
+      {
+        "id": "rra-2",
+        "name": "Repair",
+        "displayOrder": 2
+      },
+      {
+        "id": "rra-3",
+        "name": "Replacement",
+        "displayOrder": 3
+      },
+      {
+        "id": "rra-1791346079272",
+        "name": "Store Credit",
+        "displayOrder": 1
+      }
+    ]
+  },
+  "shippingSettings": {
+    "estimateShippingCartPage": true,
+    "estimateShippingProductPage": true,
+    "useCityNameForEstimateShipping": false,
+    "pickUpInStoreEnabled": true,
+    "ignoreAdditionalShippingChargeForPickUpInStore": true,
+    "displayPickupPointsOnMap": true,
+    "googleMapsApiKey": "",
+    "freeShippingOverX": true,
+    "valueOfX": 0,
+    "valueOfXCurrency": "USD",
+    "calculateXIncludingTax": true,
+    "useWarehouseLocation": true,
+    "considerAssociatedProductsDimensionsAndWeight": true,
+    "sortShippingMethodsBy": "Position",
+    "notifyCustomerAboutShippingFromMultipleLocations": false,
+    "displayShipmentEventsCustomers": false,
+    "displayShipmentEventsStoreOwner": false,
+    "hideShippingTotalIfShippingNotRequired": false,
+    "shipToSameAddress": false,
+    "bypassShippingMethodPageIfOnlyOne": false,
+    "shippingOrigin": {
+      "firstName": "",
+      "lastName": "",
+      "email": "",
+      "company": "",
+      "country": "",
+      "stateProvince": "Other",
+      "countyRegion": "",
+      "city": "",
+      "address1": "",
+      "address2": "",
+      "zipPostalCode": "",
+      "phoneNumber": "",
+      "faxNumber": "",
+      "originImage": "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=400&q=80"
+    },
+    "isAdvanced": true,
+    "updatedAt": "2026-10-07T04:20:40.761Z"
   }
 }
