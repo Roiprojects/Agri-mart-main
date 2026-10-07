@@ -16729,5 +16729,14 @@
     "pointsAccumulatedForAllStores": true,
     "pageSize": 10,
     "isAdvanced": true
+  },
+  "gdprSettings": {
+    "gdprEnabled": true,
+    "logAcceptPrivacyPolicyConsent": true,
+    "logNewsletterConsent": true,
+    "logUserProfileChanges": true,
+    "deleteInactiveCustomersAfterMonths": 36,
+    "consents": [],
+    "isAdvanced": true
   }
 }

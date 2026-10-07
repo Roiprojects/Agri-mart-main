@@ -51,6 +51,7 @@ import TaxSettingsPage from '../tax/page';
 import ShoppingCartSettingsPage from '../shopping-cart/page';
 import FilterYmmSettingsPage from '../filter-ymm/page';
 import RewardPointsSettingsPage from '../reward-points/page';
+import GdprSettingsPage from '../gdpr/page';
 
 export default function ConfigurationSectionPage({
   params,
@@ -83,6 +84,9 @@ export default function ConfigurationSectionPage({
   }
   if (section === 'reward-points') {
     return <RewardPointsSettingsPage />;
+  }
+  if (section === 'gdpr') {
+    return <GdprSettingsPage />;
   }
 
   const info = sectionTitles[section] || {
