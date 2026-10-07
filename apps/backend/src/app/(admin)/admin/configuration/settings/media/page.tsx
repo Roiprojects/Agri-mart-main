@@ -63,6 +63,7 @@ export default function MediaSettingsPage() {
   // Status & Notification
   const [saving, setSaving] = useState(false);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
 
   const showToast = (message: string, type: 'success' | 'error' = 'success') => {
     setToast({ message, type });
@@ -145,9 +146,14 @@ export default function MediaSettingsPage() {
     fetchSettings();
   }, []);
 
-  const handleChangeStorageTarget = () => {
+  const handleOpenConfirmModal = () => {
+    setShowConfirmModal(true);
+  };
+
+  const handleConfirmChangeStorageTarget = () => {
     const newTarget = pictureStorageTarget === 'database' ? 'file system' : 'database';
     setPictureStorageTarget(newTarget);
+    setShowConfirmModal(false);
     showToast(`Picture storage target changed to "${newTarget}". Click Save to persist.`);
   };
 
@@ -231,6 +237,55 @@ export default function MediaSettingsPage() {
         </div>
       )}
 
+      {/* Confirmation Modal (Matching media_1791366230467.png) */}
+      {showConfirmModal && (
+        <div
+          onClick={() => setShowConfirmModal(false)}
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="bg-white rounded shadow-xl w-full max-w-[500px] border border-slate-200 overflow-hidden"
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200">
+              <h3 className="text-xl font-normal text-slate-800">Are you sure?</h3>
+              <button
+                type="button"
+                onClick={() => setShowConfirmModal(false)}
+                className="text-slate-400 hover:text-slate-600 text-xl font-bold leading-none cursor-pointer p-1"
+                aria-label="Close"
+              >
+                &times;
+              </button>
+            </div>
+
+            {/* Body */}
+            <div className="px-6 py-6">
+              <p className="text-sm text-slate-700">Are you sure you want to perform this action?</p>
+            </div>
+
+            {/* Footer */}
+            <div className="flex items-center justify-end gap-2.5 px-6 pb-6 pt-2 bg-white">
+              <button
+                type="button"
+                onClick={handleConfirmChangeStorageTarget}
+                className="px-4 py-2 bg-[#337ab7] hover:bg-[#286090] text-white text-sm font-normal rounded shadow-2xs transition-colors cursor-pointer"
+              >
+                Yes
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowConfirmModal(false)}
+                className="px-4 py-2 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 text-sm font-normal rounded shadow-2xs transition-colors cursor-pointer"
+              >
+                No, cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Header Bar matching Reference: Title + Save Button */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-slate-200 gap-3">
         <h1 className="text-xl font-normal text-slate-800">Media settings</h1>
@@ -303,7 +358,7 @@ export default function MediaSettingsPage() {
                   <span className="text-xs text-slate-800 font-normal">{pictureStorageTarget}</span>
                   <button
                     type="button"
-                    onClick={handleChangeStorageTarget}
+                    onClick={handleOpenConfirmModal}
                     className="px-3.5 py-1 bg-[#2489c5] hover:bg-[#207ba5] text-white text-xs font-normal rounded shadow-2xs transition-colors cursor-pointer"
                   >
                     Change
