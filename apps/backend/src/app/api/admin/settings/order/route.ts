@@ -4,6 +4,12 @@ import path from 'path';
 
 const DB_PATH = path.join(process.cwd(), 'data', 'dev-database.json');
 
+export interface ReturnRequestItem {
+  id: string;
+  name: string;
+  displayOrder: number;
+}
+
 export interface OrderSettingsData {
   // Checkout settings (media_1791344861078.png)
   checkoutDisabled: boolean;
@@ -39,6 +45,20 @@ export interface OrderSettingsData {
   attachPdfInvoiceOrderProcessing: boolean;
   attachPdfInvoiceOrderCompleted: boolean;
   pdfInvoiceLogo: string;
+
+  // Gift cards settings (media_1791345470954.png)
+  activateGiftCardsAfterCompletingOrder: boolean;
+  deactivateGiftCardsAfterCancellingOrder: boolean;
+  deactivateGiftCardsAfterDeletingOrder: boolean;
+  deleteGiftCardUsageHistoryAfterOrderCancellation: boolean;
+
+  // Return request settings (media_1791345474131.png & media_1791345475932.png)
+  enableReturnsSystem: boolean;
+  returnRequestNumberMask: string;
+  numberOfDaysReturnRequestAvailable: number;
+  allowFileUploads: boolean;
+  returnRequestReasons: ReturnRequestItem[];
+  returnRequestActions: ReturnRequestItem[];
 
   // Advanced mode state
   isAdvanced: boolean;
@@ -79,6 +99,28 @@ export const DEFAULT_ORDER_SETTINGS: OrderSettingsData = {
   attachPdfInvoiceOrderProcessing: false,
   attachPdfInvoiceOrderCompleted: false,
   pdfInvoiceLogo: 'https://images.unsplash.com/photo-1595246140625-573b715d11dc?auto=format&fit=crop&w=400&q=80',
+
+  // Gift cards defaults
+  activateGiftCardsAfterCompletingOrder: false,
+  deactivateGiftCardsAfterCancellingOrder: false,
+  deactivateGiftCardsAfterDeletingOrder: false,
+  deleteGiftCardUsageHistoryAfterOrderCancellation: false,
+
+  // Return request defaults
+  enableReturnsSystem: true,
+  returnRequestNumberMask: '{ID}',
+  numberOfDaysReturnRequestAvailable: 365,
+  allowFileUploads: false,
+  returnRequestReasons: [
+    { id: 'rrr-1', name: 'Received Wrong Product', displayOrder: 1 },
+    { id: 'rrr-2', name: 'Wrong Product Ordered', displayOrder: 2 },
+    { id: 'rrr-3', name: 'There Was A Problem With The Product', displayOrder: 3 },
+  ],
+  returnRequestActions: [
+    { id: 'rra-1', name: 'Refund', displayOrder: 1 },
+    { id: 'rra-2', name: 'Repair', displayOrder: 2 },
+    { id: 'rra-3', name: 'Replacement', displayOrder: 3 },
+  ],
 
   isAdvanced: true,
 };
