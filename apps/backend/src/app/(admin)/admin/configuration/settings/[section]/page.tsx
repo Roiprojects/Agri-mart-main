@@ -63,6 +63,7 @@ import LanguagesPage from '../../languages/page';
 import TaxProvidersPage from '../../tax-providers/page';
 import TaxCategoriesPage from '../../tax-categories/page';
 import ShippingProvidersPage from '../../shipping/providers/page';
+import AdminWarehousesPage from '../../warehouses/page';
 
 export default function ConfigurationSectionPage({
   params,
@@ -131,6 +132,9 @@ export default function ConfigurationSectionPage({
   }
   if (section === 'shipping-providers' || section === 'shipping-provider') {
     return <ShippingProvidersPage />;
+  }
+  if (section === 'warehouses' || section === 'warehouse') {
+    return <AdminWarehousesPage />;
   }
 
   const info = sectionTitles[section] || {
