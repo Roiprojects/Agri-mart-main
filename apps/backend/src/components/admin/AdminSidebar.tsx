@@ -209,7 +209,6 @@ const navTree: NavGroup[] = [
               { label: 'Measures', href: '/admin/configuration/shipping/measures' },
             ],
           },
-          { label: 'Widgets', href: '/admin/configuration/widgets', icon: DotCircleIcon },
           {
             label: 'Authentication',
             href: '/admin/configuration/authentication',
@@ -218,8 +217,6 @@ const navTree: NavGroup[] = [
               { label: 'External authentication methods', href: '/admin/configuration/authentication/external' },
             ],
           },
-          { label: 'Local plugins', href: '/admin/configuration/plugins/local', icon: DotCircleIcon },
-          { label: 'All plugins and themes', href: '/admin/configuration/plugins/all', icon: DotCircleIcon },
         ],
       },
     ],

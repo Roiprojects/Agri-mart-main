@@ -67,6 +67,7 @@ import AdminWarehousesPage from '../../warehouses/page';
 import PickupPointsPage from '../../shipping/pickup-points/page';
 import DatesAndRangesPage from '../../shipping/dates-and-ranges/page';
 import MeasuresPage from '../../shipping/measures/page';
+import ExternalAuthenticationPage from '../../authentication/external/page';
 
 export default function ConfigurationSectionPage({
   params,
@@ -147,6 +148,9 @@ export default function ConfigurationSectionPage({
   }
   if (section === 'measures' || section === 'measure') {
     return <MeasuresPage />;
+  }
+  if (section === 'authentication' || section === 'external-auth' || section === 'external-authentication') {
+    return <ExternalAuthenticationPage />;
   }
 
   const info = sectionTitles[section] || {

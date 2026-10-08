@@ -21285,5 +21285,52 @@
       "displayOrder": 6,
       "isPrimary": false
     }
+  ],
+  "externalAuthMethods": [
+    {
+      "id": "1",
+      "friendlyName": "Google OAuth 2.0",
+      "systemName": "ExternalAuth.Google",
+      "displayOrder": 1,
+      "isActive": true,
+      "config": {
+        "clientId": "agri-mart-google-client.apps.googleusercontent.com",
+        "clientSecret": "GOCSPX-demo12345"
+      }
+    },
+    {
+      "id": "2",
+      "friendlyName": "Facebook Login",
+      "systemName": "ExternalAuth.Facebook",
+      "displayOrder": 2,
+      "isActive": false,
+      "config": {
+        "appId": "",
+        "appSecret": ""
+      }
+    },
+    {
+      "id": "3",
+      "friendlyName": "Microsoft Account",
+      "systemName": "ExternalAuth.Microsoft",
+      "displayOrder": 3,
+      "isActive": false,
+      "config": {
+        "clientId": "",
+        "clientSecret": ""
+      }
+    },
+    {
+      "id": "4",
+      "friendlyName": "Apple Sign-In",
+      "systemName": "ExternalAuth.Apple",
+      "displayOrder": 4,
+      "isActive": false,
+      "config": {
+        "serviceId": "",
+        "teamId": "",
+        "keyId": ""
+      }
+    }
   ]
 }
