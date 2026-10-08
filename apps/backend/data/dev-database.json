@@ -21068,6 +21068,19 @@
         "displayOnMap": false,
         "defaultOpeningHours": "24/7 Smart Locker Access"
       }
+    },
+    {
+      "id": "1791443197517",
+      "friendlyName": "Agri-mart Gram Panchayat Hub - Dharwad",
+      "systemName": "Shipping.PickupDharwadHub",
+      "displayOrder": 5,
+      "isActive": true,
+      "config": {
+        "pickupFee": 0,
+        "allowCustomerToSelectDate": true,
+        "displayOnMap": true,
+        "defaultOpeningHours": "Mon-Sat 8:00 AM - 8:00 PM"
+      }
     }
   ],
   "pickupPoints": [
@@ -21121,6 +21134,19 @@
       "country": "India",
       "zipPostalCode": "591102",
       "openingHours": "Mon-Sat 7:00 AM - 6:00 PM",
+      "pickupFee": 0
+    },
+    {
+      "id": "pt-1791443197518",
+      "providerId": "1791443197517",
+      "name": "Dharwad APMC Primary Seed Counter",
+      "description": "",
+      "address1": "Near Old Bus Stand, PB Road",
+      "city": "Dharwad",
+      "state": "Karnataka",
+      "country": "India",
+      "zipPostalCode": "580001",
+      "openingHours": "Mon-Sat 8:00 AM - 8:00 PM",
       "pickupFee": 0
     }
   ]

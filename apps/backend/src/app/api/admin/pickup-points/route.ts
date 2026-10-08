@@ -171,8 +171,8 @@ export async function POST(req: Request) {
       });
     }
 
-    // Fallback: Create provider
-    const { friendlyName, systemName, displayOrder, isActive, config } = body;
+    // Action: Create new provider (with optional initial location)
+    const { friendlyName, systemName, displayOrder, isActive, config, initialLocation } = body;
     if (!friendlyName || !systemName) {
       return NextResponse.json(
         { success: false, message: 'Friendly name and system name are required' },
@@ -180,8 +180,9 @@ export async function POST(req: Request) {
       );
     }
 
+    const providerId = String(Date.now());
     const newProvider: PickupPointProviderItem = {
-      id: String(Date.now()),
+      id: providerId,
       friendlyName: friendlyName.trim(),
       systemName: systemName.trim(),
       displayOrder: typeof displayOrder === 'number' ? displayOrder : parseInt(displayOrder, 10) || 0,
@@ -191,11 +192,31 @@ export async function POST(req: Request) {
 
     providers.push(newProvider);
     db.pickupPointProviders = providers;
+
+    // If an initial location was provided with the new provider
+    if (initialLocation && initialLocation.name && initialLocation.name.trim()) {
+      const newPoint: PickupPointItem = {
+        id: `pt-${Date.now()}`,
+        providerId,
+        name: initialLocation.name.trim(),
+        description: initialLocation.description?.trim() || '',
+        address1: initialLocation.address1?.trim() || '',
+        city: initialLocation.city?.trim() || 'Hubballi',
+        state: initialLocation.state?.trim() || 'Karnataka',
+        country: initialLocation.country?.trim() || 'India',
+        zipPostalCode: initialLocation.zipPostalCode?.trim() || '580020',
+        openingHours: initialLocation.openingHours?.trim() || 'Mon-Sat 8:00 AM - 8:00 PM',
+        pickupFee: parseFloat(String(initialLocation.pickupFee)) || 0,
+      };
+      points.push(newPoint);
+      db.pickupPoints = points;
+    }
+
     writeDb(db);
 
     return NextResponse.json({
       success: true,
-      message: 'New pickup point provider added successfully.',
+      message: 'New pickup point provider has been added successfully.',
       data: newProvider,
     });
   } catch (error: any) {
@@ -253,6 +274,49 @@ export async function PUT(req: Request) {
   } catch (error: any) {
     return NextResponse.json(
       { success: false, message: error?.message || 'Failed to update provider' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(req: Request) {
+  try {
+    const { searchParams } = new URL(req.url);
+    let id = searchParams.get('id');
+
+    if (!id) {
+      try {
+        const body = await req.json();
+        id = body?.id;
+      } catch {}
+    }
+
+    if (!id) {
+      return NextResponse.json({ success: false, message: 'Provider ID is required' }, { status: 400 });
+    }
+
+    const db = readDb();
+    const providers: PickupPointProviderItem[] = db.pickupPointProviders || [];
+    const filtered = providers.filter((p) => String(p.id) !== String(id));
+
+    if (filtered.length === providers.length) {
+      return NextResponse.json({ success: false, message: 'Provider not found' }, { status: 404 });
+    }
+
+    db.pickupPointProviders = filtered;
+    // Also remove associated points
+    if (db.pickupPoints) {
+      db.pickupPoints = db.pickupPoints.filter((pt: any) => String(pt.providerId) !== String(id));
+    }
+    writeDb(db);
+
+    return NextResponse.json({
+      success: true,
+      message: 'Pickup point provider deleted successfully.',
+    });
+  } catch (error: any) {
+    return NextResponse.json(
+      { success: false, message: error?.message || 'Failed to delete provider' },
       { status: 500 }
     );
   }
