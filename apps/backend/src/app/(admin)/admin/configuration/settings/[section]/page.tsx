@@ -66,6 +66,7 @@ import ShippingProvidersPage from '../../shipping/providers/page';
 import AdminWarehousesPage from '../../warehouses/page';
 import PickupPointsPage from '../../shipping/pickup-points/page';
 import DatesAndRangesPage from '../../shipping/dates-and-ranges/page';
+import MeasuresPage from '../../shipping/measures/page';
 
 export default function ConfigurationSectionPage({
   params,
@@ -143,6 +144,9 @@ export default function ConfigurationSectionPage({
   }
   if (section === 'dates-and-ranges' || section === 'dates-ranges' || section === 'dates-and-range') {
     return <DatesAndRangesPage />;
+  }
+  if (section === 'measures' || section === 'measure') {
+    return <MeasuresPage />;
   }
 
   const info = sectionTitles[section] || {

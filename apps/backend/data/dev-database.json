@@ -21193,5 +21193,97 @@
       "name": "Pre-order for harvest season",
       "displayOrder": 4
     }
+  ],
+  "measureDimensions": [
+    {
+      "id": "1",
+      "name": "inch(es)",
+      "systemKeyword": "inches",
+      "ratio": 1,
+      "displayOrder": 1,
+      "isPrimary": true
+    },
+    {
+      "id": "2",
+      "name": "feet",
+      "systemKeyword": "feet",
+      "ratio": 0.08333333,
+      "displayOrder": 2,
+      "isPrimary": false
+    },
+    {
+      "id": "3",
+      "name": "centimeter(s)",
+      "systemKeyword": "centimeters",
+      "ratio": 2.54,
+      "displayOrder": 3,
+      "isPrimary": false
+    },
+    {
+      "id": "4",
+      "name": "meter(s)",
+      "systemKeyword": "meters",
+      "ratio": 0.0254,
+      "displayOrder": 4,
+      "isPrimary": false
+    },
+    {
+      "id": "5",
+      "name": "millimeter(s)",
+      "systemKeyword": "millimeters",
+      "ratio": 25.4,
+      "displayOrder": 5,
+      "isPrimary": false
+    }
+  ],
+  "measureWeights": [
+    {
+      "id": "1",
+      "name": "lb(s)",
+      "systemKeyword": "lb",
+      "ratio": 1,
+      "displayOrder": 1,
+      "isPrimary": true
+    },
+    {
+      "id": "2",
+      "name": "ounce(s)",
+      "systemKeyword": "ounce",
+      "ratio": 16,
+      "displayOrder": 2,
+      "isPrimary": false
+    },
+    {
+      "id": "3",
+      "name": "kg(s)",
+      "systemKeyword": "kg",
+      "ratio": 1,
+      "displayOrder": 3,
+      "isPrimary": false
+    },
+    {
+      "id": "4",
+      "name": "gram(s)",
+      "systemKeyword": "grams",
+      "ratio": 453.59237,
+      "displayOrder": 4,
+      "isPrimary": false
+    },
+    {
+      "id": "5",
+      "name": "quintal(s)",
+      "systemKeyword": "quintal",
+      "ratio": 0.00453592,
+      "displayOrder": 5,
+      "isPrimary": false
+    },
+    {
+      "id": "6",
+      "name": "ton(s)",
+      "systemKeyword": "ton",
+      "ratio": 0.0005,
+      "displayOrder": 6,
+      "isPrimary": false
+    }
   ]
 }
