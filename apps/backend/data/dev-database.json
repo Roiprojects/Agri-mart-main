@@ -21149,5 +21149,49 @@
       "openingHours": "Mon-Sat 8:00 AM - 8:00 PM",
       "pickupFee": 0
     }
+  ],
+  "deliveryDates": [
+    {
+      "id": "1",
+      "name": "1-2 days",
+      "displayOrder": 1
+    },
+    {
+      "id": "2",
+      "name": "3-5 days",
+      "displayOrder": 2
+    },
+    {
+      "id": "3",
+      "name": "1-2 weeks",
+      "displayOrder": 3
+    },
+    {
+      "id": "4",
+      "name": "Same day dispatch (Rural hub)",
+      "displayOrder": 4
+    }
+  ],
+  "productAvailabilityRanges": [
+    {
+      "id": "1",
+      "name": "In stock",
+      "displayOrder": 1
+    },
+    {
+      "id": "2",
+      "name": "7 to 14 days",
+      "displayOrder": 2
+    },
+    {
+      "id": "3",
+      "name": "2 to 4 weeks",
+      "displayOrder": 3
+    },
+    {
+      "id": "4",
+      "name": "Pre-order for harvest season",
+      "displayOrder": 4
+    }
   ]
 }

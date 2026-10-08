@@ -65,6 +65,7 @@ import TaxCategoriesPage from '../../tax-categories/page';
 import ShippingProvidersPage from '../../shipping/providers/page';
 import AdminWarehousesPage from '../../warehouses/page';
 import PickupPointsPage from '../../shipping/pickup-points/page';
+import DatesAndRangesPage from '../../shipping/dates-and-ranges/page';
 
 export default function ConfigurationSectionPage({
   params,
@@ -139,6 +140,9 @@ export default function ConfigurationSectionPage({
   }
   if (section === 'pickup-points' || section === 'pickup-point' || section === 'pickup-point-providers') {
     return <PickupPointsPage />;
+  }
+  if (section === 'dates-and-ranges' || section === 'dates-ranges' || section === 'dates-and-range') {
+    return <DatesAndRangesPage />;
   }
 
   const info = sectionTitles[section] || {
