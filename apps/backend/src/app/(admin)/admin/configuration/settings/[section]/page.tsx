@@ -58,6 +58,7 @@ import NewsSettingsPage from '../news/page';
 import ForumSettingsPage from '../forum/page';
 import MediaSettingsPage from '../media/page';
 import AllSettingsPage from '../all/page';
+import CountriesPage from '../../countries/page';
 
 export default function ConfigurationSectionPage({
   params,
@@ -111,6 +112,9 @@ export default function ConfigurationSectionPage({
   }
   if (section === 'all') {
     return <AllSettingsPage />;
+  }
+  if (section === 'countries' || section === 'country') {
+    return <CountriesPage />;
   }
 
   const info = sectionTitles[section] || {
