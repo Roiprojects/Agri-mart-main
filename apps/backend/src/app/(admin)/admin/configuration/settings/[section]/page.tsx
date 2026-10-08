@@ -59,6 +59,7 @@ import ForumSettingsPage from '../forum/page';
 import MediaSettingsPage from '../media/page';
 import AllSettingsPage from '../all/page';
 import CountriesPage from '../../countries/page';
+import LanguagesPage from '../../languages/page';
 
 export default function ConfigurationSectionPage({
   params,
@@ -115,6 +116,9 @@ export default function ConfigurationSectionPage({
   }
   if (section === 'countries' || section === 'country') {
     return <CountriesPage />;
+  }
+  if (section === 'languages' || section === 'language') {
+    return <LanguagesPage />;
   }
 
   const info = sectionTitles[section] || {

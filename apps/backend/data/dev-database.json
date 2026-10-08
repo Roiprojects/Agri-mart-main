@@ -20799,5 +20799,87 @@
       "displayOrder": 100,
       "published": true
     }
+  ],
+  "languages": [
+    {
+      "id": "1",
+      "name": "EN",
+      "flag": "us.png",
+      "flagEmoji": "🇺🇸",
+      "languageCulture": "en-US",
+      "uniqueSeoCode": "en",
+      "rightToLeft": false,
+      "defaultCurrency": "USD",
+      "limitedToStores": "",
+      "displayOrder": 1,
+      "published": true,
+      "resources": [
+        {
+          "id": "1",
+          "name": "Account.Login",
+          "value": "Log in"
+        },
+        {
+          "id": "2",
+          "name": "Account.Register",
+          "value": "Register"
+        },
+        {
+          "id": "3",
+          "name": "Admin.Common.Save",
+          "value": "Save"
+        },
+        {
+          "id": "4",
+          "name": "Common.Search",
+          "value": "Search store"
+        },
+        {
+          "id": "5",
+          "name": "ShoppingCart.AddToCart",
+          "value": "Add to cart"
+        }
+      ]
+    },
+    {
+      "id": "2",
+      "name": "RTL",
+      "flag": "il.png",
+      "flagEmoji": "🇮🇱",
+      "languageCulture": "en-GB",
+      "uniqueSeoCode": "rtl",
+      "rightToLeft": true,
+      "defaultCurrency": "---",
+      "limitedToStores": "",
+      "displayOrder": 2,
+      "published": true,
+      "resources": [
+        {
+          "id": "1",
+          "name": "Account.Login",
+          "value": "התחברות"
+        },
+        {
+          "id": "2",
+          "name": "Account.Register",
+          "value": "הרשמה"
+        },
+        {
+          "id": "3",
+          "name": "Admin.Common.Save",
+          "value": "שמירה"
+        },
+        {
+          "id": "4",
+          "name": "Common.Search",
+          "value": "חיפוש בחנות"
+        },
+        {
+          "id": "5",
+          "name": "ShoppingCart.AddToCart",
+          "value": "הוסף לסל"
+        }
+      ]
+    }
   ]
 }
