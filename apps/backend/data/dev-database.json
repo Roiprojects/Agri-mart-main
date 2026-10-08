@@ -20881,5 +20881,31 @@
         }
       ]
     }
+  ],
+  "taxProviders": [
+    {
+      "id": "1",
+      "friendlyName": "Manual (Fixed or By Country/State/Zip)",
+      "systemName": "Tax.FixedOrByCountryStateZip",
+      "isPrimary": true,
+      "displayOrder": 1,
+      "config": {
+        "taxRatePercentage": 10,
+        "calculationType": "FixedRate"
+      }
+    },
+    {
+      "id": "2",
+      "friendlyName": "Avalara Tax",
+      "systemName": "Tax.Avalara",
+      "isPrimary": false,
+      "displayOrder": 2,
+      "config": {
+        "accountId": "",
+        "licenseKey": "",
+        "companyCode": "",
+        "sandbox": true
+      }
+    }
   ]
 }

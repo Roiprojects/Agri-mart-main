@@ -60,6 +60,7 @@ import MediaSettingsPage from '../media/page';
 import AllSettingsPage from '../all/page';
 import CountriesPage from '../../countries/page';
 import LanguagesPage from '../../languages/page';
+import TaxProvidersPage from '../../tax-providers/page';
 
 export default function ConfigurationSectionPage({
   params,
@@ -119,6 +120,9 @@ export default function ConfigurationSectionPage({
   }
   if (section === 'languages' || section === 'language') {
     return <LanguagesPage />;
+  }
+  if (section === 'tax-providers' || section === 'tax-provider') {
+    return <TaxProvidersPage />;
   }
 
   const info = sectionTitles[section] || {
