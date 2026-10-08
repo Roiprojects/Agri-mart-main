@@ -20934,5 +20934,58 @@
       "name": "Fertilizers & Pesticides",
       "displayOrder": 5
     }
+  ],
+  "shippingProviders": [
+    {
+      "id": "1",
+      "friendlyName": "Manual (Fixed or By Weight and By Total)",
+      "systemName": "Shipping.FixedByWeightByTotal",
+      "displayOrder": 1,
+      "isActive": true,
+      "config": {
+        "calculationType": "FixedRate",
+        "fixedRate": 15,
+        "freeShippingOver": 500,
+        "additionalHandlingCharge": 5
+      }
+    },
+    {
+      "id": "2",
+      "friendlyName": "UPS (United Parcel Service)",
+      "systemName": "Shipping.UPS",
+      "displayOrder": 2,
+      "isActive": false,
+      "config": {
+        "accountNumber": "",
+        "accessKey": "",
+        "username": "",
+        "password": "",
+        "useSandbox": true
+      }
+    },
+    {
+      "id": "3",
+      "friendlyName": "Agri-mart Rural Fleet & Tractor Delivery",
+      "systemName": "Shipping.AgriMartFleet",
+      "displayOrder": 3,
+      "isActive": true,
+      "config": {
+        "baseRatePerKm": 12.5,
+        "maxRadiusKm": 150,
+        "bulkMachinerySurcharge": 100,
+        "sameDayCutoffHour": 14
+      }
+    },
+    {
+      "id": "4",
+      "friendlyName": "Shipping by Order Total",
+      "systemName": "Shipping.ByTotal",
+      "displayOrder": 4,
+      "isActive": false,
+      "config": {
+        "baseRate": 20,
+        "percentageFee": 2.5
+      }
+    }
   ]
 }
