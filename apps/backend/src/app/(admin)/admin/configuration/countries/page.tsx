@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import Link from 'next/link';
 import {
   Plus,
   Check,
@@ -11,12 +10,13 @@ import {
   Upload,
   RefreshCw,
   Edit2,
+  Trash2,
   Save,
   Info,
   Globe,
   CheckCircle2,
   AlertCircle,
-  FileSpreadsheet,
+  ChevronLeft,
 } from 'lucide-react';
 
 interface StateProvince {
@@ -78,9 +78,12 @@ export default function CountriesPage() {
     setTimeout(() => setToast(null), 3500);
   };
 
+  // Delete Country Modal
+  const [showDeleteCountryModal, setShowDeleteCountryModal] = useState(false);
+
   // Form state for Add/Edit
   const [countryInfoOpen, setCountryInfoOpen] = useState(true);
-  const [statesOpen, setStatesOpen] = useState(false);
+  const [statesOpen, setStatesOpen] = useState(true);
   const [activeTab, setActiveTab] = useState<'standard' | 'en' | 'rtl'>('standard');
 
   const [formName, setFormName] = useState('');
@@ -96,8 +99,14 @@ export default function CountriesPage() {
   const [formStates, setFormStates] = useState<StateProvince[]>([]);
   const [savingForm, setSavingForm] = useState(false);
 
-  // New state modal
+  // States table pagination
+  const [statesPage, setStatesPage] = useState(1);
+  const [statesPageSize, setStatesPageSize] = useState(15);
+  const [statesLoading, setStatesLoading] = useState(false);
+
+  // Add/Edit State modal
   const [showAddStateModal, setShowAddStateModal] = useState(false);
+  const [editingStateId, setEditingStateId] = useState<string | null>(null);
   const [newStateName, setNewStateName] = useState('');
   const [newStateAbbr, setNewStateAbbr] = useState('');
   const [newStatePublished, setNewStatePublished] = useState(true);
@@ -124,8 +133,37 @@ export default function CountriesPage() {
     }
   }, [page, pageSize]);
 
+  // Check URL query parameters on mount
   useEffect(() => {
     fetchCountries(page, pageSize);
+
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      let editId = params.get('edit');
+      const action = params.get('action');
+
+      if (!editId) {
+        const segments = window.location.pathname.split('/').filter(Boolean);
+        const last = segments[segments.length - 1];
+        if (last && last !== 'countries' && last !== 'configuration' && last !== 'admin') {
+          editId = last;
+        }
+      }
+
+      if (editId) {
+        // Fetch specific country
+        fetch(`/api/admin/countries/${editId}`)
+          .then((res) => res.json())
+          .then((json) => {
+            if (json.success && json.data) {
+              handleOpenEdit(json.data, false);
+            }
+          })
+          .catch(() => {});
+      } else if (action === 'create') {
+        handleOpenCreate(false);
+      }
+    }
   }, [page, pageSize, fetchCountries]);
 
   // Bulk actions: publish / unpublish selected
@@ -194,7 +232,7 @@ export default function CountriesPage() {
   };
 
   // Switch to Create mode
-  const handleOpenCreate = () => {
+  const handleOpenCreate = (updateUrl = true) => {
     setViewMode('create');
     setEditingCountryId(null);
     setFormName('');
@@ -208,11 +246,14 @@ export default function CountriesPage() {
     setFormPublished(true);
     setFormDisplayOrder(0);
     setFormStates([]);
+    if (updateUrl && typeof window !== 'undefined') {
+      window.history.pushState(null, '', '?action=create');
+    }
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   // Switch to Edit mode
-  const handleOpenEdit = (country: CountryItem) => {
+  const handleOpenEdit = async (country: CountryItem, updateUrl = true) => {
     setViewMode('edit');
     setEditingCountryId(country.id);
     setFormName(country.name || '');
@@ -225,20 +266,41 @@ export default function CountriesPage() {
     setFormLimitedToStores(country.limitedToStores || '');
     setFormPublished(country.published ?? true);
     setFormDisplayOrder(country.displayOrder ?? 0);
-    setFormStates(
-      country.states && country.states.length
-        ? country.states
-        : country.name === 'United States'
-        ? [
-            { id: '1', name: 'Alabama', abbreviation: 'AL', published: true, displayOrder: 1 },
-            { id: '2', name: 'Alaska', abbreviation: 'AK', published: true, displayOrder: 2 },
-            { id: '3', name: 'California', abbreviation: 'CA', published: true, displayOrder: 3 },
-            { id: '4', name: 'Florida', abbreviation: 'FL', published: true, displayOrder: 4 },
-            { id: '5', name: 'New York', abbreviation: 'NY', published: true, displayOrder: 5 },
-            { id: '6', name: 'Texas', abbreviation: 'TX', published: true, displayOrder: 6 },
-          ]
-        : []
-    );
+    setStatesPage(1);
+
+    if (updateUrl && typeof window !== 'undefined') {
+      window.history.pushState(null, '', `?edit=${country.id}`);
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    // Fetch full country details including states
+    try {
+      setStatesLoading(true);
+      const res = await fetch(`/api/admin/countries/${country.id}`);
+      if (res.ok) {
+        const json = await res.json();
+        if (json.success && json.data) {
+          const d = json.data;
+          setFormStates(d.states || []);
+        }
+      } else {
+        setFormStates(country.states || []);
+      }
+    } catch {
+      setFormStates(country.states || []);
+    } finally {
+      setStatesLoading(false);
+    }
+  };
+
+  // Return to list view
+  const handleBackToList = () => {
+    setViewMode('list');
+    setEditingCountryId(null);
+    if (typeof window !== 'undefined') {
+      window.history.pushState(null, '', window.location.pathname);
+    }
+    fetchCountries(page, pageSize);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -274,25 +336,26 @@ export default function CountriesPage() {
 
     try {
       const isEdit = viewMode === 'edit' && editingCountryId;
-      const url = '/api/admin/countries';
+      const url = isEdit ? `/api/admin/countries/${editingCountryId}` : '/api/admin/countries';
       const method = isEdit ? 'PUT' : 'POST';
-      const body = isEdit ? { id: editingCountryId, ...payload } : payload;
 
       const res = await fetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
+        body: JSON.stringify(payload),
       });
 
       if (res.ok) {
         const json = await res.json();
         showToast(isEdit ? 'Country updated successfully.' : 'New country added successfully.');
         if (!continueEditing) {
-          setViewMode('list');
-          fetchCountries(page, pageSize);
+          handleBackToList();
         } else if (!isEdit && json.data?.id) {
           setEditingCountryId(json.data.id);
           setViewMode('edit');
+          if (typeof window !== 'undefined') {
+            window.history.pushState(null, '', `?edit=${json.data.id}`);
+          }
         }
       } else {
         showToast('Failed to save country.', 'error');
@@ -304,39 +367,100 @@ export default function CountriesPage() {
     }
   };
 
-  // Add state to states list
-  const handleAddState = (e: React.FormEvent) => {
+  // Delete Country handler
+  const handleConfirmDeleteCountry = async () => {
+    if (!editingCountryId) return;
+    try {
+      const res = await fetch(`/api/admin/countries/${editingCountryId}`, {
+        method: 'DELETE',
+      });
+      if (res.ok) {
+        showToast('Country deleted successfully.');
+        setShowDeleteCountryModal(false);
+        handleBackToList();
+      } else {
+        showToast('Failed to delete country.', 'error');
+      }
+    } catch {
+      showToast('Error deleting country.', 'error');
+    }
+  };
+
+  // Open modal to add state
+  const handleOpenAddState = () => {
+    setEditingStateId(null);
+    setNewStateName('');
+    setNewStateAbbr('');
+    setNewStatePublished(true);
+    setNewStateOrder(0);
+    setShowAddStateModal(true);
+  };
+
+  // Open modal to edit state
+  const handleOpenEditState = (state: StateProvince) => {
+    setEditingStateId(state.id);
+    setNewStateName(state.name);
+    setNewStateAbbr(state.abbreviation);
+    setNewStatePublished(state.published);
+    setNewStateOrder(state.displayOrder);
+    setShowAddStateModal(true);
+  };
+
+  // Save state (add or edit)
+  const handleSaveState = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newStateName.trim()) {
       showToast('State name is required.', 'error');
       return;
     }
-    const newState: StateProvince = {
-      id: String(Date.now()),
-      name: newStateName.trim(),
-      abbreviation: newStateAbbr.trim().toUpperCase(),
-      published: newStatePublished,
-      displayOrder: Number(newStateOrder) || 0,
-    };
-    setFormStates((prev) => [...prev, newState]);
-    setNewStateName('');
-    setNewStateAbbr('');
-    setNewStatePublished(true);
-    setNewStateOrder(0);
+
+    if (editingStateId) {
+      setFormStates((prev) =>
+        prev.map((s) =>
+          s.id === editingStateId
+            ? {
+                ...s,
+                name: newStateName.trim(),
+                abbreviation: newStateAbbr.trim().toUpperCase(),
+                published: newStatePublished,
+                displayOrder: Number(newStateOrder) || 0,
+              }
+            : s
+        )
+      );
+      showToast('State updated. Click Save to persist changes.');
+    } else {
+      const newState: StateProvince = {
+        id: String(Date.now()),
+        name: newStateName.trim(),
+        abbreviation: newStateAbbr.trim().toUpperCase(),
+        published: newStatePublished,
+        displayOrder: Number(newStateOrder) || 0,
+      };
+      setFormStates((prev) => [...prev, newState]);
+      showToast('State added. Click Save to persist changes.');
+    }
+
     setShowAddStateModal(false);
-    showToast('State added to list. Click Save to persist.');
   };
 
   const handleDeleteState = (id: string) => {
     setFormStates((prev) => prev.filter((s) => s.id !== id));
+    showToast('State removed from list. Click Save to persist changes.');
   };
 
   const totalPages = Math.ceil(total / pageSize) || 1;
   const startItem = total === 0 ? 0 : (page - 1) * pageSize + 1;
   const endItem = Math.min(page * pageSize, total);
 
+  // States pagination calculations
+  const statesTotal = formStates.length;
+  const statesTotalPages = Math.ceil(statesTotal / statesPageSize) || 1;
+  const statesStartIndex = (statesPage - 1) * statesPageSize;
+  const currentStatesPage = formStates.slice(statesStartIndex, statesStartIndex + statesPageSize);
+
   // =========================================================================
-  // VIEW: ADD A NEW COUNTRY OR EDIT COUNTRY (Matching media_1791432758046.png)
+  // VIEW: EDIT COUNTRY OR ADD A NEW COUNTRY (Matching media_1791435325623.png & media_1791435317855.png)
   // =========================================================================
   if (viewMode === 'create' || viewMode === 'edit') {
     return (
@@ -357,7 +481,50 @@ export default function CountriesPage() {
           </div>
         )}
 
-        {/* Add State Modal */}
+        {/* Delete Country Confirmation Modal */}
+        {showDeleteCountryModal && (
+          <div
+            onClick={() => setShowDeleteCountryModal(false)}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+          >
+            <div
+              onClick={(e) => e.stopPropagation()}
+              className="bg-white rounded shadow-xl w-full max-w-[500px] border border-slate-200 overflow-hidden"
+            >
+              <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200">
+                <h3 className="text-xl font-normal text-slate-800">Are you sure?</h3>
+                <button
+                  type="button"
+                  onClick={() => setShowDeleteCountryModal(false)}
+                  className="text-slate-400 hover:text-slate-600 text-2xl font-light leading-none cursor-pointer p-1"
+                >
+                  &times;
+                </button>
+              </div>
+              <div className="px-6 py-6">
+                <p className="text-sm text-slate-700">Are you sure you want to delete this country?</p>
+              </div>
+              <div className="flex items-center justify-end gap-2.5 px-6 pb-6 pt-2 bg-white">
+                <button
+                  type="button"
+                  onClick={handleConfirmDeleteCountry}
+                  className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-normal rounded shadow-2xs transition-colors cursor-pointer"
+                >
+                  Yes
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowDeleteCountryModal(false)}
+                  className="px-4 py-2 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 text-sm font-normal rounded shadow-2xs transition-colors cursor-pointer"
+                >
+                  No, cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Add/Edit State Modal */}
         {showAddStateModal && (
           <div
             onClick={() => setShowAddStateModal(false)}
@@ -368,7 +535,9 @@ export default function CountriesPage() {
               className="bg-white rounded shadow-xl w-full max-w-[500px] border border-slate-200 overflow-hidden"
             >
               <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200">
-                <h3 className="text-base font-semibold text-slate-800">Add state / province</h3>
+                <h3 className="text-base font-semibold text-slate-800">
+                  {editingStateId ? 'Edit state / province' : 'Add a new state / province'}
+                </h3>
                 <button
                   type="button"
                   onClick={() => setShowAddStateModal(false)}
@@ -377,7 +546,7 @@ export default function CountriesPage() {
                   &times;
                 </button>
               </div>
-              <form onSubmit={handleAddState} className="p-6 space-y-4">
+              <form onSubmit={handleSaveState} className="p-6 space-y-4">
                 <div>
                   <label className="block text-xs font-medium text-slate-700 mb-1">State / province name *</label>
                   <input
@@ -440,24 +609,26 @@ export default function CountriesPage() {
           </div>
         )}
 
-        {/* Top Header Bar matching media_1791432758046.png */}
+        {/* Top Header Bar matching media_1791435325623.png */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-slate-200 gap-3">
-          <div className="flex items-baseline gap-2">
+          <div className="flex items-center gap-2">
             <h1 className="text-xl font-normal text-slate-800">
               {viewMode === 'edit' ? `Edit country details - ${formName || 'Country'}` : 'Add a new country'}
             </h1>
             <button
               type="button"
-              onClick={() => {
-                setViewMode('list');
-                fetchCountries(page, pageSize);
-              }}
-              className="text-[#2489c5] hover:underline text-xs flex items-center gap-1 cursor-pointer font-normal"
+              onClick={handleBackToList}
+              className="text-[#2489c5] hover:underline text-xs flex items-center gap-1 cursor-pointer font-normal pl-2"
             >
-              back to country list
+              <span className="inline-flex items-center justify-center w-3.5 h-3.5 rounded-full bg-[#2489c5] text-white text-[9px] font-bold">
+                &lsaquo;
+              </span>
+              <span>back to country list</span>
             </button>
           </div>
+
           <div className="flex items-center gap-2">
+            {/* 1. Save (Blue) */}
             <button
               type="button"
               onClick={() => handleSaveCountry(false)}
@@ -467,6 +638,8 @@ export default function CountriesPage() {
               <Save className="w-3.5 h-3.5 mr-1.5" />
               Save
             </button>
+
+            {/* 2. Save and Continue Edit (Blue) */}
             <button
               type="button"
               onClick={() => handleSaveCountry(true)}
@@ -476,6 +649,18 @@ export default function CountriesPage() {
               <Save className="w-3.5 h-3.5 mr-1.5" />
               Save and Continue Edit
             </button>
+
+            {/* 3. Delete (Red) - Visible in Edit mode */}
+            {viewMode === 'edit' && (
+              <button
+                type="button"
+                onClick={() => setShowDeleteCountryModal(true)}
+                className="inline-flex items-center justify-center px-3.5 py-1.5 bg-[#dc3545] hover:bg-[#c82333] text-white text-xs font-medium rounded shadow-2xs transition-colors cursor-pointer"
+              >
+                <Trash2 className="w-3.5 h-3.5 mr-1.5" />
+                Delete
+              </button>
+            )}
           </div>
         </div>
 
@@ -496,7 +681,7 @@ export default function CountriesPage() {
 
           {countryInfoOpen && (
             <div className="p-6 space-y-4">
-              {/* Language Tabs matching media_1791432758046.png */}
+              {/* Language Tabs matching media_1791435325623.png */}
               <div className="flex items-center border-b border-slate-200 mb-6">
                 <button
                   type="button"
@@ -710,8 +895,8 @@ export default function CountriesPage() {
           )}
         </div>
 
-        {/* CARD 2: STATES AND PROVINCES (Collapsible) */}
-        <div className="bg-white rounded border border-slate-200 shadow-2xs overflow-hidden">
+        {/* CARD 2: STATES AND PROVINCES (Matching media_1791435317855.png) */}
+        <div className="bg-white rounded border border-slate-200 border-t-3 border-t-[#00c0ef] shadow-2xs overflow-hidden">
           <div
             onClick={() => setStatesOpen(!statesOpen)}
             className="px-4 py-3 bg-white border-b border-slate-100 flex items-center justify-between cursor-pointer select-none"
@@ -733,55 +918,64 @@ export default function CountriesPage() {
                 </div>
               ) : (
                 <div className="space-y-4">
-                  <div className="flex justify-end">
-                    <button
-                      type="button"
-                      onClick={() => setShowAddStateModal(true)}
-                      className="inline-flex items-center justify-center px-3 py-1.5 bg-[#2489c5] hover:bg-[#207ba5] text-white text-xs font-medium rounded shadow-2xs transition-colors cursor-pointer"
-                    >
-                      <Plus className="w-3.5 h-3.5 mr-1" />
-                      Add a new state / province
-                    </button>
-                  </div>
+                  {/* States Table */}
+                  <div className="border border-slate-200 rounded overflow-hidden relative min-h-[160px]">
+                    {statesLoading && (
+                      <div className="absolute inset-0 bg-white/80 z-20 flex flex-col items-center justify-center gap-2 py-8">
+                        <RefreshCw className="w-7 h-7 text-slate-700 animate-spin" />
+                        <span className="text-xs text-slate-600 font-medium">Loading...</span>
+                      </div>
+                    )}
 
-                  <div className="border border-slate-200 rounded overflow-hidden">
                     <table className="w-full text-left text-xs border-collapse">
                       <thead>
                         <tr className="border-b border-slate-200 bg-[#fbfbfb] text-slate-600 font-semibold">
-                          <th className="py-2.5 px-4">Name</th>
-                          <th className="py-2.5 px-4">Abbreviation</th>
-                          <th className="py-2.5 px-4 text-center">Published</th>
-                          <th className="py-2.5 px-4">Display order</th>
-                          <th className="py-2.5 px-4 text-center">Delete</th>
+                          <th className="py-3 px-4">Name</th>
+                          <th className="py-3 px-4">Abbreviation</th>
+                          <th className="py-3 px-4 text-center">Published</th>
+                          <th className="py-3 px-4 text-center">Display order</th>
+                          <th className="py-3 px-4 w-20 text-center">Edit</th>
+                          <th className="py-3 px-4 w-20 text-center">Delete</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-slate-100">
-                        {formStates.length === 0 ? (
+                        {currentStatesPage.length === 0 && !statesLoading ? (
                           <tr>
-                            <td colSpan={5} className="text-center py-6 text-slate-400">
+                            <td colSpan={6} className="text-center py-6 text-slate-400">
                               No states or provinces configured.
                             </td>
                           </tr>
                         ) : (
-                          formStates.map((state) => (
-                            <tr key={state.id} className="hover:bg-slate-50">
-                              <td className="py-2 px-4 font-medium text-slate-800">{state.name}</td>
-                              <td className="py-2 px-4 text-slate-600">{state.abbreviation}</td>
-                              <td className="py-2 px-4 text-center">
+                          currentStatesPage.map((state) => (
+                            <tr key={state.id} className="hover:bg-slate-50 transition-colors">
+                              <td className="py-2.5 px-4 font-normal text-slate-800">{state.name}</td>
+                              <td className="py-2.5 px-4 text-slate-600">{state.abbreviation}</td>
+                              <td className="py-2.5 px-4 text-center">
                                 {state.published ? (
                                   <Check className="w-4 h-4 text-sky-600 mx-auto" />
                                 ) : (
                                   <X className="w-4 h-4 text-red-500 mx-auto" />
                                 )}
                               </td>
-                              <td className="py-2 px-4 text-slate-600">{state.displayOrder}</td>
-                              <td className="py-2 px-4 text-center">
+                              <td className="py-2.5 px-4 text-center text-slate-600">{state.displayOrder}</td>
+                              <td className="py-2.5 px-4 text-center">
+                                <button
+                                  type="button"
+                                  onClick={() => handleOpenEditState(state)}
+                                  className="text-[#2489c5] hover:text-[#207ba5] font-medium text-xs cursor-pointer inline-flex items-center gap-1"
+                                >
+                                  <Edit2 className="w-3 h-3" />
+                                  <span>Edit</span>
+                                </button>
+                              </td>
+                              <td className="py-2.5 px-4 text-center">
                                 <button
                                   type="button"
                                   onClick={() => handleDeleteState(state.id)}
-                                  className="text-red-500 hover:text-red-700 text-xs font-medium cursor-pointer"
+                                  className="text-red-500 hover:text-red-700 font-medium text-xs cursor-pointer inline-flex items-center gap-1"
                                 >
-                                  Delete
+                                  <Trash2 className="w-3 h-3" />
+                                  <span>Delete</span>
                                 </button>
                               </td>
                             </tr>
@@ -789,6 +983,79 @@ export default function CountriesPage() {
                         )}
                       </tbody>
                     </table>
+                  </div>
+
+                  {/* States Pagination Bar matching media_1791435317855.png */}
+                  <div className="px-3 py-2 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-600 bg-white">
+                    {/* Left: Show [ 15 v ] items */}
+                    <div className="flex items-center gap-2">
+                      <span>Show</span>
+                      <select
+                        value={statesPageSize}
+                        onChange={(e) => {
+                          setStatesPageSize(Number(e.target.value));
+                          setStatesPage(1);
+                        }}
+                        className="border border-slate-300 rounded px-2 py-1 text-xs text-slate-800 bg-white focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      >
+                        <option value={15}>15</option>
+                        <option value={20}>20</option>
+                        <option value={50}>50</option>
+                        <option value={100}>100</option>
+                      </select>
+                      <span>items</span>
+                    </div>
+
+                    {/* Center: Pagination buttons */}
+                    {statesTotalPages > 1 && (
+                      <div className="flex items-center gap-1">
+                        <button
+                          type="button"
+                          onClick={() => setStatesPage((p) => Math.max(1, p - 1))}
+                          disabled={statesPage === 1}
+                          className="px-2 py-1 border border-slate-200 rounded hover:bg-slate-100 disabled:opacity-40 cursor-pointer disabled:cursor-not-allowed"
+                        >
+                          &lsaquo;
+                        </button>
+                        <span className="px-2.5 py-1 bg-[#2489c5] text-white rounded font-medium shadow-2xs">
+                          {statesPage}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => setStatesPage((p) => Math.min(statesTotalPages, p + 1))}
+                          disabled={statesPage === statesTotalPages}
+                          className="px-2 py-1 border border-slate-200 rounded hover:bg-slate-100 disabled:opacity-40 cursor-pointer disabled:cursor-not-allowed"
+                        >
+                          &rsaquo;
+                        </button>
+                      </div>
+                    )}
+
+                    {/* Right: Refresh Button matching media_1791435317855.png */}
+                    <div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setStatesLoading(true);
+                          setTimeout(() => setStatesLoading(false), 300);
+                        }}
+                        className="p-1.5 border border-slate-300 rounded hover:bg-slate-50 text-slate-600 transition-colors cursor-pointer shadow-2xs"
+                        title="Refresh"
+                      >
+                        <RefreshCw className={`w-3.5 h-3.5 ${statesLoading ? 'animate-spin' : ''}`} />
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Add a new state/province button matching media_1791435317855.png */}
+                  <div className="pt-2">
+                    <button
+                      type="button"
+                      onClick={handleOpenAddState}
+                      className="inline-flex items-center justify-center px-4 py-2 bg-[#2489c5] hover:bg-[#207ba5] text-white text-xs font-normal rounded shadow-2xs transition-colors cursor-pointer"
+                    >
+                      Add a new state/province
+                    </button>
                   </div>
                 </div>
               )}
@@ -838,7 +1105,7 @@ export default function CountriesPage() {
           {/* 1. Add new (Blue) */}
           <button
             type="button"
-            onClick={handleOpenCreate}
+            onClick={() => handleOpenCreate(true)}
             className="inline-flex items-center justify-center px-3 py-1.5 bg-[#2489c5] hover:bg-[#207ba5] text-white text-xs font-medium rounded shadow-2xs transition-colors cursor-pointer"
           >
             <Plus className="w-3.5 h-3.5 mr-1" />
@@ -989,7 +1256,7 @@ export default function CountriesPage() {
                       <td className="py-2.5 px-4 text-center">
                         <button
                           type="button"
-                          onClick={() => handleOpenEdit(country)}
+                          onClick={() => handleOpenEdit(country, true)}
                           className="inline-flex items-center gap-1 px-2.5 py-1 border border-slate-300 rounded text-xs text-slate-700 hover:bg-slate-100 transition-colors shadow-2xs cursor-pointer"
                         >
                           <Edit2 className="w-3 h-3 text-slate-500" />

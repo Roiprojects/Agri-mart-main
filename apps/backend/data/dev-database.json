@@ -17241,7 +17241,443 @@
       "subjectToVat": false,
       "numberOfStates": 62,
       "displayOrder": 1,
-      "published": true
+      "published": true,
+      "states": [
+        {
+          "id": "1",
+          "name": "Alabama",
+          "abbreviation": "AL",
+          "published": true,
+          "displayOrder": 1
+        },
+        {
+          "id": "2",
+          "name": "Alaska",
+          "abbreviation": "AK",
+          "published": true,
+          "displayOrder": 2
+        },
+        {
+          "id": "3",
+          "name": "Arizona",
+          "abbreviation": "AZ",
+          "published": true,
+          "displayOrder": 3
+        },
+        {
+          "id": "4",
+          "name": "Arkansas",
+          "abbreviation": "AR",
+          "published": true,
+          "displayOrder": 4
+        },
+        {
+          "id": "5",
+          "name": "California",
+          "abbreviation": "CA",
+          "published": true,
+          "displayOrder": 5
+        },
+        {
+          "id": "6",
+          "name": "Colorado",
+          "abbreviation": "CO",
+          "published": true,
+          "displayOrder": 6
+        },
+        {
+          "id": "7",
+          "name": "Connecticut",
+          "abbreviation": "CT",
+          "published": true,
+          "displayOrder": 7
+        },
+        {
+          "id": "8",
+          "name": "Delaware",
+          "abbreviation": "DE",
+          "published": true,
+          "displayOrder": 8
+        },
+        {
+          "id": "9",
+          "name": "District of Columbia",
+          "abbreviation": "DC",
+          "published": true,
+          "displayOrder": 9
+        },
+        {
+          "id": "10",
+          "name": "Florida",
+          "abbreviation": "FL",
+          "published": true,
+          "displayOrder": 10
+        },
+        {
+          "id": "11",
+          "name": "Georgia",
+          "abbreviation": "GA",
+          "published": true,
+          "displayOrder": 11
+        },
+        {
+          "id": "12",
+          "name": "Hawaii",
+          "abbreviation": "HI",
+          "published": true,
+          "displayOrder": 12
+        },
+        {
+          "id": "13",
+          "name": "Idaho",
+          "abbreviation": "ID",
+          "published": true,
+          "displayOrder": 13
+        },
+        {
+          "id": "14",
+          "name": "Illinois",
+          "abbreviation": "IL",
+          "published": true,
+          "displayOrder": 14
+        },
+        {
+          "id": "15",
+          "name": "Indiana",
+          "abbreviation": "IN",
+          "published": true,
+          "displayOrder": 15
+        },
+        {
+          "id": "16",
+          "name": "Iowa",
+          "abbreviation": "IA",
+          "published": true,
+          "displayOrder": 16
+        },
+        {
+          "id": "17",
+          "name": "Kansas",
+          "abbreviation": "KS",
+          "published": true,
+          "displayOrder": 17
+        },
+        {
+          "id": "18",
+          "name": "Kentucky",
+          "abbreviation": "KY",
+          "published": true,
+          "displayOrder": 18
+        },
+        {
+          "id": "19",
+          "name": "Louisiana",
+          "abbreviation": "LA",
+          "published": true,
+          "displayOrder": 19
+        },
+        {
+          "id": "20",
+          "name": "Maine",
+          "abbreviation": "ME",
+          "published": true,
+          "displayOrder": 20
+        },
+        {
+          "id": "21",
+          "name": "Maryland",
+          "abbreviation": "MD",
+          "published": true,
+          "displayOrder": 21
+        },
+        {
+          "id": "22",
+          "name": "Massachusetts",
+          "abbreviation": "MA",
+          "published": true,
+          "displayOrder": 22
+        },
+        {
+          "id": "23",
+          "name": "Michigan",
+          "abbreviation": "MI",
+          "published": true,
+          "displayOrder": 23
+        },
+        {
+          "id": "24",
+          "name": "Minnesota",
+          "abbreviation": "MN",
+          "published": true,
+          "displayOrder": 24
+        },
+        {
+          "id": "25",
+          "name": "Mississippi",
+          "abbreviation": "MS",
+          "published": true,
+          "displayOrder": 25
+        },
+        {
+          "id": "26",
+          "name": "Missouri",
+          "abbreviation": "MO",
+          "published": true,
+          "displayOrder": 26
+        },
+        {
+          "id": "27",
+          "name": "Montana",
+          "abbreviation": "MT",
+          "published": true,
+          "displayOrder": 27
+        },
+        {
+          "id": "28",
+          "name": "Nebraska",
+          "abbreviation": "NE",
+          "published": true,
+          "displayOrder": 28
+        },
+        {
+          "id": "29",
+          "name": "Nevada",
+          "abbreviation": "NV",
+          "published": true,
+          "displayOrder": 29
+        },
+        {
+          "id": "30",
+          "name": "New Hampshire",
+          "abbreviation": "NH",
+          "published": true,
+          "displayOrder": 30
+        },
+        {
+          "id": "31",
+          "name": "New Jersey",
+          "abbreviation": "NJ",
+          "published": true,
+          "displayOrder": 31
+        },
+        {
+          "id": "32",
+          "name": "New Mexico",
+          "abbreviation": "NM",
+          "published": true,
+          "displayOrder": 32
+        },
+        {
+          "id": "33",
+          "name": "New York",
+          "abbreviation": "NY",
+          "published": true,
+          "displayOrder": 33
+        },
+        {
+          "id": "34",
+          "name": "North Carolina",
+          "abbreviation": "NC",
+          "published": true,
+          "displayOrder": 34
+        },
+        {
+          "id": "35",
+          "name": "North Dakota",
+          "abbreviation": "ND",
+          "published": true,
+          "displayOrder": 35
+        },
+        {
+          "id": "36",
+          "name": "Ohio",
+          "abbreviation": "OH",
+          "published": true,
+          "displayOrder": 36
+        },
+        {
+          "id": "37",
+          "name": "Oklahoma",
+          "abbreviation": "OK",
+          "published": true,
+          "displayOrder": 37
+        },
+        {
+          "id": "38",
+          "name": "Oregon",
+          "abbreviation": "OR",
+          "published": true,
+          "displayOrder": 38
+        },
+        {
+          "id": "39",
+          "name": "Pennsylvania",
+          "abbreviation": "PA",
+          "published": true,
+          "displayOrder": 39
+        },
+        {
+          "id": "40",
+          "name": "Rhode Island",
+          "abbreviation": "RI",
+          "published": true,
+          "displayOrder": 40
+        },
+        {
+          "id": "41",
+          "name": "South Carolina",
+          "abbreviation": "SC",
+          "published": true,
+          "displayOrder": 41
+        },
+        {
+          "id": "42",
+          "name": "South Dakota",
+          "abbreviation": "SD",
+          "published": true,
+          "displayOrder": 42
+        },
+        {
+          "id": "43",
+          "name": "Tennessee",
+          "abbreviation": "TN",
+          "published": true,
+          "displayOrder": 43
+        },
+        {
+          "id": "44",
+          "name": "Texas",
+          "abbreviation": "TX",
+          "published": true,
+          "displayOrder": 44
+        },
+        {
+          "id": "45",
+          "name": "Utah",
+          "abbreviation": "UT",
+          "published": true,
+          "displayOrder": 45
+        },
+        {
+          "id": "46",
+          "name": "Vermont",
+          "abbreviation": "VT",
+          "published": true,
+          "displayOrder": 46
+        },
+        {
+          "id": "47",
+          "name": "Virginia",
+          "abbreviation": "VA",
+          "published": true,
+          "displayOrder": 47
+        },
+        {
+          "id": "48",
+          "name": "Washington",
+          "abbreviation": "WA",
+          "published": true,
+          "displayOrder": 48
+        },
+        {
+          "id": "49",
+          "name": "West Virginia",
+          "abbreviation": "WV",
+          "published": true,
+          "displayOrder": 49
+        },
+        {
+          "id": "50",
+          "name": "Wisconsin",
+          "abbreviation": "WI",
+          "published": true,
+          "displayOrder": 50
+        },
+        {
+          "id": "51",
+          "name": "Wyoming",
+          "abbreviation": "WY",
+          "published": true,
+          "displayOrder": 51
+        },
+        {
+          "id": "52",
+          "name": "Puerto Rico",
+          "abbreviation": "PR",
+          "published": true,
+          "displayOrder": 52
+        },
+        {
+          "id": "53",
+          "name": "Virgin Islands",
+          "abbreviation": "VI",
+          "published": true,
+          "displayOrder": 53
+        },
+        {
+          "id": "54",
+          "name": "Guam",
+          "abbreviation": "GU",
+          "published": true,
+          "displayOrder": 54
+        },
+        {
+          "id": "55",
+          "name": "American Samoa",
+          "abbreviation": "AS",
+          "published": true,
+          "displayOrder": 55
+        },
+        {
+          "id": "56",
+          "name": "Northern Mariana Islands",
+          "abbreviation": "MP",
+          "published": true,
+          "displayOrder": 56
+        },
+        {
+          "id": "57",
+          "name": "Armed Forces Americas",
+          "abbreviation": "AA",
+          "published": true,
+          "displayOrder": 57
+        },
+        {
+          "id": "58",
+          "name": "Armed Forces Europe",
+          "abbreviation": "AE",
+          "published": true,
+          "displayOrder": 58
+        },
+        {
+          "id": "59",
+          "name": "Armed Forces Pacific",
+          "abbreviation": "AP",
+          "published": true,
+          "displayOrder": 59
+        },
+        {
+          "id": "60",
+          "name": "Federated States of Micronesia",
+          "abbreviation": "FM",
+          "published": true,
+          "displayOrder": 60
+        },
+        {
+          "id": "61",
+          "name": "Marshall Islands",
+          "abbreviation": "MH",
+          "published": true,
+          "displayOrder": 61
+        },
+        {
+          "id": "62",
+          "name": "Palau",
+          "abbreviation": "PW",
+          "published": true,
+          "displayOrder": 62
+        }
+      ]
     },
     {
       "id": "2",
