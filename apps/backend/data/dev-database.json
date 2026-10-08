@@ -20907,5 +20907,32 @@
         "sandbox": true
       }
     }
+  ],
+  "taxCategories": [
+    {
+      "id": "1",
+      "name": "Books",
+      "displayOrder": 1
+    },
+    {
+      "id": "2",
+      "name": "Electronics & Software",
+      "displayOrder": 2
+    },
+    {
+      "id": "3",
+      "name": "Apparel",
+      "displayOrder": 3
+    },
+    {
+      "id": "4",
+      "name": "Agricultural Equipment & Seeds",
+      "displayOrder": 4
+    },
+    {
+      "id": "5",
+      "name": "Fertilizers & Pesticides",
+      "displayOrder": 5
+    }
   ]
 }

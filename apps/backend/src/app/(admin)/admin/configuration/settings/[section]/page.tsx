@@ -61,6 +61,7 @@ import AllSettingsPage from '../all/page';
 import CountriesPage from '../../countries/page';
 import LanguagesPage from '../../languages/page';
 import TaxProvidersPage from '../../tax-providers/page';
+import TaxCategoriesPage from '../../tax-categories/page';
 
 export default function ConfigurationSectionPage({
   params,
@@ -123,6 +124,9 @@ export default function ConfigurationSectionPage({
   }
   if (section === 'tax-providers' || section === 'tax-provider') {
     return <TaxProvidersPage />;
+  }
+  if (section === 'tax-categories' || section === 'tax-category') {
+    return <TaxCategoriesPage />;
   }
 
   const info = sectionTitles[section] || {
