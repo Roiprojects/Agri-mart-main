@@ -21015,5 +21015,113 @@
         "percentageFee": 2.5
       }
     }
+  ],
+  "pickupPointProviders": [
+    {
+      "id": "1",
+      "friendlyName": "Pickup in store",
+      "systemName": "Shipping.PickupInStore",
+      "displayOrder": 1,
+      "isActive": true,
+      "config": {
+        "pickupFee": 0,
+        "allowCustomerToSelectDate": true,
+        "displayOnMap": true,
+        "defaultOpeningHours": "08:00 AM - 08:00 PM"
+      }
+    },
+    {
+      "id": "2",
+      "friendlyName": "Agri-mart Gram Panchayat Rural Kiosks",
+      "systemName": "Shipping.PickupRuralKiosks",
+      "displayOrder": 2,
+      "isActive": true,
+      "config": {
+        "pickupFee": 10,
+        "allowCustomerToSelectDate": true,
+        "displayOnMap": true,
+        "defaultOpeningHours": "09:00 AM - 06:00 PM"
+      }
+    },
+    {
+      "id": "3",
+      "friendlyName": "Farmer Producer Organization (FPO) Collection Hubs",
+      "systemName": "Shipping.PickupFPOHubs",
+      "displayOrder": 3,
+      "isActive": true,
+      "config": {
+        "pickupFee": 0,
+        "allowCustomerToSelectDate": false,
+        "displayOnMap": true,
+        "defaultOpeningHours": "07:00 AM - 07:00 PM"
+      }
+    },
+    {
+      "id": "4",
+      "friendlyName": "Agri-Cold Storage & Seed Locker Points",
+      "systemName": "Shipping.ColdStorageLockers",
+      "displayOrder": 4,
+      "isActive": false,
+      "config": {
+        "pickupFee": 25,
+        "allowCustomerToSelectDate": true,
+        "displayOnMap": false,
+        "defaultOpeningHours": "24/7 Smart Locker Access"
+      }
+    }
+  ],
+  "pickupPoints": [
+    {
+      "id": "pt-1",
+      "providerId": "1",
+      "name": "Hubballi APMC Krishi Kendra Pickup Store",
+      "description": "Seeds, saplings & equipment counter next to gate 3",
+      "address1": "APMC Yard, Amargol",
+      "city": "Hubballi",
+      "state": "Karnataka",
+      "country": "India",
+      "zipPostalCode": "580025",
+      "openingHours": "Mon-Sat 8:00 AM - 8:00 PM",
+      "pickupFee": 0
+    },
+    {
+      "id": "pt-2",
+      "providerId": "1",
+      "name": "Dharwad Farmers Market Hub",
+      "description": "Sub-center for fertilizer and tooling pickup",
+      "address1": "Near Court Circle, PB Road",
+      "city": "Dharwad",
+      "state": "Karnataka",
+      "country": "India",
+      "zipPostalCode": "580001",
+      "openingHours": "Mon-Sun 8:30 AM - 7:30 PM",
+      "pickupFee": 0
+    },
+    {
+      "id": "pt-3",
+      "providerId": "2",
+      "name": "Navalgund Gram Panchayat Agri Kiosk",
+      "description": "Dedicated rural pickup booth at Panchayat Bhavan",
+      "address1": "Main Road, Navalgund",
+      "city": "Navalgund",
+      "state": "Karnataka",
+      "country": "India",
+      "zipPostalCode": "582208",
+      "openingHours": "Mon-Sat 9:00 AM - 5:00 PM",
+      "pickupFee": 10
+    },
+    {
+      "id": "pt-4",
+      "providerId": "3",
+      "name": "Malaprabha FPO Grain & Seed Terminal",
+      "description": "FPO member counter & bulk goods pickup bay",
+      "address1": "Industrial Estate, Bailhongal",
+      "city": "Belagavi",
+      "state": "Karnataka",
+      "country": "India",
+      "zipPostalCode": "591102",
+      "openingHours": "Mon-Sat 7:00 AM - 6:00 PM",
+      "pickupFee": 0
+    }
   ]
 }
