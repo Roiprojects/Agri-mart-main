@@ -50,3 +50,7 @@ export async function DELETE(request: Request) {
     return NextResponse.json({ success: false, message: err.message }, { status: 500 });
   }
 }
+
+export async function PUT(request: Request) {
+  return POST(request);
+}

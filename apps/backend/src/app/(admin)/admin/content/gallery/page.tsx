@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Image as ImageIcon, Plus, Edit2, Trash2, RefreshCw, X } from 'lucide-react';
+import Link from 'next/link';
+import { Image as ImageIcon, Plus, Edit2, Trash2, RefreshCw, X, Settings, ExternalLink } from 'lucide-react';
 import { ConfirmDialog } from '@/components/admin/ConfirmDialog';
 import { ImageEditorField } from '@/components/admin/ImageEditorField';
 
@@ -138,6 +139,19 @@ export default function AdminGalleryPage() {
         </div>
 
         <div className="flex items-center gap-2">
+          <Link
+            href="/admin/configuration/settings/gallery"
+            className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-lg bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 shadow-xs transition"
+          >
+            <Settings className="h-4 w-4 text-[#3c8dbc]" /> Settings
+          </Link>
+          <Link
+            href="/gallery"
+            target="_blank"
+            className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-lg bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 shadow-xs transition"
+          >
+            <ExternalLink className="h-4 w-4 text-slate-500" /> View Storefront
+          </Link>
           <button
             onClick={fetchGallery}
             className="p-2 rounded-lg bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 shadow-xs transition"

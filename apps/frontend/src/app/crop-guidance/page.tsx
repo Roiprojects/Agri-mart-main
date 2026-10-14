@@ -139,7 +139,34 @@ const STAGE_DETAILS = [
   },
 ];
 
-export default function CropGuidancePage() {
+export default async function CropGuidancePage() {
+  let stages = STAGE_DETAILS;
+  try {
+    const backendUrl =
+      process.env.BACKEND_INTERNAL_URL ||
+      process.env.NEXT_PUBLIC_BACKEND_URL ||
+      'http://localhost:3001';
+    const res = await fetch(`${backendUrl}/api/crop-guidance`, {
+      next: { revalidate: 30, tags: ['crop-guidance'] },
+    });
+    if (res.ok) {
+      const json = await res.json();
+      if (json.success && Array.isArray(json.data) && json.data.length > 0) {
+        stages = json.data.map((item: any) => ({
+          id: item.stageNumber ?? item.id,
+          title: item.title,
+          subtitle: item.subtitle,
+          summary: item.summary,
+          keyActions: item.keyActions || [],
+          recommendedTools: item.recommendedTools || [],
+          recommendedProducts: item.recommendedProducts || [],
+        }));
+      }
+    }
+  } catch {
+    // Fallback to static STAGE_DETAILS
+  }
+
   const breadcrumbItems = [
     { label: 'Home', href: '/' },
     { label: 'Crop Guidance & 7-Stage POP' },
@@ -213,10 +240,10 @@ export default function CropGuidancePage() {
         {/* Quick Stage Anchor Links */}
         <div className="bg-white rounded-2xl border border-slate-200 p-4 sm:p-6 shadow-sm">
           <h2 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">
-            Quick Navigation: 7 Stages of Agricultural Production
+            Quick Navigation: {stages.length} Stages of Agricultural Production
           </h2>
           <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2 text-center text-xs">
-            {STAGE_DETAILS.map((stage) => (
+            {stages.map((stage) => (
               <a
                 key={stage.id}
                 href={`#stage-${stage.id}`}
@@ -225,15 +252,15 @@ export default function CropGuidancePage() {
                 <span className="w-5 h-5 rounded-full bg-brand-green text-white text-[10px] flex items-center justify-center font-bold">
                   {stage.id}
                 </span>
-                <span className="line-clamp-1">{stage.title.split(': ')[1]}</span>
+                <span className="line-clamp-1">{stage.title.includes(': ') ? stage.title.split(': ')[1] : stage.title}</span>
               </a>
             ))}
           </div>
         </div>
 
-        {/* The 7 Stages Detailed Walkthrough */}
+        {/* The Stages Detailed Walkthrough */}
         <div className="space-y-8">
-          {STAGE_DETAILS.map((stage) => {
+          {stages.map((stage) => {
             const stageProducts = SEED_PRODUCTS.filter((p) => p.cropStages.includes(stage.id)).slice(
               0,
               2

@@ -11562,10 +11562,10 @@
       },
       "status": "PRODUCT_RECEIVED",
       "stageTimestamps": {
-        "PRODUCT_RECEIVED": "2026-10-14T07:49:26.874Z",
-        "INSPECTION": "2026-10-14T07:48:47.056Z",
-        "ESTIMATE": "2026-10-14T07:49:16.468Z",
-        "CUSTOMER_APPROVAL": "2026-09-18T05:51:21.799Z",
+        "PRODUCT_RECEIVED": "2026-10-14T08:43:51.076Z",
+        "INSPECTION": "2026-10-14T08:43:40.238Z",
+        "ESTIMATE": "2026-10-14T08:43:42.191Z",
+        "CUSTOMER_APPROVAL": "2026-10-14T08:43:46.848Z",
         "REPAIR": "2026-09-18T05:51:21.809Z",
         "QUALITY_CHECK": "2026-09-18T05:51:21.818Z",
         "CLEANING": "2026-09-18T05:51:21.822Z",
@@ -11653,7 +11653,7 @@
         "inspectorApprovalDate": "2026-09-18T05:51:21.822Z"
       },
       "createdAt": "2026-09-18T05:51:21.780Z",
-      "updatedAt": "2026-10-14T07:49:26.874Z",
+      "updatedAt": "2026-10-14T08:43:51.076Z",
       "invoice": {
         "invoiceNumber": "INV-WS-2026-877",
         "invoiceDate": "2026-09-18T05:51:21.826Z",
@@ -16868,15 +16868,15 @@
     "isAdvanced": true
   },
   "blogSettings": {
-    "blogEnabled": true,
+    "blogEnabled": false,
     "postsPageSize": 10,
     "numberOfTagsCloud": 15,
     "displayBlogRssFeedLink": false,
-    "allowGuestsToLeaveComments": true,
+    "allowGuestsToLeaveComments": false,
     "blogCommentsMustBeApproved": false,
     "notifyAboutNewBlogComments": false,
     "blogCommentsPerStore": false,
-    "isAdvanced": true
+    "isAdvanced": false
   },
   "newsSettings": {
     "newsEnabled": true,
@@ -21418,5 +21418,217 @@
         "keyId": ""
       }
     }
-  ]
+  ],
+  "cropGuidance": [
+    {
+      "id": "cg-stage-1",
+      "stageNumber": 1,
+      "crop": "All Crops",
+      "title": "Stage 1: Preparation of Soil",
+      "subtitle": "Deep Ploughing, Hardpan Shattering & Basal Conditioning",
+      "summary": "Proper land prep ensures root aeration, moisture retention, and uniform seedbeds. Conduct 12-parameter soil testing before basal manure application.",
+      "keyActions": [
+        "Perform primary deep summer ploughing (25-30 cm depth) to destroy dormant insect pupae and weed rhizomes.",
+        "Rotavator secondary tilling to achieve optimum clod size (2-5 cm) for seedbed moisture retention.",
+        "Incorporate 5-8 tonnes of well-decomposed FYM (Farm Yard Manure) or vermicompost per acre.",
+        "Correct soil pH using agricultural gypsum for alkali soils or dolomite lime for acidic soils."
+      ],
+      "recommendedTools": [
+        "Heavy 55HP 4WD Tractors",
+        "Reversible Ploughs",
+        "Multi-Speed Rotavators"
+      ],
+      "recommendedProducts": [
+        "AgriPro Power Tiller 12HP",
+        "FieldKing Hydraulic Reversible MB Plough",
+        "Shaktiman Rotary Tiller 6ft"
+      ],
+      "displayOrder": 1,
+      "isActive": true
+    },
+    {
+      "id": "cg-stage-2",
+      "stageNumber": 2,
+      "crop": "All Crops",
+      "title": "Stage 2: Sowing & Seed Treatment",
+      "subtitle": "Certified Hybrids, Bio-Priming & Precision Spacing",
+      "summary": "High germination vigor starts with certified seeds treated against seed-borne pathogens, damping-off fungi, and early sucking pests.",
+      "keyActions": [
+        "Select university-recommended certified hybrid varieties adapted to local agro-climatic zones.",
+        "Treat seeds with Trichoderma viride (10g/kg) and Pseudomonas fluorescens for biological wilt immunity.",
+        "Apply chemical seed dressing (Thiamethoxam 30 FS @ 5ml/kg) for 30-day sucking pest protection.",
+        "Maintain calibrated row-to-row and plant-to-plant geometry using pneumatic seed drills."
+      ],
+      "recommendedTools": [
+        "Pneumatic Seed Drills",
+        "Bio-Fungicide Seed Dressers",
+        "Germination Trays"
+      ],
+      "recommendedProducts": [
+        "Certified Hybrid Paddy Seeds (RNR 15048)",
+        "Bayer Gaucho FS 600 Seed Dresser",
+        "Anand Agro Bio-Fungicide Trichoderma"
+      ],
+      "displayOrder": 2,
+      "isActive": true
+    },
+    {
+      "id": "cg-stage-3",
+      "stageNumber": 3,
+      "crop": "All Crops",
+      "title": "Stage 3: Manure & Fertilizer Management",
+      "subtitle": "Balanced NPK Nutrition, Secondary & Micronutrients",
+      "summary": "Targeted nutrition avoids fertilizer burning, minimizes nutrient leaching, and maximizes yield response per unit of nutrient applied.",
+      "keyActions": [
+        "Apply 100% recommended Phosphorus and 50% Potash as basal fertilizer during final land preparation.",
+        "Split Nitrogen into 3 equal splits: 1/3 basal, 1/3 at active tillering/vegetative, 1/3 at panicle/flowering.",
+        "Top-dress Chelated Zinc (Zn-EDTA 12%) and Boron (20%) to avert deficiency chlorosis and flower drop.",
+        "Use slow-release Neem Coated Urea (NCU) to minimize volatilization and run-off losses."
+      ],
+      "recommendedTools": [
+        "Fertilizer Broadcasters",
+        "Fertigation Venturi Injectors",
+        "Soil Test Kits"
+      ],
+      "recommendedProducts": [
+        "IFFCO Neem Coated Urea",
+        "Coromandel Gromor 19:19:19 Water Soluble",
+        "Multiplex Zinc Micronutrient 12%"
+      ],
+      "displayOrder": 3,
+      "isActive": true
+    },
+    {
+      "id": "cg-stage-4",
+      "stageNumber": 4,
+      "crop": "All Crops",
+      "title": "Stage 4: Precision Irrigation Scheduling",
+      "subtitle": "Critical Growth Stages, Drip Efficiency & Moisture Sensor Audits",
+      "summary": "Water management tailored to crop phenology prevents root asphyxiation in clay soils and water stress during pollination.",
+      "keyActions": [
+        "Identify moisture-sensitive stages: CRI in wheat, flowering in cotton, panicle initiation in paddy.",
+        "Adopt inline drip irrigation (2.4 LPH emitters at 40cm spacing) to save 45-60% water.",
+        "Irrigate during evening or early morning hours to minimize surface evaporation losses.",
+        "Utilize tensiometers or digital soil moisture sensors to trigger irrigation at 50% field capacity."
+      ],
+      "recommendedTools": [
+        "Drip Irrigation Kits",
+        "Centrifugal Water Pumps",
+        "Digital Tensiometers"
+      ],
+      "recommendedProducts": [
+        "Jain Drip Kit 1 Acre Turbo Line",
+        "Kirloskar 5HP Submersible Water Pump",
+        "Automatic Irrigation Controller Timer"
+      ],
+      "displayOrder": 4,
+      "isActive": true
+    },
+    {
+      "id": "cg-stage-5",
+      "stageNumber": 5,
+      "crop": "All Crops",
+      "title": "Stage 5: Weed & Pest Protection",
+      "subtitle": "Integrated Pest Management (IPM), Weeders & Micro-Spraying",
+      "summary": "Combine mechanical inter-cultivation with selective green-label agrochemicals and drone atomization for residue-free produce.",
+      "keyActions": [
+        "Execute mechanical weeding at 20-25 DAS using 7HP rotary power weeders between crop rows.",
+        "Install yellow/blue sticky traps (15 traps/acre) and pheromone lures for early insect scouting.",
+        "Deploy autonomous drone spraying for uniform micron droplet coverage underneath leaf canopies.",
+        "Rotate chemical modes of action (IRAC/FRAC groups) to prevent insecticidal resistance development."
+      ],
+      "recommendedTools": [
+        "7HP Rotary Power Weeders",
+        "16L Agri Drones",
+        "Battery Knapsack Sprayers"
+      ],
+      "recommendedProducts": [
+        "KisanKraft 16L Dual Motor Battery Sprayer",
+        "Balwaan 7HP Petrol Inter-Row Weeder",
+        "Yellow Sticky Traps (Pack of 25)"
+      ],
+      "displayOrder": 5,
+      "isActive": true
+    },
+    {
+      "id": "cg-stage-6",
+      "stageNumber": 6,
+      "crop": "All Crops",
+      "title": "Stage 6: Harvesting Mechanization",
+      "subtitle": "Physiological Maturity, Low-Shatter Harvesters & Moisture Check",
+      "summary": "Timely mechanical harvesting cuts labor costs by 70%, prevents weather damage, and curtails field shattering loss below 1.5%.",
+      "keyActions": [
+        "Confirm physiological maturity (e.g., 80-85% grains turning golden yellow, 20-22% moisture).",
+        "Deploy self-propelled reaper harvesters with clean reciprocating cutter bars and windrowers.",
+        "Avoid harvesting under morning dew to prevent grain clogging in threshing drums.",
+        "Separate diseased or lodged crop patches to prevent contamination of prime grade produce."
+      ],
+      "recommendedTools": [
+        "Self-Propelled Reaper Harvesters",
+        "Multi-Crop Threshers",
+        "Grain Moisture Meters"
+      ],
+      "recommendedProducts": [
+        "VST Shakti Paddy Reaper 4-Row",
+        "AgriPro Digital Grain Moisture Meter",
+        "Mahindra Multi-Crop High Output Thresher"
+      ],
+      "displayOrder": 6,
+      "isActive": true
+    },
+    {
+      "id": "cg-stage-7",
+      "stageNumber": 7,
+      "crop": "All Crops",
+      "title": "Stage 7: Storage & Post-Harvest Preservation",
+      "subtitle": "Grain Drying, Hermetic Storage & Fumigation Protocols",
+      "summary": "Preserve grain viability and market price by drying down to 12% moisture and storing in hermetic pest-proof storage systems.",
+      "keyActions": [
+        "Solar-dry grains on clean HDPE tarpaulins until safe storage moisture (<12-13%) is reached.",
+        "Store in multi-layer hermetic bags (PICS bags) that deplete oxygen and eliminate storage weevils naturally.",
+        "Clean and disinfect godowns using approved pyrethrum sprays prior to stacking bags on wooden dunnage.",
+        "Inspect grain stocks bi-weekly for temperature spikes, insect webbing, or moisture condensation."
+      ],
+      "recommendedTools": [
+        "HDPE Tarpaulins",
+        "Hermetic Grain Bags",
+        "Digital Temperature Probes"
+      ],
+      "recommendedProducts": [
+        "Multi-Layer PICS Hermetic Grain Bags (50kg x 10)",
+        "Tadpatri Heavy Duty 250 GSM HDPE Tarpaulin",
+        "Grain Storage Temperature & Moisture Probe"
+      ],
+      "displayOrder": 7,
+      "isActive": true
+    }
+  ],
+  "cropGuidanceSettings": {
+    "enabled": true,
+    "defaultCrop": "All Crops (Karnataka)",
+    "stagesCount": 7,
+    "showRecommendedProducts": true,
+    "showRecommendedTools": true,
+    "enableAiConsultation": true,
+    "enableMachineryBooking": true,
+    "allowCustomerFeedback": true
+  },
+  "gallerySettings": {
+    "enabled": true,
+    "pageSize": 12,
+    "allowLightbox": true,
+    "showPhotographer": true,
+    "showLocation": true,
+    "showLicense": true,
+    "enableCategories": true,
+    "categories": [
+      "All",
+      "Farm Fields",
+      "Monsoon Cultivation",
+      "Field Operations",
+      "Mechanization",
+      "Irrigation",
+      "Farmer Portraits"
+    ]
+  }
 }

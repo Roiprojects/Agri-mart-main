@@ -792,6 +792,9 @@ export interface DevDatabaseData {
   productAttributes?: DbProductAttribute[];
   specificationAttributes?: DbSpecificationAttribute[];
   checkoutAttributes?: DbCheckoutAttribute[];
+  cropGuidance?: any[];
+  cropGuidanceSettings?: any;
+  gallerySettings?: any;
 }
 
 function resolveDataFilePath(): string {
@@ -2009,6 +2012,22 @@ class PersistentDevDatabase {
         }
         if (!this.data.blogReviews) {
           this.data.blogReviews = defaults.blogReviews || [];
+        }
+        // Ensure cropGuidance and settings exist
+        if (!this.data.cropGuidance || this.data.cropGuidance.length === 0) {
+          try {
+            const rawFile = fs.readFileSync(DATA_FILE_PATH, 'utf-8');
+            const parsed = JSON.parse(rawFile);
+            if (parsed.cropGuidance && parsed.cropGuidance.length > 0) {
+              this.data.cropGuidance = parsed.cropGuidance;
+            }
+            if (parsed.cropGuidanceSettings) {
+              this.data.cropGuidanceSettings = parsed.cropGuidanceSettings;
+            }
+            if (parsed.gallerySettings) {
+              this.data.gallerySettings = parsed.gallerySettings;
+            }
+          } catch {}
         }
       } catch (err) {
         console.warn('[DEV_DB] Error parsing existing dev database file, initializing with defaults.', err);

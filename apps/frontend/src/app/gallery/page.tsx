@@ -18,19 +18,31 @@ import {
 } from 'lucide-react';
 
 export default function GalleryPage() {
+  const [photos, setPhotos] = useState<GalleryPhotoType[]>(GALLERY_PHOTOS);
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
-  const activePhoto = lightboxIndex !== null ? GALLERY_PHOTOS[lightboxIndex] : null;
+  useEffect(() => {
+    fetch('/api/gallery')
+      .then((res) => res.json())
+      .then((json) => {
+        if (json.success && Array.isArray(json.data) && json.data.length > 0) {
+          setPhotos(json.data);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  const activePhoto = lightboxIndex !== null ? photos[lightboxIndex] : null;
 
   const handleNext = useCallback(() => {
-    setLightboxIndex((prev) => (prev === null ? null : (prev + 1) % GALLERY_PHOTOS.length));
-  }, []);
+    setLightboxIndex((prev) => (prev === null ? null : (prev + 1) % photos.length));
+  }, [photos.length]);
 
   const handlePrev = useCallback(() => {
     setLightboxIndex((prev) =>
-      prev === null ? null : (prev - 1 + GALLERY_PHOTOS.length) % GALLERY_PHOTOS.length
+      prev === null ? null : (prev - 1 + photos.length) % photos.length
     );
-  }, []);
+  }, [photos.length]);
 
   const handleClose = useCallback(() => {
     setLightboxIndex(null);
@@ -95,7 +107,7 @@ export default function GalleryPage() {
 
       {/* Responsive Gallery Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {GALLERY_PHOTOS.map((photo, index) => (
+        {photos.map((photo, index) => (
           <article
             key={photo.id}
             onClick={() => setLightboxIndex(index)}
@@ -165,7 +177,7 @@ export default function GalleryPage() {
           >
             <div className="flex items-center gap-3">
               <span className="text-xs font-mono bg-white/10 px-3 py-1 rounded-full text-emerald-300">
-                {lightboxIndex + 1} / {GALLERY_PHOTOS.length}
+                {lightboxIndex + 1} / {photos.length}
               </span>
               <span className="text-xs font-semibold text-slate-300 hidden sm:inline">
                 {activePhoto.subject}
