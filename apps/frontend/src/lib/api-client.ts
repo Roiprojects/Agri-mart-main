@@ -72,29 +72,25 @@ export class ApiClient {
 
     const qs = params.toString() ? `?${params.toString()}` : '';
     return this.fetchJson<{ success: boolean; data: any[] }>(`/api/products${qs}`, {
-      cache: 'no-store',
-      next: { tags: ['products', 'catalogue'], revalidate: 0 },
+      next: { tags: ['products', 'catalogue'], revalidate: 30 },
     });
   }
 
   static async getProductBySlug(slug: string) {
     return this.fetchJson<{ success: boolean; data: any }>(`/api/products/${slug}`, {
-      cache: 'no-store',
-      next: { tags: ['products', `product-${slug}`], revalidate: 0 },
+      next: { tags: ['products', `product-${slug}`], revalidate: 30 },
     });
   }
 
   static async getCategories() {
     return this.fetchJson<{ success: boolean; data: any[] }>(`/api/categories`, {
-      cache: 'no-store',
-      next: { tags: ['categories'], revalidate: 0 },
+      next: { tags: ['categories'], revalidate: 30 },
     });
   }
 
   static async getBanners() {
     return this.fetchJson<{ success: boolean; data: any[] }>(`/api/content/banners`, {
-      cache: 'no-store',
-      next: { tags: ['banners'], revalidate: 0 },
+      next: { tags: ['banners'], revalidate: 30 },
     });
   }
 
@@ -102,15 +98,13 @@ export class ApiClient {
 
   static async getRentals() {
     return this.fetchJson<{ success: boolean; data: any[] }>(`/api/rentals`, {
-      cache: 'no-store',
-      next: { tags: ['rentals'], revalidate: 0 },
+      next: { tags: ['rentals'], revalidate: 30 },
     });
   }
 
   static async getRentalBySlug(slug: string) {
     return this.fetchJson<{ success: boolean; data: any }>(`/api/rentals?slug=${slug}`, {
-      cache: 'no-store',
-      next: { tags: ['rentals', `rental-${slug}`], revalidate: 0 },
+      next: { tags: ['rentals', `rental-${slug}`], revalidate: 30 },
     });
   }
 

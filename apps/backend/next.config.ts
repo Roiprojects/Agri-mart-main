@@ -4,6 +4,9 @@ const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3000';
 
 const nextConfig: NextConfig = {
   output: 'standalone',
+  experimental: {
+    optimizePackageImports: ['lucide-react', '@agrimart/contracts'],
+  },
   async headers() {
     return [
       {

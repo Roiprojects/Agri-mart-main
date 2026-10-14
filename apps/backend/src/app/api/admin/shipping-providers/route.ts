@@ -1,8 +1,6 @@
 import { NextResponse } from 'next/server';
-import fs from 'fs';
-import path from 'path';
+import { readDb, writeDb } from '@/lib/dev-db';
 
-const DB_PATH = path.join(process.cwd(), 'data', 'dev-database.json');
 
 interface ShippingProviderItem {
   id: string;
@@ -11,28 +9,6 @@ interface ShippingProviderItem {
   displayOrder: number;
   isActive: boolean;
   config?: Record<string, any>;
-}
-
-function readDb() {
-  try {
-    if (fs.existsSync(DB_PATH)) {
-      const content = fs.readFileSync(DB_PATH, 'utf-8');
-      return JSON.parse(content);
-    }
-  } catch (err) {
-    console.error('Failed reading DB file for shipping providers:', err);
-  }
-  return {};
-}
-
-function writeDb(data: any) {
-  try {
-    fs.writeFileSync(DB_PATH, JSON.stringify(data, null, 2), 'utf-8');
-    return true;
-  } catch (err) {
-    console.error('Failed writing DB file for shipping providers:', err);
-    return false;
-  }
 }
 
 export async function GET() {

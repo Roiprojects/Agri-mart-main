@@ -101,6 +101,42 @@ export interface CartValidationResponse {
     total: number;
     warnings?: string[];
 }
+export type CartRevalidationRequest = CartValidationRequest;
+export type CartRevalidationResponse = CartValidationResponse;
+export type CartCalculationRequest = CartValidationRequest;
+export type CartCalculationResponse = CartValidationResponse;
+export interface CreateOrderRequest {
+    customerName: string;
+    customerMobile: string;
+    items: {
+        productId: string;
+        variantId?: string;
+        quantity: number;
+    }[];
+    shippingAddress: ShippingAddressContract;
+    paymentMethod: PaymentMethod;
+    couponCode?: string;
+}
+export interface CreateOrderResponse {
+    success: boolean;
+    orderId?: string;
+    orderNumber?: string;
+    totalAmount?: number;
+    razorpayOrderId?: string;
+    message?: string;
+}
+export interface VerifyPaymentRequest {
+    orderId: string;
+    razorpayPaymentId: string;
+    razorpayOrderId: string;
+    razorpaySignature: string;
+}
+export interface VerifyPaymentResponse {
+    success: boolean;
+    orderId?: string;
+    paymentStatus?: PaymentStatus;
+    message?: string;
+}
 export type OrderStatus = 'PLACED' | 'CONFIRMED' | 'ALLOCATED' | 'PACKED' | 'DISPATCHED' | 'OUT_FOR_DELIVERY' | 'DELIVERED' | 'CANCELLED' | 'REFUNDED';
 export type PaymentStatus = 'PENDING' | 'PAID' | 'FAILED' | 'REFUNDED';
 export type PaymentMethod = 'UPI' | 'CARD' | 'NETBANKING' | 'COD';

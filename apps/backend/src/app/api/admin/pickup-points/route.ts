@@ -1,8 +1,6 @@
 import { NextResponse } from 'next/server';
-import fs from 'fs';
-import path from 'path';
+import { readDb, writeDb } from '@/lib/dev-db';
 
-const DB_PATH = path.join(process.cwd(), 'data', 'dev-database.json');
 
 interface PickupPointProviderItem {
   id: string;
@@ -25,28 +23,6 @@ interface PickupPointItem {
   zipPostalCode: string;
   openingHours: string;
   pickupFee: number;
-}
-
-function readDb() {
-  try {
-    if (fs.existsSync(DB_PATH)) {
-      const content = fs.readFileSync(DB_PATH, 'utf-8');
-      return JSON.parse(content);
-    }
-  } catch (err) {
-    console.error('Failed reading DB file for pickup points:', err);
-  }
-  return {};
-}
-
-function writeDb(data: any) {
-  try {
-    fs.writeFileSync(DB_PATH, JSON.stringify(data, null, 2), 'utf-8');
-    return true;
-  } catch (err) {
-    console.error('Failed writing DB file for pickup points:', err);
-    return false;
-  }
 }
 
 export async function GET(req: Request) {

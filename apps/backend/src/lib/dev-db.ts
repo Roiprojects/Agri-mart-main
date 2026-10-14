@@ -1920,6 +1920,9 @@ function getInitialData(): DevDatabaseData {
 
 class PersistentDevDatabase {
   private data: DevDatabaseData;
+  private saveTimeout: NodeJS.Timeout | null = null;
+  private isSaving: boolean = false;
+  private pendingSave: boolean = false;
 
   constructor() {
     ensureDataDirectory();
@@ -2018,16 +2021,46 @@ class PersistentDevDatabase {
     }
   }
 
-  private save() {
+  public save() {
+    if (this.saveTimeout) {
+      clearTimeout(this.saveTimeout);
+    }
+    this.saveTimeout = setTimeout(() => {
+      this.flushToDisk();
+    }, 50);
+  }
+
+  public async flushToDisk(): Promise<void> {
+    if (this.isSaving) {
+      this.pendingSave = true;
+      return;
+    }
+    this.isSaving = true;
+    try {
+      ensureDataDirectory();
+      const content = JSON.stringify(this.data, null, 2);
+      await fs.promises.writeFile(DATA_FILE_PATH, content, 'utf-8');
+    } catch (err) {
+      console.error('[DEV_DB] Error saving dev database file asynchronously', err);
+    } finally {
+      this.isSaving = false;
+      if (this.pendingSave) {
+        this.pendingSave = false;
+        this.save();
+      }
+    }
+  }
+
+  public saveSync(): void {
     try {
       ensureDataDirectory();
       fs.writeFileSync(DATA_FILE_PATH, JSON.stringify(this.data, null, 2), 'utf-8');
     } catch (err) {
-      console.error('[DEV_DB] Error saving dev database file', err);
+      console.error('[DEV_DB] Error saving dev database file synchronously', err);
     }
   }
 
-  reload(): void {
+  public reload(): void {
     if (fs.existsSync(DATA_FILE_PATH)) {
       try {
         const raw = fs.readFileSync(DATA_FILE_PATH, 'utf-8');
@@ -2036,6 +2069,10 @@ class PersistentDevDatabase {
         console.error('[DEV_DB] Error reloading dev database file', err);
       }
     }
+  }
+
+  public getRawData(): any {
+    return this.data;
   }
 
   // Brands
@@ -5409,6 +5446,18 @@ class PersistentDevDatabase {
 }
 
 // Global singleton instance for hot reload persistence
-const globalForDevDb = global as unknown as { devDb: PersistentDevDatabase };
-export const devDb = new PersistentDevDatabase();
-globalForDevDb.devDb = devDb;
+const globalForDevDb = globalThis as unknown as { __devDbInstance?: PersistentDevDatabase };
+export const devDb: PersistentDevDatabase =
+  globalForDevDb.__devDbInstance || (globalForDevDb.__devDbInstance = new PersistentDevDatabase());
+
+export function readDb(): any {
+  return devDb.getRawData();
+}
+
+export function writeDb(data?: any): boolean {
+  if (data && data !== devDb.getRawData()) {
+    Object.assign(devDb.getRawData(), data);
+  }
+  devDb.save();
+  return true;
+}

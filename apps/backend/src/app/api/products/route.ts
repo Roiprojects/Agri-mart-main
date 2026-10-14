@@ -3,7 +3,6 @@ import { CatalogueService } from '@/lib/catalogue-service';
 import { devDb } from '@/lib/dev-db';
 
 export async function GET(request: Request) {
-  devDb.reload();
   const { searchParams } = new URL(request.url);
   const category = searchParams.get('category');
   const crop = searchParams.get('crop');

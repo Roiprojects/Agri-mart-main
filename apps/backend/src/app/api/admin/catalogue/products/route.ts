@@ -4,7 +4,6 @@ import { devDb } from '@/lib/dev-db';
 
 // Catalogue products admin route with full nopCommerce pricing and metadata support
 export async function GET() {
-  devDb.reload();
   const products = devDb.getProducts({ onlyPublished: false });
   const fullProducts = products.map((p) => devDb.getProductWithDetails(p.id));
   return NextResponse.json({ success: true, count: fullProducts.length, data: fullProducts });

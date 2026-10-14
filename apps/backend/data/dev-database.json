@@ -98,7 +98,25 @@
       "image": "https://images.unsplash.com/photo-1589923188900-85dae523342b?auto=format&fit=crop&w=600&q=80",
       "displayOrder": 1,
       "createdAt": "2026-09-17T11:18:16.948Z",
-      "updatedAt": "2026-09-17T11:18:16.948Z"
+      "updatedAt": "2026-10-14T07:29:57.493Z",
+      "parentId": "cat-fertilizers",
+      "published": true,
+      "restrictFromVendors": false,
+      "showOnHomePage": false,
+      "allowCustomersToSelectPageSize": true,
+      "pageSizeOptions": "6, 3, 9",
+      "priceRangeFiltering": true,
+      "manuallyPriceRange": true,
+      "priceFrom": 0,
+      "priceTo": 10000,
+      "discounts": "",
+      "customerRoles": "",
+      "limitedToStores": "",
+      "seName": "farm-equipment-machinery",
+      "metaTitle": "",
+      "metaKeywords": "",
+      "metaDescription": "",
+      "isPublished": true
     },
     {
       "id": "cat-seeds",
@@ -204,7 +222,7 @@
   "products": [
     {
       "id": "prod-001",
-      "name": "AgriPro 7HP Heavy-Duty Multi-Speed Power Weeder",
+      "name": "AgriPro 7HP Heavy-Duty Multi-Speed Power Weeder1",
       "nameKn": "AgriPro 7HP Heavy-Duty Multi-Speed Power Weeder",
       "slug": "agripro-7hp-heavy-duty-power-weeder",
       "sku": "AGP-PW-7HP",
@@ -223,7 +241,7 @@
       "metaTitle": "Buy AgriPro 7HP Heavy-Duty Power Weeder | Agri Mart Mega",
       "metaDescription": "Shop AgriPro 7HP Power Weeder with free ridger & reverse gear. Delivered from Hubballi & Belagavi Dark Warehouses with 1-Year comprehensive AMC.",
       "createdAt": "2026-09-17T11:18:16.948Z",
-      "updatedAt": "2026-09-30T07:35:08.133Z",
+      "updatedAt": "2026-10-14T07:27:37.928Z",
       "brand": {
         "id": "br-agripro",
         "name": "AgriPro",
@@ -381,7 +399,53 @@
           "reorderThreshold": 5
         }
       ],
-      "stockQuantity": 99
+      "stockQuantity": 99,
+      "seName": "agripro-7hp-heavy-duty-power-weeder",
+      "metaKeywords": "",
+      "canonicalUrl": "",
+      "cost": 0,
+      "disableBuyButton": false,
+      "disableWishlistButton": false,
+      "availableForPreOrder": false,
+      "callForPrice": false,
+      "customerEntersPrice": false,
+      "pangvBasePriceEnabled": false,
+      "taxExempt": false,
+      "taxCategory": "[None]",
+      "isShippingEnabled": true,
+      "weight": 0,
+      "length": 0,
+      "width": 0,
+      "height": 0,
+      "freeShipping": false,
+      "shipSeparately": false,
+      "additionalShippingCharge": 0,
+      "deliveryDate": "None",
+      "isGiftCard": false,
+      "giftCardType": "Virtual",
+      "overriddenGiftCardAmount": "",
+      "isRental": false,
+      "rentalPeriodLength": "",
+      "rentalPeriod": "Days",
+      "minCartQty": 1,
+      "maxCartQty": 100,
+      "productTags": "",
+      "gtin": "",
+      "manufacturerPartNumber": "",
+      "showOnHomePage": false,
+      "productType": "Simple",
+      "productTemplate": "Simple product",
+      "visibleIndividually": true,
+      "ageVerification": false,
+      "customerRoles": "",
+      "limitedToStores": "",
+      "vendor": "No vendor",
+      "requireOtherProducts": false,
+      "allowCustomerReviews": true,
+      "availableStartDate": "",
+      "availableEndDate": "",
+      "markAsNew": false,
+      "adminComment": ""
     },
     {
       "id": "prod-002",
@@ -862,7 +926,7 @@
       "shortDescription": "Complete fertigation manifold with bypass valve, pressure gauge, and rotameter.",
       "description": "Enables uniform liquid bio-fertilizer and micro-nutrient delivery directly through pressurized drip lines across 5-acre plots.",
       "brandId": "br-jain",
-      "categoryId": "cat-irrigation",
+      "categoryId": "cat-machinery",
       "price": 4950,
       "comparePrice": 5800,
       "isPublished": true,
@@ -874,7 +938,7 @@
       "metaTitle": "2-Inch Venturi Drip Fertigation Kit | Agri Mart Mega",
       "metaDescription": "Accurate fertilizer injector for automated drip systems. Reduces manual labor and nutrient wastage.",
       "createdAt": "2026-09-17T11:18:16.948Z",
-      "updatedAt": "2026-09-30T07:11:17.416Z",
+      "updatedAt": "2026-10-14T07:29:35.858Z",
       "brand": {
         "id": "br-jain",
         "name": "Jain Drip Tech",
@@ -913,14 +977,34 @@
       ],
       "media": [
         {
-          "id": "med-006",
+          "id": "med-prod-006-1",
           "productId": "prod-006",
-          "url": "https://images.unsplash.com/photo-1563514227147-6d2ff665a6a0?auto=format&fit=crop&w=800&q=80",
-          "altText": "Venturi Drip Kit Manifold",
+          "url": "/images/gallery/05-irrigation.jpg",
+          "altText": "Smart Drip Automation Kit with 2-Inch Venturi Injector - Image 1",
           "type": "IMAGE",
           "isPrimary": true,
           "displayOrder": 1,
-          "createdAt": "2026-09-17T11:18:16.948Z"
+          "createdAt": "2026-10-06T09:09:19.830Z"
+        },
+        {
+          "id": "med-prod-006-2",
+          "productId": "prod-006",
+          "url": "https://images.unsplash.com/photo-1563514227147-6d2ff665a6a0?auto=format&fit=crop&w=800&q=80",
+          "altText": "Smart Drip Automation Kit with 2-Inch Venturi Injector - Image 2",
+          "type": "IMAGE",
+          "isPrimary": false,
+          "displayOrder": 2,
+          "createdAt": "2026-10-06T09:09:19.830Z"
+        },
+        {
+          "id": "med-prod-006-3",
+          "productId": "prod-006",
+          "url": "https://images.unsplash.com/photo-1523348837708-15d4a09cfac2?auto=format&fit=crop&w=800&q=80",
+          "altText": "Smart Drip Automation Kit with 2-Inch Venturi Injector - Image 3",
+          "type": "IMAGE",
+          "isPrimary": false,
+          "displayOrder": 3,
+          "createdAt": "2026-10-06T09:09:19.830Z"
         }
       ],
       "images": [
@@ -940,7 +1024,8 @@
           "reservedQuantity": 0,
           "reorderThreshold": 5
         }
-      ]
+      ],
+      "seName": "smart-drip-automation-kit-venturi-injector"
     },
     {
       "id": "prod-1789644257308",
@@ -1188,7 +1273,7 @@
       "weightKg": 85,
       "unit": "Unit",
       "isDefault": true,
-      "stockQuantity": 18,
+      "stockQuantity": 99,
       "createdAt": "2026-09-17T11:18:16.948Z",
       "updatedAt": "2026-09-17T11:18:16.948Z"
     },
@@ -1367,46 +1452,6 @@
   ],
   "media": [
     {
-      "id": "med-prod-001-1",
-      "productId": "prod-001",
-      "url": "/images/gallery/08-farm-equipment.jpg",
-      "altText": "AgriPro 7HP Heavy-Duty Multi-Speed Power Weeder - Image 1",
-      "type": "IMAGE",
-      "isPrimary": true,
-      "displayOrder": 1,
-      "createdAt": "2026-10-06T09:09:19.830Z"
-    },
-    {
-      "id": "med-prod-001-2",
-      "productId": "prod-001",
-      "url": "/images/banners/hero_equipment_buy.jpg",
-      "altText": "AgriPro 7HP Heavy-Duty Multi-Speed Power Weeder - Image 2",
-      "type": "IMAGE",
-      "isPrimary": false,
-      "displayOrder": 2,
-      "createdAt": "2026-10-06T09:09:19.830Z"
-    },
-    {
-      "id": "med-prod-001-3",
-      "productId": "prod-001",
-      "url": "https://images.unsplash.com/photo-1589923188900-85dae523342b?auto=format&fit=crop&w=800&q=80",
-      "altText": "AgriPro 7HP Heavy-Duty Multi-Speed Power Weeder - Image 3",
-      "type": "IMAGE",
-      "isPrimary": false,
-      "displayOrder": 3,
-      "createdAt": "2026-10-06T09:09:19.830Z"
-    },
-    {
-      "id": "med-prod-001-4",
-      "productId": "prod-001",
-      "url": "https://images.unsplash.com/photo-1592982537447-6f2a6a0c7c18?auto=format&fit=crop&w=800&q=80",
-      "altText": "AgriPro 7HP Heavy-Duty Multi-Speed Power Weeder - Image 4",
-      "type": "IMAGE",
-      "isPrimary": false,
-      "displayOrder": 4,
-      "createdAt": "2026-10-06T09:09:19.830Z"
-    },
-    {
       "id": "med-prod-002-1",
       "productId": "prod-002",
       "url": "/images/gallery/06-crop-spraying.jpg",
@@ -1521,36 +1566,6 @@
       "productId": "prod-005",
       "url": "https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=800&q=80",
       "altText": "UAS Dharwad DWR-1006 Certified Hybrid Wheat Seeds (20 Kg) - Image 3",
-      "type": "IMAGE",
-      "isPrimary": false,
-      "displayOrder": 3,
-      "createdAt": "2026-10-06T09:09:19.830Z"
-    },
-    {
-      "id": "med-prod-006-1",
-      "productId": "prod-006",
-      "url": "/images/gallery/05-irrigation.jpg",
-      "altText": "Smart Drip Automation Kit with 2-Inch Venturi Injector - Image 1",
-      "type": "IMAGE",
-      "isPrimary": true,
-      "displayOrder": 1,
-      "createdAt": "2026-10-06T09:09:19.830Z"
-    },
-    {
-      "id": "med-prod-006-2",
-      "productId": "prod-006",
-      "url": "https://images.unsplash.com/photo-1563514227147-6d2ff665a6a0?auto=format&fit=crop&w=800&q=80",
-      "altText": "Smart Drip Automation Kit with 2-Inch Venturi Injector - Image 2",
-      "type": "IMAGE",
-      "isPrimary": false,
-      "displayOrder": 2,
-      "createdAt": "2026-10-06T09:09:19.830Z"
-    },
-    {
-      "id": "med-prod-006-3",
-      "productId": "prod-006",
-      "url": "https://images.unsplash.com/photo-1523348837708-15d4a09cfac2?auto=format&fit=crop&w=800&q=80",
-      "altText": "Smart Drip Automation Kit with 2-Inch Venturi Injector - Image 3",
       "type": "IMAGE",
       "isPrimary": false,
       "displayOrder": 3,
@@ -1675,6 +1690,76 @@
       "isPrimary": false,
       "displayOrder": 3,
       "createdAt": "2026-10-06T09:09:19.830Z"
+    },
+    {
+      "id": "med-prod-001-1-1791962857928",
+      "productId": "prod-001",
+      "url": "/images/gallery/08-farm-equipment.jpg",
+      "altText": "AgriPro 7HP Heavy-Duty Multi-Speed Power Weeder1 - Picture 1",
+      "type": "IMAGE",
+      "isPrimary": true,
+      "displayOrder": 1,
+      "createdAt": "2026-10-14T07:27:37.928Z"
+    },
+    {
+      "id": "med-prod-001-2-1791962857928",
+      "productId": "prod-001",
+      "url": "/images/banners/hero_equipment_buy.jpg",
+      "altText": "AgriPro 7HP Heavy-Duty Multi-Speed Power Weeder1 - Picture 2",
+      "type": "IMAGE",
+      "isPrimary": false,
+      "displayOrder": 2,
+      "createdAt": "2026-10-14T07:27:37.928Z"
+    },
+    {
+      "id": "med-prod-001-3-1791962857928",
+      "productId": "prod-001",
+      "url": "https://images.unsplash.com/photo-1589923188900-85dae523342b?auto=format&fit=crop&w=800&q=80",
+      "altText": "AgriPro 7HP Heavy-Duty Multi-Speed Power Weeder1 - Picture 3",
+      "type": "IMAGE",
+      "isPrimary": false,
+      "displayOrder": 3,
+      "createdAt": "2026-10-14T07:27:37.928Z"
+    },
+    {
+      "id": "med-prod-001-4-1791962857928",
+      "productId": "prod-001",
+      "url": "https://images.unsplash.com/photo-1592982537447-6f2a6a0c7c18?auto=format&fit=crop&w=800&q=80",
+      "altText": "AgriPro 7HP Heavy-Duty Multi-Speed Power Weeder1 - Picture 4",
+      "type": "IMAGE",
+      "isPrimary": false,
+      "displayOrder": 4,
+      "createdAt": "2026-10-14T07:27:37.928Z"
+    },
+    {
+      "id": "med-prod-006-1-1791962975858",
+      "productId": "prod-006",
+      "url": "/images/gallery/05-irrigation.jpg",
+      "altText": "Smart Drip Automation Kit with 2-Inch Venturi Injector - Picture 1",
+      "type": "IMAGE",
+      "isPrimary": true,
+      "displayOrder": 1,
+      "createdAt": "2026-10-14T07:29:35.858Z"
+    },
+    {
+      "id": "med-prod-006-2-1791962975858",
+      "productId": "prod-006",
+      "url": "https://images.unsplash.com/photo-1563514227147-6d2ff665a6a0?auto=format&fit=crop&w=800&q=80",
+      "altText": "Smart Drip Automation Kit with 2-Inch Venturi Injector - Picture 2",
+      "type": "IMAGE",
+      "isPrimary": false,
+      "displayOrder": 2,
+      "createdAt": "2026-10-14T07:29:35.858Z"
+    },
+    {
+      "id": "med-prod-006-3-1791962975858",
+      "productId": "prod-006",
+      "url": "https://images.unsplash.com/photo-1523348837708-15d4a09cfac2?auto=format&fit=crop&w=800&q=80",
+      "altText": "Smart Drip Automation Kit with 2-Inch Venturi Injector - Picture 3",
+      "type": "IMAGE",
+      "isPrimary": false,
+      "displayOrder": 3,
+      "createdAt": "2026-10-14T07:29:35.858Z"
     }
   ],
   "specifications": [
@@ -11475,11 +11560,11 @@
         "estimatedHours": 2,
         "actualStartTime": "2026-09-18T05:51:21.804Z"
       },
-      "status": "DELIVERED",
+      "status": "PRODUCT_RECEIVED",
       "stageTimestamps": {
-        "PRODUCT_RECEIVED": "2026-09-18T05:51:21.780Z",
-        "INSPECTION": "2026-09-18T05:51:21.785Z",
-        "ESTIMATE": "2026-09-18T05:51:21.794Z",
+        "PRODUCT_RECEIVED": "2026-10-14T07:49:26.874Z",
+        "INSPECTION": "2026-10-14T07:48:47.056Z",
+        "ESTIMATE": "2026-10-14T07:49:16.468Z",
         "CUSTOMER_APPROVAL": "2026-09-18T05:51:21.799Z",
         "REPAIR": "2026-09-18T05:51:21.809Z",
         "QUALITY_CHECK": "2026-09-18T05:51:21.818Z",
@@ -11568,7 +11653,7 @@
         "inspectorApprovalDate": "2026-09-18T05:51:21.822Z"
       },
       "createdAt": "2026-09-18T05:51:21.780Z",
-      "updatedAt": "2026-09-18T05:51:21.832Z",
+      "updatedAt": "2026-10-14T07:49:26.874Z",
       "invoice": {
         "invoiceNumber": "INV-WS-2026-877",
         "invoiceDate": "2026-09-18T05:51:21.826Z",
@@ -17260,7 +17345,7 @@
   "countries": [
     {
       "id": "1",
-      "name": "United States",
+      "name": "United States1",
       "allowsBilling": true,
       "allowsShipping": true,
       "twoLetterIsoCode": "US",
@@ -17705,7 +17790,8 @@
           "published": true,
           "displayOrder": 62
         }
-      ]
+      ],
+      "limitedToStores": ""
     },
     {
       "id": "2",
@@ -20831,7 +20917,7 @@
   "languages": [
     {
       "id": "1",
-      "name": "EN",
+      "name": "EN1",
       "flag": "us.png",
       "flagEmoji": "🇺🇸",
       "languageCulture": "en-US",
