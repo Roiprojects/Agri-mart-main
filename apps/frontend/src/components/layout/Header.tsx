@@ -355,19 +355,6 @@ export default function Header() {
                 );
               })}
             </div>
-
-            {/* Quick link to Design System */}
-            <Link
-              href="/design-system"
-              className={`group relative flex items-center gap-1.5 py-1 px-2.5 rounded-full text-[11px] xl:text-xs font-semibold normal-case transition-all duration-200 shrink-0 border ${
-                pathname === '/design-system'
-                  ? 'bg-emerald-50 text-agri-green border-agri-green font-bold shadow-xs'
-                  : 'bg-slate-50 text-black hover:text-agri-green hover:bg-emerald-50/70 border-slate-200/80 hover:border-agri-green/40 shadow-xs'
-              }`}
-            >
-              <Sparkles className="w-3.5 h-3.5 text-amber-500 group-hover:rotate-12 group-hover:scale-110 transition-transform duration-200" />
-              <span className="whitespace-nowrap">Design System</span>
-            </Link>
           </nav>
         </div>
       </div>
