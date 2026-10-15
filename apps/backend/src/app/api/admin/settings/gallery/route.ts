@@ -10,6 +10,16 @@ export interface GallerySettings {
   showLocation: boolean;
   showLicense: boolean;
   enableCategories: boolean;
+  pageTitle?: string;
+  pageSubtitle?: string;
+  gridColumns?: number;
+  layoutStyle?: string;
+  allowDownload?: boolean;
+  showCaptions?: boolean;
+  defaultCategory?: string;
+  enableSearch?: boolean;
+  seoMetaTitle?: string;
+  seoMetaDescription?: string;
 }
 
 const DEFAULT_SETTINGS: GallerySettings = {
@@ -20,6 +30,16 @@ const DEFAULT_SETTINGS: GallerySettings = {
   showLocation: true,
   showLicense: true,
   enableCategories: true,
+  pageTitle: 'Life on the Farm - Visual Agronomy Archive',
+  pageSubtitle: 'A visual journey across agricultural rhythms in Karnataka—from fertile seedbed preparation and precision irrigation to mechanized harvesting and dry post-harvest storage.',
+  gridColumns: 4,
+  layoutStyle: 'grid',
+  allowDownload: true,
+  showCaptions: true,
+  defaultCategory: 'All',
+  enableSearch: true,
+  seoMetaTitle: 'Agricultural Life & Visual Gallery | AGRI MART MEGA',
+  seoMetaDescription: 'Curated agricultural photography showing farm mechanization, irrigation, crop stages, and harvesting across Karnataka.',
 };
 
 export async function GET() {

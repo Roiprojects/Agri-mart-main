@@ -714,6 +714,17 @@ export interface DbGalleryItem {
   alt: string;
   displayOrder: number;
   isPublished: boolean;
+  category?: string;
+  location?: string;
+  cropType?: string;
+  season?: string;
+  farmingMethod?: string;
+  cameraModel?: string;
+  dateTaken?: string;
+  tags?: string;
+  aspectRatio?: string;
+  isFeatured?: boolean;
+  photographerEmail?: string;
 }
 
 export interface DbBlogPost {
@@ -5147,21 +5158,41 @@ class PersistentDevDatabase {
   saveGalleryItem(item: Partial<DbGalleryItem> & { title: string; image: string }): DbGalleryItem {
     if (!this.data.galleryItems) this.data.galleryItems = [];
     const index = this.data.galleryItems.findIndex((g) => g.id === item.id);
+    const category = item.category || item.subject || 'Farm Fields';
+    const description = item.caption || (item as any).description || '';
+
     if (index >= 0) {
-      this.data.galleryItems[index] = { ...this.data.galleryItems[index], ...item };
+      this.data.galleryItems[index] = {
+        ...this.data.galleryItems[index],
+        ...item,
+        subject: item.subject || item.category || this.data.galleryItems[index].subject,
+        category: item.category || item.subject || this.data.galleryItems[index].category,
+        caption: item.caption || (item as any).description || this.data.galleryItems[index].caption,
+      };
       this.save();
       return this.data.galleryItems[index];
     } else {
       const newItem: DbGalleryItem = {
         id: item.id || `gal-${Date.now()}`,
         title: item.title,
-        subject: item.subject || 'General Agriculture',
-        caption: item.caption || '',
+        subject: category,
+        category: category,
+        caption: description,
         image: item.image,
         photographer: item.photographer || 'Agri Mart Archive',
+        photographerEmail: item.photographerEmail || '',
         sourceUrl: item.sourceUrl || '',
         license: item.license || 'Unsplash License',
         alt: item.alt || item.title,
+        location: item.location || '',
+        cropType: item.cropType || '',
+        season: item.season || '',
+        farmingMethod: item.farmingMethod || '',
+        cameraModel: item.cameraModel || '',
+        dateTaken: item.dateTaken || '',
+        tags: item.tags || '',
+        aspectRatio: item.aspectRatio || '4:3',
+        isFeatured: item.isFeatured ?? false,
         displayOrder: item.displayOrder ?? this.data.galleryItems.length + 1,
         isPublished: item.isPublished ?? true,
       };
