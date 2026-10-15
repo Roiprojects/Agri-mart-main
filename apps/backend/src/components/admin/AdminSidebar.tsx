@@ -29,6 +29,7 @@ import {
   CircleDot,
   Circle,
   Leaf,
+  Coins,
   ExternalLink,
   X,
 } from 'lucide-react';
@@ -125,6 +126,16 @@ const navTree: NavGroup[] = [
     group: 'Customers',
     items: [
       { label: 'Customer List', href: '/admin/customers', icon: Users },
+    ],
+  },
+  {
+    group: 'Operations & Portals',
+    items: [
+      { label: 'Finance Portal', href: '/finance', icon: Coins },
+      { label: 'Procurement & Agronomy', href: '/procurement', icon: Leaf },
+      { label: 'Workshop & Repairs', href: '/repairs', icon: Wrench },
+      { label: 'Field Sales CRM', href: '/sales', icon: Users },
+      { label: 'Dark Warehouse & Stock', href: '/warehouse', icon: Warehouse },
     ],
   },
   {

@@ -2,7 +2,8 @@ import React from 'react';
 import { Metadata } from 'next';
 import Link from 'next/link';
 import { SITE_CONFIG } from '@/lib/config';
-import { SERVICES_CATALOGUE } from '@/lib/services-data';
+import { SERVICES_CATALOGUE, ServiceDefinition } from '@/lib/services-data';
+import { ApiClient } from '@/lib/api-client';
 import { Wrench, MapPin, ArrowRight, ShieldCheck, Tractor, Layers, CheckCircle2 } from 'lucide-react';
 import { Badge } from '@/components/ui/Badge';
 import { Breadcrumbs } from '@/components/ui/Breadcrumbs';
@@ -25,7 +26,17 @@ export const metadata: Metadata = {
   },
 };
 
-export default function ServicesPage() {
+export default async function ServicesPage() {
+  let services: ServiceDefinition[] = SERVICES_CATALOGUE;
+  try {
+    const res = await ApiClient.getServicesCatalogue();
+    if (res?.success && res.services?.length > 0) {
+      services = res.services;
+    }
+  } catch (err) {
+    // Fall back to seed catalog
+  }
+
   const breadcrumbItems = [{ label: 'Home', href: '/' }, { label: 'Services' }];
 
   return (
@@ -61,7 +72,7 @@ export default function ServicesPage() {
 
       {/* 10 Services Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {SERVICES_CATALOGUE.map((srv) => (
+        {services.map((srv) => (
           <div
             key={srv.id}
             className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:shadow-md hover:border-slate-300 transition flex flex-col justify-between space-y-4"

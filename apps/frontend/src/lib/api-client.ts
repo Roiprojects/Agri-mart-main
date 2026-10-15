@@ -123,6 +123,17 @@ export class ApiClient {
 
   // --- SERVICES ---
 
+  static async getServicesCatalogue(query?: { category?: string; search?: string; slug?: string }) {
+    const params = new URLSearchParams();
+    if (query?.category && query.category !== 'All') params.set('category', query.category);
+    if (query?.search) params.set('search', query.search);
+    if (query?.slug) params.set('slug', query.slug);
+    const qs = params.toString() ? `?${params.toString()}` : '';
+    return this.fetchJson<{ success: boolean; services: any[] }>(`/api/services${qs}`, {
+      next: { tags: ['services'], revalidate: 30 },
+    });
+  }
+
   static async getCustomerServices(userId: string = 'usr-farmer-01') {
     return this.fetchJson<{ success: boolean; data: any[] }>(`/api/services/request?userId=${userId}`, {
       cache: 'no-store',

@@ -68,7 +68,16 @@ export async function generateMetadata({ params }: ServiceDetailPageProps): Prom
 
 export default async function ServiceDetailPage({ params }: ServiceDetailPageProps) {
   const resolvedParams = await params;
-  const service = getServiceBySlug(resolvedParams.slug);
+  let service = getServiceBySlug(resolvedParams.slug);
+
+  try {
+    const res = await ApiClient.getServicesCatalogue({ slug: resolvedParams.slug });
+    if (res?.success && (res as any).service) {
+      service = (res as any).service;
+    }
+  } catch (e) {
+    // Fall back to seed
+  }
 
   if (!service) {
     notFound();
