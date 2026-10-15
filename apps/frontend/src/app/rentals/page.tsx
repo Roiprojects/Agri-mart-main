@@ -5,6 +5,9 @@ import { ApiClient } from '@/lib/api-client';
 import { SEED_RENTAL_PRODUCTS } from '@/lib/seed-data';
 import { Tractor, Calendar, ShieldCheck, ArrowRight } from 'lucide-react';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export default async function RentalsPage() {
   let rentalProducts = SEED_RENTAL_PRODUCTS;
   try {

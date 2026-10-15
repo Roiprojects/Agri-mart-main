@@ -139,6 +139,9 @@ const STAGE_DETAILS = [
   },
 ];
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export default async function CropGuidancePage() {
   let stages = STAGE_DETAILS;
   try {
@@ -147,7 +150,7 @@ export default async function CropGuidancePage() {
       process.env.NEXT_PUBLIC_BACKEND_URL ||
       'http://localhost:3011';
     const res = await fetch(`${backendUrl}/api/crop-guidance`, {
-      next: { revalidate: 30, tags: ['crop-guidance'] },
+      cache: 'no-store',
     });
     if (res.ok) {
       const json = await res.json();

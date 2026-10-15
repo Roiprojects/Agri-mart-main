@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server';
 import { readDb, writeDb } from '@/lib/dev-db';
 import { SERVICES_CATALOGUE, ServiceDefinition } from '@/lib/services-data';
+import { revalidateFrontendPath } from '@/lib/revalidation-dispatcher';
+
+export const dynamic = 'force-dynamic';
 
 export async function GET(request: Request) {
   try {
@@ -79,6 +82,7 @@ export async function POST(request: Request) {
 
     db.services.push(newService);
     writeDb(db);
+    try { await revalidateFrontendPath('/services'); await revalidateFrontendPath('/'); } catch {}
 
     return NextResponse.json({
       success: true,
@@ -118,6 +122,7 @@ export async function PUT(request: Request) {
     };
 
     writeDb(db);
+    try { await revalidateFrontendPath('/services'); await revalidateFrontendPath('/'); } catch {}
 
     return NextResponse.json({
       success: true,
@@ -154,6 +159,7 @@ export async function DELETE(request: Request) {
     }
 
     writeDb(db);
+    try { await revalidateFrontendPath('/services'); await revalidateFrontendPath('/'); } catch {}
 
     return NextResponse.json({
       success: true,

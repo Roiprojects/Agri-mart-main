@@ -2290,10 +2290,16 @@ class PersistentDevDatabase {
       };
       this.data.products[existingIndex] = updated;
 
-      if ((product as any).stockQuantity !== undefined) {
-        const pVars = this.data.variants.filter((v) => v.productId === updated.id);
-        if (pVars.length > 0) {
+      const pVars = this.data.variants.filter((v) => v.productId === updated.id);
+      if (pVars.length > 0) {
+        if ((product as any).stockQuantity !== undefined) {
           pVars[0].stockQuantity = Number((product as any).stockQuantity) || 0;
+        }
+        if (updated.price !== undefined) {
+          pVars[0].price = updated.price;
+        }
+        if (updated.comparePrice !== undefined) {
+          pVars[0].comparePrice = updated.comparePrice;
         }
       }
 

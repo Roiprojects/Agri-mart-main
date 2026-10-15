@@ -43,11 +43,8 @@ async function fetchAllDbProducts() {
   return [];
 }
 
-export async function generateStaticParams() {
-  const dbProducts = await fetchAllDbProducts();
-  const slugs = new Set([...dbProducts.map((p: any) => p.slug), ...SEED_PRODUCTS.map((p) => p.slug)]);
-  return Array.from(slugs).map((slug) => ({ slug }));
-}
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 export async function generateMetadata({ params }: ProductDetailPageProps): Promise<Metadata> {
   const resolvedParams = await params;

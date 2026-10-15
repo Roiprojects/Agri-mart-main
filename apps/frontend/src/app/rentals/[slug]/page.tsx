@@ -33,19 +33,8 @@ async function fetchDbRental(slug: string) {
   return null;
 }
 
-export async function generateStaticParams() {
-  try {
-    const res = await ApiClient.getRentals();
-    if (res.success && res.data && res.data.length > 0) {
-      return res.data.map((machine: any) => ({ slug: machine.slug }));
-    }
-  } catch (e) {
-    // Fallback
-  }
-  return SEED_RENTAL_PRODUCTS.map((machine) => ({
-    slug: machine.slug,
-  }));
-}
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 export async function generateMetadata({ params }: RentalDetailPageProps): Promise<Metadata> {
   const resolvedParams = await params;

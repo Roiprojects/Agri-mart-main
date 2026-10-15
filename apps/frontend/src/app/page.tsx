@@ -58,13 +58,15 @@ export const metadata: Metadata = {
   },
 };
 
-export const revalidate = 60;
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 export default async function HomePage() {
-  const [productsRes, categoriesRes, rentalsRes] = await Promise.all([
+  const [productsRes, categoriesRes, rentalsRes, servicesRes] = await Promise.all([
     ApiClient.getProducts().catch(() => null),
     ApiClient.getCategories().catch(() => null),
     ApiClient.getRentals().catch(() => null),
+    ApiClient.getServicesCatalogue().catch(() => null),
   ]);
 
   const featuredProducts = productsRes?.data && productsRes.data.length > 0
@@ -84,7 +86,17 @@ export default async function HomePage() {
     ? rentalsRes.data.slice(0, 3)
     : SEED_RENTAL_PRODUCTS;
 
-  const topServices = SITE_CONFIG.services.slice(0, 4);
+  const topServices = servicesRes?.services && servicesRes.services.length > 0
+    ? servicesRes.services.slice(0, 4).map((s: any) => ({
+        id: s.id,
+        name: s.name,
+        slug: s.slug,
+        description: s.shortDescription || s.description,
+        rate: `₹${s.baseRatePerAcre}/acre`,
+        icon: s.iconName || 'Tractor',
+      }))
+    : SITE_CONFIG.services.slice(0, 4);
+
   const blogs = SEED_BLOG_POSTS;
 
   // FAQ items for Section 13

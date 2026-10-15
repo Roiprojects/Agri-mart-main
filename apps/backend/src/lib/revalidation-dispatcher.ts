@@ -8,7 +8,7 @@ export async function dispatchFrontendRevalidation(params: {
   tags?: string[];
   payload?: any;
 }): Promise<{ success: boolean; error?: string }> {
-  const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+  const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3010';
   const secret = process.env.REVALIDATION_SECRET || 'agrimart_secret_reval_2026';
 
   // 1. Broadcast to active browser clients via Server-Sent Events

@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { SITE_CONFIG } from '@/lib/config';
 import { SERVICES_CATALOGUE, getServiceBySlug } from '@/lib/services-data';
+import { ApiClient } from '@/lib/api-client';
 import { Breadcrumbs } from '@/components/ui/Breadcrumbs';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
@@ -26,15 +27,18 @@ interface ServiceDetailPageProps {
   params: Promise<{ slug: string }>;
 }
 
-export async function generateStaticParams() {
-  return SERVICES_CATALOGUE.map((service) => ({
-    slug: service.slug,
-  }));
-}
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 export async function generateMetadata({ params }: ServiceDetailPageProps): Promise<Metadata> {
   const resolvedParams = await params;
-  const service = getServiceBySlug(resolvedParams.slug);
+  let service = getServiceBySlug(resolvedParams.slug);
+  try {
+    const res = await ApiClient.getServicesCatalogue({ slug: resolvedParams.slug });
+    if (res?.success && (res as any).service) {
+      service = (res as any).service;
+    }
+  } catch {}
 
   if (!service) {
     return { title: 'Service Not Found | AGRI MART MEGA' };
@@ -76,7 +80,7 @@ export default async function ServiceDetailPage({ params }: ServiceDetailPagePro
       service = (res as any).service;
     }
   } catch (e) {
-    // Fall back to seed
+    console.error('ServiceDetailPage fetch error:', e);
   }
 
   if (!service) {

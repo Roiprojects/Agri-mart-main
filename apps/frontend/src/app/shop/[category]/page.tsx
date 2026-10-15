@@ -1,9 +1,13 @@
-﻿import React from 'react';
+import React from 'react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { ApiClient } from '@/lib/api-client';
 import { SEED_CATEGORIES, SEED_PRODUCTS } from '@/lib/seed-data';
 import ProductCard from '@/components/shop/ProductCard';
 import { ArrowLeft } from 'lucide-react';
+
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 interface CategoryPageProps {
   params: Promise<{ category: string }>;
@@ -11,13 +15,33 @@ interface CategoryPageProps {
 
 export default async function CategoryPage({ params }: CategoryPageProps) {
   const resolvedParams = await params;
-  const currentCategory = SEED_CATEGORIES.find((c) => c.slug === resolvedParams.category);
+  let categories = SEED_CATEGORIES;
+  try {
+    const catRes = await ApiClient.getCategories();
+    if (catRes.success && catRes.data && catRes.data.length > 0) {
+      categories = catRes.data;
+    }
+  } catch {}
+
+  const currentCategory = categories.find(
+    (c: any) => c.slug === resolvedParams.category || c.id === resolvedParams.category
+  );
 
   if (!currentCategory) {
     notFound();
   }
 
-  const categoryProducts = SEED_PRODUCTS.filter((p) => p.categoryId === currentCategory.id);
+  let categoryProducts: any[] = [];
+  try {
+    const prodRes = await ApiClient.getProducts({ categoryId: currentCategory.id });
+    if (prodRes.success && Array.isArray(prodRes.data)) {
+      categoryProducts = prodRes.data;
+    } else {
+      categoryProducts = SEED_PRODUCTS.filter((p) => p.categoryId === currentCategory.id);
+    }
+  } catch {
+    categoryProducts = SEED_PRODUCTS.filter((p) => p.categoryId === currentCategory.id);
+  }
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">

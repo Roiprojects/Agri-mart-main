@@ -241,7 +241,7 @@
       "metaTitle": "Buy AgriPro 7HP Heavy-Duty Power Weeder | Agri Mart Mega",
       "metaDescription": "Shop AgriPro 7HP Power Weeder with free ridger & reverse gear. Delivered from Hubballi & Belagavi Dark Warehouses with 1-Year comprehensive AMC.",
       "createdAt": "2026-09-17T11:18:16.948Z",
-      "updatedAt": "2026-10-14T07:27:37.928Z",
+      "updatedAt": "2026-10-15T12:27:15.133Z",
       "brand": {
         "id": "br-agripro",
         "name": "AgriPro",
@@ -250,17 +250,7 @@
         "createdAt": "2026-09-17T11:18:16.946Z",
         "updatedAt": "2026-09-17T11:18:16.948Z"
       },
-      "category": {
-        "id": "cat-machinery",
-        "name": "Farm Equipment & Machinery",
-        "nameKn": "Farm Equipment & Machinery",
-        "slug": "farm-equipment-machinery",
-        "description": "Power weeders, rotavators, brush cutters, sprayers, and inter-cultivation units.",
-        "image": "https://images.unsplash.com/photo-1589923188900-85dae523342b?auto=format&fit=crop&w=600&q=80",
-        "displayOrder": 1,
-        "createdAt": "2026-09-17T11:18:16.948Z",
-        "updatedAt": "2026-09-17T11:18:16.948Z"
-      },
+      "category": "Farm Equipment & Machinery",
       "variants": [
         {
           "id": "var-001-1",
@@ -273,7 +263,7 @@
           "weightKg": 85,
           "unit": "Unit",
           "isDefault": true,
-          "stockQuantity": 18,
+          "stockQuantity": 99,
           "createdAt": "2026-09-17T11:18:16.948Z",
           "updatedAt": "2026-09-17T11:18:16.948Z"
         },
@@ -445,7 +435,12 @@
       "availableStartDate": "",
       "availableEndDate": "",
       "markAsNew": false,
-      "adminComment": ""
+      "adminComment": "",
+      "categoryKn": "Farm Equipment & Machinery",
+      "image": "/images/gallery/08-farm-equipment.jpg",
+      "rating": 4.8,
+      "reviewsCount": 6,
+      "inStock": true
     },
     {
       "id": "prod-002",
@@ -1692,46 +1687,6 @@
       "createdAt": "2026-10-06T09:09:19.830Z"
     },
     {
-      "id": "med-prod-001-1-1791962857928",
-      "productId": "prod-001",
-      "url": "/images/gallery/08-farm-equipment.jpg",
-      "altText": "AgriPro 7HP Heavy-Duty Multi-Speed Power Weeder1 - Picture 1",
-      "type": "IMAGE",
-      "isPrimary": true,
-      "displayOrder": 1,
-      "createdAt": "2026-10-14T07:27:37.928Z"
-    },
-    {
-      "id": "med-prod-001-2-1791962857928",
-      "productId": "prod-001",
-      "url": "/images/banners/hero_equipment_buy.jpg",
-      "altText": "AgriPro 7HP Heavy-Duty Multi-Speed Power Weeder1 - Picture 2",
-      "type": "IMAGE",
-      "isPrimary": false,
-      "displayOrder": 2,
-      "createdAt": "2026-10-14T07:27:37.928Z"
-    },
-    {
-      "id": "med-prod-001-3-1791962857928",
-      "productId": "prod-001",
-      "url": "https://images.unsplash.com/photo-1589923188900-85dae523342b?auto=format&fit=crop&w=800&q=80",
-      "altText": "AgriPro 7HP Heavy-Duty Multi-Speed Power Weeder1 - Picture 3",
-      "type": "IMAGE",
-      "isPrimary": false,
-      "displayOrder": 3,
-      "createdAt": "2026-10-14T07:27:37.928Z"
-    },
-    {
-      "id": "med-prod-001-4-1791962857928",
-      "productId": "prod-001",
-      "url": "https://images.unsplash.com/photo-1592982537447-6f2a6a0c7c18?auto=format&fit=crop&w=800&q=80",
-      "altText": "AgriPro 7HP Heavy-Duty Multi-Speed Power Weeder1 - Picture 4",
-      "type": "IMAGE",
-      "isPrimary": false,
-      "displayOrder": 4,
-      "createdAt": "2026-10-14T07:27:37.928Z"
-    },
-    {
       "id": "med-prod-006-1-1791962975858",
       "productId": "prod-006",
       "url": "/images/gallery/05-irrigation.jpg",
@@ -1760,6 +1715,46 @@
       "isPrimary": false,
       "displayOrder": 3,
       "createdAt": "2026-10-14T07:29:35.858Z"
+    },
+    {
+      "id": "med-prod-001-1-1792067235133",
+      "productId": "prod-001",
+      "url": "/images/gallery/08-farm-equipment.jpg",
+      "altText": "AgriPro 7HP Heavy-Duty Multi-Speed Power Weeder1 - Picture 1",
+      "type": "IMAGE",
+      "isPrimary": true,
+      "displayOrder": 1,
+      "createdAt": "2026-10-15T12:27:15.133Z"
+    },
+    {
+      "id": "med-prod-001-2-1792067235133",
+      "productId": "prod-001",
+      "url": "/images/banners/hero_equipment_buy.jpg",
+      "altText": "AgriPro 7HP Heavy-Duty Multi-Speed Power Weeder1 - Picture 2",
+      "type": "IMAGE",
+      "isPrimary": false,
+      "displayOrder": 2,
+      "createdAt": "2026-10-15T12:27:15.133Z"
+    },
+    {
+      "id": "med-prod-001-3-1792067235133",
+      "productId": "prod-001",
+      "url": "https://images.unsplash.com/photo-1589923188900-85dae523342b?auto=format&fit=crop&w=800&q=80",
+      "altText": "AgriPro 7HP Heavy-Duty Multi-Speed Power Weeder1 - Picture 3",
+      "type": "IMAGE",
+      "isPrimary": false,
+      "displayOrder": 3,
+      "createdAt": "2026-10-15T12:27:15.133Z"
+    },
+    {
+      "id": "med-prod-001-4-1792067235133",
+      "productId": "prod-001",
+      "url": "https://images.unsplash.com/photo-1592982537447-6f2a6a0c7c18?auto=format&fit=crop&w=800&q=80",
+      "altText": "AgriPro 7HP Heavy-Duty Multi-Speed Power Weeder1 - Picture 4",
+      "type": "IMAGE",
+      "isPrimary": false,
+      "displayOrder": 4,
+      "createdAt": "2026-10-15T12:27:15.133Z"
     }
   ],
   "specifications": [
@@ -8078,6 +8073,114 @@
     }
   ],
   "stockLedger": [
+    {
+      "id": "led-1792067242579-hunj",
+      "warehouseId": "wh-hubballi",
+      "warehouseName": "Hubballi Central Dark Warehouse",
+      "productId": "prod-001",
+      "productName": "AgriPro 7HP Heavy-Duty Multi-Speed Power Weeder1",
+      "type": "STOCK_OUT",
+      "quantity": 25,
+      "balanceAfter": 92,
+      "notes": "Reverting test adjustment",
+      "performedBy": "Automated Test Runner",
+      "createdAt": "2026-10-15T12:27:22.579Z"
+    },
+    {
+      "id": "led-1792067242194-5gi6",
+      "warehouseId": "wh-hubballi",
+      "warehouseName": "Hubballi Central Dark Warehouse",
+      "productId": "prod-001",
+      "productName": "AgriPro 7HP Heavy-Duty Multi-Speed Power Weeder1",
+      "type": "STOCK_IN",
+      "quantity": 25,
+      "balanceAfter": 117,
+      "referenceId": "WH-TEST-1792067242057",
+      "notes": "Verification test for warehouse stock reflection",
+      "performedBy": "Automated Test Runner",
+      "createdAt": "2026-10-15T12:27:22.194Z"
+    },
+    {
+      "id": "led-1792067198289-1jqk",
+      "warehouseId": "wh-hubballi",
+      "warehouseName": "Hubballi Central Dark Warehouse",
+      "productId": "prod-001",
+      "productName": "AgriPro 7HP Heavy-Duty Multi-Speed Power Weeder1",
+      "type": "STOCK_OUT",
+      "quantity": 25,
+      "balanceAfter": 92,
+      "notes": "Reverting test adjustment",
+      "performedBy": "Automated Test Runner",
+      "createdAt": "2026-10-15T12:26:38.289Z"
+    },
+    {
+      "id": "led-1792067197776-lgkp",
+      "warehouseId": "wh-hubballi",
+      "warehouseName": "Hubballi Central Dark Warehouse",
+      "productId": "prod-001",
+      "productName": "AgriPro 7HP Heavy-Duty Multi-Speed Power Weeder1",
+      "type": "STOCK_IN",
+      "quantity": 25,
+      "balanceAfter": 117,
+      "referenceId": "WH-TEST-1792067197644",
+      "notes": "Verification test for warehouse stock reflection",
+      "performedBy": "Automated Test Runner",
+      "createdAt": "2026-10-15T12:26:37.776Z"
+    },
+    {
+      "id": "led-1792067080927-0j5m",
+      "warehouseId": "wh-hubballi",
+      "warehouseName": "Hubballi Central Dark Warehouse",
+      "productId": "prod-001",
+      "productName": "AgriPro 7HP Heavy-Duty Multi-Speed Power Weeder1",
+      "type": "STOCK_OUT",
+      "quantity": 25,
+      "balanceAfter": 92,
+      "notes": "Reverting test adjustment",
+      "performedBy": "Automated Test Runner",
+      "createdAt": "2026-10-15T12:24:40.927Z"
+    },
+    {
+      "id": "led-1792067080230-249q",
+      "warehouseId": "wh-hubballi",
+      "warehouseName": "Hubballi Central Dark Warehouse",
+      "productId": "prod-001",
+      "productName": "AgriPro 7HP Heavy-Duty Multi-Speed Power Weeder1",
+      "type": "STOCK_IN",
+      "quantity": 25,
+      "balanceAfter": 117,
+      "referenceId": "WH-TEST-1792067080049",
+      "notes": "Verification test for warehouse stock reflection",
+      "performedBy": "Automated Test Runner",
+      "createdAt": "2026-10-15T12:24:40.230Z"
+    },
+    {
+      "id": "led-1792066978687-23td",
+      "warehouseId": "wh-hubballi",
+      "warehouseName": "Hubballi Central Dark Warehouse",
+      "productId": "prod-001",
+      "productName": "AgriPro 7HP Heavy-Duty Multi-Speed Power Weeder1",
+      "type": "STOCK_OUT",
+      "quantity": 25,
+      "balanceAfter": 92,
+      "notes": "Reverting test adjustment",
+      "performedBy": "Automated Test Runner",
+      "createdAt": "2026-10-15T12:22:58.687Z"
+    },
+    {
+      "id": "led-1792066978050-iyuu",
+      "warehouseId": "wh-hubballi",
+      "warehouseName": "Hubballi Central Dark Warehouse",
+      "productId": "prod-001",
+      "productName": "AgriPro 7HP Heavy-Duty Multi-Speed Power Weeder1",
+      "type": "STOCK_IN",
+      "quantity": 25,
+      "balanceAfter": 117,
+      "referenceId": "WH-TEST-1792066977767",
+      "notes": "Verification test for warehouse stock reflection",
+      "performedBy": "Automated Test Runner",
+      "createdAt": "2026-10-15T12:22:58.050Z"
+    },
     {
       "id": "led-1789710681666-10ch",
       "warehouseId": "wh-dharwad",
@@ -21454,7 +21557,8 @@
         "Shaktiman Rotary Tiller 6ft"
       ],
       "displayOrder": 1,
-      "isActive": true
+      "isActive": true,
+      "updatedAt": "2026-10-15T12:27:18.131Z"
     },
     {
       "id": "cg-stage-2",
@@ -21631,6 +21735,16 @@
     "showLocation": true,
     "showLicense": true,
     "enableCategories": true,
+    "pageTitle": "Life on the Farm - Visual Agronomy Archive",
+    "pageSubtitle": "A visual journey across agricultural rhythms in Karnataka—from fertile seedbed preparation and precision irrigation to mechanized harvesting and dry post-harvest storage.",
+    "gridColumns": 4,
+    "layoutStyle": "grid",
+    "allowDownload": true,
+    "showCaptions": true,
+    "defaultCategory": "All",
+    "enableSearch": true,
+    "seoMetaTitle": "Agricultural Life & Visual Gallery | AGRI MART MEGA",
+    "seoMetaDescription": "Curated agricultural photography showing farm mechanization, irrigation, crop stages, and harvesting across Karnataka.",
     "categories": [
       "All",
       "Farm Fields",

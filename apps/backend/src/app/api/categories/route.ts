@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { devDb } from '@/lib/dev-db';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   const categories = devDb.getCategories();
   const products = devDb.getProducts();

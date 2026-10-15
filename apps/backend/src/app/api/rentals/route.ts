@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { devDb } from '@/lib/dev-db';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const slug = searchParams.get('slug');
