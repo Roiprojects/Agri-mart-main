@@ -22,7 +22,7 @@ const nextConfig: NextConfig = {
     const backendUrl =
       process.env.BACKEND_INTERNAL_URL ||
       process.env.NEXT_PUBLIC_BACKEND_URL ||
-      'http://localhost:3001';
+      'http://localhost:3011';
 
     return [
       // Proxy backend API routes except local webhooks and package-of-practice

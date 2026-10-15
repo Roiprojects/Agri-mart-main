@@ -145,7 +145,7 @@ export default async function CropGuidancePage() {
     const backendUrl =
       process.env.BACKEND_INTERNAL_URL ||
       process.env.NEXT_PUBLIC_BACKEND_URL ||
-      'http://localhost:3001';
+      'http://localhost:3011';
     const res = await fetch(`${backendUrl}/api/crop-guidance`, {
       next: { revalidate: 30, tags: ['crop-guidance'] },
     });

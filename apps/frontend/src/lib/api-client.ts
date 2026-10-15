@@ -22,10 +22,10 @@ function getBackendBaseUrl(): string {
     return (
       process.env.BACKEND_INTERNAL_URL ||
       process.env.NEXT_PUBLIC_BACKEND_URL ||
-      'http://localhost:3001'
+      'http://localhost:3011'
     );
   }
-  return process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3001';
+  return process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3011';
 }
 
 export class ApiClient {
