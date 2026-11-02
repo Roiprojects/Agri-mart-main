@@ -62,7 +62,7 @@ export interface OrderSettingsData {
   isAdvanced: boolean;
 }
 
-export const DEFAULT_ORDER_SETTINGS: OrderSettingsData = {
+const DEFAULT_ORDER_SETTINGS: OrderSettingsData = {
   // Checkout defaults
   checkoutDisabled: false,
   anonymousCheckoutAllowed: true,

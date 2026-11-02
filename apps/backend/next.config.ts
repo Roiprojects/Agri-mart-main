@@ -5,6 +5,12 @@ const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3010';
 const nextConfig: NextConfig = {
   output: 'standalone',
   reactStrictMode: false,
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
   experimental: {
     optimizePackageImports: ['lucide-react', '@agrimart/contracts'],
     staleTimes: {

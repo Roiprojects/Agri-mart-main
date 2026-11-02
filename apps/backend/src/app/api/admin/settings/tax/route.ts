@@ -62,7 +62,7 @@ export interface TaxSettingsData {
   isAdvanced: boolean;
 }
 
-export const DEFAULT_TAX_SETTINGS: TaxSettingsData = {
+const DEFAULT_TAX_SETTINGS: TaxSettingsData = {
   // Common defaults
   taxBasedOn: 'Billing address',
   automaticallyDetectCountryByIpAddress: true,

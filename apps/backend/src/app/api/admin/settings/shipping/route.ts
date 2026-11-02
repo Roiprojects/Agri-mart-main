@@ -53,7 +53,7 @@ export interface ShippingSettingsData {
   isAdvanced: boolean;
 }
 
-export const DEFAULT_SHIPPING_SETTINGS: ShippingSettingsData = {
+const DEFAULT_SHIPPING_SETTINGS: ShippingSettingsData = {
   // Common
   estimateShippingCartPage: true,
   estimateShippingProductPage: true,

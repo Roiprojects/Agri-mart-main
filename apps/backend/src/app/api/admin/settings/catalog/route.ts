@@ -162,7 +162,7 @@ export interface ProductSortingOption {
   isActive: boolean;
 }
 
-export const DEFAULT_CATALOG_SETTINGS: CatalogSettingsData = {
+const DEFAULT_CATALOG_SETTINGS: CatalogSettingsData = {
   // Artificial Intelligence defaults
   enableArtificialIntelligence: true,
   providerType: 'Gemini',
