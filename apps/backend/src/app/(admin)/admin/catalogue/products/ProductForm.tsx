@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import {
   Save,
@@ -49,6 +49,8 @@ export interface ProductFormData {
   sku: string;
   brandId: string;
   categoryId: string;
+  parentCategoryId?: string;
+  subCategoryId?: string;
   price: number;
   comparePrice?: number;
   shortDescription: string;
@@ -113,11 +115,13 @@ export interface ProductFormData {
 
 interface ProductFormProps {
   initialValues?: Partial<ProductFormData>;
-  categories: { id: string; name: string }[];
+  categories: { id: string; name: string; parentId?: string | null }[];
   brands: { id: string; name: string }[];
   onSave: (data: ProductFormData, continueEditing?: boolean) => Promise<void>;
   saving: boolean;
   isEdit?: boolean;
+  externalAdvancedMode?: boolean;
+  onToggleAdvancedMode?: (nextMode: boolean) => void;
 }
 
 export function ProductForm({
@@ -127,24 +131,74 @@ export function ProductForm({
   onSave,
   saving,
   isEdit = false,
+  externalAdvancedMode,
+  onToggleAdvancedMode,
 }: ProductFormProps) {
-  // Main form state
+  const parentCategories = categories.filter((c) => !c.parentId);
+  const childCategories = categories.filter((c) => Boolean(c.parentId));
+
+  // Resolve initial parentCategoryId and subCategoryId
+  const resolveInitialCategoryHierarchy = () => {
+    const rawCatId = initialValues?.categoryId || '';
+    const rawParentId =
+      initialValues?.parentCategoryId ||
+      (initialValues as any)?.parentCategory?.id ||
+      '';
+    const rawSubId =
+      initialValues?.subCategoryId ||
+      (initialValues as any)?.subCategory?.id ||
+      '';
+
+    let pId = rawParentId;
+    let sId = rawSubId;
+
+    if (!pId && rawCatId) {
+      const found = categories.find((c) => c.id === rawCatId);
+      if (found) {
+        if (found.parentId) {
+          sId = sId || found.id;
+          pId = found.parentId;
+        } else {
+          pId = found.id;
+        }
+      }
+    }
+
+    if (!pId) {
+      pId = parentCategories[0]?.id || categories[0]?.id || 'cat-machinery';
+    }
+
+    if (!sId) {
+      const firstSub = childCategories.find((c) => c.parentId === pId);
+      if (firstSub) {
+        sId = firstSub.id;
+      }
+    }
+
+    return { parentCategoryId: pId, subCategoryId: sId };
+  };
+
+  const initialHierarchy = resolveInitialCategoryHierarchy();
+
+  // Main form state — all checkboxes defaulted to unchecked (false) while preserving full functionality
   const [formData, setFormData] = useState<ProductFormData>({
     id: initialValues?.id,
     name: initialValues?.name || '',
     sku: initialValues?.sku || `AGP-${Math.floor(1000 + Math.random() * 9000)}`,
-    brandId: initialValues?.brandId || (brands[0]?.id || ''),
-    categoryId: initialValues?.categoryId || (categories[0]?.id || ''),
+    brandId: initialValues?.brandId || (brands[0]?.id || 'br-agripro'),
+    categoryId: initialHierarchy.parentCategoryId,
+    parentCategoryId: initialHierarchy.parentCategoryId,
+    subCategoryId: initialHierarchy.subCategoryId,
     price: initialValues?.price !== undefined ? initialValues.price : 0,
     comparePrice: initialValues?.comparePrice || 0,
     shortDescription: initialValues?.shortDescription || '',
     description: initialValues?.description || '',
     targetCrops: initialValues?.targetCrops || 'Paddy, Cotton, Sugarcane',
     cropStages: initialValues?.cropStages || '1, 2, 3',
-    isPublished: initialValues?.isPublished !== undefined ? initialValues.isPublished : true,
-    isDraft: initialValues?.isDraft || false,
-    isFeatured: initialValues?.isFeatured || false,
-    isBestSeller: initialValues?.isBestSeller || false,
+    isPublished: false,
+    isDraft: false,
+    isFeatured: false,
+    isBestSeller: false,
     seName: initialValues?.seName || (initialValues as any)?.slug || '',
     metaTitle: initialValues?.metaTitle || '',
     metaKeywords: initialValues?.metaKeywords || '',
@@ -158,54 +212,60 @@ export function ProductForm({
         ? initialValues.stockQuantity
         : (initialValues as any)?.variants?.[0]?.stockQuantity !== undefined
         ? (initialValues as any).variants[0].stockQuantity
-        : 9978,
-    cost: initialValues?.cost || 0,
-    disableBuyButton: initialValues?.disableBuyButton || false,
-    disableWishlistButton: initialValues?.disableWishlistButton || false,
-    availableForPreOrder: initialValues?.availableForPreOrder || false,
-    callForPrice: initialValues?.callForPrice || false,
-    customerEntersPrice: initialValues?.customerEntersPrice || false,
-    pangvBasePriceEnabled: initialValues?.pangvBasePriceEnabled || false,
-    taxExempt: initialValues?.taxExempt || false,
-    taxCategory: initialValues?.taxCategory || '[None]',
-    isShippingEnabled: initialValues?.isShippingEnabled !== undefined ? initialValues.isShippingEnabled : true,
-    weight: initialValues?.weight || 0,
-    length: initialValues?.length || 0,
-    width: initialValues?.width || 0,
-    height: initialValues?.height || 0,
-    freeShipping: initialValues?.freeShipping || false,
-    shipSeparately: initialValues?.shipSeparately || false,
+        : 25,
+    cost: initialValues?.cost ?? Math.round((initialValues?.price || 0) * 0.78),
+    disableBuyButton: false,
+    disableWishlistButton: false,
+    availableForPreOrder: false,
+    callForPrice: false,
+    customerEntersPrice: false,
+    pangvBasePriceEnabled: false,
+    taxExempt: false,
+    taxCategory: initialValues?.taxCategory || 'Agricultural Essentials (5% GST)',
+    isShippingEnabled: false,
+    weight: initialValues?.weight ?? 5,
+    length: initialValues?.length ?? 35,
+    width: initialValues?.width ?? 25,
+    height: initialValues?.height ?? 20,
+    freeShipping: false,
+    shipSeparately: false,
     additionalShippingCharge: initialValues?.additionalShippingCharge || 0,
-    deliveryDate: initialValues?.deliveryDate || 'None',
-    isGiftCard: initialValues?.isGiftCard !== undefined ? initialValues.isGiftCard : false,
+    deliveryDate: initialValues?.deliveryDate || '1-2 days',
+    isGiftCard: false,
     giftCardType: initialValues?.giftCardType || 'Virtual',
     overriddenGiftCardAmount: initialValues?.overriddenGiftCardAmount || '',
-    isRental: initialValues?.isRental !== undefined ? initialValues.isRental : false,
+    isRental: false,
     rentalPeriodLength: initialValues?.rentalPeriodLength || '',
     rentalPeriod: (initialValues?.rentalPeriod as any) || 'Days',
     minCartQty: initialValues?.minCartQty || 1,
     maxCartQty: initialValues?.maxCartQty || 100,
-    productTags: initialValues?.productTags || '',
-    gtin: initialValues?.gtin || '',
-    manufacturerPartNumber: initialValues?.manufacturerPartNumber || '',
-    showOnHomePage: initialValues?.showOnHomePage || false,
+    productTags: initialValues?.productTags || 'agriculture, certified, farming',
+    gtin: initialValues?.gtin || '8901234560011',
+    manufacturerPartNumber: initialValues?.manufacturerPartNumber || `${initialValues?.sku || 'AGP'}-IND`,
+    showOnHomePage: false,
     productType: initialValues?.productType || 'Simple',
     productTemplate: initialValues?.productTemplate || 'Simple product',
-    visibleIndividually: initialValues?.visibleIndividually !== undefined ? initialValues.visibleIndividually : true,
-    ageVerification: initialValues?.ageVerification || false,
+    visibleIndividually: false,
+    ageVerification: false,
     customerRoles: initialValues?.customerRoles || '',
     limitedToStores: initialValues?.limitedToStores || '',
-    vendor: initialValues?.vendor || 'No vendor',
-    requireOtherProducts: initialValues?.requireOtherProducts || false,
-    allowCustomerReviews: initialValues?.allowCustomerReviews !== undefined ? initialValues.allowCustomerReviews : true,
+    vendor: initialValues?.vendor || 'Agri-Mart Direct',
+    requireOtherProducts: false,
+    allowCustomerReviews: false,
     availableStartDate: initialValues?.availableStartDate || '',
     availableEndDate: initialValues?.availableEndDate || '',
-    markAsNew: initialValues?.markAsNew || false,
+    markAsNew: false,
     adminComment: initialValues?.adminComment || '',
   });
 
-  // UI States
-  const [advancedMode, setAdvancedMode] = useState(false);
+  // UI States — starts in Advanced mode (showing all fields); clicking shifts to Basic mode (showing only mandatory/important fields)
+  const [internalAdvancedMode, setInternalAdvancedMode] = useState(true);
+  const advancedMode = externalAdvancedMode !== undefined ? externalAdvancedMode : internalAdvancedMode;
+  const handleToggleAdvancedMode = () => {
+    const next = !advancedMode;
+    setInternalAdvancedMode(next);
+    if (onToggleAdvancedMode) onToggleAdvancedMode(next);
+  };
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [productInfoCollapsed, setProductInfoCollapsed] = useState(false);
   const [priceCollapsed, setPriceCollapsed] = useState(false);
@@ -225,6 +285,72 @@ export function ProductForm({
   const [richTextHtml, setRichTextHtml] = useState(
     formData.description || '<p>Enter full product specifications, warranty details, and instructions here...</p>'
   );
+
+  // Sync formData & richTextRef whenever initialValues or categories/brands change
+  useEffect(() => {
+    if (!initialValues) return;
+    const resolved = resolveInitialCategoryHierarchy();
+    const desc =
+      initialValues.description ||
+      initialValues.shortDescription ||
+      '<p>Enter full product specifications, warranty details, and instructions here...</p>';
+
+    setFormData((prev) => ({
+      ...prev,
+      id: initialValues.id ?? prev.id,
+      name: initialValues.name ?? prev.name,
+      sku: initialValues.sku ?? prev.sku,
+      brandId: initialValues.brandId || prev.brandId || brands[0]?.id || 'br-agripro',
+      categoryId: resolved.parentCategoryId,
+      parentCategoryId: resolved.parentCategoryId,
+      subCategoryId: resolved.subCategoryId,
+      price: initialValues.price !== undefined ? initialValues.price : prev.price,
+      comparePrice: initialValues.comparePrice ?? prev.comparePrice,
+      shortDescription: initialValues.shortDescription ?? prev.shortDescription,
+      description: initialValues.description ?? prev.description,
+      targetCrops: initialValues.targetCrops || prev.targetCrops || 'Paddy, Cotton, Sugarcane',
+      cropStages: initialValues.cropStages || prev.cropStages || '1, 2, 3',
+      seName: initialValues.seName || (initialValues as any)?.slug || prev.seName,
+      metaTitle: initialValues.metaTitle || `Buy ${initialValues.name || prev.name} Online | Agri-Mart India`,
+      metaKeywords:
+        initialValues.metaKeywords ||
+        `${initialValues.name || prev.name}, ${initialValues.sku || prev.sku}, agriculture India`,
+      metaDescription:
+        initialValues.metaDescription ||
+        initialValues.shortDescription ||
+        initialValues.description ||
+        prev.metaDescription,
+      canonicalUrl: initialValues.canonicalUrl || prev.canonicalUrl,
+      images:
+        initialValues.images && initialValues.images.length > 0
+          ? initialValues.images
+          : prev.images,
+      stockQuantity:
+        initialValues.stockQuantity !== undefined
+          ? initialValues.stockQuantity
+          : (initialValues as any)?.variants?.[0]?.stockQuantity !== undefined
+          ? (initialValues as any).variants[0].stockQuantity
+          : prev.stockQuantity,
+      cost:
+        initialValues.cost ??
+        Math.round(((initialValues.price !== undefined ? initialValues.price : prev.price) || 0) * 0.78),
+      taxCategory: initialValues.taxCategory || prev.taxCategory || 'Agricultural Essentials (5% GST)',
+      weight: initialValues.weight ?? prev.weight ?? 5,
+      length: initialValues.length ?? prev.length ?? 35,
+      width: initialValues.width ?? prev.width ?? 25,
+      height: initialValues.height ?? prev.height ?? 20,
+      deliveryDate: initialValues.deliveryDate || prev.deliveryDate || '1-2 days',
+      gtin: initialValues.gtin || prev.gtin || '8901234560011',
+      manufacturerPartNumber:
+        initialValues.manufacturerPartNumber || `${initialValues.sku || prev.sku}-IND`,
+      vendor: initialValues.vendor || prev.vendor || 'Agri-Mart Direct',
+    }));
+
+    setRichTextHtml(desc);
+    if (richTextRef.current) {
+      richTextRef.current.innerHTML = desc;
+    }
+  }, [initialValues?.id, initialValues?.sku, initialValues?.name, categories.length, brands.length]);
 
   // Validation
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
@@ -347,32 +473,57 @@ export function ProductForm({
       </div>
 
       {/* MODE SWITCHER & SETTINGS BAR */}
-      <div className="flex items-center gap-2 pt-1 pb-2">
-        {/* Advanced Toggle Pill */}
+      <div className="flex flex-wrap items-center gap-2.5 pt-1 pb-2">
+        {/* Advanced / Basic Toggle Switch (nopCommerce style) */}
         <button
           type="button"
-          onClick={() => setAdvancedMode(!advancedMode)}
-          className="bg-[#2585be] hover:bg-[#1f72a3] text-white text-xs font-semibold px-3 py-1.5 rounded flex items-center gap-2.5 shadow-xs transition select-none"
+          onClick={handleToggleAdvancedMode}
+          className={`inline-flex items-center justify-between px-2.5 py-1 rounded text-xs font-semibold border transition cursor-pointer select-none min-w-[96px] h-7 shadow-2xs ${
+            advancedMode
+              ? 'bg-[#2585be] border-[#2585be] text-white hover:bg-[#1f72a3]'
+              : 'bg-white border-[#3c8dbc] text-[#3c8dbc] hover:bg-slate-50'
+          }`}
+          title={
+            advancedMode
+              ? 'Click to switch to Basic mode (show only mandatory & important fields)'
+              : 'Click to switch to Advanced mode (show all hidden fields)'
+          }
         >
-          <span>Advanced</span>
-          <span
-            className={`w-7 h-3.5 rounded-full p-0.5 flex items-center transition-colors ${
-              advancedMode ? 'bg-emerald-400 justify-end' : 'bg-white/40 justify-start'
-            }`}
-          >
-            <span className="w-2.5 h-2.5 rounded-full bg-white shadow-2xs" />
-          </span>
+          {advancedMode ? (
+            <>
+              <span className="text-white font-semibold text-xs">Advanced</span>
+              <span className="w-3.5 h-5 rounded-xs bg-white shadow-xs ml-2" />
+            </>
+          ) : (
+            <>
+              <span className="w-3.5 h-5 rounded-xs bg-[#3c8dbc] border border-[#3c8dbc] shadow-xs mr-2" />
+              <span className="text-[#3c8dbc] font-semibold text-xs">Basic</span>
+            </>
+          )}
         </button>
 
         {/* Settings Button */}
         <button
           type="button"
           onClick={() => setSettingsOpen(true)}
-          className="bg-[#00c0ef] hover:bg-[#00a7d0] text-white text-xs font-semibold px-3 py-1.5 rounded flex items-center gap-1.5 shadow-xs transition"
+          className="bg-[#00c0ef] hover:bg-[#00a7d0] text-white text-xs font-semibold px-3 py-1.5 rounded flex items-center gap-1.5 shadow-xs transition cursor-pointer h-7"
         >
           <Settings className="w-3.5 h-3.5" />
           <span>Settings</span>
         </button>
+
+        {/* Active Mode Indicator */}
+        <span
+          className={`text-[11px] px-2.5 py-1 rounded border font-medium ${
+            advancedMode
+              ? 'bg-blue-50 text-blue-700 border-blue-200'
+              : 'bg-amber-50 text-amber-800 border-amber-200'
+          }`}
+        >
+          {advancedMode
+            ? 'Advanced mode: Showing all product fields & sections (click Advanced to switch to Basic)'
+            : 'Basic mode: Showing only mandatory & important fields (click Basic to show all hidden fields)'}
+        </span>
       </div>
 
       {/* PRODUCT INFO CARD */}
@@ -401,44 +552,46 @@ export function ProductForm({
         {/* Card Body */}
         {!productInfoCollapsed && (
           <div className="p-4 sm:p-6 space-y-5 text-xs text-slate-700">
-            {/* Language / Variant Tabs */}
-            <div className="flex border-b border-slate-200 gap-1 pb-px">
-              <button
-                type="button"
-                onClick={() => setActiveLangTab('standard')}
-                className={`px-3.5 py-1.5 text-xs font-medium rounded-t border-t-2 transition ${
-                  activeLangTab === 'standard'
-                    ? 'border-[#3c8dbc] text-slate-800 bg-white font-semibold border-x border-b-white -mb-px'
-                    : 'border-transparent text-slate-500 hover:text-slate-700'
-                }`}
-              >
-                Standard
-              </button>
-              <button
-                type="button"
-                onClick={() => setActiveLangTab('en')}
-                className={`px-3.5 py-1.5 text-xs font-medium rounded-t border-t-2 transition flex items-center gap-1 ${
-                  activeLangTab === 'en'
-                    ? 'border-[#3c8dbc] text-slate-800 bg-white font-semibold border-x border-b-white -mb-px'
-                    : 'border-transparent text-slate-500 hover:text-slate-700'
-                }`}
-              >
-                <span>🇺🇸</span>
-                <span>EN</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => setActiveLangTab('rtl')}
-                className={`px-3.5 py-1.5 text-xs font-medium rounded-t border-t-2 transition flex items-center gap-1 ${
-                  activeLangTab === 'rtl'
-                    ? 'border-[#3c8dbc] text-slate-800 bg-white font-semibold border-x border-b-white -mb-px'
-                    : 'border-transparent text-slate-500 hover:text-slate-700'
-                }`}
-              >
-                <span>🇮🇳</span>
-                <span>KN (Kannada)</span>
-              </button>
-            </div>
+            {/* Language / Variant Tabs (Advanced mode only) */}
+            {advancedMode && (
+              <div className="flex border-b border-slate-200 gap-1 pb-px">
+                <button
+                  type="button"
+                  onClick={() => setActiveLangTab('standard')}
+                  className={`px-3.5 py-1.5 text-xs font-medium rounded-t border-t-2 transition ${
+                    activeLangTab === 'standard'
+                      ? 'border-[#3c8dbc] text-slate-800 bg-white font-semibold border-x border-b-white -mb-px'
+                      : 'border-transparent text-slate-500 hover:text-slate-700'
+                  }`}
+                >
+                  Standard
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveLangTab('en')}
+                  className={`px-3.5 py-1.5 text-xs font-medium rounded-t border-t-2 transition flex items-center gap-1 ${
+                    activeLangTab === 'en'
+                      ? 'border-[#3c8dbc] text-slate-800 bg-white font-semibold border-x border-b-white -mb-px'
+                      : 'border-transparent text-slate-500 hover:text-slate-700'
+                  }`}
+                >
+                  <span>🇺🇸</span>
+                  <span>EN</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveLangTab('rtl')}
+                  className={`px-3.5 py-1.5 text-xs font-medium rounded-t border-t-2 transition flex items-center gap-1 ${
+                    activeLangTab === 'rtl'
+                      ? 'border-[#3c8dbc] text-slate-800 bg-white font-semibold border-x border-b-white -mb-px'
+                      : 'border-transparent text-slate-500 hover:text-slate-700'
+                  }`}
+                >
+                  <span>🇮🇳</span>
+                  <span>KN (Kannada)</span>
+                </button>
+              </div>
+            )}
 
             {/* FORM FIELDS */}
             <div className="space-y-4 max-w-4xl">
@@ -757,24 +910,97 @@ export function ProductForm({
                 </div>
               </div>
 
-              {/* Categories */}
-              <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
-                <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
-                  <span>Categories</span>
-                  <Tooltip text="Select the primary store category under which this product will appear." />
+              {/* Parent Category & Child Category (Subcategory) */}
+              <div className="grid grid-cols-1 sm:grid-cols-12 items-start gap-2 bg-slate-50/70 p-3 rounded-md border border-slate-200">
+                <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-semibold text-slate-800 pt-1.5">
+                  <span>Parent &amp; Child Category</span>
+                  <Tooltip text="Select both the Parent Category and the Child Subcategory for this product." />
                 </div>
-                <div className="sm:col-span-9">
-                  <select
-                    value={formData.categoryId}
-                    onChange={(e) => handleChange('categoryId', e.target.value)}
-                    className="w-full text-xs px-2.5 py-2 rounded border border-[#d2d6de] bg-white focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none"
-                  >
-                    {categories.map((c) => (
-                      <option key={c.id} value={c.id}>
-                        {c.name}
-                      </option>
-                    ))}
-                  </select>
+                <div className="sm:col-span-9 space-y-3">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {/* Parent Category */}
+                    <div>
+                      <label className="block text-[11px] font-bold text-blue-700 uppercase tracking-wider mb-1">
+                        Parent Category
+                      </label>
+                      <select
+                        value={formData.parentCategoryId || formData.categoryId}
+                        onChange={(e) => {
+                          const newParentId = e.target.value;
+                          const firstChild = childCategories.find(
+                            (c) => c.parentId === newParentId
+                          );
+                          setFormData((prev) => ({
+                            ...prev,
+                            categoryId: newParentId,
+                            parentCategoryId: newParentId,
+                            subCategoryId: firstChild ? firstChild.id : '',
+                          }));
+                        }}
+                        className="w-full text-xs px-2.5 py-2 rounded border border-[#d2d6de] bg-white focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none font-medium"
+                      >
+                        {(parentCategories.length > 0 ? parentCategories : categories).map(
+                          (c) => (
+                            <option key={c.id} value={c.id}>
+                              {c.name}
+                            </option>
+                          )
+                        )}
+                      </select>
+                    </div>
+
+                    {/* Child Category (Subcategory) */}
+                    <div>
+                      <label className="block text-[11px] font-bold text-emerald-700 uppercase tracking-wider mb-1">
+                        Child Category (Subcategory)
+                      </label>
+                      <select
+                        value={formData.subCategoryId || ''}
+                        onChange={(e) =>
+                          handleChange('subCategoryId', e.target.value)
+                        }
+                        className="w-full text-xs px-2.5 py-2 rounded border border-[#d2d6de] bg-white focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none font-medium"
+                      >
+                        {childCategories
+                          .filter(
+                            (c) =>
+                              c.parentId ===
+                              (formData.parentCategoryId || formData.categoryId)
+                          )
+                          .map((sub) => (
+                            <option key={sub.id} value={sub.id}>
+                              {sub.name}
+                            </option>
+                          ))}
+                        {childCategories.filter(
+                          (c) =>
+                            c.parentId ===
+                            (formData.parentCategoryId || formData.categoryId)
+                        ).length === 0 && (
+                          <option value="">General Subcategory</option>
+                        )}
+                      </select>
+                    </div>
+                  </div>
+
+                  {/* Active Hierarchy Preview */}
+                  <div className="flex flex-wrap items-center gap-2 text-xs bg-white px-3 py-2 rounded border border-slate-200">
+                    <span className="text-slate-500 font-medium">
+                      Selected Hierarchy:
+                    </span>
+                    <span className="px-2 py-0.5 rounded bg-blue-50 text-blue-800 border border-blue-200 font-semibold">
+                      {categories.find(
+                        (c) =>
+                          c.id ===
+                          (formData.parentCategoryId || formData.categoryId)
+                      )?.name || 'Farm Equipment & Machinery'}
+                    </span>
+                    <span className="text-slate-400 font-bold">&gt;&gt;</span>
+                    <span className="px-2 py-0.5 rounded bg-emerald-50 text-emerald-800 border border-emerald-200 font-semibold">
+                      {categories.find((c) => c.id === formData.subCategoryId)
+                        ?.name || 'General Subcategory'}
+                    </span>
+                  </div>
                 </div>
               </div>
 
@@ -799,11 +1025,59 @@ export function ProductForm({
                 </div>
               </div>
 
+              {/* Stock quantity */}
+              <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
+                <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
+                  <span>Stock quantity</span>
+                  <Tooltip text="Current available inventory stock quantity across dark warehouses." />
+                </div>
+                <div className="sm:col-span-9">
+                  <input
+                    type="number"
+                    value={formData.stockQuantity ?? 25}
+                    onChange={(e) =>
+                      handleChange('stockQuantity', parseInt(e.target.value, 10) || 0)
+                    }
+                    className="w-full max-w-[200px] text-xs px-2.5 py-2 rounded border border-[#d2d6de] focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none"
+                  />
+                </div>
+              </div>
+
+              {/* Target Crops & Crop Stages (Advanced only) */}
+              {advancedMode && (
+                <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
+                  <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
+                    <span>Target crops &amp; stages</span>
+                    <Tooltip text="Target agricultural crops and growth stages for this product." />
+                  </div>
+                  <div className="sm:col-span-9 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <input
+                        type="text"
+                        value={formData.targetCrops || ''}
+                        onChange={(e) => handleChange('targetCrops', e.target.value)}
+                        placeholder="Target Crops (e.g. Paddy, Cotton, Sugarcane)"
+                        className="w-full text-xs px-2.5 py-2 rounded border border-[#d2d6de] focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none"
+                      />
+                    </div>
+                    <div>
+                      <input
+                        type="text"
+                        value={formData.cropStages || ''}
+                        onChange={(e) => handleChange('cropStages', e.target.value)}
+                        placeholder="Crop Stages (e.g. 1, 2, 3)"
+                        className="w-full text-xs px-2.5 py-2 rounded border border-[#d2d6de] focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {/* Published Checkbox */}
               <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
                 <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
                   <span>Published</span>
-                  <Tooltip text="Determines whether this product is visible and purchasable in the public storefront." />
+                  <Tooltip text="Determines whether this product is marked as published." />
                 </div>
                 <div className="sm:col-span-9 flex items-center">
                   <input
@@ -815,303 +1089,307 @@ export function ProductForm({
                 </div>
               </div>
 
-              {/* Product tags */}
-              <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
-                <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
-                  <span>Product tags</span>
-                  <Tooltip text="Product tags are keywords that products can be categorized by." />
-                </div>
-                <div className="sm:col-span-9">
-                  <input
-                    type="text"
-                    value={formData.productTags}
-                    onChange={(e) => handleChange('productTags', e.target.value)}
-                    placeholder=""
-                    className="w-full text-xs px-2.5 py-2 rounded border border-[#d2d6de] focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none"
-                  />
-                </div>
-              </div>
-
-              {/* GTIN (global trade item number) */}
-              <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
-                <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
-                  <span>GTIN (global trade item number)</span>
-                  <Tooltip text="Enter global trade item number (GTIN). These include UPC, EAN, JAN, and ISBN." />
-                </div>
-                <div className="sm:col-span-9">
-                  <input
-                    type="text"
-                    value={formData.gtin}
-                    onChange={(e) => handleChange('gtin', e.target.value)}
-                    placeholder=""
-                    className="w-full text-xs px-2.5 py-2 rounded border border-[#d2d6de] focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none"
-                  />
-                </div>
-              </div>
-
-              {/* Manufacturer part number */}
-              <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
-                <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
-                  <span>Manufacturer part number</span>
-                  <Tooltip text="The manufacturer's part number for this product." />
-                </div>
-                <div className="sm:col-span-9">
-                  <input
-                    type="text"
-                    value={formData.manufacturerPartNumber}
-                    onChange={(e) => handleChange('manufacturerPartNumber', e.target.value)}
-                    placeholder=""
-                    className="w-full text-xs px-2.5 py-2 rounded border border-[#d2d6de] focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none"
-                  />
-                </div>
-              </div>
-
-              {/* Show on home page */}
-              <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
-                <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
-                  <span>Show on home page</span>
-                  <Tooltip text="Check to display this product on your store's home page." />
-                </div>
-                <div className="sm:col-span-9 flex items-center">
-                  <input
-                    type="checkbox"
-                    checked={formData.showOnHomePage}
-                    onChange={(e) => handleChange('showOnHomePage', e.target.checked)}
-                    className="h-4 w-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc]"
-                  />
-                </div>
-              </div>
-
-              {/* Product type */}
-              <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
-                <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
-                  <span>Product type</span>
-                  <Tooltip text="Select a product type (Simple or Grouped)." />
-                </div>
-                <div className="sm:col-span-9">
-                  <select
-                    value={formData.productType}
-                    onChange={(e) => handleChange('productType', e.target.value as any)}
-                    className="w-full text-xs px-2.5 py-2 rounded border border-[#d2d6de] bg-white focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none"
-                  >
-                    <option value="Simple">Simple</option>
-                    <option value="Grouped">Grouped (product with variants)</option>
-                  </select>
-                </div>
-              </div>
-
-              {/* Product template */}
-              <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
-                <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
-                  <span>Product template</span>
-                  <Tooltip text="The template that will be used to display this product on the public storefront." />
-                </div>
-                <div className="sm:col-span-9">
-                  <select
-                    value={formData.productTemplate}
-                    onChange={(e) => handleChange('productTemplate', e.target.value as any)}
-                    className="w-full text-xs px-2.5 py-2 rounded border border-[#d2d6de] bg-white focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none"
-                  >
-                    <option value="Simple product">Simple product</option>
-                    <option value="Grouped product">Grouped product</option>
-                  </select>
-                </div>
-              </div>
-
-              {/* Visible individually */}
-              <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
-                <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
-                  <span>Visible individually</span>
-                  <Tooltip text="Check if the product is individually visible in catalog or search results." />
-                </div>
-                <div className="sm:col-span-9 flex items-center">
-                  <input
-                    type="checkbox"
-                    checked={formData.visibleIndividually}
-                    onChange={(e) => handleChange('visibleIndividually', e.target.checked)}
-                    className="h-4 w-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc]"
-                  />
-                </div>
-              </div>
-
-              {/* Age verification */}
-              <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
-                <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
-                  <span>Age verification</span>
-                  <Tooltip text="Check to require age verification before viewing or purchasing this product." />
-                </div>
-                <div className="sm:col-span-9 flex items-center">
-                  <input
-                    type="checkbox"
-                    checked={formData.ageVerification}
-                    onChange={(e) => handleChange('ageVerification', e.target.checked)}
-                    className="h-4 w-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc]"
-                  />
-                </div>
-              </div>
-
-              {/* Limited to customer roles */}
-              <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
-                <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
-                  <span>Limited to customer roles</span>
-                  <Tooltip text="Select customer roles that can view/purchase this product." />
-                </div>
-                <div className="sm:col-span-9 grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
-                  <div className="md:col-span-6">
-                    <input
-                      type="text"
-                      value={formData.customerRoles}
-                      onChange={(e) => handleChange('customerRoles', e.target.value)}
-                      placeholder=""
-                      className="w-full text-xs px-2.5 py-2 rounded border border-[#d2d6de] focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none"
-                    />
+              {advancedMode && (
+                <>
+                  {/* Product tags */}
+                  <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
+                    <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
+                      <span>Product tags</span>
+                      <Tooltip text="Product tags are keywords that products can be categorized by." />
+                    </div>
+                    <div className="sm:col-span-9">
+                      <input
+                        type="text"
+                        value={formData.productTags}
+                        onChange={(e) => handleChange('productTags', e.target.value)}
+                        placeholder=""
+                        className="w-full text-xs px-2.5 py-2 rounded border border-[#d2d6de] focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none"
+                      />
+                    </div>
                   </div>
-                  <div className="md:col-span-6 border border-[#d2d6de] bg-[#f9fafc] text-slate-600 px-3 py-2 rounded text-[11px] leading-snug">
-                    In order to use this functionality, you have to disable the following setting: Catalog settings &gt; Ignore ACL rules.
+
+                  {/* GTIN (global trade item number) */}
+                  <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
+                    <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
+                      <span>GTIN (global trade item number)</span>
+                      <Tooltip text="Enter global trade item number (GTIN). These include UPC, EAN, JAN, and ISBN." />
+                    </div>
+                    <div className="sm:col-span-9">
+                      <input
+                        type="text"
+                        value={formData.gtin}
+                        onChange={(e) => handleChange('gtin', e.target.value)}
+                        placeholder=""
+                        className="w-full text-xs px-2.5 py-2 rounded border border-[#d2d6de] focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none"
+                      />
+                    </div>
                   </div>
-                </div>
-              </div>
 
-              {/* Limited to stores */}
-              <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
-                <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
-                  <span>Limited to stores</span>
-                  <Tooltip text="Select stores this product is limited to." />
-                </div>
-                <div className="sm:col-span-9 grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
-                  <div className="md:col-span-6">
-                    <input
-                      type="text"
-                      value={formData.limitedToStores}
-                      onChange={(e) => handleChange('limitedToStores', e.target.value)}
-                      placeholder=""
-                      className="w-full text-xs px-2.5 py-2 rounded border border-[#d2d6de] focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none"
-                    />
+                  {/* Manufacturer part number */}
+                  <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
+                    <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
+                      <span>Manufacturer part number</span>
+                      <Tooltip text="The manufacturer's part number for this product." />
+                    </div>
+                    <div className="sm:col-span-9">
+                      <input
+                        type="text"
+                        value={formData.manufacturerPartNumber}
+                        onChange={(e) => handleChange('manufacturerPartNumber', e.target.value)}
+                        placeholder=""
+                        className="w-full text-xs px-2.5 py-2 rounded border border-[#d2d6de] focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none"
+                      />
+                    </div>
                   </div>
-                  <div className="md:col-span-6 border border-[#d2d6de] bg-[#f9fafc] text-slate-600 px-3 py-2 rounded text-[11px] leading-snug">
-                    In order to use this functionality, you have to disable the following setting: Catalog settings &gt; Ignore &quot;limit per store&quot; rules.
+
+                  {/* Show on home page */}
+                  <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
+                    <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
+                      <span>Show on home page</span>
+                      <Tooltip text="Check to display this product on your store's home page." />
+                    </div>
+                    <div className="sm:col-span-9 flex items-center">
+                      <input
+                        type="checkbox"
+                        checked={formData.showOnHomePage}
+                        onChange={(e) => handleChange('showOnHomePage', e.target.checked)}
+                        className="h-4 w-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc]"
+                      />
+                    </div>
                   </div>
-                </div>
-              </div>
 
-              {/* Vendor */}
-              <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
-                <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
-                  <span>Vendor</span>
-                  <Tooltip text="Choose the vendor for this product." />
-                </div>
-                <div className="sm:col-span-9">
-                  <select
-                    value={formData.vendor}
-                    onChange={(e) => handleChange('vendor', e.target.value)}
-                    className="w-full text-xs px-2.5 py-2 rounded border border-[#d2d6de] bg-white focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none text-slate-700 cursor-pointer"
-                  >
-                    <option value="No vendor">No vendor</option>
-                    <option value="Agri-Mart Direct">Agri-Mart Direct</option>
-                    <option value="Bayer CropScience">Bayer CropScience</option>
-                    <option value="Syngenta India">Syngenta India</option>
-                    <option value="UPL Limited">UPL Limited</option>
-                    <option value="IFFCO Organic">IFFCO Organic</option>
-                  </select>
-                </div>
-              </div>
+                  {/* Product type */}
+                  <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
+                    <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
+                      <span>Product type</span>
+                      <Tooltip text="Select a product type (Simple or Grouped)." />
+                    </div>
+                    <div className="sm:col-span-9">
+                      <select
+                        value={formData.productType}
+                        onChange={(e) => handleChange('productType', e.target.value as any)}
+                        className="w-full text-xs px-2.5 py-2 rounded border border-[#d2d6de] bg-white focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none"
+                      >
+                        <option value="Simple">Simple</option>
+                        <option value="Grouped">Grouped (product with variants)</option>
+                      </select>
+                    </div>
+                  </div>
 
-              {/* Require other products */}
-              <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
-                <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
-                  <span>Require other products</span>
-                  <Tooltip text="Check if this product requires other products to be added to the cart." />
-                </div>
-                <div className="sm:col-span-9 flex items-center">
-                  <input
-                    type="checkbox"
-                    checked={formData.requireOtherProducts}
-                    onChange={(e) => handleChange('requireOtherProducts', e.target.checked)}
-                    className="h-4 w-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
-                  />
-                </div>
-              </div>
+                  {/* Product template */}
+                  <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
+                    <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
+                      <span>Product template</span>
+                      <Tooltip text="The template that will be used to display this product on the public storefront." />
+                    </div>
+                    <div className="sm:col-span-9">
+                      <select
+                        value={formData.productTemplate}
+                        onChange={(e) => handleChange('productTemplate', e.target.value as any)}
+                        className="w-full text-xs px-2.5 py-2 rounded border border-[#d2d6de] bg-white focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none"
+                      >
+                        <option value="Simple product">Simple product</option>
+                        <option value="Grouped product">Grouped product</option>
+                      </select>
+                    </div>
+                  </div>
 
-              {/* Allow customer reviews */}
-              <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
-                <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
-                  <span>Allow customer reviews</span>
-                  <Tooltip text="Check if customers are allowed to write reviews for this product." />
-                </div>
-                <div className="sm:col-span-9 flex items-center">
-                  <input
-                    type="checkbox"
-                    checked={formData.allowCustomerReviews}
-                    onChange={(e) => handleChange('allowCustomerReviews', e.target.checked)}
-                    className="h-4 w-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
-                  />
-                </div>
-              </div>
+                  {/* Visible individually */}
+                  <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
+                    <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
+                      <span>Visible individually</span>
+                      <Tooltip text="Check if the product is individually visible in catalog or search results." />
+                    </div>
+                    <div className="sm:col-span-9 flex items-center">
+                      <input
+                        type="checkbox"
+                        checked={formData.visibleIndividually}
+                        onChange={(e) => handleChange('visibleIndividually', e.target.checked)}
+                        className="h-4 w-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc]"
+                      />
+                    </div>
+                  </div>
 
-              {/* Available start date */}
-              <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
-                <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
-                  <span>Available start date</span>
-                  <Tooltip text="The start of the product availability range." />
-                </div>
-                <div className="sm:col-span-9">
-                  <input
-                    type="datetime-local"
-                    value={formData.availableStartDate}
-                    onChange={(e) => handleChange('availableStartDate', e.target.value)}
-                    className="w-full max-w-[280px] text-xs px-2.5 py-1.5 rounded border border-[#d2d6de] focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none bg-white text-slate-700"
-                  />
-                </div>
-              </div>
+                  {/* Age verification */}
+                  <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
+                    <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
+                      <span>Age verification</span>
+                      <Tooltip text="Check to require age verification before viewing or purchasing this product." />
+                    </div>
+                    <div className="sm:col-span-9 flex items-center">
+                      <input
+                        type="checkbox"
+                        checked={formData.ageVerification}
+                        onChange={(e) => handleChange('ageVerification', e.target.checked)}
+                        className="h-4 w-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc]"
+                      />
+                    </div>
+                  </div>
 
-              {/* Available end date */}
-              <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
-                <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
-                  <span>Available end date</span>
-                  <Tooltip text="The end of the product availability range." />
-                </div>
-                <div className="sm:col-span-9">
-                  <input
-                    type="datetime-local"
-                    value={formData.availableEndDate}
-                    onChange={(e) => handleChange('availableEndDate', e.target.value)}
-                    className="w-full max-w-[280px] text-xs px-2.5 py-1.5 rounded border border-[#d2d6de] focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none bg-white text-slate-700"
-                  />
-                </div>
-              </div>
+                  {/* Limited to customer roles */}
+                  <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
+                    <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
+                      <span>Limited to customer roles</span>
+                      <Tooltip text="Select customer roles that can view/purchase this product." />
+                    </div>
+                    <div className="sm:col-span-9 grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                      <div className="md:col-span-6">
+                        <input
+                          type="text"
+                          value={formData.customerRoles}
+                          onChange={(e) => handleChange('customerRoles', e.target.value)}
+                          placeholder=""
+                          className="w-full text-xs px-2.5 py-2 rounded border border-[#d2d6de] focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none"
+                        />
+                      </div>
+                      <div className="md:col-span-6 border border-[#d2d6de] bg-[#f9fafc] text-slate-600 px-3 py-2 rounded text-[11px] leading-snug">
+                        In order to use this functionality, you have to disable the following setting: Catalog settings &gt; Ignore ACL rules.
+                      </div>
+                    </div>
+                  </div>
 
-              {/* Mark as new */}
-              <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
-                <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
-                  <span>Mark as new</span>
-                  <Tooltip text="Check to mark the product as new. It can be used to display 'New' badge." />
-                </div>
-                <div className="sm:col-span-9 flex items-center">
-                  <input
-                    type="checkbox"
-                    checked={formData.markAsNew}
-                    onChange={(e) => handleChange('markAsNew', e.target.checked)}
-                    className="h-4 w-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
-                  />
-                </div>
-              </div>
+                  {/* Limited to stores */}
+                  <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
+                    <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
+                      <span>Limited to stores</span>
+                      <Tooltip text="Select stores this product is limited to." />
+                    </div>
+                    <div className="sm:col-span-9 grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                      <div className="md:col-span-6">
+                        <input
+                          type="text"
+                          value={formData.limitedToStores}
+                          onChange={(e) => handleChange('limitedToStores', e.target.value)}
+                          placeholder=""
+                          className="w-full text-xs px-2.5 py-2 rounded border border-[#d2d6de] focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none"
+                        />
+                      </div>
+                      <div className="md:col-span-6 border border-[#d2d6de] bg-[#f9fafc] text-slate-600 px-3 py-2 rounded text-[11px] leading-snug">
+                        In order to use this functionality, you have to disable the following setting: Catalog settings &gt; Ignore &quot;limit per store&quot; rules.
+                      </div>
+                    </div>
+                  </div>
 
-              {/* Admin comment */}
-              <div className="grid grid-cols-1 sm:grid-cols-12 items-start gap-2">
-                <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700 pt-1.5">
-                  <span>Admin comment</span>
-                  <Tooltip text="This comment is for internal use only, not displayed to customers." />
-                </div>
-                <div className="sm:col-span-9">
-                  <textarea
-                    rows={4}
-                    value={formData.adminComment}
-                    onChange={(e) => handleChange('adminComment', e.target.value)}
-                    className="w-full text-xs px-2.5 py-2 rounded border border-[#d2d6de] focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none resize-y font-sans"
-                    placeholder=""
-                  />
-                </div>
-              </div>
+                  {/* Vendor */}
+                  <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
+                    <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
+                      <span>Vendor</span>
+                      <Tooltip text="Choose the vendor for this product." />
+                    </div>
+                    <div className="sm:col-span-9">
+                      <select
+                        value={formData.vendor}
+                        onChange={(e) => handleChange('vendor', e.target.value)}
+                        className="w-full text-xs px-2.5 py-2 rounded border border-[#d2d6de] bg-white focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none text-slate-700 cursor-pointer"
+                      >
+                        <option value="No vendor">No vendor</option>
+                        <option value="Agri-Mart Direct">Agri-Mart Direct</option>
+                        <option value="Bayer CropScience">Bayer CropScience</option>
+                        <option value="Syngenta India">Syngenta India</option>
+                        <option value="UPL Limited">UPL Limited</option>
+                        <option value="IFFCO Organic">IFFCO Organic</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  {/* Require other products */}
+                  <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
+                    <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
+                      <span>Require other products</span>
+                      <Tooltip text="Check if this product requires other products to be added to the cart." />
+                    </div>
+                    <div className="sm:col-span-9 flex items-center">
+                      <input
+                        type="checkbox"
+                        checked={formData.requireOtherProducts}
+                        onChange={(e) => handleChange('requireOtherProducts', e.target.checked)}
+                        className="h-4 w-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Allow customer reviews */}
+                  <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
+                    <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
+                      <span>Allow customer reviews</span>
+                      <Tooltip text="Check if customers are allowed to write reviews for this product." />
+                    </div>
+                    <div className="sm:col-span-9 flex items-center">
+                      <input
+                        type="checkbox"
+                        checked={formData.allowCustomerReviews}
+                        onChange={(e) => handleChange('allowCustomerReviews', e.target.checked)}
+                        className="h-4 w-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Available start date */}
+                  <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
+                    <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
+                      <span>Available start date</span>
+                      <Tooltip text="The start of the product availability range." />
+                    </div>
+                    <div className="sm:col-span-9">
+                      <input
+                        type="datetime-local"
+                        value={formData.availableStartDate}
+                        onChange={(e) => handleChange('availableStartDate', e.target.value)}
+                        className="w-full max-w-[280px] text-xs px-2.5 py-1.5 rounded border border-[#d2d6de] focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none bg-white text-slate-700"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Available end date */}
+                  <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
+                    <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
+                      <span>Available end date</span>
+                      <Tooltip text="The end of the product availability range." />
+                    </div>
+                    <div className="sm:col-span-9">
+                      <input
+                        type="datetime-local"
+                        value={formData.availableEndDate}
+                        onChange={(e) => handleChange('availableEndDate', e.target.value)}
+                        className="w-full max-w-[280px] text-xs px-2.5 py-1.5 rounded border border-[#d2d6de] focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none bg-white text-slate-700"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Mark as new */}
+                  <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
+                    <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
+                      <span>Mark as new</span>
+                      <Tooltip text="Check to mark the product as new. It can be used to display 'New' badge." />
+                    </div>
+                    <div className="sm:col-span-9 flex items-center">
+                      <input
+                        type="checkbox"
+                        checked={formData.markAsNew}
+                        onChange={(e) => handleChange('markAsNew', e.target.checked)}
+                        className="h-4 w-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Admin comment */}
+                  <div className="grid grid-cols-1 sm:grid-cols-12 items-start gap-2">
+                    <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700 pt-1.5">
+                      <span>Admin comment</span>
+                      <Tooltip text="This comment is for internal use only, not displayed to customers." />
+                    </div>
+                    <div className="sm:col-span-9">
+                      <textarea
+                        rows={4}
+                        value={formData.adminComment}
+                        onChange={(e) => handleChange('adminComment', e.target.value)}
+                        className="w-full text-xs px-2.5 py-2 rounded border border-[#d2d6de] focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none resize-y font-sans"
+                        placeholder=""
+                      />
+                    </div>
+                  </div>
+                </>
+              )}
 
             </div>
           </div>
@@ -1126,8 +1404,8 @@ export function ProductForm({
           className="border-b border-[#f4f4f4] px-4 py-2.5 flex items-center justify-between cursor-pointer select-none bg-white hover:bg-slate-50/50 transition"
         >
           <div className="flex items-center gap-2 text-slate-800 font-semibold text-xs sm:text-sm">
-            <span className="font-bold text-slate-700 text-sm">$</span>
-            <span>Price</span>
+            <span className="font-bold text-slate-700 text-sm">₹</span>
+            <span>Price (INR)</span>
           </div>
           <button
             type="button"
@@ -1148,7 +1426,7 @@ export function ProductForm({
             <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
               <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
                 <span>Price</span>
-                <Tooltip text="The retail selling price of this product." />
+                <Tooltip text="The retail selling price of this product in INR." />
               </div>
               <div className="sm:col-span-9 flex items-center">
                 <div className="flex max-w-[200px] w-full">
@@ -1160,180 +1438,184 @@ export function ProductForm({
                     className="w-full text-xs px-2.5 py-1.5 rounded-l border border-r-0 border-[#d2d6de] focus:border-[#3c8dbc] outline-none"
                   />
                   <span className="inline-flex items-center px-3 text-xs text-slate-600 bg-white border border-[#d2d6de] rounded-r font-medium select-none">
-                    USD
+                    INR
                   </span>
                 </div>
               </div>
             </div>
 
-            {/* Old price */}
-            <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
-              <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
-                <span>Old price</span>
-                <Tooltip text="The old price of the product. If set, this price will be displayed alongside the new price." />
-              </div>
-              <div className="sm:col-span-9 flex items-center">
-                <div className="flex max-w-[200px] w-full">
-                  <input
-                    type="number"
-                    step="any"
-                    value={formData.comparePrice ?? 0}
-                    onChange={(e) => handleChange('comparePrice', parseFloat(e.target.value) || 0)}
-                    className="w-full text-xs px-2.5 py-1.5 rounded-l border border-r-0 border-[#d2d6de] focus:border-[#3c8dbc] outline-none"
-                  />
-                  <span className="inline-flex items-center px-3 text-xs text-slate-600 bg-white border border-[#d2d6de] rounded-r font-medium select-none">
-                    USD
-                  </span>
+            {advancedMode && (
+              <>
+                {/* Old price */}
+                <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
+                  <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
+                    <span>Old price</span>
+                    <Tooltip text="The old price of the product in INR. If set, this price will be displayed alongside the new price." />
+                  </div>
+                  <div className="sm:col-span-9 flex items-center">
+                    <div className="flex max-w-[200px] w-full">
+                      <input
+                        type="number"
+                        step="any"
+                        value={formData.comparePrice ?? 0}
+                        onChange={(e) => handleChange('comparePrice', parseFloat(e.target.value) || 0)}
+                        className="w-full text-xs px-2.5 py-1.5 rounded-l border border-r-0 border-[#d2d6de] focus:border-[#3c8dbc] outline-none"
+                      />
+                      <span className="inline-flex items-center px-3 text-xs text-slate-600 bg-white border border-[#d2d6de] rounded-r font-medium select-none">
+                        INR
+                      </span>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
 
-            {/* Product cost */}
-            <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
-              <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
-                <span>Product cost</span>
-                <Tooltip text="The cost of the product for calculating profit margin. Not shown to customers." />
-              </div>
-              <div className="sm:col-span-9 flex items-center">
-                <div className="flex max-w-[200px] w-full">
-                  <input
-                    type="number"
-                    step="any"
-                    value={formData.cost ?? 0}
-                    onChange={(e) => handleChange('cost', parseFloat(e.target.value) || 0)}
-                    className="w-full text-xs px-2.5 py-1.5 rounded-l border border-r-0 border-[#d2d6de] focus:border-[#3c8dbc] outline-none"
-                  />
-                  <span className="inline-flex items-center px-3 text-xs text-slate-600 bg-white border border-[#d2d6de] rounded-r font-medium select-none">
-                    USD
-                  </span>
+                {/* Product cost */}
+                <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
+                  <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
+                    <span>Product cost</span>
+                    <Tooltip text="The cost of the product in INR for calculating profit margin. Not shown to customers." />
+                  </div>
+                  <div className="sm:col-span-9 flex items-center">
+                    <div className="flex max-w-[200px] w-full">
+                      <input
+                        type="number"
+                        step="any"
+                        value={formData.cost ?? 0}
+                        onChange={(e) => handleChange('cost', parseFloat(e.target.value) || 0)}
+                        className="w-full text-xs px-2.5 py-1.5 rounded-l border border-r-0 border-[#d2d6de] focus:border-[#3c8dbc] outline-none"
+                      />
+                      <span className="inline-flex items-center px-3 text-xs text-slate-600 bg-white border border-[#d2d6de] rounded-r font-medium select-none">
+                        INR
+                      </span>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
 
-            {/* Disable buy button */}
-            <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
-              <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
-                <span>Disable buy button</span>
-                <Tooltip text="Check to disable the buy button for this product." />
-              </div>
-              <div className="sm:col-span-9 flex items-center">
-                <input
-                  type="checkbox"
-                  checked={formData.disableBuyButton}
-                  onChange={(e) => handleChange('disableBuyButton', e.target.checked)}
-                  className="h-4 w-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
-                />
-              </div>
-            </div>
-
-            {/* Disable wishlist button */}
-            <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
-              <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
-                <span>Disable wishlist button</span>
-                <Tooltip text="Check to disable the wishlist button for this product." />
-              </div>
-              <div className="sm:col-span-9 flex items-center">
-                <input
-                  type="checkbox"
-                  checked={formData.disableWishlistButton}
-                  onChange={(e) => handleChange('disableWishlistButton', e.target.checked)}
-                  className="h-4 w-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
-                />
-              </div>
-            </div>
-
-            {/* Available for pre-order */}
-            <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
-              <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
-                <span>Available for pre-order</span>
-                <Tooltip text="Check if this product is available for pre-order." />
-              </div>
-              <div className="sm:col-span-9 flex items-center">
-                <input
-                  type="checkbox"
-                  checked={formData.availableForPreOrder}
-                  onChange={(e) => handleChange('availableForPreOrder', e.target.checked)}
-                  className="h-4 w-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
-                />
-              </div>
-            </div>
-
-            {/* Call for price */}
-            <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
-              <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
-                <span>Call for price</span>
-                <Tooltip text="Check to show 'Call for price' instead of the price." />
-              </div>
-              <div className="sm:col-span-9 flex items-center">
-                <input
-                  type="checkbox"
-                  checked={formData.callForPrice}
-                  onChange={(e) => handleChange('callForPrice', e.target.checked)}
-                  className="h-4 w-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
-                />
-              </div>
-            </div>
-
-            {/* Customer enters price */}
-            <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
-              <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
-                <span>Customer enters price</span>
-                <Tooltip text="Check if customers can enter the product price (e.g. for donations or flexible payment)." />
-              </div>
-              <div className="sm:col-span-9 flex items-center">
-                <input
-                  type="checkbox"
-                  checked={formData.customerEntersPrice}
-                  onChange={(e) => handleChange('customerEntersPrice', e.target.checked)}
-                  className="h-4 w-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
-                />
-              </div>
-            </div>
-
-            {/* PAngV (base price) enabled */}
-            <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
-              <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
-                <span>PAngV (base price) enabled</span>
-                <Tooltip text="Check if product base price (PAngV) is enabled for display according to German Price Indication Directive." />
-              </div>
-              <div className="sm:col-span-9 flex items-center">
-                <input
-                  type="checkbox"
-                  checked={formData.pangvBasePriceEnabled}
-                  onChange={(e) => handleChange('pangvBasePriceEnabled', e.target.checked)}
-                  className="h-4 w-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
-                />
-              </div>
-            </div>
-
-            {/* Discounts */}
-            <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
-              <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
-                <span>Discounts</span>
-                <Tooltip text="Check discounts applied to this product." />
-              </div>
-              <div className="sm:col-span-9">
-                <div className="w-full border border-[#d2d6de] bg-[#f4f4f4] text-slate-600 px-3 py-2 rounded text-xs leading-snug">
-                  No discounts available. Create at least one discount before mapping.
+                {/* Disable buy button */}
+                <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
+                  <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
+                    <span>Disable buy button</span>
+                    <Tooltip text="Check to disable the buy button for this product." />
+                  </div>
+                  <div className="sm:col-span-9 flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={formData.disableBuyButton}
+                      onChange={(e) => handleChange('disableBuyButton', e.target.checked)}
+                      className="h-4 w-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                    />
+                  </div>
                 </div>
-              </div>
-            </div>
 
-            {/* Tax exempt */}
-            <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
-              <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
-                <span>Tax exempt</span>
-                <Tooltip text="Check if this product is tax exempt (no tax will be calculated on purchase)." />
-              </div>
-              <div className="sm:col-span-9 flex items-center">
-                <input
-                  type="checkbox"
-                  checked={formData.taxExempt}
-                  onChange={(e) => handleChange('taxExempt', e.target.checked)}
-                  className="h-4 w-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
-                />
-              </div>
-            </div>
+                {/* Disable wishlist button */}
+                <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
+                  <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
+                    <span>Disable wishlist button</span>
+                    <Tooltip text="Check to disable the wishlist button for this product." />
+                  </div>
+                  <div className="sm:col-span-9 flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={formData.disableWishlistButton}
+                      onChange={(e) => handleChange('disableWishlistButton', e.target.checked)}
+                      className="h-4 w-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                    />
+                  </div>
+                </div>
+
+                {/* Available for pre-order */}
+                <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
+                  <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
+                    <span>Available for pre-order</span>
+                    <Tooltip text="Check if this product is available for pre-order." />
+                  </div>
+                  <div className="sm:col-span-9 flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={formData.availableForPreOrder}
+                      onChange={(e) => handleChange('availableForPreOrder', e.target.checked)}
+                      className="h-4 w-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                    />
+                  </div>
+                </div>
+
+                {/* Call for price */}
+                <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
+                  <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
+                    <span>Call for price</span>
+                    <Tooltip text="Check to show 'Call for price' instead of the price." />
+                  </div>
+                  <div className="sm:col-span-9 flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={formData.callForPrice}
+                      onChange={(e) => handleChange('callForPrice', e.target.checked)}
+                      className="h-4 w-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                    />
+                  </div>
+                </div>
+
+                {/* Customer enters price */}
+                <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
+                  <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
+                    <span>Customer enters price</span>
+                    <Tooltip text="Check if customers can enter the product price (e.g. for donations or flexible payment)." />
+                  </div>
+                  <div className="sm:col-span-9 flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={formData.customerEntersPrice}
+                      onChange={(e) => handleChange('customerEntersPrice', e.target.checked)}
+                      className="h-4 w-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                    />
+                  </div>
+                </div>
+
+                {/* PAngV (base price) enabled */}
+                <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
+                  <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
+                    <span>PAngV (base price) enabled</span>
+                    <Tooltip text="Check if product base price (PAngV) is enabled for display according to German Price Indication Directive." />
+                  </div>
+                  <div className="sm:col-span-9 flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={formData.pangvBasePriceEnabled}
+                      onChange={(e) => handleChange('pangvBasePriceEnabled', e.target.checked)}
+                      className="h-4 w-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                    />
+                  </div>
+                </div>
+
+                {/* Discounts */}
+                <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
+                  <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
+                    <span>Discounts</span>
+                    <Tooltip text="Check discounts applied to this product." />
+                  </div>
+                  <div className="sm:col-span-9">
+                    <div className="w-full border border-[#d2d6de] bg-[#f4f4f4] text-slate-600 px-3 py-2 rounded text-xs leading-snug">
+                      No discounts available. Create at least one discount before mapping.
+                    </div>
+                  </div>
+                </div>
+
+                {/* Tax exempt */}
+                <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
+                  <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
+                    <span>Tax exempt</span>
+                    <Tooltip text="Check if this product is tax exempt (no tax will be calculated on purchase)." />
+                  </div>
+                  <div className="sm:col-span-9 flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={formData.taxExempt}
+                      onChange={(e) => handleChange('taxExempt', e.target.checked)}
+                      className="h-4 w-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                    />
+                  </div>
+                </div>
+              </>
+            )}
 
             {/* Tax category */}
             <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
@@ -1351,6 +1633,7 @@ export function ProductForm({
                   <option value="Standard Rate (18% GST)">Standard Rate (18% GST)</option>
                   <option value="Reduced Rate (12% GST)">Reduced Rate (12% GST)</option>
                   <option value="Agricultural Essentials (5% GST)">Agricultural Essentials (5% GST)</option>
+                  <option value="Exempt / Agricultural (5% GST)">Exempt / Agricultural (5% GST)</option>
                   <option value="Exempt Seeds & Biocides (0% GST)">Exempt Seeds &amp; Biocides (0% GST)</option>
                 </select>
               </div>
@@ -1359,731 +1642,636 @@ export function ProductForm({
         )}
       </div>
 
-      {/* SHIPPING CARD */}
-      {/* SHIPPING CARD */}
-      <div className="bg-white rounded border border-[#d2d6de] border-t-[3px] border-t-[#00c0ef] shadow-2xs overflow-hidden">
-        {/* Card Header */}
-        <div
-          onClick={() => setShippingCollapsed(!shippingCollapsed)}
-          className="border-b border-[#f4f4f4] px-4 py-2.5 flex items-center justify-between cursor-pointer select-none bg-white hover:bg-slate-50/50 transition"
-        >
-          <div className="flex items-center gap-2 text-slate-800 font-semibold text-xs sm:text-sm">
-            <Truck className="w-4 h-4 text-slate-800" />
-            <span>Shipping</span>
-          </div>
-          <button
-            type="button"
-            className="p-1 text-slate-500 hover:text-slate-700 focus:outline-none"
-          >
-            {shippingCollapsed ? (
-              <Plus className="w-3.5 h-3.5" />
-            ) : (
-              <Minus className="w-3.5 h-3.5" />
-            )}
-          </button>
-        </div>
-
-        {/* Card Body */}
-        {!shippingCollapsed && (
-          <div className="p-4 sm:p-6 space-y-4 text-xs text-slate-700">
-            {/* Shipping enabled */}
-            <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
-              <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
-                <span>Shipping enabled</span>
-                <Tooltip text="Check if this product can be shipped to customers." />
+      {/* ADVANCED CARDS: SHIPPING, GIFT CARD, RENTAL, SEO */}
+      {advancedMode && (
+        <>
+          {/* SHIPPING CARD */}
+          <div className="bg-white rounded border border-[#d2d6de] border-t-[3px] border-t-[#00c0ef] shadow-2xs overflow-hidden">
+            {/* Card Header */}
+            <div
+              onClick={() => setShippingCollapsed(!shippingCollapsed)}
+              className="border-b border-[#f4f4f4] px-4 py-2.5 flex items-center justify-between cursor-pointer select-none bg-white hover:bg-slate-50/50 transition"
+            >
+              <div className="flex items-center gap-2 text-slate-800 font-semibold text-xs sm:text-sm">
+                <Truck className="w-4 h-4 text-slate-800" />
+                <span>Shipping</span>
               </div>
-              <div className="sm:col-span-9 flex items-center">
-                <input
-                  type="checkbox"
-                  checked={formData.isShippingEnabled}
-                  onChange={(e) => handleChange('isShippingEnabled', e.target.checked)}
-                  className="h-4 w-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
-                />
-              </div>
+              <button
+                type="button"
+                className="p-1 text-slate-500 hover:text-slate-700 focus:outline-none"
+              >
+                {shippingCollapsed ? (
+                  <Plus className="w-3.5 h-3.5" />
+                ) : (
+                  <Minus className="w-3.5 h-3.5" />
+                )}
+              </button>
             </div>
 
-            {formData.isShippingEnabled && (
-              <div className="space-y-4">
-                {/* Dimensions Group: Weight, Length, Width, Height */}
-                <div className="space-y-0">
-                  {/* Weight */}
+            {/* Card Body */}
+            {!shippingCollapsed && (
+              <div className="p-4 sm:p-6 space-y-4 text-xs text-slate-700">
+                {/* Shipping enabled */}
+                <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
+                  <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
+                    <span>Shipping enabled</span>
+                    <Tooltip text="Check if this product can be shipped to customers." />
+                  </div>
+                  <div className="sm:col-span-9 flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={formData.isShippingEnabled}
+                      onChange={(e) => handleChange('isShippingEnabled', e.target.checked)}
+                      className="h-4 w-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  {/* Dimensions Group: Weight, Length, Width, Height */}
+                  <div className="space-y-0">
+                    {/* Weight */}
+                    <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
+                      <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
+                        <span>Weight</span>
+                        <Tooltip text="The physical weight of the product." />
+                      </div>
+                      <div className="sm:col-span-9 relative flex items-center pl-6">
+                        <div className="absolute left-[7px] -top-4 bottom-0 w-px bg-[#d2d6de]" />
+                        <div className="absolute left-[7px] top-1/2 w-4 h-px bg-[#d2d6de]" />
+                        <div className="flex max-w-[200px] w-full">
+                          <input
+                            type="number"
+                            step="any"
+                            value={formData.weight}
+                            onChange={(e) => handleChange('weight', parseFloat(e.target.value) || 0)}
+                            className="w-full text-xs px-2.5 py-1.5 rounded-tl border border-r-0 border-[#d2d6de] focus:border-[#3c8dbc] outline-none"
+                          />
+                          <span className="inline-flex items-center px-3 text-xs text-slate-600 bg-white border border-[#d2d6de] rounded-tr font-medium select-none">
+                            kg
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Length */}
+                    <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
+                      <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
+                        <span>Length</span>
+                        <Tooltip text="The package length of the product." />
+                      </div>
+                      <div className="sm:col-span-9 relative flex items-center pl-6">
+                        <div className="absolute left-[7px] 0 bottom-0 w-px bg-[#d2d6de]" />
+                        <div className="flex max-w-[200px] w-full">
+                          <input
+                            type="number"
+                            step="any"
+                            value={formData.length}
+                            onChange={(e) => handleChange('length', parseFloat(e.target.value) || 0)}
+                            className="w-full text-xs px-2.5 py-1.5 border border-r-0 border-t-0 border-[#d2d6de] focus:border-[#3c8dbc] outline-none"
+                          />
+                          <span className="inline-flex items-center px-3 text-xs text-slate-600 bg-white border border-t-0 border-[#d2d6de] font-medium select-none">
+                            cm
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Width */}
+                    <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
+                      <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
+                        <span>Width</span>
+                        <Tooltip text="The package width of the product." />
+                      </div>
+                      <div className="sm:col-span-9 relative flex items-center pl-6">
+                        <div className="absolute left-[7px] 0 bottom-0 w-px bg-[#d2d6de]" />
+                        <div className="flex max-w-[200px] w-full">
+                          <input
+                            type="number"
+                            step="any"
+                            value={formData.width}
+                            onChange={(e) => handleChange('width', parseFloat(e.target.value) || 0)}
+                            className="w-full text-xs px-2.5 py-1.5 border border-r-0 border-t-0 border-[#d2d6de] focus:border-[#3c8dbc] outline-none"
+                          />
+                          <span className="inline-flex items-center px-3 text-xs text-slate-600 bg-white border border-t-0 border-[#d2d6de] font-medium select-none">
+                            cm
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Height */}
+                    <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
+                      <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
+                        <span>Height</span>
+                        <Tooltip text="The package height of the product." />
+                      </div>
+                      <div className="sm:col-span-9 relative flex items-center pl-6">
+                        <div className="absolute left-[7px] 0 bottom-0 w-px bg-[#d2d6de]" />
+                        <div className="flex max-w-[200px] w-full">
+                          <input
+                            type="number"
+                            step="any"
+                            value={formData.height}
+                            onChange={(e) => handleChange('height', parseFloat(e.target.value) || 0)}
+                            className="w-full text-xs px-2.5 py-1.5 rounded-bl border border-r-0 border-t-0 border-[#d2d6de] focus:border-[#3c8dbc] outline-none"
+                          />
+                          <span className="inline-flex items-center px-3 text-xs text-slate-600 bg-white border border-t-0 border-[#d2d6de] rounded-br font-medium select-none">
+                            cm
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Free shipping */}
                   <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
                     <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
-                      <span>Weight</span>
-                      <Tooltip text="The physical weight of the product." />
+                      <span>Free shipping</span>
+                      <Tooltip text="Check if this product qualifies for free shipping." />
                     </div>
                     <div className="sm:col-span-9 relative flex items-center pl-6">
-                      {/* Vertical line starting from checkbox above down through */}
                       <div className="absolute left-[7px] -top-4 bottom-0 w-px bg-[#d2d6de]" />
-                      {/* Horizontal branch line connecting to Weight */}
+                      <div className="absolute left-[7px] top-1/2 w-4 h-px bg-[#d2d6de]" />
+                      <input
+                        type="checkbox"
+                        checked={formData.freeShipping}
+                        onChange={(e) => handleChange('freeShipping', e.target.checked)}
+                        className="h-4 w-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Ship separately */}
+                  <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
+                    <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
+                      <span>Ship separately</span>
+                      <Tooltip text="Check if this product must be shipped in its own individual parcel/box." />
+                    </div>
+                    <div className="sm:col-span-9 relative flex items-center pl-6">
+                      <div className="absolute left-[7px] -top-4 bottom-0 w-px bg-[#d2d6de]" />
+                      <div className="absolute left-[7px] top-1/2 w-4 h-px bg-[#d2d6de]" />
+                      <input
+                        type="checkbox"
+                        checked={formData.shipSeparately}
+                        onChange={(e) => handleChange('shipSeparately', e.target.checked)}
+                        className="h-4 w-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Additional shipping charge */}
+                  <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
+                    <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
+                      <span>Additional shipping charge</span>
+                      <Tooltip text="An additional fixed amount in INR charged for shipping this product." />
+                    </div>
+                    <div className="sm:col-span-9 relative flex items-center pl-6">
+                      <div className="absolute left-[7px] -top-4 top-1/2 w-px bg-[#d2d6de]" />
                       <div className="absolute left-[7px] top-1/2 w-4 h-px bg-[#d2d6de]" />
                       <div className="flex max-w-[200px] w-full">
                         <input
                           type="number"
                           step="any"
-                          value={formData.weight}
-                          onChange={(e) => handleChange('weight', parseFloat(e.target.value) || 0)}
-                          className="w-full text-xs px-2.5 py-1.5 rounded-tl border border-r-0 border-[#d2d6de] focus:border-[#3c8dbc] outline-none"
+                          value={formData.additionalShippingCharge}
+                          onChange={(e) => handleChange('additionalShippingCharge', parseFloat(e.target.value) || 0)}
+                          className="w-full text-xs px-2.5 py-1.5 rounded-l border border-r-0 border-[#d2d6de] focus:border-[#3c8dbc] outline-none"
                         />
-                        <span className="inline-flex items-center px-3 text-xs text-slate-600 bg-white border border-[#d2d6de] rounded-tr font-medium select-none">
-                          lb(s)
+                        <span className="inline-flex items-center px-3 text-xs text-slate-600 bg-white border border-[#d2d6de] rounded-r font-medium select-none">
+                          INR
                         </span>
                       </div>
                     </div>
                   </div>
 
-                  {/* Length */}
+                  {/* Delivery date */}
                   <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
                     <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
-                      <span>Length</span>
-                      <Tooltip text="The package length of the product." />
+                      <span>Delivery date</span>
+                      <Tooltip text="The delivery date options for this product." />
                     </div>
-                    <div className="sm:col-span-9 relative flex items-center pl-6">
-                      {/* Vertical line continuing down */}
-                      <div className="absolute left-[7px] 0 bottom-0 w-px bg-[#d2d6de]" />
-                      <div className="flex max-w-[200px] w-full">
-                        <input
-                          type="number"
-                          step="any"
-                          value={formData.length}
-                          onChange={(e) => handleChange('length', parseFloat(e.target.value) || 0)}
-                          className="w-full text-xs px-2.5 py-1.5 border border-r-0 border-t-0 border-[#d2d6de] focus:border-[#3c8dbc] outline-none"
-                        />
-                        <span className="inline-flex items-center px-3 text-xs text-slate-600 bg-white border border-t-0 border-[#d2d6de] font-medium select-none">
-                          inch(es)
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Width */}
-                  <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
-                    <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
-                      <span>Width</span>
-                      <Tooltip text="The package width of the product." />
-                    </div>
-                    <div className="sm:col-span-9 relative flex items-center pl-6">
-                      {/* Vertical line continuing down */}
-                      <div className="absolute left-[7px] 0 bottom-0 w-px bg-[#d2d6de]" />
-                      <div className="flex max-w-[200px] w-full">
-                        <input
-                          type="number"
-                          step="any"
-                          value={formData.width}
-                          onChange={(e) => handleChange('width', parseFloat(e.target.value) || 0)}
-                          className="w-full text-xs px-2.5 py-1.5 border border-r-0 border-t-0 border-[#d2d6de] focus:border-[#3c8dbc] outline-none"
-                        />
-                        <span className="inline-flex items-center px-3 text-xs text-slate-600 bg-white border border-t-0 border-[#d2d6de] font-medium select-none">
-                          inch(es)
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Height */}
-                  <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
-                    <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
-                      <span>Height</span>
-                      <Tooltip text="The package height of the product." />
-                    </div>
-                    <div className="sm:col-span-9 relative flex items-center pl-6">
-                      {/* Vertical line continuing down */}
-                      <div className="absolute left-[7px] 0 bottom-0 w-px bg-[#d2d6de]" />
-                      <div className="flex max-w-[200px] w-full">
-                        <input
-                          type="number"
-                          step="any"
-                          value={formData.height}
-                          onChange={(e) => handleChange('height', parseFloat(e.target.value) || 0)}
-                          className="w-full text-xs px-2.5 py-1.5 rounded-bl border border-r-0 border-t-0 border-[#d2d6de] focus:border-[#3c8dbc] outline-none"
-                        />
-                        <span className="inline-flex items-center px-3 text-xs text-slate-600 bg-white border border-t-0 border-[#d2d6de] rounded-br font-medium select-none">
-                          inch(es)
-                        </span>
-                      </div>
+                    <div className="sm:col-span-9">
+                      <select
+                        value={formData.deliveryDate}
+                        onChange={(e) => handleChange('deliveryDate', e.target.value)}
+                        className="w-full text-xs px-2.5 py-2 rounded border border-[#d2d6de] bg-white focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none text-slate-700 cursor-pointer"
+                      >
+                        <option value="None">None</option>
+                        <option value="1-2 days">1-2 days</option>
+                        <option value="1-2 days (Express Hub)">1-2 days (Express Hub)</option>
+                        <option value="2-3 days">2-3 days</option>
+                        <option value="2-4 days">2-4 days</option>
+                        <option value="3-5 days">3-5 days</option>
+                        <option value="1 week">1 week</option>
+                        <option value="2-3 weeks">2-3 weeks</option>
+                      </select>
                     </div>
                   </div>
                 </div>
+              </div>
+            )}
+          </div>
 
-                {/* Free shipping */}
+          {/* GIFT CARD */}
+          <div className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden">
+            {/* Card Header */}
+            <div
+              onClick={() => setGiftCardCollapsed(!giftCardCollapsed)}
+              className="border-b border-[#f4f4f4] px-4 py-2.5 flex items-center justify-between cursor-pointer select-none bg-white hover:bg-slate-50/50 transition"
+            >
+              <div className="flex items-center gap-2 text-slate-800 font-semibold text-xs sm:text-sm">
+                <Gift className="w-4 h-4 text-slate-800" />
+                <span>Gift card</span>
+              </div>
+              <button
+                type="button"
+                className="p-1 text-slate-500 hover:text-slate-700 focus:outline-none"
+              >
+                {giftCardCollapsed ? (
+                  <Plus className="w-3.5 h-3.5" />
+                ) : (
+                  <Minus className="w-3.5 h-3.5" />
+                )}
+              </button>
+            </div>
+
+            {/* Card Body */}
+            {!giftCardCollapsed && (
+              <div className="p-4 sm:p-6 space-y-4 text-xs text-slate-700">
+                {/* Is gift card */}
                 <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
                   <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
-                    <span>Free shipping</span>
-                    <Tooltip text="Check if this product qualifies for free shipping." />
+                    <span>Is gift card</span>
+                    <Tooltip text="Check if this product is a gift card." />
                   </div>
-                  <div className="sm:col-span-9 relative flex items-center pl-6">
-                    {/* Vertical line continuing through gap */}
-                    <div className="absolute left-[7px] -top-4 bottom-0 w-px bg-[#d2d6de]" />
-                    {/* Horizontal branch line */}
-                    <div className="absolute left-[7px] top-1/2 w-4 h-px bg-[#d2d6de]" />
+                  <div className="sm:col-span-9 flex items-center">
                     <input
                       type="checkbox"
-                      checked={formData.freeShipping}
-                      onChange={(e) => handleChange('freeShipping', e.target.checked)}
+                      checked={formData.isGiftCard}
+                      onChange={(e) => handleChange('isGiftCard', e.target.checked)}
                       className="h-4 w-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
                     />
                   </div>
                 </div>
 
-                {/* Ship separately */}
+                {formData.isGiftCard && (
+                  <div className="space-y-4 pt-1">
+                    {/* Gift card type */}
+                    <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
+                      <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
+                        <span>Gift card type</span>
+                        <Tooltip text="Choose the gift card type: Virtual (delivered via email) or Physical (shipped)." />
+                      </div>
+                      <div className="sm:col-span-9 relative flex items-center pl-6">
+                        <div className="absolute left-[7px] -top-4 bottom-0 w-px bg-[#d2d6de]" />
+                        <div className="absolute left-[7px] top-1/2 w-4 h-px bg-[#d2d6de]" />
+                        <select
+                          value={formData.giftCardType}
+                          onChange={(e) => handleChange('giftCardType', e.target.value as any)}
+                          className="w-full text-xs px-2.5 py-2 rounded border border-[#d2d6de] bg-white focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none text-slate-700 cursor-pointer"
+                        >
+                          <option value="Virtual">Virtual</option>
+                          <option value="Physical">Physical</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    {/* Overridden gift card amount */}
+                    <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
+                      <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
+                        <span>Overridden gift card amount (INR)</span>
+                        <Tooltip text="Specify the overridden gift card amount in INR if applicable. Leave blank to use product price." />
+                      </div>
+                      <div className="sm:col-span-9 relative flex items-center pl-6">
+                        <div className="absolute left-[7px] -top-4 top-1/2 w-px bg-[#d2d6de]" />
+                        <div className="absolute left-[7px] top-1/2 w-4 h-px bg-[#d2d6de]" />
+                        <input
+                          type="number"
+                          step="any"
+                          placeholder=""
+                          value={formData.overriddenGiftCardAmount || ''}
+                          onChange={(e) => handleChange('overriddenGiftCardAmount', e.target.value ? parseFloat(e.target.value) : '')}
+                          className="w-full max-w-[180px] text-xs px-2.5 py-1.5 rounded border border-[#d2d6de] focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* RENTAL CARD */}
+          <div className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden">
+            {/* Card Header */}
+            <div
+              onClick={() => setRentalCollapsed(!rentalCollapsed)}
+              className="border-b border-[#f4f4f4] px-4 py-2.5 flex items-center justify-between cursor-pointer select-none bg-white hover:bg-slate-50/50 transition"
+            >
+              <div className="flex items-center gap-2 text-slate-800 font-semibold text-xs sm:text-sm">
+                <Calendar className="w-4 h-4 text-slate-800" />
+                <span>Rental</span>
+              </div>
+              <button
+                type="button"
+                className="p-1 text-slate-500 hover:text-slate-700 focus:outline-none"
+              >
+                {rentalCollapsed ? (
+                  <Plus className="w-3.5 h-3.5" />
+                ) : (
+                  <Minus className="w-3.5 h-3.5" />
+                )}
+              </button>
+            </div>
+
+            {/* Card Body */}
+            {!rentalCollapsed && (
+              <div className="p-4 sm:p-6 space-y-4 text-xs text-slate-700">
+                {/* Is rental */}
                 <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
                   <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
-                    <span>Ship separately</span>
-                    <Tooltip text="Check if this product must be shipped in its own individual parcel/box." />
+                    <span>Is rental</span>
+                    <Tooltip text="Check if this product is available for rental instead of outright purchase." />
                   </div>
-                  <div className="sm:col-span-9 relative flex items-center pl-6">
-                    {/* Vertical line continuing through gap */}
-                    <div className="absolute left-[7px] -top-4 bottom-0 w-px bg-[#d2d6de]" />
-                    {/* Horizontal branch line */}
-                    <div className="absolute left-[7px] top-1/2 w-4 h-px bg-[#d2d6de]" />
+                  <div className="sm:col-span-9 flex items-center">
                     <input
                       type="checkbox"
-                      checked={formData.shipSeparately}
-                      onChange={(e) => handleChange('shipSeparately', e.target.checked)}
+                      checked={formData.isRental}
+                      onChange={(e) => handleChange('isRental', e.target.checked)}
                       className="h-4 w-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
                     />
                   </div>
                 </div>
 
-                {/* Additional shipping charge */}
-                <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
-                  <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
-                    <span>Additional shipping charge</span>
-                    <Tooltip text="An additional fixed amount charged for shipping this product." />
-                  </div>
-                  <div className="sm:col-span-9 relative flex items-center pl-6">
-                    {/* Vertical line ending at branch */}
-                    <div className="absolute left-[7px] -top-4 top-1/2 w-px bg-[#d2d6de]" />
-                    {/* Horizontal branch line */}
-                    <div className="absolute left-[7px] top-1/2 w-4 h-px bg-[#d2d6de]" />
-                    <div className="flex max-w-[200px] w-full">
-                      <input
-                        type="number"
-                        step="any"
-                        value={formData.additionalShippingCharge}
-                        onChange={(e) => handleChange('additionalShippingCharge', parseFloat(e.target.value) || 0)}
-                        className="w-full text-xs px-2.5 py-1.5 rounded-l border border-r-0 border-[#d2d6de] focus:border-[#3c8dbc] outline-none"
-                      />
-                      <span className="inline-flex items-center px-3 text-xs text-slate-600 bg-white border border-[#d2d6de] rounded-r font-medium select-none">
-                        USD
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Delivery date */}
-                <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
-                  <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
-                    <span>Delivery date</span>
-                    <Tooltip text="The delivery date options for this product." />
-                  </div>
-                  <div className="sm:col-span-9">
-                    <select
-                      value={formData.deliveryDate}
-                      onChange={(e) => handleChange('deliveryDate', e.target.value)}
-                      className="w-full text-xs px-2.5 py-2 rounded border border-[#d2d6de] bg-white focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none text-slate-700 cursor-pointer"
-                    >
-                      <option value="None">None</option>
-                      <option value="1-2 days">1-2 days</option>
-                      <option value="3-5 days">3-5 days</option>
-                      <option value="1 week">1 week</option>
-                      <option value="2-3 weeks">2-3 weeks</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-        )}
-      </div>
-
-      {/* GIFT CARD */}
-      <div className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden">
-        {/* Card Header */}
-        <div
-          onClick={() => setGiftCardCollapsed(!giftCardCollapsed)}
-          className="border-b border-[#f4f4f4] px-4 py-2.5 flex items-center justify-between cursor-pointer select-none bg-white hover:bg-slate-50/50 transition"
-        >
-          <div className="flex items-center gap-2 text-slate-800 font-semibold text-xs sm:text-sm">
-            <Gift className="w-4 h-4 text-slate-800" />
-            <span>Gift card</span>
-          </div>
-          <button
-            type="button"
-            className="p-1 text-slate-500 hover:text-slate-700 focus:outline-none"
-          >
-            {giftCardCollapsed ? (
-              <Plus className="w-3.5 h-3.5" />
-            ) : (
-              <Minus className="w-3.5 h-3.5" />
-            )}
-          </button>
-        </div>
-
-        {/* Card Body */}
-        {!giftCardCollapsed && (
-          <div className="p-4 sm:p-6 space-y-4 text-xs text-slate-700">
-            {/* Is gift card */}
-            <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
-              <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
-                <span>Is gift card</span>
-                <Tooltip text="Check if this product is a gift card." />
-              </div>
-              <div className="sm:col-span-9 flex items-center">
-                <input
-                  type="checkbox"
-                  checked={formData.isGiftCard}
-                  onChange={(e) => handleChange('isGiftCard', e.target.checked)}
-                  className="h-4 w-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
-                />
-              </div>
-            </div>
-
-            {formData.isGiftCard && (
-              <div className="space-y-4 pt-1">
-                {/* Gift card type */}
-                <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
-                  <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
-                    <span>Gift card type</span>
-                    <Tooltip text="Choose the gift card type: Virtual (delivered via email) or Physical (shipped)." />
-                  </div>
-                  <div className="sm:col-span-9 relative flex items-center pl-6">
-                    {/* Vertical line continuing down */}
-                    <div className="absolute left-[7px] -top-4 bottom-0 w-px bg-[#d2d6de]" />
-                    {/* Horizontal branch line */}
-                    <div className="absolute left-[7px] top-1/2 w-4 h-px bg-[#d2d6de]" />
-                    <select
-                      value={formData.giftCardType}
-                      onChange={(e) => handleChange('giftCardType', e.target.value as any)}
-                      className="w-full text-xs px-2.5 py-2 rounded border border-[#d2d6de] bg-white focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none text-slate-700 cursor-pointer"
-                    >
-                      <option value="Virtual">Virtual</option>
-                      <option value="Physical">Physical</option>
-                    </select>
-                  </div>
-                </div>
-
-                {/* Overridden gift card amount */}
-                <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
-                  <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
-                    <span>Overridden gift card amount</span>
-                    <Tooltip text="Specify the overridden gift card amount if applicable. Leave blank to use product price." />
-                  </div>
-                  <div className="sm:col-span-9 relative flex items-center pl-6">
-                    {/* Vertical line ending at branch */}
-                    <div className="absolute left-[7px] -top-4 top-1/2 w-px bg-[#d2d6de]" />
-                    {/* Horizontal branch line */}
-                    <div className="absolute left-[7px] top-1/2 w-4 h-px bg-[#d2d6de]" />
-                    <input
-                      type="number"
-                      step="any"
-                      placeholder=""
-                      value={formData.overriddenGiftCardAmount || ''}
-                      onChange={(e) => handleChange('overriddenGiftCardAmount', e.target.value ? parseFloat(e.target.value) : '')}
-                      className="w-full max-w-[180px] text-xs px-2.5 py-1.5 rounded border border-[#d2d6de] focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none"
-                    />
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-        )}
-      </div>
-
-      {/* RENTAL CARD */}
-      <div className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden">
-        {/* Card Header */}
-        <div
-          onClick={() => setRentalCollapsed(!rentalCollapsed)}
-          className="border-b border-[#f4f4f4] px-4 py-2.5 flex items-center justify-between cursor-pointer select-none bg-white hover:bg-slate-50/50 transition"
-        >
-          <div className="flex items-center gap-2 text-slate-800 font-semibold text-xs sm:text-sm">
-            <Calendar className="w-4 h-4 text-slate-800" />
-            <span>Rental</span>
-          </div>
-          <button
-            type="button"
-            className="p-1 text-slate-500 hover:text-slate-700 focus:outline-none"
-          >
-            {rentalCollapsed ? (
-              <Plus className="w-3.5 h-3.5" />
-            ) : (
-              <Minus className="w-3.5 h-3.5" />
-            )}
-          </button>
-        </div>
-
-        {/* Card Body */}
-        {!rentalCollapsed && (
-          <div className="p-4 sm:p-6 space-y-4 text-xs text-slate-700">
-            {/* Is rental */}
-            <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
-              <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
-                <span>Is rental</span>
-                <Tooltip text="Check if this product is available for rental instead of outright purchase." />
-              </div>
-              <div className="sm:col-span-9 flex items-center">
-                <input
-                  type="checkbox"
-                  checked={formData.isRental}
-                  onChange={(e) => handleChange('isRental', e.target.checked)}
-                  className="h-4 w-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
-                />
-              </div>
-            </div>
-
-            {formData.isRental && (
-              <div className="space-y-4 pt-1">
-                {/* Rental period length */}
-                <div className="grid grid-cols-1 sm:grid-cols-12 items-start gap-2">
-                  <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700 pt-1.5">
-                    <span>Rental period length</span>
-                    <Tooltip text="Specify the cycle length for rental (e.g. 1, 3, 7)." />
-                  </div>
-                  <div className="sm:col-span-9 relative pl-6">
-                    {/* Vertical line continuing down */}
-                    <div className="absolute left-[7px] -top-4 bottom-0 w-px bg-[#d2d6de]" />
-                    {/* Horizontal branch line */}
-                    <div className="absolute left-[7px] top-4 w-4 h-px bg-[#d2d6de]" />
-                    <input
-                      type="number"
-                      min="1"
-                      placeholder=""
-                      value={formData.rentalPeriodLength || ''}
-                      onChange={(e) => handleChange('rentalPeriodLength', e.target.value ? parseInt(e.target.value, 10) : '')}
-                      className="w-full text-xs px-2.5 py-1.5 rounded border border-[#d2d6de] focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none"
-                    />
-                    {(!formData.rentalPeriodLength || Number(formData.rentalPeriodLength) <= 0) && (
-                      <span className="block text-red-500 text-[11px] mt-1 font-normal">
-                        The Rental period length field is required.
-                      </span>
-                    )}
-                  </div>
-                </div>
-
-                {/* Rental period */}
-                <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
-                  <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
-                    <span>Rental period</span>
-                    <Tooltip text="Choose the rental cycle period: Days, Weeks, Months, or Years." />
-                  </div>
-                  <div className="sm:col-span-9 relative flex items-center pl-6">
-                    {/* Vertical line ending at branch */}
-                    <div className="absolute left-[7px] -top-4 top-1/2 w-px bg-[#d2d6de]" />
-                    {/* Horizontal branch line */}
-                    <div className="absolute left-[7px] top-1/2 w-4 h-px bg-[#d2d6de]" />
-                    <select
-                      value={formData.rentalPeriod}
-                      onChange={(e) => handleChange('rentalPeriod', e.target.value as any)}
-                      className="w-full text-xs px-2.5 py-2 rounded border border-[#d2d6de] bg-white focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none text-slate-700 cursor-pointer"
-                    >
-                      <option value="Days">Days</option>
-                      <option value="Weeks">Weeks</option>
-                      <option value="Months">Months</option>
-                      <option value="Years">Years</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-        )}
-      </div>
-
-      {/* SEO CARD */}
-      <div className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden">
-        {/* Card Header */}
-        <div
-          onClick={() => setSeoCollapsed(!seoCollapsed)}
-          className="border-b border-[#f4f4f4] px-4 py-2.5 flex items-center justify-between cursor-pointer select-none bg-white hover:bg-slate-50/50 transition"
-        >
-          <div className="flex items-center gap-2 text-slate-800 font-semibold text-xs sm:text-sm">
-            <Search className="w-4 h-4 text-slate-800" />
-            <span>SEO</span>
-          </div>
-          <button
-            type="button"
-            className="p-1 text-slate-500 hover:text-slate-700 focus:outline-none"
-          >
-            {seoCollapsed ? (
-              <Plus className="w-3.5 h-3.5" />
-            ) : (
-              <Minus className="w-3.5 h-3.5" />
-            )}
-          </button>
-        </div>
-
-        {/* Card Body */}
-        {!seoCollapsed && (
-          <div className="p-4 sm:p-6 text-xs text-slate-700">
-            {/* Tabbed box container matching screenshot */}
-            <div className="border border-[#d2d6de] rounded-xs bg-white">
-              {/* Tabs bar */}
-              <div className="flex border-b border-[#d2d6de] bg-[#fdfdfd]">
-                <button
-                  type="button"
-                  onClick={() => setSeoActiveTab('standard')}
-                  className={`px-4 py-2 text-xs transition border-r border-[#d2d6de] select-none ${
-                    seoActiveTab === 'standard'
-                      ? 'border-t-2 border-t-[#3c8dbc] bg-white text-slate-800 font-medium -mb-px border-b border-b-white'
-                      : 'border-t-2 border-t-transparent text-slate-600 hover:text-slate-800'
-                  }`}
-                >
-                  Standard
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setSeoActiveTab('en')}
-                  className={`px-4 py-2 text-xs transition border-r border-[#d2d6de] flex items-center gap-1.5 select-none ${
-                    seoActiveTab === 'en'
-                      ? 'border-t-2 border-t-[#3c8dbc] bg-white text-slate-800 font-medium -mb-px border-b border-b-white'
-                      : 'border-t-2 border-t-transparent text-slate-600 hover:text-slate-800'
-                  }`}
-                >
-                  <span>🇺🇸</span>
-                  <span>EN</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setSeoActiveTab('rtl')}
-                  className={`px-4 py-2 text-xs transition flex items-center gap-1.5 select-none ${
-                    seoActiveTab === 'rtl'
-                      ? 'border-t-2 border-t-[#3c8dbc] bg-white text-slate-800 font-medium -mb-px border-b border-b-white'
-                      : 'border-t-2 border-t-transparent text-slate-600 hover:text-slate-800'
-                  }`}
-                >
-                  <span>🇮🇱</span>
-                  <span>RTL</span>
-                </button>
-              </div>
-
-              {/* Tab Content Fields */}
-              <div className="p-5 sm:p-6 space-y-4">
-                {/* Search engine friendly page name */}
-                <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
-                  <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
-                    <span>Search engine friendly page name</span>
-                    <Tooltip text="Set a search engine friendly page name such as 'the-best-product' to make your product page URL more SEO-friendly. If left empty, the product name will be used." />
-                  </div>
-                  <div className="sm:col-span-9">
-                    <input
-                      type="text"
-                      value={formData.seName || ''}
-                      onChange={(e) => handleChange('seName', e.target.value)}
-                      className="w-full text-xs px-2.5 py-2 rounded border border-[#d2d6de] bg-white focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none text-slate-700"
-                    />
-                  </div>
-                </div>
-
-                {/* Meta title */}
-                <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
-                  <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
-                    <span>Meta title</span>
-                    <Tooltip text="The title tag is displayed on search engine results pages (SERPs) as the clickable headline for a given result." />
-                  </div>
-                  <div className="sm:col-span-9">
-                    <input
-                      type="text"
-                      value={formData.metaTitle || ''}
-                      onChange={(e) => handleChange('metaTitle', e.target.value)}
-                      className="w-full text-xs px-2.5 py-2 rounded border border-[#d2d6de] bg-white focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none text-slate-700"
-                    />
-                  </div>
-                </div>
-
-                {/* Meta keywords */}
-                <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
-                  <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
-                    <span>Meta keywords</span>
-                    <Tooltip text="Keywords to include in product page meta tags for search engines." />
-                  </div>
-                  <div className="sm:col-span-9">
-                    <input
-                      type="text"
-                      value={formData.metaKeywords || ''}
-                      onChange={(e) => handleChange('metaKeywords', e.target.value)}
-                      className="w-full text-xs px-2.5 py-2 rounded border border-[#d2d6de] bg-white focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none text-slate-700"
-                    />
-                  </div>
-                </div>
-
-                {/* Meta description */}
-                <div className="grid grid-cols-1 sm:grid-cols-12 items-start gap-2">
-                  <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700 pt-2">
-                    <span>Meta description</span>
-                    <Tooltip text="Brief description to be included in product page meta tags for search engines." />
-                  </div>
-                  <div className="sm:col-span-9">
-                    <textarea
-                      rows={4}
-                      value={formData.metaDescription || ''}
-                      onChange={(e) => handleChange('metaDescription', e.target.value)}
-                      className="w-full text-xs px-2.5 py-2 rounded border border-[#d2d6de] bg-white focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none text-slate-700 resize-y"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* ADVANCED SECTIONS (Visible when Advanced Mode is ON) */}
-      {advancedMode && (
-        <div className="space-y-4 animate-fadeIn">
-          {/* Prices & Tier Card */}
-          <div className="bg-white rounded border border-[#d2d6de] shadow-2xs p-4 sm:p-6 space-y-4">
-            <h3 className="font-semibold text-slate-800 text-sm border-b pb-2 flex items-center gap-2">
-              <span className="text-amber-500 font-bold">₹</span> Prices &amp; Commercial Settings
-            </h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-              <div>
-                <label className="block font-medium text-slate-700 mb-1">
-                  Product Cost (₹)
-                </label>
-                <input
-                  type="number"
-                  value={formData.cost}
-                  onChange={(e) => handleChange('cost', parseFloat(e.target.value) || 0)}
-                  className="w-full px-2.5 py-1.5 border border-slate-300 rounded outline-none"
-                />
-              </div>
-              <div>
-                <label className="block font-medium text-slate-700 mb-1">
-                  Target Crops &amp; Stages
-                </label>
-                <input
-                  type="text"
-                  value={formData.targetCrops}
-                  onChange={(e) => handleChange('targetCrops', e.target.value)}
-                  placeholder="e.g. Paddy, Sugarcane"
-                  className="w-full px-2.5 py-1.5 border border-slate-300 rounded outline-none"
-                />
-              </div>
-              <div className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  checked={formData.disableBuyButton}
-                  onChange={(e) => handleChange('disableBuyButton', e.target.checked)}
-                  className="h-4 w-4 rounded border-slate-300 text-[#3c8dbc]"
-                />
-                <span className="text-slate-700">Disable buy button</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  checked={formData.callForPrice}
-                  onChange={(e) => handleChange('callForPrice', e.target.checked)}
-                  className="h-4 w-4 rounded border-slate-300 text-[#3c8dbc]"
-                />
-                <span className="text-slate-700">Call for price</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Pictures & Media Card */}
-          <div className="bg-white rounded border border-[#d2d6de] shadow-2xs p-4 sm:p-6 space-y-4">
-            <div className="flex items-center justify-between border-b pb-2">
-              <h3 className="font-semibold text-slate-800 text-sm flex items-center gap-2">
-                <ImageIcon className="w-4 h-4 text-purple-600" /> Product Pictures &amp; Gallery
-              </h3>
-              <span className="text-xs text-slate-500 font-medium">
-                {formData.images?.length || 0} picture(s)
-              </span>
-            </div>
-
-            {/* Add New Picture with ImageEditorField */}
-            <div className="border border-dashed border-slate-300 rounded-lg p-3 bg-slate-50/60 space-y-2">
-              <span className="text-xs font-semibold text-slate-700 block">
-                Add New Picture (From Local Device or Google / Website URL):
-              </span>
-              <ImageEditorField
-                value=""
-                onChange={(url) => {
-                  if (url) {
-                    setFormData((prev) => ({
-                      ...prev,
-                      images: [...(prev.images || []), url],
-                    }));
-                  }
-                }}
-              />
-            </div>
-
-            {/* List of Existing Product Images with Edit / Crop / Change / Remove */}
-            <div className="space-y-2 pt-2">
-              <span className="text-xs font-semibold text-slate-700 block">
-                Current Gallery Pictures (Click Edit to crop, rotate, or adjust):
-              </span>
-              {(!formData.images || formData.images.length === 0) ? (
-                <p className="text-xs text-slate-400 italic">No pictures uploaded yet for this product.</p>
-              ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {formData.images.map((img, i) => (
-                    <div key={i} className="border border-slate-200 rounded-lg p-3 bg-white shadow-2xs space-y-2">
-                      <div className="flex items-center justify-between text-[11px] font-semibold text-slate-500">
-                        <span>Picture #{i + 1} {i === 0 && <strong className="text-[#3c8dbc]">(Main)</strong>}</span>
+                {formData.isRental && (
+                  <div className="space-y-4 pt-1">
+                    {/* Rental period length */}
+                    <div className="grid grid-cols-1 sm:grid-cols-12 items-start gap-2">
+                      <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700 pt-1.5">
+                        <span>Rental period length</span>
+                        <Tooltip text="Specify the cycle length for rental (e.g. 1, 3, 7)." />
                       </div>
-                      <ImageEditorField
-                        value={img}
-                        onChange={(newUrl) => {
-                          if (!newUrl) {
-                            // remove
-                            setFormData((prev) => ({
-                              ...prev,
-                              images: prev.images?.filter((_, idx) => idx !== i),
-                            }));
-                          } else {
-                            // update
-                            setFormData((prev) => ({
-                              ...prev,
-                              images: prev.images?.map((item, idx) => (idx === i ? newUrl : item)),
-                            }));
-                          }
-                        }}
-                        previewHeight="h-28"
-                      />
+                      <div className="sm:col-span-9 relative pl-6">
+                        <div className="absolute left-[7px] -top-4 bottom-0 w-px bg-[#d2d6de]" />
+                        <div className="absolute left-[7px] top-4 w-4 h-px bg-[#d2d6de]" />
+                        <input
+                          type="number"
+                          min="1"
+                          placeholder=""
+                          value={formData.rentalPeriodLength || ''}
+                          onChange={(e) => handleChange('rentalPeriodLength', e.target.value ? parseInt(e.target.value, 10) : '')}
+                          className="w-full text-xs px-2.5 py-1.5 rounded border border-[#d2d6de] focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none"
+                        />
+                        {(!formData.rentalPeriodLength || Number(formData.rentalPeriodLength) <= 0) && (
+                          <span className="block text-red-500 text-[11px] mt-1 font-normal">
+                            The Rental period length field is required.
+                          </span>
+                        )}
+                      </div>
                     </div>
-                  ))}
-                </div>
-              )}
-            </div>
+
+                    {/* Rental period */}
+                    <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
+                      <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
+                        <span>Rental period</span>
+                        <Tooltip text="Choose the rental cycle period: Days, Weeks, Months, or Years." />
+                      </div>
+                      <div className="sm:col-span-9 relative flex items-center pl-6">
+                        <div className="absolute left-[7px] -top-4 top-1/2 w-px bg-[#d2d6de]" />
+                        <div className="absolute left-[7px] top-1/2 w-4 h-px bg-[#d2d6de]" />
+                        <select
+                          value={formData.rentalPeriod}
+                          onChange={(e) => handleChange('rentalPeriod', e.target.value as any)}
+                          className="w-full text-xs px-2.5 py-2 rounded border border-[#d2d6de] bg-white focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none text-slate-700 cursor-pointer"
+                        >
+                          <option value="Days">Days</option>
+                          <option value="Weeks">Weeks</option>
+                          <option value="Months">Months</option>
+                          <option value="Years">Years</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
-          {/* SEO & Meta Card */}
-          <div className="bg-white rounded border border-[#d2d6de] shadow-2xs p-4 sm:p-6 space-y-3">
-            <h3 className="font-semibold text-slate-800 text-sm border-b pb-2 flex items-center gap-2">
-              <Search className="w-4 h-4 text-emerald-600" /> Search Engine Optimization (SEO)
-            </h3>
-            <div className="space-y-3 text-xs">
-              <div>
-                <label className="block font-medium text-slate-700 mb-1">
-                  Meta Title
-                </label>
-                <input
-                  type="text"
-                  value={formData.metaTitle}
-                  onChange={(e) => handleChange('metaTitle', e.target.value)}
-                  placeholder="Custom meta title for Google search..."
-                  className="w-full px-2.5 py-1.5 border border-slate-300 rounded outline-none"
-                />
+          {/* SEO CARD */}
+          <div className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden">
+            {/* Card Header */}
+            <div
+              onClick={() => setSeoCollapsed(!seoCollapsed)}
+              className="border-b border-[#f4f4f4] px-4 py-2.5 flex items-center justify-between cursor-pointer select-none bg-white hover:bg-slate-50/50 transition"
+            >
+              <div className="flex items-center gap-2 text-slate-800 font-semibold text-xs sm:text-sm">
+                <Search className="w-4 h-4 text-slate-800" />
+                <span>SEO</span>
               </div>
-              <div>
-                <label className="block font-medium text-slate-700 mb-1">
-                  Meta Description
-                </label>
-                <textarea
-                  rows={2}
-                  value={formData.metaDescription}
-                  onChange={(e) => handleChange('metaDescription', e.target.value)}
-                  placeholder="Meta description for search engine snippets..."
-                  className="w-full px-2.5 py-1.5 border border-slate-300 rounded outline-none"
-                />
-              </div>
+              <button
+                type="button"
+                className="p-1 text-slate-500 hover:text-slate-700 focus:outline-none"
+              >
+                {seoCollapsed ? (
+                  <Plus className="w-3.5 h-3.5" />
+                ) : (
+                  <Minus className="w-3.5 h-3.5" />
+                )}
+              </button>
             </div>
+
+            {/* Card Body */}
+            {!seoCollapsed && (
+              <div className="p-4 sm:p-6 text-xs text-slate-700">
+                <div className="border border-[#d2d6de] rounded-xs bg-white">
+                  {/* Tabs bar */}
+                  <div className="flex border-b border-[#d2d6de] bg-[#fdfdfd]">
+                    <button
+                      type="button"
+                      onClick={() => setSeoActiveTab('standard')}
+                      className={`px-4 py-2 text-xs transition border-r border-[#d2d6de] select-none ${
+                        seoActiveTab === 'standard'
+                          ? 'border-t-2 border-t-[#3c8dbc] bg-white text-slate-800 font-medium -mb-px border-b border-b-white'
+                          : 'border-t-2 border-t-transparent text-slate-600 hover:text-slate-800'
+                      }`}
+                    >
+                      Standard
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setSeoActiveTab('en')}
+                      className={`px-4 py-2 text-xs transition border-r border-[#d2d6de] flex items-center gap-1.5 select-none ${
+                        seoActiveTab === 'en'
+                          ? 'border-t-2 border-t-[#3c8dbc] bg-white text-slate-800 font-medium -mb-px border-b border-b-white'
+                          : 'border-t-2 border-t-transparent text-slate-600 hover:text-slate-800'
+                      }`}
+                    >
+                      <span>🇺🇸</span>
+                      <span>EN</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setSeoActiveTab('rtl')}
+                      className={`px-4 py-2 text-xs transition flex items-center gap-1.5 select-none ${
+                        seoActiveTab === 'rtl'
+                          ? 'border-t-2 border-t-[#3c8dbc] bg-white text-slate-800 font-medium -mb-px border-b border-b-white'
+                          : 'border-t-2 border-t-transparent text-slate-600 hover:text-slate-800'
+                      }`}
+                    >
+                      <span>🇮🇱</span>
+                      <span>RTL</span>
+                    </button>
+                  </div>
+
+                  {/* Tab Content Fields */}
+                  <div className="p-5 sm:p-6 space-y-4">
+                    {/* Search engine friendly page name */}
+                    <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
+                      <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
+                        <span>Search engine friendly page name</span>
+                        <Tooltip text="Set a search engine friendly page name such as 'the-best-product' to make your product page URL more SEO-friendly. If left empty, the product name will be used." />
+                      </div>
+                      <div className="sm:col-span-9">
+                        <input
+                          type="text"
+                          value={formData.seName || ''}
+                          onChange={(e) => handleChange('seName', e.target.value)}
+                          className="w-full text-xs px-2.5 py-2 rounded border border-[#d2d6de] bg-white focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none text-slate-700"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Meta title */}
+                    <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
+                      <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
+                        <span>Meta title</span>
+                        <Tooltip text="The title tag is displayed on search engine results pages (SERPs) as the clickable headline for a given result." />
+                      </div>
+                      <div className="sm:col-span-9">
+                        <input
+                          type="text"
+                          value={formData.metaTitle || ''}
+                          onChange={(e) => handleChange('metaTitle', e.target.value)}
+                          className="w-full text-xs px-2.5 py-2 rounded border border-[#d2d6de] bg-white focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none text-slate-700"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Meta keywords */}
+                    <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
+                      <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
+                        <span>Meta keywords</span>
+                        <Tooltip text="Keywords to include in product page meta tags for search engines." />
+                      </div>
+                      <div className="sm:col-span-9">
+                        <input
+                          type="text"
+                          value={formData.metaKeywords || ''}
+                          onChange={(e) => handleChange('metaKeywords', e.target.value)}
+                          className="w-full text-xs px-2.5 py-2 rounded border border-[#d2d6de] bg-white focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none text-slate-700"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Meta description */}
+                    <div className="grid grid-cols-1 sm:grid-cols-12 items-start gap-2">
+                      <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700 pt-2">
+                        <span>Meta description</span>
+                        <Tooltip text="Brief description to be included in product page meta tags for search engines." />
+                      </div>
+                      <div className="sm:col-span-9">
+                        <textarea
+                          rows={4}
+                          value={formData.metaDescription || ''}
+                          onChange={(e) => handleChange('metaDescription', e.target.value)}
+                          className="w-full text-xs px-2.5 py-2 rounded border border-[#d2d6de] bg-white focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none text-slate-700 resize-y"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
-        </div>
+        </>
       )}
+
+      {/* PICTURES & MEDIA CARD (Always visible so all product details are shown properly) */}
+      <div className="bg-white rounded border border-[#d2d6de] shadow-2xs p-4 sm:p-6 space-y-4">
+        <div className="flex items-center justify-between border-b pb-2">
+          <h3 className="font-semibold text-slate-800 text-sm flex items-center gap-2">
+            <ImageIcon className="w-4 h-4 text-purple-600" /> Product Pictures &amp; Gallery
+          </h3>
+          <span className="text-xs text-slate-500 font-medium">
+            {formData.images?.length || 0} picture(s)
+          </span>
+        </div>
+
+        {/* Add New Picture with ImageEditorField */}
+        <div className="border border-dashed border-slate-300 rounded-lg p-3 bg-slate-50/60 space-y-2">
+          <span className="text-xs font-semibold text-slate-700 block">
+            Add New Picture (From Local Device or Website URL):
+          </span>
+          <ImageEditorField
+            value=""
+            onChange={(url) => {
+              if (url) {
+                setFormData((prev) => ({
+                  ...prev,
+                  images: [...(prev.images || []), url],
+                }));
+              }
+            }}
+          />
+        </div>
+
+        {/* List of Existing Product Images with Edit / Crop / Change / Remove */}
+        <div className="space-y-2 pt-2">
+          <span className="text-xs font-semibold text-slate-700 block">
+            Current Gallery Pictures (Click Edit to crop, rotate, or adjust):
+          </span>
+          {!formData.images || formData.images.length === 0 ? (
+            <p className="text-xs text-slate-400 italic">
+              No pictures uploaded yet for this product.
+            </p>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {formData.images.map((img, i) => (
+                <div
+                  key={i}
+                  className="border border-slate-200 rounded-lg p-3 bg-white shadow-2xs space-y-2"
+                >
+                  <div className="flex items-center justify-between text-[11px] font-semibold text-slate-500">
+                    <span>
+                      Picture #{i + 1}{' '}
+                      {i === 0 && <strong className="text-[#3c8dbc]">(Main)</strong>}
+                    </span>
+                  </div>
+                  <ImageEditorField
+                    value={img}
+                    onChange={(newUrl) => {
+                      if (!newUrl) {
+                        setFormData((prev) => ({
+                          ...prev,
+                          images: prev.images?.filter((_, idx) => idx !== i),
+                        }));
+                      } else {
+                        setFormData((prev) => ({
+                          ...prev,
+                          images: prev.images?.map((item, idx) =>
+                            idx === i ? newUrl : item
+                          ),
+                        }));
+                      }
+                    }}
+                    previewHeight="h-28"
+                  />
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
 
       {/* QUICK SETTINGS MODAL */}
       {settingsOpen && (

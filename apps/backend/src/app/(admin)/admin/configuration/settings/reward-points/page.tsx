@@ -292,7 +292,7 @@ export default function RewardPointsSettingsPage() {
               <div className="grid grid-cols-1 md:grid-cols-12 gap-y-2 md:gap-x-4 items-center">
                 <div className="md:col-span-3 flex items-center justify-start md:justify-end gap-1.5 text-right font-medium text-slate-700 text-xs">
                   <span>Exchange rate</span>
-                  <HelpTooltip text="Reward points exchange rate (e.g. 1 point = 1 USD)." />
+                  <HelpTooltip text="Reward points exchange rate (e.g. 1 point = 1 INR)." />
                 </div>
                 <div className="md:col-span-9 flex items-center gap-2 text-xs text-slate-700">
                   <span className="whitespace-nowrap">1 reward point =</span>
@@ -304,7 +304,7 @@ export default function RewardPointsSettingsPage() {
                       className="w-full px-3 py-1.5 text-xs text-slate-800 focus:outline-none"
                     />
                     <span className="px-3 py-1.5 bg-slate-50 border-l border-slate-200 text-xs text-slate-600 font-medium select-none flex items-center">
-                      USD
+                      INR
                     </span>
                   </div>
                 </div>
@@ -402,7 +402,7 @@ export default function RewardPointsSettingsPage() {
                     className="w-full px-2.5 py-1.5 text-xs text-slate-800 focus:outline-none"
                   />
                   <span className="px-2.5 py-1.5 bg-slate-50 border-l border-slate-200 text-xs text-slate-600 font-medium select-none flex items-center">
-                    USD
+                    INR
                   </span>
                 </div>
                 <span>spent will earn</span>
@@ -450,7 +450,7 @@ export default function RewardPointsSettingsPage() {
                         className="w-full px-3 py-1.5 text-xs text-slate-800 focus:outline-none"
                       />
                       <span className="px-3 py-1.5 bg-slate-50 border-l border-slate-200 text-xs text-slate-600 font-medium select-none flex items-center">
-                        USD
+                        INR
                       </span>
                     </div>
                   </div>

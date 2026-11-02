@@ -42,6 +42,7 @@ export interface RentalProductType {
   title: string;
   slug: string;
   category: string;
+  hourlyRate?: number;
   dailyRate: number;
   weeklyRate: number;
   monthlyRate: number;
@@ -487,10 +488,11 @@ export const SEED_WAREHOUSES: WarehouseType[] = [
 
 export const SEED_RENTAL_PRODUCTS: RentalProductType[] = [
   {
-    id: 'rent-001',
-    title: '7HP Petrol Rotary Power Weeder with Ridger & Ditcher',
-    slug: 'rent-7hp-power-weeder-ridger',
+    id: 'rnt-weeder-7hp',
+    title: 'AgriPro 7HP Multi-Speed Heavy-Duty Power Weeder',
+    slug: 'power-weeder-7hp',
     category: 'Power Weeder',
+    hourlyRate: 120,
     dailyRate: 650,
     weeklyRate: 3800,
     monthlyRate: 12500,
@@ -503,36 +505,38 @@ export const SEED_RENTAL_PRODUCTS: RentalProductType[] = [
     isAvailable: true,
   },
   {
-    id: 'rent-002',
-    title: 'Self-Propelled 4-Stroke Paddy & Wheat Reaper Harvester',
-    slug: 'rent-self-propelled-paddy-reaper',
+    id: 'rnt-reaper-binder',
+    title: 'Self-Propelled 10HP Multi-Crop Reaper Binder',
+    slug: 'power-reaper-binder',
     category: 'Reaper & Harvester',
+    hourlyRate: 250,
     dailyRate: 1450,
     weeklyRate: 8500,
     monthlyRate: 28000,
     securityDeposit: 6000,
     images: ['https://images.unsplash.com/photo-1595974482597-4b8da8879bc5?auto=format&fit=crop&w=600&q=80'],
     description: 'Harvests 1 acre in 60-90 minutes with neat windrow laying. Low grain loss (<1.5%).',
-    powerRating: '6.5 HP Commercial Diesel',
+    powerRating: '10.0 HP Commercial Diesel',
     fuelType: 'Diesel',
     suitableFor: 'Paddy, Wheat, Soybean, Ragi',
     isAvailable: true,
   },
   {
-    id: 'rent-003',
-    title: '16-Liter Tractor-Mounted Boom Sprayer with 24 Brass Nozzles',
-    slug: 'rent-tractor-boom-sprayer',
+    id: 'rnt-battery-sprayer-16l',
+    title: 'KisanKraft 16L Dual-Motor High-Pressure Knapsack Sprayer',
+    slug: 'battery-sprayer-16l',
     category: 'Sprayer Attachment',
-    dailyRate: 950,
-    weeklyRate: 5400,
-    monthlyRate: 18000,
-    securityDeposit: 4000,
+    hourlyRate: 60,
+    dailyRate: 350,
+    weeklyRate: 2100,
+    monthlyRate: 7000,
+    securityDeposit: 1500,
     images: ['https://images.unsplash.com/photo-1586771107445-d3ca888129ff?auto=format&fit=crop&w=600&q=80'],
-    description: 'Covers 30 feet swath per pass. Connects to tractor 3-point linkage with 540 RPM PTO drive.',
-    powerRating: 'Requires 25+ HP Tractor',
-    fuelType: 'Tractor PTO',
+    description: 'Dual motor high-pressure knapsack sprayer for uniform pesticide & micronutrient foliar application.',
+    powerRating: '12V 12Ah Dual Motor',
+    fuelType: 'Rechargeable Battery',
     suitableFor: 'Field crops, Cotton, Sugarcane canopy',
-    isAvailable: false,
+    isAvailable: true,
   },
 ];
 

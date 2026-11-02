@@ -167,37 +167,11 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
   };
 
   const handleAddToCart = () => {
-    if (!isLoggedIn) {
-      setPendingAction('cart');
-      setShowAuthModal(true);
-      return;
-    }
     executeAddToCart();
   };
 
   const handleBuyNow = () => {
-    if (!isLoggedIn) {
-      setPendingAction('buy');
-      setShowAuthModal(true);
-      return;
-    }
     executeBuyNow();
-  };
-
-  const handleDemoSignInAndProceed = () => {
-    setClientAuthUser({
-      id: 'demo-farmer-1',
-      name: 'Basavaraj Patil',
-      phone: '9845190812',
-      role: 'farmer',
-    });
-    setShowAuthModal(false);
-    if (pendingAction === 'buy') {
-      executeBuyNow();
-    } else {
-      executeAddToCart();
-    }
-    setPendingAction(null);
   };
 
   const handleReviewSubmit = async (e: React.FormEvent) => {

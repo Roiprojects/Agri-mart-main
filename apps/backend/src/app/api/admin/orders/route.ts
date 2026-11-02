@@ -22,10 +22,11 @@ export async function GET(request: Request) {
       const orderItems = (devDb as any).data?.orderItems?.filter((i: any) => i.orderId === o.id) || [];
       return {
         ...o,
-        customerName: user?.name || 'Customer',
-        customerMobile: user?.mobile || '',
+        customerName: o.shippingAddress?.fullName || user?.name || 'Customer',
+        customerMobile: o.shippingAddress?.mobile || user?.mobile || '',
         customerEmail: user?.email || '',
         itemCount: orderItems.length || 1,
+        items: orderItems,
       };
     });
     

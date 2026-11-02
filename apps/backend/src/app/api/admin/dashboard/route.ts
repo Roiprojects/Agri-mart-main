@@ -43,8 +43,8 @@ export async function GET() {
       return {
         id: o.id,
         orderNumber: o.orderNumber,
-        customerName: user?.name || 'Unknown',
-        customerMobile: user?.mobile || '',
+        customerName: o.shippingAddress?.fullName || user?.name || 'Customer',
+        customerMobile: o.shippingAddress?.mobile || user?.mobile || '',
         totalAmount: o.totalAmount,
         status: o.status,
         paymentStatus: o.paymentStatus,

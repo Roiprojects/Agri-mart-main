@@ -8,7 +8,8 @@ export async function dispatchFrontendRevalidation(params: {
   tags?: string[];
   payload?: any;
 }): Promise<{ success: boolean; error?: string }> {
-  const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3010';
+  const rawFrontendUrl = process.env.FRONTEND_URL || 'http://127.0.0.1:3010';
+  const frontendUrl = rawFrontendUrl.replace('://localhost:', '://127.0.0.1:');
   const secret = process.env.REVALIDATION_SECRET || 'agrimart_secret_reval_2026';
 
   // 1. Broadcast to active browser clients via Server-Sent Events
@@ -24,7 +25,7 @@ export async function dispatchFrontendRevalidation(params: {
     console.warn('[REVALIDATION] SSE broadcast non-fatal warning:', sseErr);
   }
 
-  // 2. Dispatch authenticated revalidation webhook to Next.js Frontend server
+  // 2. Dispatch authenticated revalidation webhook to Next.js Frontend server asynchronously (non-blocking)
   const webhookPayload: RevalidationWebhookPayload = {
     secret,
     event: params.event,
@@ -34,30 +35,25 @@ export async function dispatchFrontendRevalidation(params: {
     timestamp: new Date().toISOString(),
   };
 
-  try {
-    const res = await fetch(`${frontendUrl}/api/revalidate`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(webhookPayload),
-      signal: AbortSignal.timeout(4000),
+  fetch(`${frontendUrl}/api/revalidate`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(webhookPayload),
+    signal: AbortSignal.timeout(4000),
+  })
+    .then(async (res) => {
+      if (!res.ok) {
+        const errText = await res.text().catch(() => '');
+        console.warn(`[REVALIDATION] Frontend revalidation webhook returned ${res.status}: ${errText}`);
+      }
+    })
+    .catch((fetchErr: any) => {
+      console.warn(`[REVALIDATION] Could not contact frontend webhook at ${frontendUrl}/api/revalidate (${fetchErr.message})`);
     });
 
-    if (!res.ok) {
-      const errText = await res.text().catch(() => '');
-      console.warn(`[REVALIDATION] Frontend revalidation webhook returned ${res.status}: ${errText}`);
-      return { success: false, error: `Frontend responded with status ${res.status}` };
-    }
-
-    const data = await res.json().catch(() => ({}));
-    console.log(`[REVALIDATION] Successfully revalidated frontend for event [${params.event}]`, data);
-    return { success: true };
-  } catch (fetchErr: any) {
-    // If frontend is not running during isolated backend test, log gracefully
-    console.warn(`[REVALIDATION] Could not contact frontend webhook at ${frontendUrl}/api/revalidate (${fetchErr.message})`);
-    return { success: false, error: fetchErr.message };
-  }
+  return { success: true };
 }
 
 export async function revalidateFrontendPath(path: string) {

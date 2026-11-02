@@ -24,23 +24,47 @@ import {
   CheckCircle2,
   SlidersHorizontal,
 } from 'lucide-react';
+import { ProductForm, ProductFormData } from './ProductForm';
 
 interface Product {
   id: string;
   name: string;
+  nameKn?: string;
+  slug?: string;
   sku: string;
   categoryId: string;
+  parentCategoryId?: string;
+  subCategoryId?: string;
   brandId?: string;
   price: number;
   comparePrice?: number;
+  cost?: number;
+  weight?: number;
+  length?: number;
+  width?: number;
+  height?: number;
+  gtin?: string;
+  manufacturerPartNumber?: string;
+  vendor?: string;
+  taxCategory?: string;
+  deliveryDate?: string;
+  shortDescription?: string;
+  description?: string;
+  metaTitle?: string;
+  metaKeywords?: string;
+  metaDescription?: string;
   isPublished: boolean;
   isDraft?: boolean;
   isFeatured?: boolean;
   isBestSeller?: boolean;
   images?: string[];
-  category?: { id?: string; name: string };
+  category?: { id?: string; name: string; parentId?: string | null };
+  parentCategory?: { id: string; name: string };
+  subCategory?: { id: string; name: string };
+  categoryHierarchy?: string;
   brand?: { id?: string; name: string };
-  variants?: { stockQuantity?: number; sku?: string; price?: number }[];
+  variants?: { stockQuantity?: number; sku?: string; price?: number; title?: string }[];
+  specifications?: { id?: string; group?: string; name: string; value: string }[];
   targetCrops?: string;
   cropStages?: string;
 }
@@ -48,6 +72,7 @@ interface Product {
 interface CategoryOption {
   id: string;
   name: string;
+  parentId?: string | null;
 }
 
 interface BrandOption {
@@ -73,6 +98,7 @@ export default function AdminProductsPage() {
   // Filter States
   const [filterName, setFilterName] = useState('');
   const [filterCategory, setFilterCategory] = useState('All');
+  const [filterSubcategoryId, setFilterSubcategoryId] = useState('All');
   const [filterSubcategories, setFilterSubcategories] = useState(false);
   const [filterManufacturer, setFilterManufacturer] = useState('All');
   const [filterProductType, setFilterProductType] = useState('All');
@@ -83,6 +109,7 @@ export default function AdminProductsPage() {
   const [appliedFilters, setAppliedFilters] = useState({
     name: '',
     category: 'All',
+    subcategoryId: 'All',
     subcategories: false,
     manufacturer: 'All',
     productType: 'All',
@@ -146,30 +173,6 @@ export default function AdminProductsPage() {
         loadedProducts = prodRes.data;
       }
 
-      // Check if sample "Round Straw Bag" exists; if not, include it seamlessly so user sees what was in their screenshot
-      const hasStrawBag = loadedProducts.some(
-        (p) => p.name.toLowerCase().includes('round straw bag') || p.sku === 'BAG-STR-01'
-      );
-      if (!hasStrawBag) {
-        const strawBag: Product = {
-          id: 'prod-straw-bag-01',
-          name: 'Round Straw Bag',
-          sku: 'BAG-STR-01',
-          categoryId: 'cat-general',
-          price: 269,
-          comparePrice: 299,
-          isPublished: true,
-          isDraft: false,
-          images: [
-            'https://images.unsplash.com/photo-1590874103328-eac38a683ce7?auto=format&fit=crop&w=400&q=80',
-          ],
-          category: { name: 'Accessories & Crafts' },
-          brand: { name: 'Artisan Works' },
-          variants: [{ stockQuantity: 9978, sku: 'BAG-STR-01', price: 269 }],
-        };
-        loadedProducts = [strawBag, ...loadedProducts];
-      }
-
       setProducts(loadedProducts);
 
       if (catRes.success && Array.isArray(catRes.data)) {
@@ -190,11 +193,212 @@ export default function AdminProductsPage() {
     fetchData();
   }, []);
 
+  // Category Map & Parent/Child Helpers
+  const categoryMap = useMemo(() => {
+    const map = new Map<string, CategoryOption>();
+    categories.forEach((c) => map.set(c.id, c));
+    return map;
+  }, [categories]);
+
+  const parentCategories = useMemo(
+    () => categories.filter((c) => !c.parentId),
+    [categories]
+  );
+
+  const childCategories = useMemo(
+    () => categories.filter((c) => Boolean(c.parentId)),
+    [categories]
+  );
+
+  const availableSubcategoriesForFilter = useMemo(() => {
+    if (filterCategory === 'All') return childCategories;
+    const selectedCat = categoryMap.get(filterCategory);
+    if (selectedCat?.parentId) {
+      return childCategories.filter((c) => c.parentId === selectedCat.parentId);
+    }
+    return childCategories.filter((c) => c.parentId === filterCategory);
+  }, [filterCategory, childCategories, categoryMap]);
+
+  const getCategoryHierarchyLabel = (cat: CategoryOption): string => {
+    if (!cat.parentId) return cat.name;
+    const parent = categoryMap.get(cat.parentId);
+    return parent ? `${parent.name} >> ${cat.name}` : cat.name;
+  };
+
+  const resolveProductCategories = (p: Product) => {
+    let parentName = p.parentCategory?.name || '';
+    let childName = p.subCategory?.name || '';
+    let parentId = p.parentCategoryId || p.parentCategory?.id || '';
+    let childId = p.subCategoryId || p.subCategory?.id || '';
+
+    if (!parentName && p.categoryId) {
+      const cat = categoryMap.get(p.categoryId);
+      if (cat) {
+        if (cat.parentId) {
+          childName = childName || cat.name;
+          childId = childId || cat.id;
+          const parent = categoryMap.get(cat.parentId);
+          if (parent) {
+            parentName = parent.name;
+            parentId = parent.id;
+          }
+        } else {
+          parentName = cat.name;
+          parentId = cat.id;
+        }
+      }
+    }
+
+    if (!childName && p.subCategoryId) {
+      const sub = categoryMap.get(p.subCategoryId);
+      if (sub) {
+        childName = sub.name;
+        childId = sub.id;
+        if (!parentName && sub.parentId) {
+          const parent = categoryMap.get(sub.parentId);
+          if (parent) {
+            parentName = parent.name;
+            parentId = parent.id;
+          }
+        }
+      }
+    }
+
+    if (!parentName && p.category?.name) {
+      parentName = p.category.name;
+    }
+
+    // Fallback default child category if parent has subcategories
+    if (parentId && !childName) {
+      const firstSub = childCategories.find((c) => c.parentId === parentId);
+      if (firstSub) {
+        childName = firstSub.name;
+        childId = firstSub.id;
+      }
+    }
+
+    return {
+      parentId,
+      childId,
+      parentName: parentName || 'Uncategorized',
+      childName: childName || 'General Subcategory',
+      fullHierarchy: childName
+        ? `${parentName || 'Uncategorized'} >> ${childName}`
+        : parentName || 'Uncategorized',
+    };
+  };
+
+  const [advancedMode, setAdvancedMode] = useState(true);
+  const [inlineFormSaving, setInlineFormSaving] = useState(false);
+  const [showInlineForm, setShowInlineForm] = useState(true);
+  const autoFilledFromUrlRef = useRef<string>('');
+
+  // Auto-fill all search/filter inputs and select the product to display its full details & editable form
+  const autoFillProductDetails = (targetProduct: Product, applyToTableFilter = false) => {
+    const resolved = resolveProductCategories(targetProduct);
+    const parentCatValue = resolved.parentId || 'All';
+    const childCatValue = resolved.childId || 'All';
+    const brandValue = targetProduct.brandId || 'All';
+    const prodTypeValue = (targetProduct as any).productType || 'Simple';
+
+    setFilterName(targetProduct.name || '');
+    setFilterCategory(parentCatValue);
+    setFilterSubcategoryId(childCatValue);
+    setFilterSubcategories(false);
+    setFilterManufacturer(brandValue);
+    setFilterProductType(prodTypeValue);
+    setFilterPublished('All');
+    setSkuSearchInput(targetProduct.sku || '');
+
+    if (applyToTableFilter) {
+      setAppliedFilters({
+        name: targetProduct.name || '',
+        category: parentCatValue,
+        subcategoryId: childCatValue,
+        subcategories: false,
+        manufacturer: brandValue,
+        productType: 'All',
+        published: 'All',
+        sku: targetProduct.sku || '',
+      });
+      setCurrentPage(1);
+    }
+
+    setSelectedIds((prev) =>
+      prev.includes(targetProduct.id) ? prev : [targetProduct.id, ...prev]
+    );
+    setShowInlineForm(true);
+  };
+
+  // Automatically read URL query parameters (?productId=...&sku=...&name=...) when navigated from Product Attributes or Specification Attributes
+  useEffect(() => {
+    if (typeof window === 'undefined' || products.length === 0) return;
+    const params = new URLSearchParams(window.location.search);
+    const qProductId = (params.get('productId') || params.get('id') || '').trim();
+    const qSku = (params.get('sku') || '').trim();
+    const qName = (params.get('name') || params.get('search') || '').trim();
+
+    if (!qProductId && !qSku && !qName) return;
+
+    const querySignature = `${qProductId}|${qSku}|${qName}|${categories.length}`;
+    if (autoFilledFromUrlRef.current === querySignature) return;
+
+    const matched =
+      products.find(
+        (p) =>
+          (qProductId && p.id.toLowerCase() === qProductId.toLowerCase()) ||
+          (qSku && p.sku?.toLowerCase() === qSku.toLowerCase())
+      ) ||
+      products.find(
+        (p) =>
+          (qProductId && p.id.toLowerCase().includes(qProductId.toLowerCase())) ||
+          (qSku && p.sku?.toLowerCase().includes(qSku.toLowerCase())) ||
+          (qName && p.name?.toLowerCase().includes(qName.toLowerCase()))
+      );
+
+    if (matched) {
+      autoFilledFromUrlRef.current = querySignature;
+      autoFillProductDetails(matched, true);
+      showToast(
+        `Auto-filled all product details for "${matched.name}" (ID: ${matched.id}, SKU: ${matched.sku}).`
+      );
+    }
+  }, [products, categories]);
+
+  // Save handler for the inline Auto-Filled Product Form directly on the Products page
+  const handleSaveInlineProduct = async (formData: ProductFormData, continueEditing = false) => {
+    const targetId = formData.id || selectedIds[0];
+    if (!targetId) return;
+    try {
+      setInlineFormSaving(true);
+      const res = await fetch(`/api/admin/catalogue/products/${targetId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+      const json = await res.json();
+      if (json.success) {
+        showToast(`Product "${formData.name}" updated and synced successfully!`);
+        await fetchData();
+        if (!continueEditing) {
+          setShowInlineForm(false);
+        }
+      } else {
+        showToast(json.error || 'Failed to update product', 'error');
+      }
+    } catch (err: any) {
+      showToast(`Error saving product: ${err.message}`, 'error');
+    } finally {
+      setInlineFormSaving(false);
+    }
+  };
+
   // Apply filters on Search button click
   const handleApplySearch = () => {
     setAppliedFilters({
       name: filterName.trim(),
       category: filterCategory,
+      subcategoryId: filterSubcategoryId,
       subcategories: filterSubcategories,
       manufacturer: filterManufacturer,
       productType: filterProductType,
@@ -208,6 +412,7 @@ export default function AdminProductsPage() {
   const handleResetFilters = () => {
     setFilterName('');
     setFilterCategory('All');
+    setFilterSubcategoryId('All');
     setFilterSubcategories(false);
     setFilterManufacturer('All');
     setFilterProductType('All');
@@ -216,13 +421,18 @@ export default function AdminProductsPage() {
     setAppliedFilters({
       name: '',
       category: 'All',
+      subcategoryId: 'All',
       subcategories: false,
       manufacturer: 'All',
       productType: 'All',
       published: 'All',
       sku: '',
     });
+    setSelectedIds([]);
     setCurrentPage(1);
+    if (typeof window !== 'undefined' && window.location.search) {
+      window.history.replaceState({}, '', '/admin/catalogue/products');
+    }
   };
 
   // Quick Go directly to product SKU
@@ -235,11 +445,13 @@ export default function AdminProductsPage() {
     const matched = products.find(
       (p) =>
         p.sku?.toLowerCase() === cleanSku ||
+        p.id?.toLowerCase() === cleanSku ||
         p.variants?.some((v) => v.sku?.toLowerCase() === cleanSku)
     );
 
     if (matched) {
-      router.push(`/admin/catalogue/products/${matched.id}/edit`);
+      autoFillProductDetails(matched, true);
+      showToast(`Auto-filled product details for SKU "${matched.sku}" (${matched.name}).`);
     } else {
       // Filter the table by this SKU
       setAppliedFilters((prev) => ({ ...prev, sku: skuSearchInput.trim() }));
@@ -250,12 +462,15 @@ export default function AdminProductsPage() {
   // Filtered Products Memo
   const filteredProducts = useMemo(() => {
     return products.filter((p) => {
-      // Product Name filter
+      const resolved = resolveProductCategories(p);
+
+      // Product Name / ID / SKU filter
       if (appliedFilters.name) {
         const query = appliedFilters.name.toLowerCase();
         const matchesName = p.name?.toLowerCase().includes(query);
         const matchesSku = p.sku?.toLowerCase().includes(query);
-        if (!matchesName && !matchesSku) return false;
+        const matchesId = p.id?.toLowerCase().includes(query);
+        if (!matchesName && !matchesSku && !matchesId) return false;
       }
 
       // SKU filter
@@ -268,13 +483,37 @@ export default function AdminProductsPage() {
         if (!matchesMainSku && !matchesVariantSku) return false;
       }
 
-      // Category filter
+      // Category & Subcategory filter
       if (appliedFilters.category !== 'All') {
-        const catMatch =
-          p.categoryId === appliedFilters.category ||
-          p.category?.name?.toLowerCase() === appliedFilters.category.toLowerCase() ||
-          p.category?.id === appliedFilters.category;
-        if (!catMatch) return false;
+        const targetCat = appliedFilters.category;
+        const subIdsOfTarget = childCategories
+          .filter((c) => c.parentId === targetCat)
+          .map((c) => c.id);
+
+        const directMatch =
+          p.categoryId === targetCat ||
+          p.parentCategoryId === targetCat ||
+          p.subCategoryId === targetCat ||
+          resolved.parentId === targetCat ||
+          resolved.childId === targetCat ||
+          p.category?.id === targetCat;
+
+        const subCatMatch =
+          subIdsOfTarget.includes(p.categoryId) ||
+          (p.subCategoryId ? subIdsOfTarget.includes(p.subCategoryId) : false) ||
+          (resolved.childId ? subIdsOfTarget.includes(resolved.childId) : false);
+
+        if (!directMatch && !subCatMatch) return false;
+      }
+
+      // Explicit Subcategory dropdown filter
+      if (appliedFilters.subcategoryId !== 'All') {
+        const targetSub = appliedFilters.subcategoryId;
+        const matchesSub =
+          p.subCategoryId === targetSub ||
+          p.categoryId === targetSub ||
+          resolved.childId === targetSub;
+        if (!matchesSub) return false;
       }
 
       // Manufacturer / Brand filter
@@ -296,7 +535,7 @@ export default function AdminProductsPage() {
 
       return true;
     });
-  }, [products, appliedFilters]);
+  }, [products, appliedFilters, categoryMap, childCategories]);
 
   // Pagination slice
   const totalItems = filteredProducts.length;
@@ -322,6 +561,13 @@ export default function AdminProductsPage() {
   };
 
   const handleToggleSelectRow = (id: string) => {
+    const isCurrentlySelected = selectedIds.includes(id);
+    if (!isCurrentlySelected) {
+      const targetProd = products.find((item) => item.id === id);
+      if (targetProd) {
+        autoFillProductDetails(targetProd, false);
+      }
+    }
     setSelectedIds((prev) =>
       prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
     );
@@ -716,10 +962,52 @@ export default function AdminProductsPage() {
       )}
 
       {/* TOP HEADER & ACTION BUTTONS BAR */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 pt-1 pb-2">
-        <h1 className="text-2xl font-normal text-slate-800 tracking-tight">
-          Products
-        </h1>
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 pt-1 pb-1">
+        <div className="flex items-center gap-3 flex-wrap">
+          <h1 className="text-2xl font-normal text-slate-800 tracking-tight">
+            Products
+          </h1>
+
+          {/* ADVANCED / BASIC TOGGLE SWITCH (nopCommerce style) */}
+          <button
+            type="button"
+            onClick={() => setAdvancedMode(!advancedMode)}
+            className={`inline-flex items-center justify-between px-2.5 py-1 rounded text-xs font-semibold border transition cursor-pointer select-none min-w-[96px] h-7 shadow-2xs ${
+              advancedMode
+                ? 'bg-[#2585be] border-[#2585be] text-white hover:bg-[#1f72a3]'
+                : 'bg-white border-[#3c8dbc] text-[#3c8dbc] hover:bg-slate-50'
+            }`}
+            title={
+              advancedMode
+                ? 'Click to switch to Basic mode (show only mandatory & important fields)'
+                : 'Click to switch to Advanced mode (show all hidden fields)'
+            }
+          >
+            {advancedMode ? (
+              <>
+                <span className="text-white font-semibold text-xs">Advanced</span>
+                <span className="w-3.5 h-5 rounded-xs bg-white shadow-xs ml-2" />
+              </>
+            ) : (
+              <>
+                <span className="w-3.5 h-5 rounded-xs bg-[#3c8dbc] border border-[#3c8dbc] shadow-xs mr-2" />
+                <span className="text-[#3c8dbc] font-semibold text-xs">Basic</span>
+              </>
+            )}
+          </button>
+
+          <span
+            className={`text-[11px] px-2.5 py-0.5 rounded border font-medium ${
+              advancedMode
+                ? 'bg-blue-50 text-blue-700 border-blue-200'
+                : 'bg-amber-50 text-amber-800 border-amber-200'
+            }`}
+          >
+            {advancedMode
+              ? 'Advanced mode: All fields visible'
+              : 'Basic mode: Showing only mandatory & important fields'}
+          </span>
+        </div>
 
         <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
           {/* Add New */}
@@ -847,7 +1135,7 @@ export default function AdminProductsPage() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-8 gap-y-3.5 text-xs text-slate-700">
               {/* LEFT COLUMN */}
               <div className="space-y-3.5">
-                {/* Product Name */}
+                {/* Product Name (Mandatory / Important) */}
                 <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
                   <div className="sm:col-span-4 flex items-center gap-1 font-medium text-slate-700">
                     <span>Product name</span>
@@ -870,12 +1158,12 @@ export default function AdminProductsPage() {
                   </div>
                 </div>
 
-                {/* Category */}
+                {/* Category (Mandatory / Important) */}
                 <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
                   <div className="sm:col-span-4 flex items-center gap-1 font-medium text-slate-700">
                     <span>Category</span>
                     <span
-                      title="Search by a specific category."
+                      title="Search by a specific parent or child category."
                       className="inline-flex items-center justify-center w-3.5 h-3.5 rounded-full bg-[#3c8dbc] text-white text-[10px] cursor-help font-bold"
                     >
                       ?
@@ -884,119 +1172,125 @@ export default function AdminProductsPage() {
                   <div className="sm:col-span-8">
                     <select
                       value={filterCategory}
-                      onChange={(e) => setFilterCategory(e.target.value)}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setFilterCategory(val);
+                        setFilterSubcategoryId('All');
+                      }}
                       className="w-full text-xs px-2.5 py-1.5 rounded border border-[#d2d6de] bg-white focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none"
                     >
                       <option value="All">All</option>
-                      {categories.map((c) => (
-                        <option key={c.id} value={c.id}>
-                          {c.name}
-                        </option>
-                      ))}
+                      <optgroup label="Parent Categories">
+                        {parentCategories.map((c) => (
+                          <option key={c.id} value={c.id}>
+                            {c.name}
+                          </option>
+                        ))}
+                      </optgroup>
+                      {childCategories.length > 0 && (
+                        <optgroup label="Parent >> Child Subcategories">
+                          {childCategories.map((c) => (
+                            <option key={c.id} value={c.id}>
+                              {getCategoryHierarchyLabel(c)}
+                            </option>
+                          ))}
+                        </optgroup>
+                      )}
                     </select>
                   </div>
                 </div>
 
-                {/* Search subcategories */}
-                <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
-                  <div className="sm:col-span-4 flex items-center gap-1 font-medium text-slate-700">
-                    <span>Search subcategories</span>
-                    <span
-                      title="Check to search in subcategories."
-                      className="inline-flex items-center justify-center w-3.5 h-3.5 rounded-full bg-[#3c8dbc] text-white text-[10px] cursor-help font-bold"
-                    >
-                      ?
-                    </span>
-                  </div>
-                  <div className="sm:col-span-8 flex items-center">
-                    <input
-                      type="checkbox"
-                      checked={filterSubcategories}
-                      onChange={(e) => setFilterSubcategories(e.target.checked)}
-                      className="h-4 w-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc]"
-                    />
-                  </div>
-                </div>
-
-                {/* Manufacturer */}
-                <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
-                  <div className="sm:col-span-4 flex items-center gap-1 font-medium text-slate-700">
-                    <span>Manufacturer</span>
-                    <span
-                      title="Search by a specific manufacturer or brand."
-                      className="inline-flex items-center justify-center w-3.5 h-3.5 rounded-full bg-[#3c8dbc] text-white text-[10px] cursor-help font-bold"
-                    >
-                      ?
-                    </span>
-                  </div>
-                  <div className="sm:col-span-8">
-                    <select
-                      value={filterManufacturer}
-                      onChange={(e) => setFilterManufacturer(e.target.value)}
-                      className="w-full text-xs px-2.5 py-1.5 rounded border border-[#d2d6de] bg-white focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none"
-                    >
-                      <option value="All">All</option>
-                      {brands.map((b) => (
-                        <option key={b.id} value={b.id}>
-                          {b.name}
+                {/* Search subcategories (Advanced mode only) */}
+                {advancedMode && (
+                  <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
+                    <div className="sm:col-span-4 flex items-center gap-1 font-medium text-slate-700">
+                      <span>Search subcategories</span>
+                      <span
+                        title="Check to search in subcategories or select a child subcategory."
+                        className="inline-flex items-center justify-center w-3.5 h-3.5 rounded-full bg-[#3c8dbc] text-white text-[10px] cursor-help font-bold"
+                      >
+                        ?
+                      </span>
+                    </div>
+                    <div className="sm:col-span-8">
+                      <select
+                        value={filterSubcategoryId}
+                        onChange={(e) => setFilterSubcategoryId(e.target.value)}
+                        className="w-full text-xs px-2.5 py-1.5 rounded border border-[#d2d6de] bg-white focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none"
+                      >
+                        <option value="All">
+                          All Subcategories ({availableSubcategoriesForFilter.length})
                         </option>
-                      ))}
-                    </select>
+                        {availableSubcategoriesForFilter.map((sub) => (
+                          <option key={sub.id} value={sub.id}>
+                            {getCategoryHierarchyLabel(sub)}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
                   </div>
-                </div>
+                )}
+
+                {/* Manufacturer (Advanced mode only) */}
+                {advancedMode && (
+                  <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
+                    <div className="sm:col-span-4 flex items-center gap-1 font-medium text-slate-700">
+                      <span>Manufacturer</span>
+                      <span
+                        title="Search by a specific manufacturer or brand."
+                        className="inline-flex items-center justify-center w-3.5 h-3.5 rounded-full bg-[#3c8dbc] text-white text-[10px] cursor-help font-bold"
+                      >
+                        ?
+                      </span>
+                    </div>
+                    <div className="sm:col-span-8">
+                      <select
+                        value={filterManufacturer}
+                        onChange={(e) => setFilterManufacturer(e.target.value)}
+                        className="w-full text-xs px-2.5 py-1.5 rounded border border-[#d2d6de] bg-white focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none"
+                      >
+                        <option value="All">All</option>
+                        {brands.map((b) => (
+                          <option key={b.id} value={b.id}>
+                            {b.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* RIGHT COLUMN */}
               <div className="space-y-3.5">
-                {/* Product Type */}
-                <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
-                  <div className="sm:col-span-5 flex items-center gap-1 font-medium text-slate-700">
-                    <span>Product type</span>
-                    <span
-                      title="Search by product type (Simple or Grouped)."
-                      className="inline-flex items-center justify-center w-3.5 h-3.5 rounded-full bg-[#3c8dbc] text-white text-[10px] cursor-help font-bold"
-                    >
-                      ?
-                    </span>
-                  </div>
-                  <div className="sm:col-span-7">
-                    <select
-                      value={filterProductType}
-                      onChange={(e) => setFilterProductType(e.target.value)}
-                      className="w-full text-xs px-2.5 py-1.5 rounded border border-[#d2d6de] bg-white focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none"
-                    >
-                      <option value="All">All</option>
-                      <option value="Simple">Simple</option>
-                      <option value="Grouped">Grouped</option>
-                    </select>
-                  </div>
-                </div>
 
-                {/* Published */}
-                <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
-                  <div className="sm:col-span-5 flex items-center gap-1 font-medium text-slate-700">
-                    <span>Published</span>
-                    <span
-                      title="Search by published status."
-                      className="inline-flex items-center justify-center w-3.5 h-3.5 rounded-full bg-[#3c8dbc] text-white text-[10px] cursor-help font-bold"
-                    >
-                      ?
-                    </span>
+                {/* Published (Advanced mode only) */}
+                {advancedMode && (
+                  <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
+                    <div className="sm:col-span-5 flex items-center gap-1 font-medium text-slate-700">
+                      <span>Published</span>
+                      <span
+                        title="Search by published status."
+                        className="inline-flex items-center justify-center w-3.5 h-3.5 rounded-full bg-[#3c8dbc] text-white text-[10px] cursor-help font-bold"
+                      >
+                        ?
+                      </span>
+                    </div>
+                    <div className="sm:col-span-7">
+                      <select
+                        value={filterPublished}
+                        onChange={(e) => setFilterPublished(e.target.value)}
+                        className="w-full text-xs px-2.5 py-1.5 rounded border border-[#d2d6de] bg-white focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none"
+                      >
+                        <option value="All">All</option>
+                        <option value="Published only">Published only</option>
+                        <option value="Unpublished only">Unpublished only</option>
+                      </select>
+                    </div>
                   </div>
-                  <div className="sm:col-span-7">
-                    <select
-                      value={filterPublished}
-                      onChange={(e) => setFilterPublished(e.target.value)}
-                      className="w-full text-xs px-2.5 py-1.5 rounded border border-[#d2d6de] bg-white focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none"
-                    >
-                      <option value="All">All</option>
-                      <option value="Published only">Published only</option>
-                      <option value="Unpublished only">Unpublished only</option>
-                    </select>
-                  </div>
-                </div>
+                )}
 
-                {/* Go directly to product SKU */}
+                {/* Go directly to product SKU (Mandatory / Important) */}
                 <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
                   <div className="sm:col-span-5 flex items-center gap-1 font-medium text-slate-700">
                     <span>Go directly to product SKU</span>
@@ -1040,6 +1334,7 @@ export default function AdminProductsPage() {
               </button>
               {(appliedFilters.name ||
                 appliedFilters.category !== 'All' ||
+                appliedFilters.subcategoryId !== 'All' ||
                 appliedFilters.manufacturer !== 'All' ||
                 appliedFilters.published !== 'All' ||
                 appliedFilters.sku) && (
@@ -1056,17 +1351,425 @@ export default function AdminProductsPage() {
         )}
       </div>
 
+      {/* SELECTED PRODUCT(S) FULL DETAILS PANEL & AUTO-FILLED FORM */}
+      {selectedIds.length > 0 && (
+        <div className="bg-white rounded border-2 border-[#3c8dbc] shadow-sm overflow-hidden">
+          <div className="bg-[#3c8dbc] text-white px-4 py-2.5 flex items-center justify-between flex-wrap gap-2">
+            <div className="flex items-center gap-2 text-xs font-bold">
+              <Package className="w-4 h-4" />
+              <span>
+                Selected Product Details ({selectedIds.length} selected) — Parent &amp; Child Category + Auto-Filled Product Form
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setAdvancedMode(!advancedMode)}
+                className={`inline-flex items-center justify-between px-2.5 py-1 rounded text-xs font-semibold border transition cursor-pointer select-none min-w-[96px] h-7 shadow-2xs ${
+                  advancedMode
+                    ? 'bg-[#2585be] border-white text-white'
+                    : 'bg-white border-white text-[#3c8dbc]'
+                }`}
+              >
+                {advancedMode ? (
+                  <>
+                    <span className="text-white font-semibold text-xs">Advanced</span>
+                    <span className="w-3.5 h-5 rounded-xs bg-white shadow-xs ml-2" />
+                  </>
+                ) : (
+                  <>
+                    <span className="w-3.5 h-5 rounded-xs bg-[#3c8dbc] border border-[#3c8dbc] shadow-xs mr-2" />
+                    <span className="text-[#3c8dbc] font-semibold text-xs">Basic</span>
+                  </>
+                )}
+              </button>
+              <button
+                type="button"
+                onClick={() => setSelectedIds([])}
+                className="text-white/90 hover:text-white text-xs flex items-center gap-1 bg-white/15 px-2.5 py-1 rounded h-7"
+              >
+                <X className="w-3.5 h-3.5" />
+                <span>Clear selection</span>
+              </button>
+            </div>
+          </div>
+
+          {/* AUTO-FILLED DIRECT PRODUCT FORM SECTION RIGHT AT THE TOP WHEN SELECTED */}
+          {(() => {
+            const activeProd = products.find((p) => p.id === selectedIds[0]);
+            if (!activeProd) return null;
+            const resolvedCat = resolveProductCategories(activeProd);
+            return (
+              <div className="border-b-2 border-[#3c8dbc] bg-white">
+                <div
+                  onClick={() => setShowInlineForm(!showInlineForm)}
+                  className="bg-slate-100 hover:bg-slate-200/70 px-4 py-2.5 flex items-center justify-between cursor-pointer select-none border-b border-slate-200 transition"
+                >
+                  <div className="flex items-center gap-2 text-xs font-bold text-slate-800">
+                    <Edit3 className="w-4 h-4 text-[#3c8dbc]" />
+                    <span>
+                      Auto-Filled Product Form — {activeProd.name} (ID: {activeProd.id} | SKU: {activeProd.sku})
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    className="text-xs font-semibold text-[#3c8dbc] hover:underline flex items-center gap-1"
+                  >
+                    <span>{showInlineForm ? 'Hide Auto-Filled Form' : 'Show Auto-Filled Form'}</span>
+                    {showInlineForm ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                  </button>
+                </div>
+
+                {showInlineForm && (
+                  <div className="p-4 sm:p-5 bg-[#ecf0f5]">
+                    <ProductForm
+                      key={activeProd.id}
+                      isEdit={true}
+                      categories={categories}
+                      brands={brands}
+                      saving={inlineFormSaving}
+                      onSave={handleSaveInlineProduct}
+                      externalAdvancedMode={advancedMode}
+                      onToggleAdvancedMode={setAdvancedMode}
+                      initialValues={{
+                        id: activeProd.id,
+                        name: activeProd.name || '',
+                        sku: activeProd.sku || '',
+                        brandId: activeProd.brandId || '',
+                        categoryId: resolvedCat.parentId || activeProd.categoryId || '',
+                        parentCategoryId: resolvedCat.parentId || activeProd.parentCategoryId || '',
+                        subCategoryId: resolvedCat.childId || activeProd.subCategoryId || '',
+                        price: activeProd.price ?? 0,
+                        comparePrice: activeProd.comparePrice ?? 0,
+                        cost: activeProd.cost ?? Math.round((activeProd.price || 0) * 0.78),
+                        shortDescription:
+                          activeProd.shortDescription || activeProd.description || '',
+                        description:
+                          activeProd.description || activeProd.shortDescription || '',
+                        targetCrops:
+                          activeProd.targetCrops || 'Paddy, Cotton, Sugarcane, Vegetables',
+                        cropStages: activeProd.cropStages || '1, 2, 3',
+                        isPublished: false,
+                        isDraft: false,
+                        isFeatured: false,
+                        isBestSeller: false,
+                        seName: activeProd.slug || activeProd.id || '',
+                        metaTitle:
+                          activeProd.metaTitle || `Buy ${activeProd.name} Online | Agri-Mart India`,
+                        metaKeywords:
+                          activeProd.metaKeywords ||
+                          `${activeProd.name}, ${activeProd.sku}, agriculture India`,
+                        metaDescription:
+                          activeProd.metaDescription ||
+                          activeProd.shortDescription ||
+                          activeProd.description ||
+                          '',
+                        images:
+                          activeProd.images && activeProd.images.length > 0
+                            ? activeProd.images
+                            : [
+                                'https://images.unsplash.com/photo-1590874103328-eac38a683ce7?auto=format&fit=crop&w=400&q=80',
+                              ],
+                        stockQuantity:
+                          activeProd.variants?.reduce(
+                            (sum, v) => sum + (v.stockQuantity || 0),
+                            0
+                          ) ||
+                          (activeProd as any).stockQuantity ||
+                          25,
+                        weight: activeProd.weight ?? 5,
+                        length: activeProd.length ?? 35,
+                        width: activeProd.width ?? 25,
+                        height: activeProd.height ?? 20,
+                        gtin: activeProd.gtin || '8901234560011',
+                        manufacturerPartNumber:
+                          activeProd.manufacturerPartNumber || `${activeProd.sku}-IND`,
+                        vendor: activeProd.vendor || 'Agri-Mart Direct',
+                        taxCategory:
+                          activeProd.taxCategory || 'Agricultural Essentials (5% GST)',
+                        deliveryDate: activeProd.deliveryDate || '1-2 days',
+                      }}
+                    />
+                  </div>
+                )}
+              </div>
+            );
+          })()}
+
+          <div className="divide-y divide-slate-200 max-h-[540px] overflow-y-auto">
+            {products
+              .filter((p) => selectedIds.includes(p.id))
+              .map((p) => {
+                const catInfo = resolveProductCategories(p);
+                const stock =
+                  p.variants?.reduce((sum, v) => sum + (v.stockQuantity || 0), 0) ||
+                  (p as any).stockQuantity ||
+                  0;
+                const brandName =
+                  p.brand?.name ||
+                  brands.find((b) => b.id === p.brandId)?.name ||
+                  'AgriPro';
+
+                return (
+                  <div key={p.id} className="p-4 sm:p-5 space-y-4 bg-slate-50/40">
+                    {/* Top Row: Images + Title + Hierarchy Badges + Edit Link */}
+                    <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 border-b border-slate-200 pb-4">
+                      <div className="flex items-start gap-4">
+                        <div className="flex gap-2 shrink-0">
+                          {(p.images && p.images.length > 0 ? p.images : ['']).map(
+                            (img, idx) =>
+                              img ? (
+                                <img
+                                  key={idx}
+                                  src={img}
+                                  alt={p.name}
+                                  className="w-16 h-16 rounded-md object-cover border border-slate-300 bg-white shadow-2xs"
+                                />
+                              ) : (
+                                <div
+                                  key={idx}
+                                  className="w-16 h-16 rounded-md bg-slate-100 border border-slate-300 flex items-center justify-center text-slate-400"
+                                >
+                                  <Package className="w-6 h-6" />
+                                </div>
+                              )
+                          )}
+                        </div>
+                        <div className="space-y-1.5">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <h3 className="text-sm font-bold text-slate-900">
+                              {p.name}
+                            </h3>
+                            <span className="px-2 py-0.5 rounded bg-slate-200 text-slate-800 font-mono text-[11px] font-semibold">
+                              SKU: {p.sku}
+                            </span>
+                          </div>
+                          {p.nameKn && (
+                            <p className="text-xs text-slate-500">{p.nameKn}</p>
+                          )}
+
+                          {/* Parent & Child Category Hierarchy */}
+                          <div className="flex flex-wrap items-center gap-2 pt-1">
+                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-blue-50 border border-blue-200 text-blue-800 text-xs font-semibold">
+                              <span className="text-[10px] uppercase tracking-wider text-blue-600 font-bold">
+                                Parent Category:
+                              </span>
+                              <span>{catInfo.parentName}</span>
+                            </span>
+                            <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
+                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold">
+                              <span className="text-[10px] uppercase tracking-wider text-emerald-600 font-bold">
+                                Child Category (Subcategory):
+                              </span>
+                              <span>{catInfo.childName}</span>
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-2 shrink-0">
+                        <Link
+                          href={`/admin/catalogue/products/${p.id}/edit`}
+                          className="bg-[#3c8dbc] hover:bg-[#357ca5] text-white text-xs font-semibold px-3.5 py-2 rounded flex items-center gap-1.5 shadow-2xs transition"
+                        >
+                          <Edit3 className="w-3.5 h-3.5" />
+                          <span>Edit Full Product</span>
+                        </Link>
+                      </div>
+                    </div>
+
+                    {/* Grid of All Product Details */}
+                    <div className={`grid grid-cols-1 sm:grid-cols-2 ${advancedMode ? 'lg:grid-cols-4' : 'lg:grid-cols-2'} gap-3 text-xs`}>
+                      {/* Pricing & Tax (INR) — Mandatory/Important */}
+                      <div className="bg-white p-3 rounded border border-slate-200 space-y-1.5">
+                        <div className="font-bold text-slate-700 border-b border-slate-100 pb-1 uppercase text-[10px] tracking-wider">
+                          Pricing &amp; Tax (INR)
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-slate-500">Selling Price:</span>
+                          <span className="font-bold text-emerald-700">
+                            ₹{(p.price || 0).toLocaleString('en-IN')} INR
+                          </span>
+                        </div>
+                        {advancedMode && (
+                          <>
+                            <div className="flex justify-between">
+                              <span className="text-slate-500">MRP / Old Price:</span>
+                              <span className="font-semibold text-slate-700">
+                                ₹{(p.comparePrice || p.price || 0).toLocaleString('en-IN')} INR
+                              </span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-slate-500">Product Cost:</span>
+                              <span className="font-semibold text-slate-700">
+                                ₹{(p.cost ?? Math.round((p.price || 0) * 0.78)).toLocaleString('en-IN')} INR
+                              </span>
+                            </div>
+                          </>
+                        )}
+                        <div className="flex justify-between">
+                          <span className="text-slate-500">Tax Category:</span>
+                          <span className="font-medium text-slate-800">
+                            {p.taxCategory || 'Exempt / Agricultural (5% GST)'}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Inventory & Identification — Mandatory/Important */}
+                      <div className="bg-white p-3 rounded border border-slate-200 space-y-1.5">
+                        <div className="font-bold text-slate-700 border-b border-slate-100 pb-1 uppercase text-[10px] tracking-wider">
+                          Inventory &amp; Brand
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-slate-500">Manufacturer:</span>
+                          <span className="font-semibold text-slate-800">{brandName}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-slate-500">Stock Quantity:</span>
+                          <span className="font-bold text-blue-700">{stock} units</span>
+                        </div>
+                        {advancedMode && (
+                          <>
+                            <div className="flex justify-between">
+                              <span className="text-slate-500">Vendor:</span>
+                              <span className="font-medium text-slate-800">
+                                {p.vendor || 'Agri-Mart Direct'}
+                              </span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-slate-500">GTIN / MPN:</span>
+                              <span className="font-mono text-[11px] text-slate-700">
+                                {p.gtin || '8901234560011'} / {p.manufacturerPartNumber || `${p.sku}-IND`}
+                              </span>
+                            </div>
+                          </>
+                        )}
+                      </div>
+
+                      {/* Shipping & Dimensions — Advanced mode only */}
+                      {advancedMode && (
+                        <div className="bg-white p-3 rounded border border-slate-200 space-y-1.5">
+                          <div className="font-bold text-slate-700 border-b border-slate-100 pb-1 uppercase text-[10px] tracking-wider">
+                            Shipping &amp; Dimensions
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-slate-500">Weight:</span>
+                            <span className="font-medium text-slate-800">
+                              {p.weight ?? 5} kg
+                            </span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-slate-500">Dimensions (L×W×H):</span>
+                            <span className="font-medium text-slate-800">
+                              {p.length ?? 35} × {p.width ?? 25} × {p.height ?? 20} cm
+                            </span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-slate-500">Delivery Time:</span>
+                            <span className="font-medium text-slate-800">
+                              {p.deliveryDate || '1-2 days (Express Hub)'}
+                            </span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-slate-500">URL Slug:</span>
+                            <span className="font-mono text-[11px] text-slate-600 truncate max-w-[140px]">
+                              /{p.slug || p.id}
+                            </span>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Agronomy & Crop Guidance — Advanced mode only */}
+                      {advancedMode && (
+                        <div className="bg-white p-3 rounded border border-slate-200 space-y-1.5">
+                          <div className="font-bold text-slate-700 border-b border-slate-100 pb-1 uppercase text-[10px] tracking-wider">
+                            Agronomy &amp; Crop Stages
+                          </div>
+                          <div>
+                            <span className="text-slate-500 block">Target Crops:</span>
+                            <span className="font-medium text-slate-800">
+                              {p.targetCrops || 'Paddy, Cotton, Sugarcane, Vegetables'}
+                            </span>
+                          </div>
+                          <div>
+                            <span className="text-slate-500 block">Crop Stages:</span>
+                            <span className="font-medium text-slate-800">
+                              Stages: {p.cropStages || '1, 2, 3'}
+                            </span>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Descriptions & Technical Specifications — Advanced mode only */}
+                    {advancedMode && (
+                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 text-xs">
+                        <div className="bg-white p-3 rounded border border-slate-200 space-y-1.5">
+                          <div className="font-bold text-slate-700 border-b border-slate-100 pb-1 uppercase text-[10px] tracking-wider">
+                            Product Descriptions &amp; SEO
+                          </div>
+                          {p.shortDescription && (
+                            <p className="text-slate-700 font-medium">
+                              <span className="text-slate-500">Short: </span>
+                              {p.shortDescription}
+                            </p>
+                          )}
+                          <p className="text-slate-600 leading-relaxed">
+                            <span className="text-slate-500 font-medium">Full: </span>
+                            {p.description || p.shortDescription || 'Standard agricultural specification.'}
+                          </p>
+                          <div className="pt-1 text-[11px] text-slate-500 border-t border-slate-100">
+                            <strong>SEO Title:</strong> {p.metaTitle || `Buy ${p.name} | Agri-Mart India`}
+                          </div>
+                        </div>
+
+                        <div className="bg-white p-3 rounded border border-slate-200 space-y-1.5">
+                          <div className="font-bold text-slate-700 border-b border-slate-100 pb-1 uppercase text-[10px] tracking-wider">
+                            Technical Specifications &amp; Variants
+                          </div>
+                          {p.specifications && p.specifications.length > 0 ? (
+                            <div className="space-y-1">
+                              {p.specifications.map((sp, i) => (
+                                <div key={i} className="flex justify-between border-b border-slate-50 pb-0.5">
+                                  <span className="text-slate-500">
+                                    {sp.group ? `[${sp.group}] ` : ''}
+                                    {sp.name}:
+                                  </span>
+                                  <span className="font-medium text-slate-800">{sp.value}</span>
+                                </div>
+                              ))}
+                            </div>
+                          ) : (
+                            <p className="text-slate-500">
+                              ISO &amp; FCO Certified Agricultural Input — Quality Tested
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+          </div>
+        </div>
+      )}
+
       {/* PRODUCTS DATA GRID CARD */}
       <div className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden">
         {/* Helper Link */}
-        <div className="px-4 py-2.5 text-xs text-slate-500 border-b border-slate-100">
-          Learn more about{' '}
-          <Link
-            href="/admin/catalogue/categories"
-            className="text-[#3c8dbc] hover:underline"
-          >
-            products
-          </Link>
+        <div className="px-4 py-2.5 text-xs text-slate-500 border-b border-slate-100 flex items-center justify-between">
+          <div>
+            Learn more about{' '}
+            <Link
+              href="/admin/catalogue/categories"
+              className="text-[#3c8dbc] hover:underline"
+            >
+              products &amp; subcategories
+            </Link>
+          </div>
+          <div className="text-[11px] text-slate-500">
+            Tip: Check any product row to view its <strong>Parent &amp; Child Category</strong> and complete details above, or click <strong>Edit</strong>.
+          </div>
         </div>
 
         {/* Table Container */}
@@ -1083,9 +1786,10 @@ export default function AdminProductsPage() {
                   />
                 </th>
                 <th className="py-2.5 px-3 w-20 text-center">Picture</th>
-                <th className="py-2.5 px-3">Product name</th>
+                <th className="py-2.5 px-3">Product name &amp; Details</th>
+                <th className="py-2.5 px-3 w-64">Parent &amp; Child Category</th>
                 <th className="py-2.5 px-3 w-36">SKU</th>
-                <th className="py-2.5 px-3 w-28 text-right">Price</th>
+                <th className="py-2.5 px-3 w-28 text-right">Price (INR)</th>
                 <th className="py-2.5 px-3 w-28 text-center">Stock quantity</th>
                 <th className="py-2.5 px-3 w-24 text-center">Published</th>
                 <th className="py-2.5 px-3 w-24 text-center">Edit</th>
@@ -1094,14 +1798,14 @@ export default function AdminProductsPage() {
             <tbody className="divide-y divide-slate-100">
               {loading ? (
                 <tr>
-                  <td colSpan={8} className="py-12 text-center text-slate-400">
+                  <td colSpan={9} className="py-12 text-center text-slate-400">
                     <RefreshCw className="w-6 h-6 animate-spin mx-auto mb-2 text-[#3c8dbc]" />
                     <span>Loading products catalogue...</span>
                   </td>
                 </tr>
               ) : paginatedProducts.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="py-12 text-center text-slate-400">
+                  <td colSpan={9} className="py-12 text-center text-slate-400">
                     <Package className="w-8 h-8 mx-auto mb-2 text-slate-300" />
                     <p className="font-semibold text-slate-600">No products found</p>
                     <p className="text-[11px] text-slate-400 mt-1">
@@ -1126,6 +1830,11 @@ export default function AdminProductsPage() {
                     (p as any).stockQuantity ||
                     0;
                   const thumb = p.images?.[0];
+                  const catInfo = resolveProductCategories(p);
+                  const brandName =
+                    p.brand?.name ||
+                    brands.find((b) => b.id === p.brandId)?.name ||
+                    'AgriPro';
 
                   return (
                     <tr
@@ -1173,19 +1882,37 @@ export default function AdminProductsPage() {
                         </Link>
                       </td>
 
-                      {/* Product Name */}
+                      {/* Product Name & Summary Details */}
                       <td className="py-2.5 px-3 font-medium text-slate-800">
                         <Link
                           href={`/admin/catalogue/products/${p.id}/edit`}
-                          className="hover:text-[#3c8dbc] transition"
+                          className="hover:text-[#3c8dbc] transition font-semibold block"
                         >
                           {p.name}
                         </Link>
-                        {p.category?.name && (
-                          <span className="block text-[11px] text-slate-400 font-normal">
-                            {p.category.name}
-                          </span>
-                        )}
+                        <div className="flex flex-wrap items-center gap-2 mt-1 text-[11px] text-slate-500 font-normal">
+                          <span>Brand: <strong className="text-slate-700">{brandName}</strong></span>
+                          {p.targetCrops && (
+                            <span>• Crops: {p.targetCrops}</span>
+                          )}
+                        </div>
+                      </td>
+
+                      {/* Parent & Child Category */}
+                      <td className="py-2.5 px-3">
+                        <div className="space-y-1">
+                          <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-blue-50 text-blue-800 border border-blue-200 text-[11px] font-medium">
+                            <span className="text-[9px] uppercase font-bold text-blue-600">Parent:</span>
+                            <span>{catInfo.parentName}</span>
+                          </div>
+                          <div className="flex items-center gap-1 pl-1">
+                            <span className="text-slate-400 text-[10px]">↳</span>
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-emerald-50 text-emerald-800 border border-emerald-200 text-[11px] font-medium">
+                              <span className="text-[9px] uppercase font-bold text-emerald-600">Child:</span>
+                              <span>{catInfo.childName}</span>
+                            </span>
+                          </div>
+                        </div>
                       </td>
 
                       {/* SKU */}
@@ -1196,6 +1923,11 @@ export default function AdminProductsPage() {
                       {/* Price */}
                       <td className="py-2.5 px-3 text-right font-semibold text-slate-800">
                         ₹{p.price?.toLocaleString('en-IN')}
+                        {p.comparePrice && p.comparePrice > p.price && (
+                          <span className="block text-[10px] text-slate-400 line-through font-normal">
+                            ₹{p.comparePrice.toLocaleString('en-IN')}
+                          </span>
+                        )}
                       </td>
 
                       {/* Stock Quantity */}

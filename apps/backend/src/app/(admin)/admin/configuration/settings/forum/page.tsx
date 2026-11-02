@@ -214,7 +214,7 @@ export default function ForumSettingsPage() {
   };
 
   return (
-    <div className="space-y-4">
+    <div style={{ display: 'none' }} className="hidden space-y-4">
       {/* Toast Notification */}
       {toast && (
         <div

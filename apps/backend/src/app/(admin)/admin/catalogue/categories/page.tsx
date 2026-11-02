@@ -42,6 +42,9 @@ export default function AdminCategoriesPage() {
   // Selection
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
+  // Advanced / Basic Mode State
+  const [advancedMode, setAdvancedMode] = useState(true);
+
   // Search Collapsible State
   const [searchOpen, setSearchOpen] = useState(true);
 
@@ -77,7 +80,7 @@ export default function AdminCategoriesPage() {
     image: '',
     parentId: '',
     displayOrder: 1,
-    published: true,
+    published: false,
   });
 
   // Toast Notification
@@ -147,7 +150,7 @@ export default function AdminCategoriesPage() {
       if (appliedFilters.name && !fullName.includes(appliedFilters.name)) {
         return false;
       }
-      const isPub = cat.published !== false && cat.isPublished !== false;
+      const isPub = Boolean(cat.published || cat.isPublished);
       if (appliedFilters.published === 'PublishedOnly' && !isPub) {
         return false;
       }
@@ -183,7 +186,7 @@ export default function AdminCategoriesPage() {
       image: '',
       parentId: '',
       displayOrder: categories.length,
-      published: true,
+      published: false,
     });
     setModalOpen(true);
   };
@@ -198,7 +201,7 @@ export default function AdminCategoriesPage() {
       image: cat.image || '',
       parentId: cat.parentId || '',
       displayOrder: cat.displayOrder !== undefined ? cat.displayOrder : 0,
-      published: cat.published !== false && cat.isPublished !== false,
+      published: false,
     });
     setModalOpen(true);
   };
@@ -379,9 +382,51 @@ export default function AdminCategoriesPage() {
         </div>
       )}
 
-      {/* TOP HEADER: Title + Action buttons */}
+      {/* TOP HEADER: Title + Advanced/Basic Toggle + Action buttons */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1 pb-1">
-        <h1 className="text-2xl font-normal text-slate-800 tracking-tight">Categories</h1>
+        <div className="flex items-center gap-3 flex-wrap">
+          <h1 className="text-2xl font-normal text-slate-800 tracking-tight">Categories</h1>
+
+          {/* ADVANCED / BASIC TOGGLE SWITCH */}
+          <button
+            type="button"
+            onClick={() => setAdvancedMode(!advancedMode)}
+            className={`inline-flex items-center justify-between px-2.5 py-1 rounded text-xs font-semibold border transition cursor-pointer select-none min-w-[96px] h-7 shadow-2xs ${
+              advancedMode
+                ? 'bg-[#2585be] border-[#2585be] text-white hover:bg-[#1f72a3]'
+                : 'bg-white border-[#3c8dbc] text-[#3c8dbc] hover:bg-slate-50'
+            }`}
+            title={
+              advancedMode
+                ? 'Click to switch to Basic mode (show only mandatory & important fields)'
+                : 'Click to switch to Advanced mode (show all hidden fields)'
+            }
+          >
+            {advancedMode ? (
+              <>
+                <span className="text-white font-semibold text-xs">Advanced</span>
+                <span className="w-3.5 h-5 rounded-xs bg-white shadow-xs ml-2" />
+              </>
+            ) : (
+              <>
+                <span className="w-3.5 h-5 rounded-xs bg-[#3c8dbc] border border-[#3c8dbc] shadow-xs mr-2" />
+                <span className="text-[#3c8dbc] font-semibold text-xs">Basic</span>
+              </>
+            )}
+          </button>
+
+          <span
+            className={`text-[11px] px-2.5 py-0.5 rounded border font-medium ${
+              advancedMode
+                ? 'bg-blue-50 text-blue-700 border-blue-200'
+                : 'bg-amber-50 text-amber-800 border-amber-200'
+            }`}
+          >
+            {advancedMode
+              ? 'Advanced mode: All fields visible'
+              : 'Basic mode: Showing only mandatory & important fields'}
+          </span>
+        </div>
 
         <div className="flex flex-wrap items-center gap-2">
           {/* Add new button */}
@@ -496,7 +541,7 @@ export default function AdminCategoriesPage() {
         {searchOpen && (
           <div className="p-4 sm:p-6 space-y-4 text-xs text-slate-700">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
-              {/* Category name */}
+              {/* Category name (Mandatory / Important) */}
               <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
                 <div className="sm:col-span-4 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
                   <span>Category name</span>
@@ -514,24 +559,26 @@ export default function AdminCategoriesPage() {
                 </div>
               </div>
 
-              {/* Published */}
-              <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
-                <div className="sm:col-span-4 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
-                  <span>Published</span>
-                  <Tooltip text="Search by a published status." />
+              {/* Published (Advanced mode only) */}
+              {advancedMode && (
+                <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
+                  <div className="sm:col-span-4 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
+                    <span>Published</span>
+                    <Tooltip text="Search by a published status." />
+                  </div>
+                  <div className="sm:col-span-8">
+                    <select
+                      value={filterPublished}
+                      onChange={(e) => setFilterPublished(e.target.value)}
+                      className="w-full text-xs px-2.5 py-1.5 rounded border border-[#d2d6de] bg-white focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none text-slate-700 cursor-pointer"
+                    >
+                      <option value="All">All</option>
+                      <option value="PublishedOnly">Published only</option>
+                      <option value="UnpublishedOnly">Unpublished only</option>
+                    </select>
+                  </div>
                 </div>
-                <div className="sm:col-span-8">
-                  <select
-                    value={filterPublished}
-                    onChange={(e) => setFilterPublished(e.target.value)}
-                    className="w-full text-xs px-2.5 py-1.5 rounded border border-[#d2d6de] bg-white focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none text-slate-700 cursor-pointer"
-                  >
-                    <option value="All">All</option>
-                    <option value="PublishedOnly">Published only</option>
-                    <option value="UnpublishedOnly">Unpublished only</option>
-                  </select>
-                </div>
-              </div>
+              )}
             </div>
 
             {/* Centered Search Button */}

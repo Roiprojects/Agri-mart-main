@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 import {
   Sprout,
   PhoneCall,
@@ -85,10 +86,14 @@ export default function ProcurementPortalPage() {
   const [callNotesModal, setCallNotesModal] = useState<FollowUp | null>(null);
   const [agronomistNotes, setAgronomistNotes] = useState('');
   const [actionSuccess, setActionSuccess] = useState('');
+  const [popFormsCount, setPopFormsCount] = useState<number>(0);
 
   const fetchData = async () => {
     try {
-      const res = await fetch('/api/procurement/farmers');
+      const [res, popRes] = await Promise.all([
+        fetch('/api/procurement/farmers'),
+        fetch('/api/package-of-practice').catch(() => null),
+      ]);
       const data = await res.json();
       if (data.success) {
         setProfiles(data.profiles || []);
@@ -97,6 +102,12 @@ export default function ProcurementPortalPage() {
         setRecentDemand(data.recentDemandOrders || []);
         if (data.profiles?.length > 0 && !selectedFarmer) {
           setSelectedFarmer(data.profiles[0]);
+        }
+      }
+      if (popRes && popRes.ok) {
+        const popData = await popRes.json();
+        if (popData?.records) {
+          setPopFormsCount(popData.records.length);
         }
       }
     } catch (err) {
@@ -184,12 +195,21 @@ export default function ProcurementPortalPage() {
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
-          <div className="bg-white/10 backdrop-blur-md px-4 py-2.5 rounded-xl border border-white/20 text-center">
+        <div className="flex flex-nowrap items-stretch gap-3 shrink-0">
+          <Link
+            href="/procurement/pop-forms"
+            className="bg-white/10 hover:bg-white/20 backdrop-blur-md px-4 py-2.5 rounded-xl border border-white/20 text-center transition whitespace-nowrap"
+          >
+            <div className="text-[10px] text-emerald-200 font-bold uppercase flex items-center justify-center gap-1">
+              <FileText className="w-3 h-3" /> Submitted Farmer POP Forms
+            </div>
+            <div className="text-xl font-black text-[#F7C629]">{popFormsCount}</div>
+          </Link>
+          <div className="bg-white/10 backdrop-blur-md px-4 py-2.5 rounded-xl border border-white/20 text-center whitespace-nowrap">
             <div className="text-[10px] text-emerald-200 font-bold uppercase">Active Farmers</div>
             <div className="text-xl font-black text-[#F7C629]">{profiles.length}</div>
           </div>
-          <div className="bg-white/10 backdrop-blur-md px-4 py-2.5 rounded-xl border border-white/20 text-center">
+          <div className="bg-white/10 backdrop-blur-md px-4 py-2.5 rounded-xl border border-white/20 text-center whitespace-nowrap">
             <div className="text-[10px] text-emerald-200 font-bold uppercase">Pending Calls</div>
             <div className="text-xl font-black text-rose-400">
               {followUps.filter((f) => f.status === 'SCHEDULED' || f.status === 'OVERDUE').length}
@@ -211,7 +231,7 @@ export default function ProcurementPortalPage() {
       )}
 
       {/* Tabs */}
-      <div className="flex border-b border-slate-200 gap-4">
+      <div className="flex flex-wrap border-b border-slate-200 gap-4 items-center">
         <button
           onClick={() => setActiveTab('farmers')}
           className={`pb-2.5 font-bold text-xs flex items-center gap-2 border-b-2 transition ${
@@ -222,6 +242,12 @@ export default function ProcurementPortalPage() {
         >
           <UserCheck className="w-4 h-4" /> Active Farmer Profiles & Crop Stages
         </button>
+        <Link
+          href="/procurement/pop-forms"
+          className="pb-2.5 font-bold text-xs flex items-center gap-2 border-b-2 border-transparent text-emerald-700 hover:text-emerald-900 hover:border-emerald-500 transition"
+        >
+          <FileText className="w-4 h-4" /> Submitted Farmer Data & POP Forms (Separate Page) &rarr;
+        </Link>
         <button
           onClick={() => setActiveTab('calls')}
           className={`pb-2.5 font-bold text-xs flex items-center gap-2 border-b-2 transition ${

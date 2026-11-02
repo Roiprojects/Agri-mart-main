@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import {
   Plus,
@@ -12,9 +12,7 @@ import {
   Search,
   ChevronUp,
   ChevronDown,
-  Edit,
-  Sliders,
-  Check,
+  Package,
 } from 'lucide-react';
 
 interface SpecGroup {
@@ -23,27 +21,43 @@ interface SpecGroup {
   displayOrder: number;
 }
 
+interface UsedByProductSpec {
+  id: string;
+  name: string;
+  sku: string;
+  price: number;
+  published: boolean;
+  categoryHierarchy: string;
+  specValue: string;
+}
+
 interface SpecAttribute {
   id: string;
   name: string;
   displayOrder: number;
   groupId?: string;
+  usedByProducts?: UsedByProductSpec[];
 }
 
 export default function SpecificationAttributesPage() {
   const [groups, setGroups] = useState<SpecGroup[]>([]);
   const [attributes, setAttributes] = useState<SpecAttribute[]>([]);
+  const [allProducts, setAllProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
-  // Search State
+  // Advanced / Basic Mode State
+  const [advancedMode, setAdvancedMode] = useState(true);
+
+  // Search State (Single Unified Search Bar for Specification Attribute Name, Product ID, Product Name, and Product SKU)
   const [searchOpen, setSearchOpen] = useState(true);
   const [searchName, setSearchName] = useState('');
   const [activeSearch, setActiveSearch] = useState('');
 
-  // Expand / Collapse group state (by group ID)
-  // Default to collapsed or expanded
-  const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({});
+  // Expand / Collapse group state (by group ID) — expanded by default so attributes are immediately visible
+  const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({
+    'group-default': true,
+  });
 
   // Selection for bulk delete
   const [selectedAttrIds, setSelectedAttrIds] = useState<string[]>([]);
@@ -74,23 +88,33 @@ export default function SpecificationAttributesPage() {
     setTimeout(() => setToast(null), 3500);
   };
 
-  const fetchAttributes = async (query = activeSearch) => {
+  const fetchAttributes = async () => {
     try {
       setLoading(true);
-      const url = query
-        ? `/api/admin/catalogue/attributes/specification?search=${encodeURIComponent(query)}`
-        : '/api/admin/catalogue/attributes/specification';
-      const res = await fetch(url);
+      const res = await fetch('/api/admin/catalogue/attributes/specification');
       const json = await res.json();
       if (json.success) {
         setAttributes(json.data || []);
-        if (json.groups && json.groups.length > 0) {
-          setGroups(json.groups);
-        } else {
-          setGroups([
-            { id: 'group-default', name: 'Default group (non-grouped specification attributes)', displayOrder: 0 },
-          ]);
+        if (Array.isArray(json.products)) {
+          setAllProducts(json.products);
         }
+        const loadedGroups =
+          json.groups && json.groups.length > 0
+            ? json.groups
+            : [
+                {
+                  id: 'group-default',
+                  name: 'Default group (non-grouped specification attributes)',
+                  displayOrder: 0,
+                },
+              ];
+        setGroups(loadedGroups);
+        // Ensure groups are expanded so attributes and search results are immediately visible
+        const expandedMap: Record<string, boolean> = {};
+        loadedGroups.forEach((g: SpecGroup) => {
+          expandedMap[g.id] = true;
+        });
+        setExpandedGroups((prev) => ({ ...expandedMap, ...prev }));
       } else {
         showToast(json.error || 'Failed to load specification attributes', 'error');
       }
@@ -108,8 +132,49 @@ export default function SpecificationAttributesPage() {
   const handleSearch = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     setActiveSearch(searchName.trim());
-    fetchAttributes(searchName.trim());
+    // Expand all groups when searching
+    const expandedMap: Record<string, boolean> = {};
+    groups.forEach((g) => {
+      expandedMap[g.id] = true;
+    });
+    setExpandedGroups(expandedMap);
   };
+
+  // Unified query (live + button triggered)
+  const query = (searchName.trim() || activeSearch.trim()).toLowerCase();
+
+  // Products matching the single search bar (by Product ID, Product Name, or Product SKU)
+  const matchedProducts = useMemo(() => {
+    if (!query) return [];
+    return allProducts.filter(
+      (p) =>
+        (p.id || '').toLowerCase().includes(query) ||
+        (p.name || '').toLowerCase().includes(query) ||
+        (p.sku || '').toLowerCase().includes(query)
+    );
+  }, [allProducts, query]);
+
+  // Filtered Specification Attributes matching Attribute Name, ID, Group, Spec Value, OR Product ID / Product Name / Product SKU
+  const filteredAttributes = useMemo(() => {
+    if (!query) return attributes;
+    const matchedProdIds = new Set(matchedProducts.map((p) => p.id));
+
+    return attributes.filter((a) => {
+      const matchName = (a.name || '').toLowerCase().includes(query);
+      const matchId = (a.id || '').toLowerCase().includes(query);
+      const matchUsedProduct =
+        Array.isArray(a.usedByProducts) &&
+        a.usedByProducts.some(
+          (p) =>
+            matchedProdIds.has(p.id) ||
+            (p.id || '').toLowerCase().includes(query) ||
+            (p.name || '').toLowerCase().includes(query) ||
+            (p.sku || '').toLowerCase().includes(query) ||
+            (p.specValue || '').toLowerCase().includes(query)
+        );
+      return matchName || matchId || matchUsedProduct;
+    });
+  }, [attributes, query, matchedProducts]);
 
   const toggleGroup = (groupId: string) => {
     setExpandedGroups((prev) => ({
@@ -137,12 +202,6 @@ export default function SpecificationAttributesPage() {
   };
 
   // Group Modal Handlers
-  const handleOpenAddGroup = () => {
-    setGroupFormName('');
-    setGroupFormDisplayOrder(groups.length);
-    setGroupModalOpen(true);
-  };
-
   const handleSaveGroup = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!groupFormName.trim()) {
@@ -173,23 +232,6 @@ export default function SpecificationAttributesPage() {
     } finally {
       setSaving(false);
     }
-  };
-
-  // Attribute Modal Handlers
-  const handleOpenAddAttr = () => {
-    setEditingAttr(null);
-    setAttrFormName('');
-    setAttrFormGroupId(groups[0]?.id || 'group-default');
-    setAttrFormDisplayOrder(attributes.length + 1);
-    setAttrModalOpen(true);
-  };
-
-  const handleOpenEditAttr = (attr: SpecAttribute) => {
-    setEditingAttr(attr);
-    setAttrFormName(attr.name);
-    setAttrFormGroupId(attr.groupId || 'group-default');
-    setAttrFormDisplayOrder(attr.displayOrder);
-    setAttrModalOpen(true);
   };
 
   const handleSaveAttr = async (e: React.FormEvent) => {
@@ -284,9 +326,51 @@ export default function SpecificationAttributesPage() {
         </div>
       )}
 
-      {/* TOP HEADER: Title + Buttons (Matching media_1791009966324.png) */}
+      {/* TOP HEADER: Title + Advanced/Basic Toggle + Buttons */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1 pb-1">
-        <h1 className="text-2xl font-normal text-slate-800 tracking-tight">Specification attributes</h1>
+        <div className="flex items-center gap-3 flex-wrap">
+          <h1 className="text-2xl font-normal text-slate-800 tracking-tight">Specification attributes</h1>
+
+          {/* ADVANCED / BASIC TOGGLE SWITCH */}
+          <button
+            type="button"
+            onClick={() => setAdvancedMode(!advancedMode)}
+            className={`inline-flex items-center justify-between px-2.5 py-1 rounded text-xs font-semibold border transition cursor-pointer select-none min-w-[96px] h-7 shadow-2xs ${
+              advancedMode
+                ? 'bg-[#2585be] border-[#2585be] text-white hover:bg-[#1f72a3]'
+                : 'bg-white border-[#3c8dbc] text-[#3c8dbc] hover:bg-slate-50'
+            }`}
+            title={
+              advancedMode
+                ? 'Click to switch to Basic mode (show only mandatory & important fields)'
+                : 'Click to switch to Advanced mode (show all hidden fields)'
+            }
+          >
+            {advancedMode ? (
+              <>
+                <span className="text-white font-semibold text-xs">Advanced</span>
+                <span className="w-3.5 h-5 rounded-xs bg-white shadow-xs ml-2" />
+              </>
+            ) : (
+              <>
+                <span className="w-3.5 h-5 rounded-xs bg-[#3c8dbc] border border-[#3c8dbc] shadow-xs mr-2" />
+                <span className="text-[#3c8dbc] font-semibold text-xs">Basic</span>
+              </>
+            )}
+          </button>
+
+          <span
+            className={`text-[11px] px-2.5 py-0.5 rounded border font-medium ${
+              advancedMode
+                ? 'bg-blue-50 text-blue-700 border-blue-200'
+                : 'bg-amber-50 text-amber-800 border-amber-200'
+            }`}
+          >
+            {advancedMode
+              ? 'Advanced mode: All fields visible'
+              : 'Basic mode: Showing only mandatory & important fields'}
+          </span>
+        </div>
 
         <div className="flex items-center gap-2 flex-wrap">
           {/* Add group button */}
@@ -319,7 +403,7 @@ export default function SpecificationAttributesPage() {
         </div>
       </div>
 
-      {/* SEARCH CARD (Matching media_1791009966324.png) */}
+      {/* SEARCH CARD (Single Unified Search Bar for Specification Attribute Name, Product ID, Product Name, and Product SKU) */}
       <div className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden">
         {/* Card Header: 🔍 Search with collapsible chevron */}
         <div
@@ -346,24 +430,42 @@ export default function SpecificationAttributesPage() {
                 <div className="sm:col-span-3 flex items-center justify-start sm:justify-end font-medium text-xs text-slate-700">
                   <span>Name</span>
                   <span
-                    title="A specification attribute name."
+                    title="Search by Specification Attribute Name, Product ID (e.g. prod-001), Product Name, or Product SKU (e.g. AGP-PW-7HP) all in one search bar."
                     className="inline-flex items-center justify-center w-3.5 h-3.5 rounded-full bg-[#3c8dbc] text-white text-[10px] cursor-help font-bold shrink-0 select-none ml-1"
                   >
                     ?
                   </span>
                 </div>
                 <div className="sm:col-span-9">
-                  <input
-                    type="text"
-                    value={searchName}
-                    onChange={(e) => setSearchName(e.target.value)}
-                    placeholder=""
-                    className="w-full text-xs px-2.5 py-1.5 rounded border border-[#d2d6de] bg-white focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none text-slate-700"
-                  />
+                  <div className="relative">
+                    <input
+                      type="text"
+                      value={searchName}
+                      onChange={(e) => {
+                        setSearchName(e.target.value);
+                        setActiveSearch(e.target.value.trim());
+                      }}
+                      placeholder="Search by Specification Name, Product ID (prod-001), Product Name, or SKU (AGP-PW-7HP)..."
+                      className="w-full text-xs px-2.5 py-1.5 pr-8 rounded border border-[#d2d6de] bg-white focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none text-slate-700"
+                    />
+                    {searchName && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSearchName('');
+                          setActiveSearch('');
+                        }}
+                        className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer"
+                        title="Clear search"
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
 
-              {/* Centered Search Button (Matching screenshot) */}
+              {/* Centered Search Button */}
               <div className="text-center pt-2">
                 <button
                   type="submit"
@@ -378,7 +480,78 @@ export default function SpecificationAttributesPage() {
         )}
       </div>
 
-      {/* MAIN DATA CARD (Matching media_1791009966324.png) */}
+      {/* MATCHED PRODUCT(S) SUMMARY BANNER WHEN SEARCHING BY PRODUCT ID, NAME, OR SKU */}
+      {query && matchedProducts.length > 0 && (
+        <div className="bg-emerald-50/70 rounded border border-emerald-200 p-4 space-y-3 shadow-2xs">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2 text-emerald-800 font-semibold text-xs sm:text-sm">
+              <Package className="w-4 h-4" />
+              <span>
+                Matched Product(s) for &quot;{searchName || activeSearch}&quot; ({matchedProducts.length})
+              </span>
+            </div>
+            <span className="text-[11px] text-slate-600">
+              Showing {filteredAttributes.length} associated specification attribute(s) below
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {matchedProducts.map((prod) => (
+              <div
+                key={prod.id}
+                className="bg-white rounded border border-emerald-200 p-3 flex flex-col justify-between gap-2 text-xs shadow-2xs"
+              >
+                <div className="space-y-1">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <span className="font-bold text-slate-900 text-xs sm:text-sm">{prod.name}</span>
+                    <span className="px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200 font-semibold text-[11px]">
+                      ₹{Number(prod.price || 0).toLocaleString('en-IN')} INR
+                    </span>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-2 text-[11px] text-slate-600 pt-0.5">
+                    <span className="px-2 py-0.5 rounded bg-slate-100 border border-slate-200 font-mono text-slate-800">
+                      <strong>Product ID:</strong> {prod.id}
+                    </span>
+                    <span className="px-2 py-0.5 rounded bg-blue-50 border border-blue-200 font-mono text-blue-800">
+                      <strong>SKU:</strong> {prod.sku}
+                    </span>
+                    {prod.categoryHierarchy && (
+                      <span className="px-2 py-0.5 rounded bg-amber-50 border border-amber-200 text-amber-800">
+                        {prod.categoryHierarchy}
+                      </span>
+                    )}
+                  </div>
+                </div>
+                {Array.isArray(prod.specifications) && prod.specifications.length > 0 && (
+                  <div className="pt-2 border-t border-slate-100 space-y-1">
+                    <div className="text-[11px] text-slate-500 font-medium">Product Technical Specifications:</div>
+                    <div className="flex flex-wrap gap-1.5">
+                      {prod.specifications.map((sp: any) => (
+                        <span
+                          key={sp.id || sp.name}
+                          className="px-2 py-0.5 rounded bg-slate-100 border border-slate-200 text-[10px] text-slate-700"
+                        >
+                          <strong>{sp.name}:</strong> {sp.value}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                <div className="pt-2 border-t border-slate-100 flex items-center justify-end">
+                  <Link
+                    href={`/admin/catalogue/products?productId=${encodeURIComponent(prod.id)}&sku=${encodeURIComponent(prod.sku || '')}&name=${encodeURIComponent(prod.name || '')}`}
+                    className="inline-flex items-center gap-1 bg-[#2585be] hover:bg-[#1f72a3] text-white text-[11px] font-semibold px-2.5 py-1 rounded shadow-2xs transition shrink-0"
+                  >
+                    <span>View in Products →</span>
+                  </Link>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* MAIN DATA CARD */}
       <div className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden">
         <div className="p-4 sm:p-5 space-y-4">
           {/* Explanatory Paragraph matching screenshot copy */}
@@ -423,14 +596,14 @@ export default function SpecificationAttributesPage() {
                     </tr>
                   ) : (
                     groups.map((group) => {
-                      const groupAttrs = attributes.filter(
+                      const groupAttrs = filteredAttributes.filter(
                         (a) => (a.groupId || 'group-default') === group.id
                       );
-                      const isExpanded = !!expandedGroups[group.id];
+                      const isExpanded = expandedGroups[group.id] !== false;
 
                       return (
                         <React.Fragment key={group.id}>
-                          {/* Group Row (Matching media_1791009966324.png) */}
+                          {/* Group Row */}
                           <tr
                             onClick={() => toggleGroup(group.id)}
                             className="border-b border-[#e5e7eb] hover:bg-slate-50/80 cursor-pointer select-none bg-white transition"
@@ -441,7 +614,10 @@ export default function SpecificationAttributesPage() {
                               </span>
                             </td>
                             <td className="px-4 py-2.5 border-r border-[#e5e7eb] font-medium text-slate-800">
-                              {group.name}
+                              {group.name}{' '}
+                              <span className="text-slate-500 font-normal text-[11px]">
+                                ({groupAttrs.length} attributes)
+                              </span>
                             </td>
                             <td className="px-4 py-2.5 text-right text-slate-700 font-medium w-36">
                               {group.displayOrder}
@@ -468,7 +644,12 @@ export default function SpecificationAttributesPage() {
                                               className="w-3.5 h-3.5 rounded text-[#3c8dbc] cursor-pointer"
                                             />
                                           </th>
-                                          <th className="px-3 py-2 border-r border-[#e5e7eb]">Attribute Name</th>
+                                          <th className="px-3 py-2 border-r border-[#e5e7eb] min-w-[200px]">
+                                            Attribute Name
+                                          </th>
+                                          <th className="px-3 py-2 border-r border-[#e5e7eb] min-w-[320px]">
+                                            Used by Products (Product ID, Name, SKU &amp; Spec Value)
+                                          </th>
                                           <th className="px-3 py-2 text-center w-28 border-r border-[#e5e7eb]">
                                             Display order
                                           </th>
@@ -479,57 +660,137 @@ export default function SpecificationAttributesPage() {
                                       <tbody>
                                         {groupAttrs.length === 0 ? (
                                           <tr>
-                                            <td colSpan={5} className="py-6 text-center text-slate-400">
-                                              No specification attributes in this group. Click &quot;Add attribute&quot; to add one.
+                                            <td colSpan={6} className="py-6 text-center text-slate-400">
+                                              No specification attributes matching &quot;{searchName || activeSearch}&quot;.
                                             </td>
                                           </tr>
                                         ) : (
-                                          groupAttrs.map((attr) => (
-                                            <tr
-                                              key={attr.id}
-                                              className="border-b border-[#f0f0f0] hover:bg-slate-50 transition"
-                                            >
-                                              <td className="p-2 text-center border-r border-[#f0f0f0]">
-                                                <input
-                                                  type="checkbox"
-                                                  checked={selectedAttrIds.includes(attr.id)}
-                                                  onChange={() => handleToggleSelectAttr(attr.id)}
-                                                  className="w-3.5 h-3.5 rounded text-[#3c8dbc] cursor-pointer"
-                                                />
-                                              </td>
-                                              <td className="px-3 py-2 border-r border-[#f0f0f0] font-medium text-slate-800">
-                                                <Link
-                                                  href={`/admin/catalogue/attributes/specification/${attr.id}/edit`}
-                                                  className="text-[#3c8dbc] hover:underline"
-                                                >
-                                                  {attr.name}
-                                                </Link>
-                                              </td>
-                                              <td className="px-3 py-2 text-center text-slate-700 border-r border-[#f0f0f0]">
-                                                {attr.displayOrder}
-                                              </td>
-                                              <td className="px-3 py-2 text-center border-r border-[#f0f0f0]">
-                                                <Link
-                                                  href={`/admin/catalogue/attributes/specification/${attr.id}/edit`}
-                                                  className="text-[#2585be] hover:underline font-medium cursor-pointer"
-                                                >
-                                                  Edit
-                                                </Link>
-                                              </td>
-                                              <td className="px-3 py-2 text-center">
-                                                <button
-                                                  type="button"
-                                                  onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    handleConfirmDeleteSingle(attr.id);
-                                                  }}
-                                                  className="text-red-500 hover:underline font-medium cursor-pointer"
-                                                >
-                                                  Delete
-                                                </button>
-                                              </td>
-                                            </tr>
-                                          ))
+                                          groupAttrs.map((attr) => {
+                                            const usedProducts = attr.usedByProducts || [];
+                                            const sortedUsed = query
+                                              ? [...usedProducts].sort((a, b) => {
+                                                  const aMatch =
+                                                    (a.id || '').toLowerCase().includes(query) ||
+                                                    (a.name || '').toLowerCase().includes(query) ||
+                                                    (a.sku || '').toLowerCase().includes(query) ||
+                                                    (a.specValue || '').toLowerCase().includes(query);
+                                                  const bMatch =
+                                                    (b.id || '').toLowerCase().includes(query) ||
+                                                    (b.name || '').toLowerCase().includes(query) ||
+                                                    (b.sku || '').toLowerCase().includes(query) ||
+                                                    (b.specValue || '').toLowerCase().includes(query);
+                                                  return aMatch === bMatch ? 0 : aMatch ? -1 : 1;
+                                                })
+                                              : usedProducts;
+
+                                            return (
+                                              <tr
+                                                key={attr.id}
+                                                className="border-b border-[#f0f0f0] hover:bg-slate-50 transition align-top"
+                                              >
+                                                <td className="p-2 text-center border-r border-[#f0f0f0]">
+                                                  <input
+                                                    type="checkbox"
+                                                    checked={selectedAttrIds.includes(attr.id)}
+                                                    onChange={() => handleToggleSelectAttr(attr.id)}
+                                                    className="w-3.5 h-3.5 rounded text-[#3c8dbc] cursor-pointer"
+                                                  />
+                                                </td>
+                                                <td className="px-3 py-2 border-r border-[#f0f0f0] font-medium text-slate-800">
+                                                  <Link
+                                                    href={`/admin/catalogue/attributes/specification/${attr.id}/edit`}
+                                                    className="text-[#3c8dbc] hover:underline font-semibold"
+                                                  >
+                                                    {attr.name}
+                                                  </Link>
+                                                </td>
+                                                <td className="px-3 py-2 border-r border-[#f0f0f0] text-slate-700">
+                                                  {sortedUsed.length === 0 ? (
+                                                    <span className="text-slate-400 text-[11px]">No products linked</span>
+                                                  ) : (
+                                                    <div className="space-y-1.5">
+                                                      {sortedUsed.slice(0, query ? 6 : 3).map((p) => {
+                                                        const isHighlighted =
+                                                          Boolean(query) &&
+                                                          ((p.id || '').toLowerCase().includes(query) ||
+                                                            (p.name || '').toLowerCase().includes(query) ||
+                                                            (p.sku || '').toLowerCase().includes(query) ||
+                                                            (p.specValue || '').toLowerCase().includes(query));
+                                                        return (
+                                                          <div
+                                                            key={p.id}
+                                                            className={`p-1.5 rounded border text-[11px] flex flex-wrap items-center justify-between gap-1.5 ${
+                                                              isHighlighted
+                                                                ? 'bg-amber-50/90 border-amber-300 text-slate-900 font-medium'
+                                                                : 'bg-white border-slate-200 text-slate-700'
+                                                            }`}
+                                                          >
+                                                            <div className="flex flex-wrap items-center gap-1.5">
+                                                              <span className="px-1.5 py-0.5 rounded bg-slate-100 text-slate-700 font-mono text-[10px] border border-slate-200">
+                                                                ID: {p.id}
+                                                              </span>
+                                                              {p.sku && (
+                                                                <span className="px-1.5 py-0.5 rounded bg-blue-50 text-blue-700 font-mono text-[10px] border border-blue-200 font-semibold">
+                                                                  SKU: {p.sku}
+                                                                </span>
+                                                              )}
+                                                              <Link
+                                                                href={`/admin/catalogue/products?productId=${encodeURIComponent(p.id)}&sku=${encodeURIComponent(p.sku || '')}&name=${encodeURIComponent(p.name || '')}`}
+                                                                className="text-slate-800 hover:text-[#2585be] hover:underline font-medium"
+                                                              >
+                                                                {p.name}
+                                                              </Link>
+                                                            </div>
+                                                            <div className="flex items-center gap-2">
+                                                              {p.specValue && (
+                                                                <span className="px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px]">
+                                                                  {p.specValue}
+                                                                </span>
+                                                              )}
+                                                              <Link
+                                                                href={`/admin/catalogue/products?productId=${encodeURIComponent(p.id)}&sku=${encodeURIComponent(p.sku || '')}&name=${encodeURIComponent(p.name || '')}`}
+                                                                className="text-[10px] font-semibold text-[#2585be] hover:underline shrink-0"
+                                                              >
+                                                                View in Products →
+                                                              </Link>
+                                                            </div>
+                                                          </div>
+                                                        );
+                                                      })}
+                                                      {sortedUsed.length > (query ? 6 : 3) && (
+                                                        <div className="text-[11px] text-[#3c8dbc] font-medium">
+                                                          +{sortedUsed.length - (query ? 6 : 3)} more product(s)
+                                                        </div>
+                                                      )}
+                                                    </div>
+                                                  )}
+                                                </td>
+                                                <td className="px-3 py-2 text-center text-slate-700 border-r border-[#f0f0f0]">
+                                                  {attr.displayOrder}
+                                                </td>
+                                                <td className="px-3 py-2 text-center border-r border-[#f0f0f0]">
+                                                  <Link
+                                                    href={`/admin/catalogue/attributes/specification/${attr.id}/edit`}
+                                                    className="text-[#2585be] hover:underline font-medium cursor-pointer"
+                                                  >
+                                                    Edit
+                                                  </Link>
+                                                </td>
+                                                <td className="px-3 py-2 text-center">
+                                                  <button
+                                                    type="button"
+                                                    onClick={(e) => {
+                                                      e.stopPropagation();
+                                                      handleConfirmDeleteSingle(attr.id);
+                                                    }}
+                                                    className="text-red-500 hover:underline font-medium cursor-pointer"
+                                                  >
+                                                    Delete
+                                                  </button>
+                                                </td>
+                                              </tr>
+                                            );
+                                          })
                                         )}
                                       </tbody>
                                     </table>
@@ -546,7 +807,7 @@ export default function SpecificationAttributesPage() {
               </table>
             </div>
 
-            {/* Pagination / Table Footer (Matching media_1791009966324.png) */}
+            {/* Pagination / Table Footer */}
             <div className="bg-[#fcfcfc] border-t border-[#e5e7eb] px-3 py-2 flex flex-wrap items-center justify-between gap-3 text-xs text-slate-600">
               {/* Previous / Next */}
               <div className="flex items-center">
@@ -585,9 +846,9 @@ export default function SpecificationAttributesPage() {
               {/* Records count & Refresh button */}
               <div className="flex items-center gap-3">
                 <span>
-                  {groups.length === 0
+                  {filteredAttributes.length === 0
                     ? 'No records'
-                    : `1-${groups.length} of ${groups.length} items`}
+                    : `1-${filteredAttributes.length} of ${filteredAttributes.length} attributes`}
                 </span>
                 <button
                   type="button"
@@ -806,8 +1067,8 @@ export default function SpecificationAttributesPage() {
 
       {/* FOOTER */}
       <footer className="mt-8 border-t border-[#d2d6de] pt-4 text-xs text-slate-500 flex flex-col sm:flex-row items-center justify-between gap-2">
-        <div>
-          Powered by{' '}
+        <div className="flex items-center gap-1">
+          <span>Powered by</span>
           <a
             href="https://www.nopcommerce.com/"
             target="_blank"
@@ -828,6 +1089,16 @@ export default function SpecificationAttributesPage() {
         </div>
         <div>nopCommerce version 4.90.0</div>
       </footer>
+
+      {/* Floating Scroll to Top Button */}
+      <button
+        type="button"
+        onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+        className="fixed bottom-6 right-6 p-2.5 rounded-full bg-[#00a65a] hover:bg-[#008d4c] text-white shadow-lg transition cursor-pointer z-40"
+        title="Scroll to top"
+      >
+        <ChevronUp className="w-5 h-5 stroke-[2.5]" />
+      </button>
     </div>
   );
 }

@@ -1855,13 +1855,28 @@ class PersistentDevDatabase {
     }
   }
 
-  private save() {
+  public save() {
     try {
       ensureDataDirectory();
       fs.writeFileSync(DATA_FILE_PATH, JSON.stringify(this.data, null, 2), 'utf-8');
     } catch (err) {
       console.error('[DEV_DB] Error saving dev database file', err);
     }
+  }
+
+  public reload(): void {
+    if (fs.existsSync(DATA_FILE_PATH)) {
+      try {
+        const raw = fs.readFileSync(DATA_FILE_PATH, 'utf-8');
+        this.data = JSON.parse(raw);
+      } catch (err) {
+        console.error('[DEV_DB] Error reloading dev database file', err);
+      }
+    }
+  }
+
+  public getRawData(): any {
+    return this.data;
   }
 
   // Brands
@@ -4710,6 +4725,18 @@ class PersistentDevDatabase {
 }
 
 // Global singleton instance for hot reload persistence
-const globalForDevDb = global as unknown as { devDb: PersistentDevDatabase };
-export const devDb = globalForDevDb.devDb || new PersistentDevDatabase();
-if (process.env.NODE_ENV !== 'production') globalForDevDb.devDb = devDb;
+const globalForDevDb = global as unknown as { devDb?: PersistentDevDatabase };
+export const devDb: PersistentDevDatabase =
+  globalForDevDb.devDb ?? (globalForDevDb.devDb = new PersistentDevDatabase());
+
+export function readDb(): any {
+  return devDb.getRawData();
+}
+
+export function writeDb(data?: any): boolean {
+  if (data && data !== devDb.getRawData()) {
+    Object.assign(devDb.getRawData(), data);
+  }
+  devDb.save();
+  return true;
+}

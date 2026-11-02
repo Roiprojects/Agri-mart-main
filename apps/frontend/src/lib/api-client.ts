@@ -17,13 +17,33 @@ import {
 
 const IS_SERVER = typeof window === 'undefined';
 
+interface CacheEntry {
+  data: any;
+  timestamp: number;
+}
+
+const globalApiCache = globalThis as unknown as {
+  __agrimartFrontendApiCache?: Map<string, CacheEntry>;
+};
+
+export function getFrontendApiCache(): Map<string, CacheEntry> {
+  if (!globalApiCache.__agrimartFrontendApiCache) {
+    globalApiCache.__agrimartFrontendApiCache = new Map<string, CacheEntry>();
+  }
+  return globalApiCache.__agrimartFrontendApiCache;
+}
+
+export function clearFrontendApiCache(): void {
+  getFrontendApiCache().clear();
+}
+
 function getBackendBaseUrl(): string {
   if (IS_SERVER) {
-    return (
+    const rawUrl =
       process.env.BACKEND_INTERNAL_URL ||
       process.env.NEXT_PUBLIC_BACKEND_URL ||
-      'http://localhost:3011'
-    );
+      'http://127.0.0.1:3011';
+    return rawUrl.replace('://localhost:', '://127.0.0.1:');
   }
   return process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3011';
 }
@@ -35,11 +55,33 @@ export class ApiClient {
     endpoint: string,
     options?: RequestInit & { next?: { tags?: string[]; revalidate?: number } }
   ): Promise<T> {
+    const method = (options?.method || 'GET').toUpperCase();
     const url = `${getBackendBaseUrl()}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`;
     const headers = {
       'Content-Type': 'application/json',
       ...(options?.headers || {}),
     };
+
+    const cache = getFrontendApiCache();
+    if (method === 'GET') {
+      const cached = cache.get(url);
+      const now = Date.now();
+      if (cached && now - cached.timestamp < 120000) {
+        return cached.data as T;
+      }
+      if (cached) {
+        // Stale-while-revalidate: return cached immediately and refresh in background
+        fetch(url, { ...options, headers })
+          .then((r) => (r.ok ? r.json() : null))
+          .then((fresh) => {
+            if (fresh) cache.set(url, { data: fresh, timestamp: Date.now() });
+          })
+          .catch(() => {});
+        return cached.data as T;
+      }
+    } else {
+      cache.clear();
+    }
 
     const res = await fetch(url, {
       ...options,
@@ -51,7 +93,11 @@ export class ApiClient {
       throw new Error(`API error ${res.status} on ${endpoint}: ${errorBody || res.statusText}`);
     }
 
-    return (await res.json()) as T;
+    const json = (await res.json()) as T;
+    if (method === 'GET') {
+      cache.set(url, { data: json, timestamp: Date.now() });
+    }
+    return json;
   }
 
   // --- CATALOGUE & PRODUCTS ---

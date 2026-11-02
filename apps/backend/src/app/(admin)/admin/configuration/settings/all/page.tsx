@@ -85,7 +85,12 @@ export default function AllSettingsPage() {
         if (res.ok) {
           const json = await res.json();
           if (json.success) {
-            setSettings(json.data || []);
+            const visibleSettings = (json.data || []).filter(
+              (s: SettingItem) =>
+                !s.name?.toLowerCase().startsWith('forumsettings.') &&
+                !s.name?.toLowerCase().startsWith('pollsettings.')
+            );
+            setSettings(visibleSettings);
             setTotal(json.total || 0);
           }
         } else {

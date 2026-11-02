@@ -101,7 +101,7 @@ export default function AddNewPollPage() {
   };
 
   return (
-    <div className="space-y-4 max-w-full text-slate-800 pb-20 font-sans">
+    <div style={{ display: 'none' }} className="hidden space-y-4 max-w-full text-slate-800 pb-20 font-sans">
       {/* Toast Notification */}
       {toast && (
         <div

@@ -24,11 +24,6 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
     : 0;
 
   const handleAdd = () => {
-    if (!isLoggedIn) {
-      router.push(`/login?redirect=/products/${product.slug}`);
-      return;
-    }
-
     setIsAdded(true);
     if (onAddToCart) {
       onAddToCart(product);
@@ -51,6 +46,7 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
             });
           }
           localStorage.setItem('agri_cart_items', JSON.stringify(cart));
+          window.dispatchEvent(new Event('cartUpdated'));
         } catch (e) {}
       }
     }

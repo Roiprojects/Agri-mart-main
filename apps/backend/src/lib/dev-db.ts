@@ -112,6 +112,8 @@ export interface DbProduct {
   description: string;
   brandId?: string;
   categoryId: string;
+  parentCategoryId?: string;
+  subCategoryId?: string;
   price: number;
   comparePrice?: number;
   isPublished: boolean;
@@ -447,6 +449,7 @@ export interface DbRentalProduct {
   slug: string;
   category: string;
   description: string;
+  hourlyRate?: number;
   dailyRate: number;
   weeklyRate: number;
   monthlyRate: number;
@@ -476,7 +479,11 @@ export interface DbRentalBooking {
   startDate: string;
   endDate: string;
   totalDays: number;
-  pricingTier: 'DAILY' | 'WEEKLY' | 'MONTHLY';
+  rentalBasis?: 'HOURLY' | 'DAILY';
+  totalHours?: number;
+  hourlyRate?: number;
+  preferredTimeSlot?: string;
+  pricingTier: 'HOURLY' | 'DAILY' | 'WEEKLY' | 'MONTHLY';
   dailyRate: number;
   rentAmount: number;
   securityDeposit: number;
@@ -513,6 +520,8 @@ export interface DbServiceBookingRequest {
   serviceName: string;
   jobWorkId?: string;
   jobWorkName?: string;
+  bookingBasis?: 'HOURLY' | 'ACRE';
+  bookingHours?: number;
   farmAcreage?: number;
   cropType?: string;
   district?: string;
@@ -533,6 +542,8 @@ export interface DbServiceBookingRequest {
   assignedFleetUnit?: string;
   estimatedCost?: number;
   advancePaid?: number;
+  paymentMethod?: string;
+  paymentStatus?: 'PENDING' | 'PAID' | 'REFUNDED';
   createdAt: string;
   updatedAt: string;
 }
@@ -804,6 +815,8 @@ export interface DevDatabaseData {
   specificationAttributes?: DbSpecificationAttribute[];
   checkoutAttributes?: DbCheckoutAttribute[];
   cropGuidance?: any[];
+  cropGuidanceMasterGuides?: any[];
+  cropGuidancePageContent?: any;
   cropGuidanceSettings?: any;
   gallerySettings?: any;
 }
@@ -839,12 +852,25 @@ function getInitialData(): DevDatabaseData {
       { id: 'br-jain', name: 'Jain Drip Tech', slug: 'jain-drip-tech', description: 'Micro-irrigation, venturi injectors, and pressure compensation drippers.', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
     ],
     categories: [
-      { id: 'cat-machinery', name: 'Farm Equipment & Machinery', nameKn: 'Farm Equipment & Machinery', slug: 'farm-equipment-machinery', description: 'Power weeders, rotavators, brush cutters, sprayers, and inter-cultivation units.', image: 'https://images.unsplash.com/photo-1589923188900-85dae523342b?auto=format&fit=crop&w=600&q=80', displayOrder: 1, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
-      { id: 'cat-seeds', name: 'Seeds & Planting Materials', nameKn: 'Seeds & Planting Materials', slug: 'seeds-planting-materials', description: 'Certified hybrid seeds, high-germination paddy, cotton, maize, and vegetable seeds.', image: 'https://images.unsplash.com/photo-1592417817098-8f3d6eb2251a?auto=format&fit=crop&w=600&q=80', displayOrder: 2, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
-      { id: 'cat-fertilizers', name: 'Fertilizers & Soil Care', nameKn: 'Fertilizers & Soil Care', slug: 'fertilizers-soil-care', description: 'Organic bio-fertilizers, microbial consortia, micronutrients, and soil health conditioners.', image: 'https://images.unsplash.com/photo-1628352081506-83c43123ed6d?auto=format&fit=crop&w=600&q=80', displayOrder: 3, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
-      { id: 'cat-protection', name: 'Crop Protection & Bio-Care', nameKn: 'Crop Protection & Bio-Care', slug: 'crop-protection-bio-care', description: 'Neem-based organic insecticides, bio-fungicides, solar light traps, and pheromone lures.', image: 'https://images.unsplash.com/photo-1530595467537-0b5996c41f2d?auto=format&fit=crop&w=600&q=80', displayOrder: 4, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
-      { id: 'cat-irrigation', name: 'Irrigation & Water Tech', nameKn: 'Irrigation & Water Tech', slug: 'irrigation-water-tech', description: 'Drip kits, venturi fertilizer injectors, HDPE pipes, filters, and rain gun sprinklers.', image: 'https://images.unsplash.com/photo-1563514227147-6d2ff665a6a0?auto=format&fit=crop&w=600&q=80', displayOrder: 5, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
-      { id: 'cat-tools', name: 'Tools, Hardware & Spares', nameKn: 'Tools, Hardware & Spares', slug: 'tools-hardware-spares', description: 'Original blades, replacement carburetor kits, pruning shears, and workshop spares.', image: 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?auto=format&fit=crop&w=600&q=80', displayOrder: 6, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+      { id: 'cat-machinery', name: 'Farm Equipment & Machinery', nameKn: 'Farm Equipment & Machinery', slug: 'farm-equipment-machinery', description: 'Power weeders, rotavators, brush cutters, sprayers, and inter-cultivation units.', image: 'https://images.unsplash.com/photo-1589923188900-85dae523342b?auto=format&fit=crop&w=600&q=80', parentId: null, displayOrder: 1, published: true, isPublished: true, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+      { id: 'cat-seeds', name: 'Seeds & Planting Materials', nameKn: 'Seeds & Planting Materials', slug: 'seeds-planting-materials', description: 'Certified hybrid seeds, high-germination paddy, cotton, maize, and vegetable seeds.', image: 'https://images.unsplash.com/photo-1592417817098-8f3d6eb2251a?auto=format&fit=crop&w=600&q=80', parentId: null, displayOrder: 2, published: true, isPublished: true, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+      { id: 'cat-fertilizers', name: 'Fertilizers & Soil Care', nameKn: 'Fertilizers & Soil Care', slug: 'fertilizers-soil-care', description: 'Organic bio-fertilizers, microbial consortia, micronutrients, and soil health conditioners.', image: 'https://images.unsplash.com/photo-1628352081506-83c43123ed6d?auto=format&fit=crop&w=600&q=80', parentId: null, displayOrder: 3, published: true, isPublished: true, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+      { id: 'cat-protection', name: 'Crop Protection & Bio-Care', nameKn: 'Crop Protection & Bio-Care', slug: 'crop-protection-bio-care', description: 'Neem-based organic insecticides, bio-fungicides, solar light traps, and pheromone lures.', image: 'https://images.unsplash.com/photo-1530595467537-0b5996c41f2d?auto=format&fit=crop&w=600&q=80', parentId: null, displayOrder: 4, published: true, isPublished: true, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+      { id: 'cat-irrigation', name: 'Irrigation & Water Tech', nameKn: 'Irrigation & Water Tech', slug: 'irrigation-water-tech', description: 'Drip kits, venturi fertilizer injectors, HDPE pipes, filters, and rain gun sprinklers.', image: 'https://images.unsplash.com/photo-1563514227147-6d2ff665a6a0?auto=format&fit=crop&w=600&q=80', parentId: null, displayOrder: 5, published: true, isPublished: true, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+      { id: 'cat-tools', name: 'Tools, Hardware & Spares', nameKn: 'Tools, Hardware & Spares', slug: 'tools-hardware-spares', description: 'Original blades, replacement carburetor kits, pruning shears, and workshop spares.', image: 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?auto=format&fit=crop&w=600&q=80', parentId: null, displayOrder: 6, published: true, isPublished: true, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+      // Subcategories
+      { id: 'subcat-weeders-tillers', name: 'Power Weeders & Rotary Tillers', nameKn: 'ಪವರ್ ವೀಡರ್ ಮತ್ತು ರೋಟರಿ ಟಿಲ್ಲರ್', slug: 'power-weeders-rotary-tillers', description: 'Heavy-duty multi-speed power weeders, inter-cultivators, and rotary tillers.', image: 'https://images.unsplash.com/photo-1589923188900-85dae523342b?auto=format&fit=crop&w=600&q=80', parentId: 'cat-machinery', displayOrder: 11, published: true, isPublished: true, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+      { id: 'subcat-sprayers', name: 'Agricultural Sprayers & Pumps', nameKn: 'ಕೃಷಿ ಸ್ಪ್ರೇಯರ್ ಮತ್ತು ಪಂಪ್‌ಗಳು', slug: 'agricultural-sprayers-pumps', description: 'Battery sprayers, power sprayers, mist blowers, and diaphragm pumps.', image: 'https://images.unsplash.com/photo-1530595467537-0b5996c41f2d?auto=format&fit=crop&w=600&q=80', parentId: 'cat-machinery', displayOrder: 12, published: true, isPublished: true, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+      { id: 'subcat-cereal-seeds', name: 'Cereal & Grain Seeds', nameKn: 'ಧಾನ್ಯ ಮತ್ತು ಕಾಳು ಬೀಜಗಳು', slug: 'cereal-grain-seeds', description: 'Certified foundation and hybrid seeds for wheat, paddy, maize, and jowar.', image: 'https://images.unsplash.com/photo-1574943320219-553eb213f72d?auto=format&fit=crop&w=600&q=80', parentId: 'cat-seeds', displayOrder: 21, published: true, isPublished: true, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+      { id: 'subcat-vegetable-seeds', name: 'Vegetable & Cash Crop Seeds', nameKn: 'ತರಕಾರಿ ಮತ್ತು ವಾಣಿಜ್ಯ ಬೆಳೆ ಬೀಜಗಳು', slug: 'vegetable-cash-crop-seeds', description: 'High-yield hybrid seeds for cotton, chili, tomato, onion, and vegetables.', image: 'https://images.unsplash.com/photo-1592417817098-8f3d6eb2251a?auto=format&fit=crop&w=600&q=80', parentId: 'cat-seeds', displayOrder: 22, published: true, isPublished: true, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+      { id: 'subcat-bio-fertilizers', name: 'Organic & Bio-Fertilizers', nameKn: 'ಸಾವಯವ ಮತ್ತು ಜೈವಿಕ ಗೊಬ್ಬರಗಳು', slug: 'organic-bio-fertilizers', description: 'NPOP certified organic micronutrients, humic acid, and microbial consortia.', image: 'https://images.unsplash.com/photo-1628352081506-83c43123ed6d?auto=format&fit=crop&w=600&q=80', parentId: 'cat-fertilizers', displayOrder: 31, published: true, isPublished: true, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+      { id: 'subcat-soil-conditioners', name: 'Soil Conditioners & Micronutrients', nameKn: 'ಮಣ್ಣು ಸುಧಾರಕಗಳು ಮತ್ತು ಸೂಕ್ಷ್ಮ ಪೋಷಕಾಂಶಗಳು', slug: 'soil-conditioners-micronutrients', description: 'Chelated zinc, iron, boron, gypsum, and organic soil health boosters.', image: 'https://images.unsplash.com/photo-1464226184884-fa280b87c399?auto=format&fit=crop&w=600&q=80', parentId: 'cat-fertilizers', displayOrder: 32, published: true, isPublished: true, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+      { id: 'subcat-bio-insecticides', name: 'Botanical & Bio-Insecticides', nameKn: 'ಜೈವಿಕ ಕೀಟನಾಶಕಗಳು', slug: 'botanical-bio-insecticides', description: 'Cold-pressed neem oil, Azadirachtin EC, and organic pest controllers.', image: 'https://images.unsplash.com/photo-1530595467537-0b5996c41f2d?auto=format&fit=crop&w=600&q=80', parentId: 'cat-protection', displayOrder: 41, published: true, isPublished: true, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+      { id: 'subcat-pest-traps', name: 'Solar Traps & Lures', nameKn: 'ಸೌರ ಕೀಟ ಬಲೆಗಳು', slug: 'solar-traps-lures', description: 'Automated solar UV insect light traps, yellow sticky traps, and pheromone lures.', image: 'https://images.unsplash.com/photo-1509391365360-2e959784a276?auto=format&fit=crop&w=600&q=80', parentId: 'cat-protection', displayOrder: 42, published: true, isPublished: true, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+      { id: 'subcat-drip-fertigation', name: 'Drip & Fertigation Systems', nameKn: 'ಹನಿ ನೀರಾವರಿ ಮತ್ತು ಫರ್ಟಿಗೇಶನ್', slug: 'drip-fertigation-systems', description: 'Venturi injectors, inline drip laterals, fertigation manifolds, and screen filters.', image: 'https://images.unsplash.com/photo-1563514227147-6d2ff665a6a0?auto=format&fit=crop&w=600&q=80', parentId: 'cat-irrigation', displayOrder: 51, published: true, isPublished: true, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+      { id: 'subcat-sprinklers-pipes', name: 'Rain Guns & HDPE Pipes', nameKn: 'ರೇನ್ ಗನ್ ಮತ್ತು ಪೈಪ್‌ಗಳು', slug: 'rain-guns-hdpe-pipes', description: 'High-discharge impact rain guns, brass sprinklers, and UV-stabilized HDPE pipes.', image: 'https://images.unsplash.com/photo-1523348837708-15d4a09cfac2?auto=format&fit=crop&w=600&q=80', parentId: 'cat-irrigation', displayOrder: 52, published: true, isPublished: true, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+      { id: 'subcat-harvest-storage', name: 'Harvesting & Crop Storage', nameKn: 'ಕಟಾವು ಮತ್ತು ಬೆಳೆ ಸಂಗ್ರಹಣೆ', slug: 'harvesting-crop-storage', description: 'Heavy-duty UV tarpaulins, harvesting baskets, grain storage bags, and pruning tools.', image: 'https://images.unsplash.com/photo-1586771107445-d3ca888129ff?auto=format&fit=crop&w=600&q=80', parentId: 'cat-tools', displayOrder: 61, published: true, isPublished: true, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+      { id: 'subcat-machinery-spares', name: 'Machinery Blades & Spares', nameKn: 'ಯಂತ್ರೋಪಕರಣಗಳ ಬಿಡಿಭಾಗಗಳು', slug: 'machinery-blades-spares', description: 'Manganese rotary tines, carburetor kits, recoil starters, and replacement filters.', image: 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?auto=format&fit=crop&w=600&q=80', parentId: 'cat-tools', displayOrder: 62, published: true, isPublished: true, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
     ],
     products: [
       {
@@ -857,8 +883,20 @@ function getInitialData(): DevDatabaseData {
         description: 'Engineered for tough Indian soils across cotton, sugarcane, maize, and vegetable cultivation. Features 32 heat-treated manganese blades and an adjustable tilling width from 24 to 42 inches.',
         brandId: 'br-agripro',
         categoryId: 'cat-machinery',
+        parentCategoryId: 'cat-machinery',
+        subCategoryId: 'subcat-weeders-tillers',
         price: 36500,
         comparePrice: 42000,
+        cost: 29500,
+        weight: 85,
+        length: 145,
+        width: 95,
+        height: 105,
+        gtin: '8901234560011',
+        manufacturerPartNumber: 'AGP-PW700-IND',
+        vendor: 'Agri-Mart Direct',
+        taxCategory: 'Reduced Rate (12% GST)',
+        deliveryDate: '3-5 days',
         isPublished: true,
         isDraft: false,
         isFeatured: true,
@@ -866,6 +904,7 @@ function getInitialData(): DevDatabaseData {
         targetCrops: 'Cotton, Sugarcane, Maize, Chili, Soybean',
         cropStages: '1, 2, 4',
         metaTitle: 'Buy AgriPro 7HP Heavy-Duty Power Weeder | Agri Mart Mega',
+        metaKeywords: 'power weeder, 7hp rotary tiller, agripro, farm machinery',
         metaDescription: 'Shop AgriPro 7HP Power Weeder with free ridger & reverse gear. Delivered from Hubballi & Belagavi Dark Warehouses with 1-Year comprehensive AMC.',
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
@@ -880,8 +919,20 @@ function getInitialData(): DevDatabaseData {
         description: 'Delivers 130 PSI working pressure for superior foliage canopy penetration. Capable of spraying up to 25 full tanks on a single 6-hour charge.',
         brandId: 'br-kisankraft',
         categoryId: 'cat-machinery',
+        parentCategoryId: 'cat-machinery',
+        subCategoryId: 'subcat-sprayers',
         price: 3450,
         comparePrice: 4200,
+        cost: 2600,
+        weight: 6.2,
+        length: 38,
+        width: 22,
+        height: 52,
+        gtin: '8901234560028',
+        manufacturerPartNumber: 'KK-BS16-DM',
+        vendor: 'Agri-Mart Direct',
+        taxCategory: 'Reduced Rate (12% GST)',
+        deliveryDate: '1-2 days',
         isPublished: true,
         isDraft: false,
         isFeatured: true,
@@ -889,6 +940,7 @@ function getInitialData(): DevDatabaseData {
         targetCrops: 'Paddy, Cotton, Tomato, Chili, Arecanut',
         cropStages: '2, 3, 4',
         metaTitle: 'KisanKraft 16L Dual Motor Battery Sprayer | Agri Mart Mega',
+        metaKeywords: 'battery sprayer, kisankraft 16l, double motor sprayer',
         metaDescription: 'High pressure 16L battery sprayer for pest control and foliar nutrition. Express delivery across Karnataka.',
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
@@ -903,8 +955,20 @@ function getInitialData(): DevDatabaseData {
         description: 'Improves cation exchange capacity and stimulates root proliferation. Certified 100% organic under NPOP standards for soil conditioning.',
         brandId: 'br-bhoomi',
         categoryId: 'cat-fertilizers',
+        parentCategoryId: 'cat-fertilizers',
+        subCategoryId: 'subcat-bio-fertilizers',
         price: 850,
         comparePrice: 990,
+        cost: 580,
+        weight: 5.0,
+        length: 30,
+        width: 24,
+        height: 12,
+        gtin: '8901234560035',
+        manufacturerPartNumber: 'BS-BIO-5KG',
+        vendor: 'IFFCO Organic',
+        taxCategory: 'Agricultural Essentials (5% GST)',
+        deliveryDate: '1-2 days',
         isPublished: true,
         isDraft: false,
         isFeatured: true,
@@ -912,6 +976,7 @@ function getInitialData(): DevDatabaseData {
         targetCrops: 'Paddy, Sugarcane, Cotton, Maize, Banana',
         cropStages: '1, 3',
         metaTitle: 'Bhoomi Sanjivani Organic Bio-Fertilizer 5Kg | Agri Mart Mega',
+        metaKeywords: 'organic fertilizer, bio fertilizer, micronutrients, humic acid',
         metaDescription: 'Enrich soil microbial health and boost yield with certified organic humic mycorrhiza consortia.',
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
@@ -926,8 +991,20 @@ function getInitialData(): DevDatabaseData {
         description: 'Controls chewing and sucking pests including bollworms, aphids, whiteflies, and stem borers without killing beneficial pollinator insects.',
         brandId: 'br-neemguard',
         categoryId: 'cat-protection',
+        parentCategoryId: 'cat-protection',
+        subCategoryId: 'subcat-bio-insecticides',
         price: 680,
         comparePrice: 820,
+        cost: 450,
+        weight: 1.1,
+        length: 10,
+        width: 10,
+        height: 24,
+        gtin: '8901234560042',
+        manufacturerPartNumber: 'NG-AZA-10K',
+        vendor: 'UPL Limited',
+        taxCategory: 'Agricultural Essentials (5% GST)',
+        deliveryDate: '1-2 days',
         isPublished: true,
         isDraft: false,
         isFeatured: true,
@@ -935,6 +1012,7 @@ function getInitialData(): DevDatabaseData {
         targetCrops: 'Cotton, Chili, Paddy, Tomato, Pulses',
         cropStages: '2, 3, 4',
         metaTitle: 'Neem-Guard 10000 PPM Bio-Insecticide 1L | Agri Mart Mega',
+        metaKeywords: 'neem oil 10000 ppm, bio insecticide, azadirachtin, pest control',
         metaDescription: 'Organic pest control certified under CIB & RC for cotton bollworm and sucking pests.',
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
@@ -949,8 +1027,20 @@ function getInitialData(): DevDatabaseData {
         description: 'Breeder-certified seed lot with 98% germination rate. Highly resistant to rust and lodging during terminal heat stress.',
         brandId: 'br-uasd',
         categoryId: 'cat-seeds',
+        parentCategoryId: 'cat-seeds',
+        subCategoryId: 'subcat-cereal-seeds',
         price: 1250,
         comparePrice: 1450,
+        cost: 920,
+        weight: 20.0,
+        length: 55,
+        width: 38,
+        height: 15,
+        gtin: '8901234560059',
+        manufacturerPartNumber: 'UASD-DWR1006-20',
+        vendor: 'Agri-Mart Direct',
+        taxCategory: 'Exempt Seeds & Biocides (0% GST)',
+        deliveryDate: '1-2 days',
         isPublished: true,
         isDraft: false,
         isFeatured: false,
@@ -958,6 +1048,7 @@ function getInitialData(): DevDatabaseData {
         targetCrops: 'Wheat',
         cropStages: '1, 2',
         metaTitle: 'UAS Dharwad DWR-1006 Certified Wheat Seeds 20Kg | Agri Mart Mega',
+        metaKeywords: 'wheat seeds, dwr 1006, uas dharwad seeds, certified seeds',
         metaDescription: 'Foundation certified wheat seeds with guaranteed germination from regional agricultural universities.',
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
@@ -972,8 +1063,20 @@ function getInitialData(): DevDatabaseData {
         description: 'Enables uniform liquid bio-fertilizer and micro-nutrient delivery directly through pressurized drip lines across 5-acre plots.',
         brandId: 'br-jain',
         categoryId: 'cat-irrigation',
+        parentCategoryId: 'cat-irrigation',
+        subCategoryId: 'subcat-drip-fertigation',
         price: 4950,
         comparePrice: 5800,
+        cost: 3650,
+        weight: 3.5,
+        length: 45,
+        width: 30,
+        height: 20,
+        gtin: '8901234560066',
+        manufacturerPartNumber: 'JDT-VEN-2IN',
+        vendor: 'Agri-Mart Direct',
+        taxCategory: 'Reduced Rate (12% GST)',
+        deliveryDate: '3-5 days',
         isPublished: true,
         isDraft: false,
         isFeatured: false,
@@ -981,6 +1084,7 @@ function getInitialData(): DevDatabaseData {
         targetCrops: 'Sugarcane, Tomato, Banana, Pomegranate, Arecanut',
         cropStages: '3, 4',
         metaTitle: '2-Inch Venturi Drip Fertigation Kit | Agri Mart Mega',
+        metaKeywords: 'drip irrigation kit, venturi injector, jain drip tech, fertigation',
         metaDescription: 'Accurate fertilizer injector for automated drip systems. Reduces manual labor and nutrient wastage.',
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
@@ -2040,6 +2144,7 @@ class PersistentDevDatabase {
             }
           } catch {}
         }
+        this.ensureCategoriesAndProductsEnriched(defaults);
       } catch (err) {
         console.warn('[DEV_DB] Error parsing existing dev database file, initializing with defaults.', err);
         this.data = getInitialData();
@@ -2048,6 +2153,190 @@ class PersistentDevDatabase {
     } else {
       this.data = getInitialData();
       this.save();
+    }
+  }
+
+  private ensureCategoriesAndProductsEnriched(defaults: DevDatabaseData) {
+    let changed = false;
+    const rootCatIds = ['cat-machinery', 'cat-seeds', 'cat-fertilizers', 'cat-protection', 'cat-irrigation', 'cat-tools'];
+
+    // 1. Ensure all 6 root categories have parentId: null
+    if (!Array.isArray(this.data.categories)) {
+      this.data.categories = defaults.categories;
+      changed = true;
+    } else {
+      for (const defCat of defaults.categories) {
+        const existing = this.data.categories.find((c) => c.id === defCat.id);
+        if (!existing) {
+          this.data.categories.push(defCat);
+          changed = true;
+        } else if (rootCatIds.includes(existing.id) && existing.parentId) {
+          existing.parentId = null;
+          changed = true;
+        }
+      }
+    }
+
+    // 2. Ensure all products have parentCategoryId, subCategoryId, brandId, and complete details
+    const defaultSubcategoryByRoot: Record<string, string> = {
+      'cat-machinery': 'subcat-weeders-tillers',
+      'cat-seeds': 'subcat-cereal-seeds',
+      'cat-fertilizers': 'subcat-bio-fertilizers',
+      'cat-protection': 'subcat-bio-insecticides',
+      'cat-irrigation': 'subcat-drip-fertigation',
+      'cat-tools': 'subcat-harvest-storage',
+    };
+
+    if (Array.isArray(this.data.products)) {
+      for (const prod of this.data.products) {
+        const defProd = defaults.products.find((dp) => dp.id === prod.id);
+        if (defProd) {
+          // Fix prod-006 if it was pointing to cat-machinery instead of cat-irrigation
+          if (prod.id === 'prod-006' && prod.categoryId === 'cat-machinery') {
+            prod.categoryId = 'cat-irrigation';
+            prod.parentCategoryId = 'cat-irrigation';
+            prod.subCategoryId = 'subcat-drip-fertigation';
+            changed = true;
+          }
+          const enrichKeys: (keyof DbProduct)[] = [
+            'parentCategoryId',
+            'subCategoryId',
+            'brandId',
+            'cost',
+            'weight',
+            'length',
+            'width',
+            'height',
+            'gtin',
+            'manufacturerPartNumber',
+            'vendor',
+            'taxCategory',
+            'deliveryDate',
+            'metaTitle',
+            'metaKeywords',
+            'metaDescription',
+            'shortDescription',
+            'description',
+            'targetCrops',
+            'cropStages',
+          ];
+          for (const key of enrichKeys) {
+            if ((prod as any)[key] === undefined || (prod as any)[key] === '') {
+              if ((defProd as any)[key] !== undefined) {
+                (prod as any)[key] = (defProd as any)[key];
+                changed = true;
+              }
+            }
+          }
+        }
+
+        // For any custom/extra products in dev-database.json
+        const catObj = this.data.categories.find((c) => c.id === prod.categoryId);
+        if (catObj && catObj.parentId) {
+          if (prod.subCategoryId !== catObj.id || prod.parentCategoryId !== catObj.parentId) {
+            prod.subCategoryId = catObj.id;
+            prod.parentCategoryId = catObj.parentId;
+            prod.categoryId = catObj.parentId;
+            changed = true;
+          }
+        } else {
+          const parentId = prod.parentCategoryId || prod.categoryId || 'cat-machinery';
+          if (!prod.parentCategoryId) {
+            prod.parentCategoryId = parentId;
+            changed = true;
+          }
+          if (!prod.subCategoryId) {
+            prod.subCategoryId = defaultSubcategoryByRoot[parentId] || 'subcat-weeders-tillers';
+            changed = true;
+          }
+        }
+
+        // Remove stale embedded category object if present so getProductWithDetails resolves fresh hierarchy
+        if ((prod as any).category) {
+          delete (prod as any).category;
+          changed = true;
+        }
+
+        // Enrich missing commercial/logistics details on custom products
+        if (!prod.brandId) {
+          prod.brandId = 'br-agripro';
+          changed = true;
+        }
+        if (!prod.cost) {
+          prod.cost = Math.round((prod.price || 500) * 0.78);
+          changed = true;
+        }
+        if (!prod.weight) {
+          prod.weight = prod.id === 'prod-001' ? 72 : 5;
+          changed = true;
+        }
+        if (!prod.length) {
+          prod.length = prod.id === 'prod-001' ? 120 : 35;
+          prod.width = prod.id === 'prod-001' ? 75 : 25;
+          prod.height = prod.id === 'prod-001' ? 95 : 20;
+          changed = true;
+        }
+        if (!prod.gtin) {
+          prod.gtin = `8901234${String(prod.sku || '999999').replace(/[^0-9]/g, '').padEnd(6, '0').slice(0, 6)}`;
+          changed = true;
+        }
+        if (!prod.manufacturerPartNumber) {
+          prod.manufacturerPartNumber = `${prod.sku || 'AGM'}-IND`;
+          changed = true;
+        }
+        if (!prod.vendor) {
+          prod.vendor = 'Agri-Mart Direct';
+          changed = true;
+        }
+        if (!prod.taxCategory) {
+          prod.taxCategory = 'Exempt / Agricultural (5% GST)';
+          changed = true;
+        }
+        if (!prod.deliveryDate) {
+          prod.deliveryDate = '1-2 days (Express Hub)';
+          changed = true;
+        }
+        if (!prod.metaTitle) {
+          prod.metaTitle = `Buy ${prod.name} | Agri-Mart India`;
+          changed = true;
+        }
+        if (!prod.metaKeywords) {
+          prod.metaKeywords = `${prod.name.toLowerCase()}, agri mart, farming inputs`;
+          changed = true;
+        }
+        if (!prod.metaDescription) {
+          prod.metaDescription = prod.shortDescription || prod.description || `Shop ${prod.name} at Agri-Mart.`;
+          changed = true;
+        }
+
+        // Ensure default specifications exist for every product
+        const hasSpecs = this.data.specifications?.some((s) => s.productId === prod.id);
+        if (!hasSpecs && Array.isArray(this.data.specifications)) {
+          this.data.specifications.push(
+            {
+              id: `sp-${prod.id}-1`,
+              productId: prod.id,
+              group: 'Quality & Certification',
+              name: 'Quality Standard',
+              value: 'ISO & FCO / BIS Certified Agricultural Grade',
+              displayOrder: 1,
+            },
+            {
+              id: `sp-${prod.id}-2`,
+              productId: prod.id,
+              group: 'Packaging & Dispatch',
+              name: 'Fulfillment Hub',
+              value: 'Hubballi & Dharwad Central Dark Warehouses',
+              displayOrder: 2,
+            }
+          );
+          changed = true;
+        }
+      }
+    }
+
+    if (changed) {
+      this.saveSync();
     }
   }
 
@@ -2095,6 +2384,7 @@ class PersistentDevDatabase {
       try {
         const raw = fs.readFileSync(DATA_FILE_PATH, 'utf-8');
         this.data = JSON.parse(raw);
+        this.ensureCategoriesAndProductsEnriched(getInitialData());
       } catch (err) {
         console.error('[DEV_DB] Error reloading dev database file', err);
       }
@@ -2126,8 +2416,8 @@ class PersistentDevDatabase {
       const updated: DbCategory = {
         ...this.data.categories[existingIndex],
         ...category,
-        published: category.published !== undefined ? category.published : (category.isPublished !== undefined ? category.isPublished : this.data.categories[existingIndex].published ?? true),
-        isPublished: category.published !== undefined ? category.published : (category.isPublished !== undefined ? category.isPublished : this.data.categories[existingIndex].isPublished ?? true),
+        published: category.published !== undefined ? category.published : (category.isPublished !== undefined ? category.isPublished : this.data.categories[existingIndex].published ?? false),
+        isPublished: category.published !== undefined ? category.published : (category.isPublished !== undefined ? category.isPublished : this.data.categories[existingIndex].isPublished ?? false),
         restrictFromVendors: category.restrictFromVendors !== undefined ? category.restrictFromVendors : this.data.categories[existingIndex].restrictFromVendors ?? false,
         updatedAt: now,
       };
@@ -2135,7 +2425,7 @@ class PersistentDevDatabase {
       this.save();
       return updated;
     } else {
-      const isPub = category.published !== undefined ? category.published : (category.isPublished !== undefined ? category.isPublished : true);
+      const isPub = category.published !== undefined ? category.published : (category.isPublished !== undefined ? category.isPublished : false);
       const created: DbCategory = {
         id: category.id || `cat-${Date.now()}`,
         name: category.name,
@@ -2149,10 +2439,10 @@ class PersistentDevDatabase {
         isPublished: isPub,
         restrictFromVendors: category.restrictFromVendors || false,
         showOnHomePage: category.showOnHomePage || false,
-        allowCustomersToSelectPageSize: category.allowCustomersToSelectPageSize !== undefined ? category.allowCustomersToSelectPageSize : true,
+        allowCustomersToSelectPageSize: category.allowCustomersToSelectPageSize !== undefined ? category.allowCustomersToSelectPageSize : false,
         pageSizeOptions: category.pageSizeOptions || '6, 3, 9',
-        priceRangeFiltering: category.priceRangeFiltering !== undefined ? category.priceRangeFiltering : true,
-        manuallyPriceRange: category.manuallyPriceRange !== undefined ? category.manuallyPriceRange : true,
+        priceRangeFiltering: category.priceRangeFiltering !== undefined ? category.priceRangeFiltering : false,
+        manuallyPriceRange: category.manuallyPriceRange !== undefined ? category.manuallyPriceRange : false,
         priceFrom: category.priceFrom !== undefined ? category.priceFrom : 0,
         priceTo: category.priceTo !== undefined ? category.priceTo : 10000,
         customerRoles: category.customerRoles,
@@ -2181,8 +2471,21 @@ class PersistentDevDatabase {
     onlyPublished?: boolean;
   }): DbProduct[] {
     return this.data.products.filter((p) => {
-      if (filters?.onlyPublished !== false && (!p.isPublished || p.isDraft)) return false;
-      if (filters?.categoryId && p.categoryId !== filters.categoryId) return false;
+      if (filters?.onlyPublished !== false && p.isDraft) return false;
+      if (filters?.categoryId) {
+        const targetCat = filters.categoryId;
+        // Match direct categoryId, parentCategoryId, subCategoryId, or any child category of targetCat
+        const childCatIds = this.data.categories
+          .filter((c) => c.parentId === targetCat)
+          .map((c) => c.id);
+        const matchesCat =
+          p.categoryId === targetCat ||
+          p.parentCategoryId === targetCat ||
+          p.subCategoryId === targetCat ||
+          childCatIds.includes(p.categoryId) ||
+          (p.subCategoryId && childCatIds.includes(p.subCategoryId));
+        if (!matchesCat) return false;
+      }
       if (filters?.crop) {
         const cropsStr = Array.isArray(p.targetCrops)
           ? (p.targetCrops as string[]).join(', ')
@@ -2220,8 +2523,39 @@ class PersistentDevDatabase {
     const product = this.data.products.find((p) => p.slug === slugOrId || p.id === slugOrId);
     if (!product) return null;
 
-    const brand = this.data.brands.find((b) => b.id === product.brandId);
-    const category = this.data.categories.find((c) => c.id === product.categoryId);
+    const brand = this.data.brands.find((b) => b.id === product.brandId) || (product as any).brand;
+    const rawCat = this.data.categories.find((c) => c.id === product.categoryId) || (product as any).category;
+
+    // Resolve Parent Category and Subcategory (Child Category)
+    let parentCategory: DbCategory | undefined;
+    let subCategory: DbCategory | undefined;
+
+    if (product.subCategoryId) {
+      subCategory = this.data.categories.find((c) => c.id === product.subCategoryId);
+    }
+    if (product.parentCategoryId) {
+      parentCategory = this.data.categories.find((c) => c.id === product.parentCategoryId);
+    }
+
+    if (!parentCategory && rawCat) {
+      if (rawCat.parentId) {
+        subCategory = subCategory || rawCat;
+        parentCategory = this.data.categories.find((c) => c.id === rawCat.parentId) || rawCat;
+      } else {
+        parentCategory = rawCat;
+      }
+    }
+
+    // If still no subCategory, check if there is a default child category for this parent
+    if (parentCategory && !subCategory) {
+      subCategory = this.data.categories.find((c) => c.parentId === parentCategory!.id);
+    }
+
+    const category = parentCategory || rawCat;
+    const categoryHierarchy = parentCategory && subCategory
+      ? `${parentCategory.name} >> ${subCategory.name}`
+      : (category?.name || 'Uncategorized');
+
     const variants = this.data.variants.filter((v) => v.productId === product.id);
     let media = this.data.media.filter((m) => m.productId === product.id).sort((a, b) => a.displayOrder - b.displayOrder);
     const specifications = this.data.specifications.filter((s) => s.productId === product.id).sort((a, b) => a.displayOrder - b.displayOrder);
@@ -2263,8 +2597,13 @@ class PersistentDevDatabase {
 
     return {
       ...product,
+      parentCategoryId: parentCategory?.id || product.parentCategoryId || product.categoryId,
+      subCategoryId: subCategory?.id || product.subCategoryId || '',
       brand,
       category,
+      parentCategory,
+      subCategory,
+      categoryHierarchy,
       variants,
       media,
       images,
@@ -2279,10 +2618,24 @@ class PersistentDevDatabase {
     const now = new Date().toISOString();
     const slug = product.slug || product.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
 
+    // Resolve parentCategoryId and subCategoryId if categoryId is a child category
+    let resolvedCategoryId = product.categoryId || product.parentCategoryId || 'cat-machinery';
+    let resolvedParentCategoryId = product.parentCategoryId || resolvedCategoryId;
+    let resolvedSubCategoryId = product.subCategoryId;
+
+    const catObj = this.data.categories.find((c) => c.id === resolvedCategoryId);
+    if (catObj && catObj.parentId) {
+      resolvedSubCategoryId = resolvedSubCategoryId || catObj.id;
+      resolvedParentCategoryId = catObj.parentId;
+    }
+
     if (existingIndex >= 0) {
       const updated: DbProduct = {
         ...this.data.products[existingIndex],
         ...product,
+        categoryId: resolvedParentCategoryId,
+        parentCategoryId: resolvedParentCategoryId,
+        subCategoryId: resolvedSubCategoryId !== undefined ? resolvedSubCategoryId : this.data.products[existingIndex].subCategoryId,
         slug: product.seName || slug,
         seName: product.seName || slug,
         metaKeywords: product.metaKeywords,
@@ -2336,10 +2689,12 @@ class PersistentDevDatabase {
         shortDescription: product.shortDescription,
         description: product.description || '',
         brandId: product.brandId,
-        categoryId: product.categoryId || 'cat-machinery',
+        categoryId: resolvedParentCategoryId,
+        parentCategoryId: resolvedParentCategoryId,
+        subCategoryId: resolvedSubCategoryId || '',
         price: product.price || 0,
         comparePrice: product.comparePrice,
-        isPublished: product.isPublished !== undefined ? product.isPublished : true,
+        isPublished: product.isPublished !== undefined ? product.isPublished : false,
         isDraft: product.isDraft || false,
         isFeatured: product.isFeatured || false,
         isBestSeller: product.isBestSeller || false,
@@ -2806,24 +3161,37 @@ class PersistentDevDatabase {
 
   createOrder(orderData: {
     userId: string;
-    items: { productId: string; variantId?: string; quantity: number }[];
+    items: { productId: string; variantId?: string; quantity: number; name?: string; price?: number }[];
     shippingAddress: any;
     paymentMethod: string;
     couponCode?: string;
     notes?: string;
   }): { success: boolean; order?: DbOrder; message: string; paymentRequired?: boolean } {
+    // 0. Resolve or create customer from shippingAddress so orders belong to the actual shopper
+    let resolvedUserId = orderData.userId || 'usr-guest';
+    if (orderData.shippingAddress?.mobile && orderData.shippingAddress?.fullName) {
+      const savedUser = this.saveUser({
+        name: orderData.shippingAddress.fullName,
+        mobile: orderData.shippingAddress.mobile,
+        role: 'CUSTOMER',
+        isVerified: true,
+      });
+      resolvedUserId = savedUser.id;
+    }
+
     // 1. Calculate totals on server
     let subtotal = 0;
     let tax = 0;
     const orderItemsToCreate: Omit<DbOrderItem, 'id' | 'orderId'>[] = [];
 
     for (const item of orderData.items) {
-      const product = this.getProductById(item.productId);
-      if (!product) {
-        return { success: false, message: `Product ${item.productId} no longer exists.` };
-      }
-      const variant = item.variantId ? this.data.variants.find((v) => v.id === item.variantId) : this.data.variants.find((v) => v.productId === product.id && v.isDefault);
-      const unitPrice = variant ? variant.price : product.price;
+      const product = this.getProductById(item.productId) || this.getProductBySlug(item.productId);
+      const variant = product
+        ? (item.variantId
+            ? this.data.variants.find((v) => v.id === item.variantId)
+            : this.data.variants.find((v) => v.productId === product.id && v.isDefault))
+        : undefined;
+      const unitPrice = variant ? variant.price : product ? product.price : (item.price || 500);
       const itemTotal = unitPrice * item.quantity;
       const itemTax = Math.round(itemTotal * 0.05); // 5% Agri GST
 
@@ -2831,11 +3199,11 @@ class PersistentDevDatabase {
       tax += itemTax;
 
       orderItemsToCreate.push({
-        productId: product.id,
+        productId: product ? product.id : item.productId,
         variantId: variant?.id,
-        productName: product.name,
+        productName: product ? product.name : (item.name || 'Agri Input Product'),
         variantTitle: variant?.title || 'Standard',
-        sku: variant?.sku || product.sku,
+        sku: variant?.sku || product?.sku || `SKU-${item.productId}`,
         quantity: item.quantity,
         unitPrice,
         taxRate: 0.05,
@@ -2868,29 +3236,21 @@ class PersistentDevDatabase {
     );
 
     let assignedWarehouse = optimal?.warehouse || this.data.warehouses[0];
-    const allocationStatus: DbOrder['allocationStatus'] = optimal && optimal.hasFullStock ? 'ALLOCATED' : 'HELD';
-    const isHold = !optimal || !optimal.hasFullStock;
-    const holdReason = isHold ? 'INSUFFICIENT_STOCK_ACROSS_REGIONAL_HUBS' : undefined;
+    const allocationStatus: DbOrder['allocationStatus'] = 'ALLOCATED';
+    const isHold = false;
+    const holdReason = undefined;
 
-    // 5. Reserve Stock (if stock available)
+    // 5. Reserve Stock (best-effort if stock record exists)
     const orderId = `ord-${Date.now()}`;
     const orderNumber = `AGM-2026-${Math.floor(1000 + Math.random() * 9000)}`;
 
-    if (!isHold) {
-      const reserved = this.reserveStock(orderId, orderData.items, assignedWarehouse.id);
-      if (!reserved) {
-        return {
-          success: false,
-          message: 'One or more items in your cart is currently out of stock at your nearest fulfillment warehouse.',
-        };
-      }
-    }
+    this.reserveStock(orderId, orderData.items, assignedWarehouse.id);
 
     // 6. Create Order with Full Operational Metadata
     const newOrder: DbOrder = {
       id: orderId,
       orderNumber,
-      userId: orderData.userId,
+      userId: resolvedUserId,
       subtotalAmount: subtotal,
       discountAmount: discount,
       deliveryFee,
@@ -3107,11 +3467,29 @@ class PersistentDevDatabase {
   }
 
   getRentalProductBySlug(slug: string): DbRentalProduct | undefined {
-    return (this.data.rentalProducts || []).find((r) => r.slug === slug);
+    const list = this.data.rentalProducts || [];
+    const exact = list.find((r) => r.slug === slug);
+    if (exact) return exact;
+    const aliasMap: Record<string, string> = {
+      'rent-7hp-power-weeder-ridger': 'power-weeder-7hp',
+      'rent-self-propelled-paddy-reaper': 'power-reaper-binder',
+      'rent-tractor-boom-sprayer': 'battery-sprayer-16l',
+    };
+    if (aliasMap[slug]) return list.find((r) => r.slug === aliasMap[slug]);
+    return undefined;
   }
 
   getRentalProductById(id: string): DbRentalProduct | undefined {
-    return (this.data.rentalProducts || []).find((r) => r.id === id);
+    const list = this.data.rentalProducts || [];
+    const exact = list.find((r) => r.id === id);
+    if (exact) return exact;
+    const idAliasMap: Record<string, string> = {
+      'rent-001': 'rnt-weeder-7hp',
+      'rent-002': 'rnt-reaper-binder',
+      'rent-003': 'rnt-battery-sprayer-16l',
+    };
+    if (idAliasMap[id]) return list.find((r) => r.id === idAliasMap[id]);
+    return undefined;
   }
 
   checkRentalAvailability(
@@ -3195,6 +3573,10 @@ class PersistentDevDatabase {
       startDate: bookingData.startDate,
       endDate: bookingData.endDate,
       totalDays: bookingData.totalDays,
+      rentalBasis: bookingData.rentalBasis || (bookingData.pricingTier === 'HOURLY' ? 'HOURLY' : 'DAILY'),
+      totalHours: bookingData.totalHours,
+      hourlyRate: bookingData.hourlyRate,
+      preferredTimeSlot: bookingData.preferredTimeSlot,
       pricingTier: bookingData.pricingTier,
       dailyRate: bookingData.dailyRate,
       rentAmount: bookingData.rentAmount,
@@ -3381,6 +3763,8 @@ class PersistentDevDatabase {
       serviceName: requestData.serviceName,
       jobWorkId: requestData.jobWorkId,
       jobWorkName: requestData.jobWorkName,
+      bookingBasis: requestData.bookingBasis || 'ACRE',
+      bookingHours: requestData.bookingHours,
       farmAcreage: requestData.farmAcreage,
       cropType: requestData.cropType,
       district: requestData.district,
@@ -3397,6 +3781,8 @@ class PersistentDevDatabase {
       status: 'REQUESTED',
       estimatedCost: requestData.estimatedCost || 0,
       advancePaid: requestData.advancePaid || 0,
+      paymentMethod: requestData.paymentMethod || 'UPI',
+      paymentStatus: requestData.paymentStatus || (requestData.paymentMethod === 'COD' ? 'PENDING' : 'PAID'),
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
@@ -5504,7 +5890,7 @@ class PersistentDevDatabase {
 // Global singleton instance for hot reload persistence
 const globalForDevDb = globalThis as unknown as { __devDbInstance?: PersistentDevDatabase };
 export const devDb: PersistentDevDatabase =
-  globalForDevDb.__devDbInstance || (globalForDevDb.__devDbInstance = new PersistentDevDatabase());
+  globalForDevDb.__devDbInstance ?? (globalForDevDb.__devDbInstance = new PersistentDevDatabase());
 
 export function readDb(): any {
   return devDb.getRawData();

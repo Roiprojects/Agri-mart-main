@@ -219,25 +219,31 @@ export default async function RentalDetailPage({ params }: RentalDetailPageProps
               {/* Machine Rental Rates Slab */}
               <div className="space-y-2 pt-2">
                 <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500">
-                  Transparent Rental Rate Structure
+                  Transparent Rental Rate Structure (Hourly &bull; Daily &bull; Weekly &bull; Monthly)
                 </h3>
-                <div className="grid grid-cols-3 gap-3 text-center">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
+                  <div className="p-3 bg-emerald-50 rounded-xl border border-emerald-200">
+                    <div className="text-xs text-emerald-800 font-semibold">Hourly Rate</div>
+                    <div className="text-base font-black text-emerald-900 mt-0.5">
+                      ₹{(machine.hourlyRate || Math.max(50, Math.round(machine.dailyRate / 6))).toLocaleString('en-IN')}/hr
+                    </div>
+                  </div>
                   <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
                     <div className="text-xs text-slate-500">Daily Rate</div>
                     <div className="text-base font-black text-slate-900 mt-0.5">
-                      ₹{machine.dailyRate.toLocaleString('en-IN')}
+                      ₹{machine.dailyRate.toLocaleString('en-IN')}/day
                     </div>
                   </div>
                   <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
                     <div className="text-xs text-slate-500">Weekly Rate</div>
                     <div className="text-base font-black text-slate-900 mt-0.5">
-                      ₹{machine.weeklyRate.toLocaleString('en-IN')}
+                      ₹{machine.weeklyRate.toLocaleString('en-IN')}/wk
                     </div>
                   </div>
                   <div className="p-3 bg-brand-lightGreen/50 rounded-xl border border-brand-green/30">
                     <div className="text-xs text-brand-greenDark">Monthly Rate</div>
                     <div className="text-base font-black text-brand-green mt-0.5">
-                      ₹{machine.monthlyRate.toLocaleString('en-IN')}
+                      ₹{machine.monthlyRate.toLocaleString('en-IN')}/mo
                     </div>
                   </div>
                 </div>

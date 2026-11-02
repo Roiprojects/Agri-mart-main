@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { devDb } from '@/lib/dev-db';
 import { getServiceById } from '@/lib/services-data';
+import { validatePhoneNumber, validateEmailOptional, validatePinCode } from '@/lib/validation';
 
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const userId = searchParams.get('userId') || 'usr-farmer-01';
+    const userId = searchParams.get('userId') || undefined;
     const status = searchParams.get('status') || undefined;
 
     const requests = devDb.getServiceRequests({ userId, status });
@@ -25,9 +26,12 @@ export async function POST(request: NextRequest) {
       serviceId,
       jobWorkId,
       jobWorkName,
-      userId = 'usr-farmer-01',
+      userId,
       customerName,
       customerMobile,
+      customerEmail,
+      bookingBasis = 'ACRE',
+      bookingHours = 2,
       farmAcreage = 1,
       cropType = 'General Crops',
       district = 'Mandya',
@@ -41,7 +45,7 @@ export async function POST(request: NextRequest) {
       preferredTime = '08:00 AM - 12:00 PM',
       notes = '',
       photoUrl = '',
-      advancePaid = 0,
+      paymentMethod = 'UPI',
     } = body;
 
     if (!serviceId || !customerName || !customerMobile || !address || !preferredDate) {
@@ -54,39 +58,75 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const existingServiceMobiles = devDb
+      .getServiceRequests()
+      .map((s) => s.customerMobile || '')
+      .filter(Boolean);
+
+    const phoneValidation = validatePhoneNumber(customerMobile, existingServiceMobiles);
+    if (!phoneValidation.valid) {
+      return NextResponse.json({ success: false, error: phoneValidation.error }, { status: 400 });
+    }
+
+    const emailValidation = validateEmailOptional(customerEmail);
+    if (!emailValidation.valid) {
+      return NextResponse.json({ success: false, error: emailValidation.error }, { status: 400 });
+    }
+
+    const pinValidation = validatePinCode(pincode);
+    if (!pinValidation.valid) {
+      return NextResponse.json({ success: false, error: pinValidation.error }, { status: 400 });
+    }
+
+    const cleanMobile = phoneValidation.cleaned!;
+    const savedUser = devDb.saveUser({
+      name: String(customerName).trim(),
+      mobile: cleanMobile,
+      email: emailValidation.cleaned || undefined,
+      role: 'CUSTOMER',
+      isVerified: true,
+    });
+    const resolvedUserId = userId || savedUser.id;
+
     const serviceDef = getServiceById(serviceId);
     const serviceName = serviceDef ? serviceDef.name : serviceId;
 
-    // Calculate estimated cost
+    // Calculate estimated cost (Hourly Basis or Acre/Unit Basis)
     let estimatedCost = 0;
+    const isHourly = bookingBasis === 'HOURLY';
+    const resolvedHours = Math.max(1, Number(bookingHours) || 1);
     if (serviceDef) {
+      let baseRate = serviceDef.baseRatePerAcre;
       if (jobWorkId) {
         const jw = serviceDef.jobWorkTypes.find((j) => j.id === jobWorkId);
-        if (jw) {
-          estimatedCost = jw.rate * Number(farmAcreage);
-        } else {
-          estimatedCost = serviceDef.baseRatePerAcre * Number(farmAcreage);
-        }
+        if (jw) baseRate = jw.rate;
+      }
+      if (isHourly) {
+        const hourlyRate = Math.max(200, Math.round(baseRate * 0.65));
+        estimatedCost = hourlyRate * resolvedHours;
       } else {
-        estimatedCost = serviceDef.baseRatePerAcre * Number(farmAcreage);
+        estimatedCost = baseRate * Number(farmAcreage);
       }
     }
 
+    const isCod = paymentMethod === 'COD';
     const created = devDb.createServiceRequest({
-      userId,
-      customerName,
-      customerMobile,
+      userId: resolvedUserId,
+      customerName: String(customerName).trim(),
+      customerMobile: cleanMobile,
       serviceId,
       serviceName,
       jobWorkId,
       jobWorkName,
+      bookingBasis: isHourly ? 'HOURLY' : 'ACRE',
+      bookingHours: isHourly ? resolvedHours : undefined,
       farmAcreage: Number(farmAcreage),
       cropType,
       district,
       taluk,
       village,
-      address,
-      pincode,
+      address: String(address).trim(),
+      pincode: pinValidation.cleaned!,
       gpsLatitude: Number(gpsLatitude),
       gpsLongitude: Number(gpsLongitude),
       preferredDate,
@@ -94,7 +134,9 @@ export async function POST(request: NextRequest) {
       notes,
       photoUrl,
       estimatedCost,
-      advancePaid: Number(advancePaid) || 0,
+      advancePaid: isCod ? 0 : estimatedCost,
+      paymentMethod: paymentMethod || 'UPI',
+      paymentStatus: isCod ? 'PENDING' : 'PAID',
       status: 'REQUESTED',
     });
 

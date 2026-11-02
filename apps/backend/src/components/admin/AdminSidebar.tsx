@@ -71,6 +71,7 @@ interface NavSubItem {
   label: string;
   href: string;
   icon?: React.ElementType;
+  hidden?: boolean;
   children?: NavSubItem[];
 }
 
@@ -92,6 +93,7 @@ const navTree: NavGroup[] = [
     group: 'Overview',
     items: [
       { label: 'Dashboard', href: '/admin', icon: LayoutDashboard },
+      { label: 'Staff', href: '/admin/staff', icon: Users },
     ],
   },
   {
@@ -123,16 +125,20 @@ const navTree: NavGroup[] = [
     ],
   },
   {
-    group: 'Customers',
+    group: 'Customers & Staff',
     items: [
       { label: 'Customer List', href: '/admin/customers', icon: Users },
+      { label: 'Staff', href: '/admin/staff', icon: Users },
     ],
   },
   {
     group: 'Operations & Portals',
     items: [
+      { label: 'All Portals Control', href: '/admin/portals', icon: Sliders, badge: 'Master' },
       { label: 'Finance Portal', href: '/finance', icon: Coins },
       { label: 'Procurement & Agronomy', href: '/procurement', icon: Leaf },
+      { label: 'Farmer POP Forms', href: '/procurement/pop-forms', icon: FileText },
+      { label: 'Crop Guidance', href: '/procurement/crop-guidance', icon: Leaf },
       { label: 'Workshop & Repairs', href: '/repairs', icon: Wrench },
       { label: 'Field Sales CRM', href: '/sales', icon: Users },
       { label: 'Dark Warehouse & Stock', href: '/warehouse', icon: Warehouse },
@@ -169,8 +175,8 @@ const navTree: NavGroup[] = [
           { label: 'Blog comments', href: '/admin/content/blog-comments', icon: DotCircleIcon },
           { label: 'Crop guidance', href: '/admin/content/crop-guidance', icon: DotCircleIcon },
           { label: 'Gallery', href: '/admin/content/gallery', icon: DotCircleIcon },
-          { label: 'Polls', href: '/admin/content/polls', icon: DotCircleIcon },
-          { label: 'Forums', href: '/admin/content/forums', icon: DotCircleIcon },
+          { label: 'Polls', href: '/admin/content/polls', icon: DotCircleIcon, hidden: true },
+          { label: 'Forums', href: '/admin/content/forums', icon: DotCircleIcon, hidden: true },
         ],
       },
     ],
@@ -201,7 +207,7 @@ const navTree: NavGroup[] = [
               { label: 'Vendor settings', href: '/admin/configuration/settings/vendor' },
               { label: 'Blog settings', href: '/admin/configuration/settings/blog' },
               { label: 'News settings', href: '/admin/configuration/settings/news' },
-              { label: 'Forum settings', href: '/admin/configuration/settings/forum' },
+              { label: 'Forum settings', href: '/admin/configuration/settings/forum', hidden: true },
               { label: 'Media settings', href: '/admin/configuration/settings/media' },
               { label: 'Crop guidance settings', href: '/admin/configuration/settings/crop-guidance' },
               { label: 'Gallery settings', href: '/admin/configuration/settings/gallery' },
@@ -276,6 +282,10 @@ function NavSubItemRow({
     }
   }, [isChildActive]);
 
+  if (child.hidden) {
+    return null;
+  }
+
   const ChildIcon = child.icon || DotCircleIcon;
 
   if (child.children && child.children.length > 0) {
@@ -312,6 +322,7 @@ function NavSubItemRow({
         {isOpen && (
           <div className="pl-5 space-y-0.5 mt-0.5 border-l-2 border-slate-200 ml-3.5">
             {child.children.map((subChild) => {
+              if (subChild.hidden) return null;
               const isSubSelected =
                 pathname === subChild.href ||
                 (subChild.href === '/admin/configuration/settings/general' &&

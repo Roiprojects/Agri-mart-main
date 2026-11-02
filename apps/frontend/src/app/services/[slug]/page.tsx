@@ -215,10 +215,10 @@ export default async function ServiceDetailPage({ params }: ServiceDetailPagePro
 
                 <div className="p-4 bg-emerald-50/70 rounded-xl border border-emerald-200/80 space-y-1">
                   <div className="text-emerald-900 font-medium flex items-center gap-1.5">
-                    <IndianRupee className="w-4 h-4 text-emerald-700" /> Standard Base Rate:
+                    <IndianRupee className="w-4 h-4 text-emerald-700" /> Standard Hourly &amp; Acre Rates:
                   </div>
                   <div className="font-black text-emerald-900 text-base">
-                    ₹{service.baseRatePerAcre} / acre
+                    ₹{Math.max(250, Math.round(service.baseRatePerAcre * 0.65))} / hour &bull; ₹{service.baseRatePerAcre} / acre
                   </div>
                 </div>
 
@@ -252,7 +252,7 @@ export default async function ServiceDetailPage({ params }: ServiceDetailPagePro
                           <span className="font-extrabold text-sm text-slate-900">{jw.name}</span>
                         </div>
                         <span className="bg-emerald-100 text-emerald-900 font-black px-3 py-1 rounded-lg text-xs self-start sm:self-auto border border-emerald-300">
-                          ₹{jw.rate} <span className="font-normal text-[10px]">/{jw.rateUnit}</span>
+                          ₹{Math.max(200, Math.round(jw.rate * 0.65))} <span className="font-normal text-[10px]">/hour</span> &bull; ₹{jw.rate} <span className="font-normal text-[10px]">/{jw.rateUnit}</span>
                         </span>
                       </div>
 
@@ -309,11 +309,14 @@ export default async function ServiceDetailPage({ params }: ServiceDetailPagePro
                 </p>
               </div>
 
-              <div className="p-4 bg-emerald-50 rounded-2xl border border-emerald-200 text-center">
-                <span className="text-xs text-emerald-800 font-medium">Starting from</span>
-                <div className="text-3xl font-black text-slate-950 mt-0.5">
+              <div className="p-4 bg-emerald-50 rounded-2xl border border-emerald-200 text-center space-y-1">
+                <span className="text-xs text-emerald-800 font-medium">Available on Hourly &amp; Acre Basis</span>
+                <div className="text-2xl font-black text-slate-950">
+                  ₹{Math.max(250, Math.round(service.baseRatePerAcre * 0.65))}
+                  <span className="text-xs font-normal text-slate-600"> / hour</span>
+                  <span className="text-slate-300 mx-2">|</span>
                   ₹{service.baseRatePerAcre}
-                  <span className="text-sm font-normal text-slate-600"> / acre</span>
+                  <span className="text-xs font-normal text-slate-600"> / acre</span>
                 </div>
               </div>
 
@@ -331,6 +334,15 @@ export default async function ServiceDetailPage({ params }: ServiceDetailPagePro
                 >
                   <PhoneCall className="w-3.5 h-3.5 text-emerald-700" /> Agronomist Booking Desk: {SITE_CONFIG.supportPhone}
                 </a>
+              </div>
+
+              <div className="p-3 bg-emerald-50/60 rounded-xl border border-emerald-200 text-[11px] text-emerald-950 space-y-1.5">
+                <div className="font-bold text-slate-900">Accepted Payment Methods:</div>
+                <div className="flex flex-wrap gap-1.5">
+                  <span className="px-2 py-0.5 bg-white rounded-md border border-emerald-200 font-bold text-emerald-800">UPI Pay</span>
+                  <span className="px-2 py-0.5 bg-white rounded-md border border-emerald-200 font-bold text-emerald-800">NetBanking</span>
+                  <span className="px-2 py-0.5 bg-white rounded-md border border-emerald-200 font-bold text-emerald-800">Cash on Delivery</span>
+                </div>
               </div>
 
               <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 text-[11px] text-slate-600 space-y-1">

@@ -37,14 +37,14 @@ export default function AddNewDiscountPage() {
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
 
   // Form Fields matching media_1791174145536.png
-  const [isActive, setIsActive] = useState(true);
+  const [isActive, setIsActive] = useState(false);
   const [name, setName] = useState('');
   const [discountType, setDiscountType] = useState('Assigned to order total');
   const [vendor, setVendor] = useState('No vendor');
   const [usePercentage, setUsePercentage] = useState(false);
   const [discountAmount, setDiscountAmount] = useState<number | string>(0);
   const [discountPercentage, setDiscountPercentage] = useState<number | string>(0);
-  const [currency, setCurrency] = useState('USD');
+  const [currency, setCurrency] = useState('INR');
   const [requiresCouponCode, setRequiresCouponCode] = useState(false);
   const [couponCode, setCouponCode] = useState('');
   const [startDate, setStartDate] = useState('');

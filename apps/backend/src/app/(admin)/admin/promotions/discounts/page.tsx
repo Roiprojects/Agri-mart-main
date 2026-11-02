@@ -342,7 +342,7 @@ export default function DiscountsPage() {
                       {d.usePercentage
                         ? `${d.discountPercentage || 0}%`
                         : d.discountAmount !== undefined
-                        ? `${d.discountAmount} ${d.currency || 'USD'}`
+                        ? `${d.discountAmount} ${d.currency === 'USD' || !d.currency ? 'INR' : d.currency}`
                         : d.discount || '—'}
                     </td>
                     <td className="px-4 py-3 text-slate-500 font-mono">{d.startDate}</td>

@@ -105,25 +105,11 @@ export function ManufacturerForm({
     logoUrl: initialValues?.logoUrl || initialValues?.picture || '',
     website: initialValues?.website || '',
     displayOrder: initialValues?.displayOrder !== undefined ? initialValues.displayOrder : 0,
-    published:
-      initialValues?.published !== undefined
-        ? initialValues.published
-        : initialValues?.isPublished !== undefined
-        ? initialValues.isPublished
-        : true,
-    allowCustomersToSelectPageSize:
-      initialValues?.allowCustomersToSelectPageSize !== undefined
-        ? initialValues.allowCustomersToSelectPageSize
-        : true,
+    published: false,
+    allowCustomersToSelectPageSize: false,
     pageSizeOptions: initialValues?.pageSizeOptions || '6, 3, 9',
-    priceRangeFiltering:
-      initialValues?.priceRangeFiltering !== undefined
-        ? initialValues.priceRangeFiltering
-        : true,
-    manuallyPriceRange:
-      initialValues?.manuallyPriceRange !== undefined
-        ? initialValues.manuallyPriceRange
-        : true,
+    priceRangeFiltering: false,
+    manuallyPriceRange: false,
     priceFrom: initialValues?.priceFrom !== undefined ? initialValues.priceFrom : 0,
     priceTo: initialValues?.priceTo !== undefined ? initialValues.priceTo : 10000,
     discounts: initialValues?.discounts || '',
@@ -135,8 +121,8 @@ export function ManufacturerForm({
     metaDescription: initialValues?.metaDescription || '',
   });
 
-  // UI States
-  const [advancedMode, setAdvancedMode] = useState(false);
+  // UI States — starts in Advanced mode (true) showing all fields; clicking shifts to Basic mode (false) showing only mandatory/important fields
+  const [advancedMode, setAdvancedMode] = useState(true);
   const [manufacturerInfoCollapsed, setManufacturerInfoCollapsed] = useState(false);
   const [displayCollapsed, setDisplayCollapsed] = useState(false);
   const [mappingsCollapsed, setMappingsCollapsed] = useState(false);
@@ -199,6 +185,11 @@ export function ManufacturerForm({
         picture: initialValues.picture || initialValues.logoUrl || prev.picture || '',
         logoUrl: initialValues.logoUrl || initialValues.picture || prev.logoUrl || '',
         seName: initialValues.seName || initialValues.slug || prev.seName || '',
+        published: false,
+        isPublished: false,
+        allowCustomersToSelectPageSize: false,
+        priceRangeFiltering: false,
+        manuallyPriceRange: false,
       }));
       if (initialValues.description !== undefined) {
         setRichTextHtml(initialValues.description);
@@ -403,26 +394,45 @@ export function ManufacturerForm({
         </div>
       </div>
 
-      {/* ADVANCED MODE TOGGLE BUTTON matching screenshot media_1790762821788.png */}
-      <div className="flex items-center">
+      {/* MODE SWITCHER: Advanced <-> Basic Toggle Switch */}
+      <div className="flex flex-wrap items-center gap-2.5 pt-1 pb-2">
         <button
           type="button"
           onClick={() => setAdvancedMode(!advancedMode)}
-          className="inline-flex items-center gap-2.5 px-3 py-1.5 bg-[#2585be] hover:bg-[#1f72a3] text-white text-xs font-normal rounded shadow-2xs transition cursor-pointer"
+          className={`inline-flex items-center justify-between px-2.5 py-1 rounded text-xs font-semibold border transition cursor-pointer select-none min-w-[96px] h-7 shadow-2xs ${
+            advancedMode
+              ? 'bg-[#2585be] border-[#2585be] text-white hover:bg-[#1f72a3]'
+              : 'bg-white border-[#3c8dbc] text-[#3c8dbc] hover:bg-slate-50'
+          }`}
+          title={
+            advancedMode
+              ? 'Click to switch to Basic mode (show only mandatory/important fields)'
+              : 'Click to switch to Advanced mode (show all hidden fields)'
+          }
         >
-          <span>Advanced</span>
-          <div
-            className={`w-7 h-3.5 rounded-full p-0.5 transition-colors relative flex items-center ${
-              advancedMode ? 'bg-white/40' : 'bg-white/30'
-            }`}
-          >
-            <div
-              className={`w-2.5 h-2.5 rounded-full bg-white shadow-xs transition-transform transform ${
-                advancedMode ? 'translate-x-3.5' : 'translate-x-0'
-              }`}
-            />
-          </div>
+          {advancedMode ? (
+            <>
+              <span className="text-white font-semibold text-xs">Advanced</span>
+              <span className="w-3.5 h-5 rounded-xs bg-white shadow-xs ml-2" />
+            </>
+          ) : (
+            <>
+              <span className="w-3.5 h-5 rounded-xs bg-[#3c8dbc] border border-[#3c8dbc] shadow-xs mr-2" />
+              <span className="text-[#3c8dbc] font-semibold text-xs">Basic</span>
+            </>
+          )}
         </button>
+        <span
+          className={`text-[11px] px-2.5 py-0.5 rounded border font-medium ${
+            advancedMode
+              ? 'bg-blue-50 text-blue-700 border-blue-200'
+              : 'bg-amber-50 text-amber-800 border-amber-200'
+          }`}
+        >
+          {advancedMode
+            ? 'Advanced mode: Showing all manufacturer fields & sections (click Advanced to switch to Basic)'
+            : 'Basic mode: Showing only mandatory & important fields (click Basic to show all hidden fields)'}
+        </span>
       </div>
 
       {/* CARD: MANUFACTURER INFO matching screenshot media_1790762821788.png */}
@@ -453,44 +463,46 @@ export function ManufacturerForm({
           <div className="p-4 sm:p-6 text-xs text-slate-700 space-y-6">
             {/* Tabbed box container matching screenshot */}
             <div className="border border-[#d2d6de] rounded-xs bg-white">
-              {/* Tabs bar */}
-              <div className="flex border-b border-[#d2d6de] bg-[#fdfdfd]">
-                <button
-                  type="button"
-                  onClick={() => setActiveLangTab('standard')}
-                  className={`px-4 py-2 text-xs transition border-r border-[#d2d6de] select-none ${
-                    activeLangTab === 'standard'
-                      ? 'border-t-2 border-t-[#3c8dbc] bg-white text-slate-800 font-medium -mb-px border-b border-b-white'
-                      : 'border-t-2 border-t-transparent text-slate-600 hover:text-slate-800'
-                  }`}
-                >
-                  Standard
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setActiveLangTab('en')}
-                  className={`px-4 py-2 text-xs transition border-r border-[#d2d6de] flex items-center gap-1.5 select-none ${
-                    activeLangTab === 'en'
-                      ? 'border-t-2 border-t-[#3c8dbc] bg-white text-slate-800 font-medium -mb-px border-b border-b-white'
-                      : 'border-t-2 border-t-transparent text-slate-600 hover:text-slate-800'
-                  }`}
-                >
-                  <span>🇺🇸</span>
-                  <span>EN</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setActiveLangTab('rtl')}
-                  className={`px-4 py-2 text-xs transition flex items-center gap-1.5 select-none ${
-                    activeLangTab === 'rtl'
-                      ? 'border-t-2 border-t-[#3c8dbc] bg-white text-slate-800 font-medium -mb-px border-b border-b-white'
-                      : 'border-t-2 border-t-transparent text-slate-600 hover:text-slate-800'
-                  }`}
-                >
-                  <span>🇮🇱</span>
-                  <span>RTL</span>
-                </button>
-              </div>
+              {/* Tabs bar (Advanced only) */}
+              {advancedMode && (
+                <div className="flex border-b border-[#d2d6de] bg-[#fdfdfd]">
+                  <button
+                    type="button"
+                    onClick={() => setActiveLangTab('standard')}
+                    className={`px-4 py-2 text-xs transition border-r border-[#d2d6de] select-none ${
+                      activeLangTab === 'standard'
+                        ? 'border-t-2 border-t-[#3c8dbc] bg-white text-slate-800 font-medium -mb-px border-b border-b-white'
+                        : 'border-t-2 border-t-transparent text-slate-600 hover:text-slate-800'
+                    }`}
+                  >
+                    Standard
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setActiveLangTab('en')}
+                    className={`px-4 py-2 text-xs transition border-r border-[#d2d6de] flex items-center gap-1.5 select-none ${
+                      activeLangTab === 'en'
+                        ? 'border-t-2 border-t-[#3c8dbc] bg-white text-slate-800 font-medium -mb-px border-b border-b-white'
+                        : 'border-t-2 border-t-transparent text-slate-600 hover:text-slate-800'
+                    }`}
+                  >
+                    <span>🇺🇸</span>
+                    <span>EN</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setActiveLangTab('rtl')}
+                    className={`px-4 py-2 text-xs transition flex items-center gap-1.5 select-none ${
+                      activeLangTab === 'rtl'
+                        ? 'border-t-2 border-t-[#3c8dbc] bg-white text-slate-800 font-medium -mb-px border-b border-b-white'
+                        : 'border-t-2 border-t-transparent text-slate-600 hover:text-slate-800'
+                    }`}
+                  >
+                    <span>🇮🇱</span>
+                    <span>RTL</span>
+                  </button>
+                </div>
+              )}
 
               {/* Tab Content Fields */}
               <div className="p-5 sm:p-6 space-y-4">
@@ -877,7 +889,7 @@ export function ManufacturerForm({
               <div className="sm:col-span-9 flex items-center">
                 <input
                   type="checkbox"
-                  checked={formData.published !== false && formData.isPublished !== false}
+                  checked={Boolean(formData.published || formData.isPublished)}
                   onChange={(e) => {
                     handleChange('published', e.target.checked);
                     handleChange('isPublished', e.target.checked);
@@ -887,147 +899,139 @@ export function ManufacturerForm({
               </div>
             </div>
 
-            {/* Allow customers to select page size */}
-            <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
-              <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
-                <span>Allow customers to select page size</span>
-                <Tooltip text="Whether customers are allowed to select manufacturer page size." />
-              </div>
-              <div className="sm:col-span-9 flex items-center">
-                <input
-                  type="checkbox"
-                  checked={formData.allowCustomersToSelectPageSize !== false}
-                  onChange={(e) =>
-                    handleChange('allowCustomersToSelectPageSize', e.target.checked)
-                  }
-                  className="h-4 w-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
-                />
-              </div>
-            </div>
-
-            {/* Page size options (Branch under Allow customers to select page size) */}
-            {formData.allowCustomersToSelectPageSize !== false && (
-              <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
-                <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
-                  <span>Page size options</span>
-                  <Tooltip text="Comma separated list of page size options (e.g. 6, 3, 9)." />
-                </div>
-                <div className="sm:col-span-9 relative flex items-center pl-6">
-                  {/* Vertical branch line */}
-                  <div className="absolute left-[7px] -top-5 top-1/2 w-px bg-[#d2d6de]" />
-                  {/* Horizontal tick */}
-                  <div className="absolute left-[7px] top-1/2 w-4 h-px bg-[#d2d6de]" />
-                  <input
-                    type="text"
-                    value={formData.pageSizeOptions || '6, 3, 9'}
-                    onChange={(e) => handleChange('pageSizeOptions', e.target.value)}
-                    className="w-full text-xs px-2.5 py-1.5 rounded border border-[#d2d6de] bg-white focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none text-slate-700"
-                  />
-                </div>
-              </div>
-            )}
-
-            {/* Price range filtering */}
-            <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
-              <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
-                <span>Price range filtering</span>
-                <Tooltip text="Enable price range filtering on this manufacturer page." />
-              </div>
-              <div className="sm:col-span-9 flex items-center">
-                <input
-                  type="checkbox"
-                  checked={formData.priceRangeFiltering !== false}
-                  onChange={(e) => handleChange('priceRangeFiltering', e.target.checked)}
-                  className="h-4 w-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
-                />
-              </div>
-            </div>
-
-            {/* Tree branch for Price range filtering children */}
-            {formData.priceRangeFiltering !== false && (
-              <div className="space-y-4 pt-0">
-                {/* Enter price range manually */}
+            {advancedMode && (
+              <>
+                {/* Allow customers to select page size */}
                 <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
                   <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
-                    <span>Enter price range manually</span>
-                    <Tooltip text="Check to enter price range manually (from / to)." />
+                    <span>Allow customers to select page size</span>
+                    <Tooltip text="Whether customers are allowed to select manufacturer page size." />
                   </div>
-                  <div className="sm:col-span-9 relative flex items-center pl-6">
-                    {/* Vertical line through or ending */}
-                    <div
-                      className={`absolute left-[7px] -top-5 ${
-                        formData.manuallyPriceRange !== false ? 'bottom-0' : 'top-1/2'
-                      } w-px bg-[#d2d6de]`}
-                    />
-                    {/* Horizontal branch line */}
-                    <div className="absolute left-[7px] top-1/2 w-4 h-px bg-[#d2d6de]" />
+                  <div className="sm:col-span-9 flex items-center">
                     <input
                       type="checkbox"
-                      checked={formData.manuallyPriceRange !== false}
-                      onChange={(e) => handleChange('manuallyPriceRange', e.target.checked)}
+                      checked={Boolean(formData.allowCustomersToSelectPageSize)}
+                      onChange={(e) =>
+                        handleChange('allowCustomersToSelectPageSize', e.target.checked)
+                      }
                       className="h-4 w-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
                     />
                   </div>
                 </div>
 
-                {formData.manuallyPriceRange !== false && (
-                  <>
-                    {/* Price 'from' */}
-                    <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
-                      <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
-                        <span>Price 'from'</span>
-                        <Tooltip text="The minimum price for price range filtering." />
-                      </div>
-                      <div className="sm:col-span-9 relative flex items-center pl-6">
-                        {/* Vertical line passing through */}
-                        <div className="absolute left-[7px] -top-5 bottom-0 w-px bg-[#d2d6de]" />
-                        {/* Horizontal branch line */}
-                        <div className="absolute left-[7px] top-1/2 w-4 h-px bg-[#d2d6de]" />
-                        <div className="flex rounded border border-[#d2d6de] overflow-hidden bg-white focus-within:border-[#3c8dbc] focus-within:ring-1 focus-within:ring-[#3c8dbc] w-48">
-                          <input
-                            type="number"
-                            value={formData.priceFrom !== undefined ? formData.priceFrom : 0}
-                            onChange={(e) =>
-                              handleChange('priceFrom', parseFloat(e.target.value) || 0)
-                            }
-                            className="w-full text-xs px-2.5 py-1.5 outline-none text-slate-800"
-                          />
-                          <span className="bg-[#eee] px-3 py-1.5 text-xs text-slate-600 border-l border-[#d2d6de] flex items-center select-none font-medium">
-                            USD
-                          </span>
-                        </div>
-                      </div>
-                    </div>
+                {/* Page size options (Branch under Allow customers to select page size) */}
+                <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
+                  <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
+                    <span>Page size options</span>
+                    <Tooltip text="Comma separated list of page size options (e.g. 6, 3, 9)." />
+                  </div>
+                  <div className="sm:col-span-9 relative flex items-center pl-6">
+                    {/* Vertical branch line */}
+                    <div className="absolute left-[7px] -top-5 top-1/2 w-px bg-[#d2d6de]" />
+                    {/* Horizontal tick */}
+                    <div className="absolute left-[7px] top-1/2 w-4 h-px bg-[#d2d6de]" />
+                    <input
+                      type="text"
+                      value={formData.pageSizeOptions || '6, 3, 9'}
+                      onChange={(e) => handleChange('pageSizeOptions', e.target.value)}
+                      className="w-full text-xs px-2.5 py-1.5 rounded border border-[#d2d6de] bg-white focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none text-slate-700"
+                    />
+                  </div>
+                </div>
 
-                    {/* Price 'to' */}
-                    <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
-                      <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
-                        <span>Price 'to'</span>
-                        <Tooltip text="The maximum price for price range filtering." />
-                      </div>
-                      <div className="sm:col-span-9 relative flex items-center pl-6">
-                        {/* Vertical line ending at last branch */}
-                        <div className="absolute left-[7px] -top-5 top-1/2 w-px bg-[#d2d6de]" />
-                        {/* Horizontal branch line */}
-                        <div className="absolute left-[7px] top-1/2 w-4 h-px bg-[#d2d6de]" />
-                        <div className="flex rounded border border-[#d2d6de] overflow-hidden bg-white focus-within:border-[#3c8dbc] focus-within:ring-1 focus-within:ring-[#3c8dbc] w-48">
-                          <input
-                            type="number"
-                            value={formData.priceTo !== undefined ? formData.priceTo : 10000}
-                            onChange={(e) =>
-                              handleChange('priceTo', parseFloat(e.target.value) || 0)
-                            }
-                            className="w-full text-xs px-2.5 py-1.5 outline-none text-slate-800"
-                          />
-                          <span className="bg-[#eee] px-3 py-1.5 text-xs text-slate-600 border-l border-[#d2d6de] flex items-center select-none font-medium">
-                            USD
-                          </span>
-                        </div>
+                {/* Price range filtering */}
+                <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
+                  <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
+                    <span>Price range filtering</span>
+                    <Tooltip text="Enable price range filtering on this manufacturer page." />
+                  </div>
+                  <div className="sm:col-span-9 flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={Boolean(formData.priceRangeFiltering)}
+                      onChange={(e) => handleChange('priceRangeFiltering', e.target.checked)}
+                      className="h-4 w-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                    />
+                  </div>
+                </div>
+
+                {/* Tree branch for Price range filtering children */}
+                <div className="space-y-4 pt-0">
+                  {/* Enter price range manually */}
+                  <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
+                    <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
+                      <span>Enter price range manually</span>
+                      <Tooltip text="Check to enter price range manually (from / to)." />
+                    </div>
+                    <div className="sm:col-span-9 relative flex items-center pl-6">
+                      {/* Vertical line through or ending */}
+                      <div className="absolute left-[7px] -top-5 bottom-0 w-px bg-[#d2d6de]" />
+                      {/* Horizontal branch line */}
+                      <div className="absolute left-[7px] top-1/2 w-4 h-px bg-[#d2d6de]" />
+                      <input
+                        type="checkbox"
+                        checked={Boolean(formData.manuallyPriceRange)}
+                        onChange={(e) => handleChange('manuallyPriceRange', e.target.checked)}
+                        className="h-4 w-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Price 'from' */}
+                  <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
+                    <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
+                      <span>Price &apos;from&apos;</span>
+                      <Tooltip text="The minimum price for price range filtering." />
+                    </div>
+                    <div className="sm:col-span-9 relative flex items-center pl-6">
+                      {/* Vertical line passing through */}
+                      <div className="absolute left-[7px] -top-5 bottom-0 w-px bg-[#d2d6de]" />
+                      {/* Horizontal branch line */}
+                      <div className="absolute left-[7px] top-1/2 w-4 h-px bg-[#d2d6de]" />
+                      <div className="flex rounded border border-[#d2d6de] overflow-hidden bg-white focus-within:border-[#3c8dbc] focus-within:ring-1 focus-within:ring-[#3c8dbc] w-48">
+                        <input
+                          type="number"
+                          value={formData.priceFrom !== undefined ? formData.priceFrom : 0}
+                          onChange={(e) =>
+                            handleChange('priceFrom', parseFloat(e.target.value) || 0)
+                          }
+                          className="w-full text-xs px-2.5 py-1.5 outline-none text-slate-800"
+                        />
+                        <span className="bg-[#eee] px-3 py-1.5 text-xs text-slate-600 border-l border-[#d2d6de] flex items-center select-none font-medium">
+                          INR
+                        </span>
                       </div>
                     </div>
-                  </>
-                )}
-              </div>
+                  </div>
+
+                  {/* Price 'to' */}
+                  <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
+                    <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
+                      <span>Price &apos;to&apos;</span>
+                      <Tooltip text="The maximum price for price range filtering." />
+                    </div>
+                    <div className="sm:col-span-9 relative flex items-center pl-6">
+                      {/* Vertical line ending at last branch */}
+                      <div className="absolute left-[7px] -top-5 top-1/2 w-px bg-[#d2d6de]" />
+                      {/* Horizontal branch line */}
+                      <div className="absolute left-[7px] top-1/2 w-4 h-px bg-[#d2d6de]" />
+                      <div className="flex rounded border border-[#d2d6de] overflow-hidden bg-white focus-within:border-[#3c8dbc] focus-within:ring-1 focus-within:ring-[#3c8dbc] w-48">
+                        <input
+                          type="number"
+                          value={formData.priceTo !== undefined ? formData.priceTo : 10000}
+                          onChange={(e) =>
+                            handleChange('priceTo', parseFloat(e.target.value) || 0)
+                          }
+                          className="w-full text-xs px-2.5 py-1.5 outline-none text-slate-800"
+                        />
+                        <span className="bg-[#eee] px-3 py-1.5 text-xs text-slate-600 border-l border-[#d2d6de] flex items-center select-none font-medium">
+                          INR
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </>
             )}
 
             {/* Display order */}
@@ -1051,226 +1055,231 @@ export function ManufacturerForm({
         )}
       </div>
 
-      {/* MAPPINGS CARD matching media_1790829399677.png (Always visible below Display section) */}
-      <div className="bg-white rounded border border-[#d2d6de] border-t-2 border-t-[#00c0ef] shadow-2xs overflow-hidden">
-        <div
-          onClick={() => setMappingsCollapsed(!mappingsCollapsed)}
-          className="border-b border-[#f4f4f4] px-4 py-2.5 flex items-center justify-between cursor-pointer select-none bg-white hover:bg-slate-50/50 transition"
-        >
-          <div className="flex items-center gap-2 text-slate-800 font-semibold text-xs sm:text-sm">
-            <Bookmark className="w-4 h-4 text-slate-800 fill-slate-800" />
-            <span>Mappings</span>
-          </div>
-          <button
-            type="button"
-            className="p-1 text-slate-500 hover:text-slate-700 focus:outline-none cursor-pointer"
-          >
-            {mappingsCollapsed ? (
-              <Plus className="w-3.5 h-3.5" />
-            ) : (
-              <Minus className="w-3.5 h-3.5" />
+      {/* ADVANCED CARDS: MAPPINGS & SEO */}
+      {advancedMode && (
+        <>
+          {/* MAPPINGS CARD matching media_1790829399677.png */}
+          <div className="bg-white rounded border border-[#d2d6de] border-t-2 border-t-[#00c0ef] shadow-2xs overflow-hidden">
+            <div
+              onClick={() => setMappingsCollapsed(!mappingsCollapsed)}
+              className="border-b border-[#f4f4f4] px-4 py-2.5 flex items-center justify-between cursor-pointer select-none bg-white hover:bg-slate-50/50 transition"
+            >
+              <div className="flex items-center gap-2 text-slate-800 font-semibold text-xs sm:text-sm">
+                <Bookmark className="w-4 h-4 text-slate-800 fill-slate-800" />
+                <span>Mappings</span>
+              </div>
+              <button
+                type="button"
+                className="p-1 text-slate-500 hover:text-slate-700 focus:outline-none cursor-pointer"
+              >
+                {mappingsCollapsed ? (
+                  <Plus className="w-3.5 h-3.5" />
+                ) : (
+                  <Minus className="w-3.5 h-3.5" />
+                )}
+              </button>
+            </div>
+
+            {!mappingsCollapsed && (
+              <div className="p-4 sm:p-6 text-xs text-slate-700 space-y-4">
+                {/* Discounts */}
+                <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
+                  <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
+                    <span>Discounts</span>
+                    <Tooltip text="Select discounts to apply to this manufacturer." />
+                  </div>
+                  <div className="sm:col-span-9">
+                    <div className="w-full bg-[#f4f4f4] border border-[#d2d6de] rounded-xs px-3 py-2 text-xs text-slate-600 select-none">
+                      No discounts available. Create at least one discount before mapping.
+                    </div>
+                  </div>
+                </div>
+
+                {/* Limited to customer roles */}
+                <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
+                  <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
+                    <span>Limited to customer roles</span>
+                    <Tooltip text="Select customer roles that can view this manufacturer. Leave empty for all." />
+                  </div>
+                  <div className="sm:col-span-9">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 items-center">
+                      <div className="relative">
+                        <input
+                          type="text"
+                          placeholder=""
+                          value={formData.customerRoles || ''}
+                          onChange={(e) => handleChange('customerRoles', e.target.value)}
+                          className="w-full text-xs px-2.5 py-1.5 rounded border border-[#d2d6de] bg-white focus:border-[#3c8dbc] outline-none text-slate-700 h-9"
+                        />
+                      </div>
+                      <div className="bg-[#f4f4f4] border border-[#d2d6de] rounded-xs px-3 py-2 text-xs text-slate-700 shadow-2xs">
+                        In order to use this functionality, you have to disable the following setting: Catalog settings &gt; Ignore ACL rules.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Limited to stores */}
+                <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
+                  <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
+                    <span>Limited to stores</span>
+                    <Tooltip text="Select stores in which this manufacturer is available. Leave empty for all stores." />
+                  </div>
+                  <div className="sm:col-span-9">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 items-center">
+                      <div className="relative">
+                        <input
+                          type="text"
+                          placeholder=""
+                          value={formData.limitedToStores || ''}
+                          onChange={(e) => handleChange('limitedToStores', e.target.value)}
+                          className="w-full text-xs px-2.5 py-1.5 rounded border border-[#d2d6de] bg-white focus:border-[#3c8dbc] outline-none text-slate-700 h-9"
+                        />
+                      </div>
+                      <div className="bg-[#f4f4f4] border border-[#d2d6de] rounded-xs px-3 py-2 text-xs text-slate-700 shadow-2xs">
+                        In order to use this functionality, you have to disable the following setting: Catalog settings &gt; Ignore &quot;limit per store&quot; rules.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             )}
-          </button>
-        </div>
-
-        {!mappingsCollapsed && (
-          <div className="p-4 sm:p-6 text-xs text-slate-700 space-y-4">
-            {/* Discounts */}
-            <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
-              <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
-                <span>Discounts</span>
-                <Tooltip text="Select discounts to apply to this manufacturer." />
-              </div>
-              <div className="sm:col-span-9">
-                <div className="w-full bg-[#f4f4f4] border border-[#d2d6de] rounded-xs px-3 py-2 text-xs text-slate-600 select-none">
-                  No discounts available. Create at least one discount before mapping.
-                </div>
-              </div>
-            </div>
-
-            {/* Limited to customer roles */}
-            <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
-              <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
-                <span>Limited to customer roles</span>
-                <Tooltip text="Select customer roles that can view this manufacturer. Leave empty for all." />
-              </div>
-              <div className="sm:col-span-9">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 items-center">
-                  <div className="relative">
-                    <input
-                      type="text"
-                      placeholder=""
-                      value={formData.customerRoles || ''}
-                      onChange={(e) => handleChange('customerRoles', e.target.value)}
-                      className="w-full text-xs px-2.5 py-1.5 rounded border border-[#d2d6de] bg-white focus:border-[#3c8dbc] outline-none text-slate-700 h-9"
-                    />
-                  </div>
-                  <div className="bg-[#f4f4f4] border border-[#d2d6de] rounded-xs px-3 py-2 text-xs text-slate-700 shadow-2xs">
-                    In order to use this functionality, you have to disable the following setting: Catalog settings &gt; Ignore ACL rules.
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Limited to stores */}
-            <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
-              <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
-                <span>Limited to stores</span>
-                <Tooltip text="Select stores in which this manufacturer is available. Leave empty for all stores." />
-              </div>
-              <div className="sm:col-span-9">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 items-center">
-                  <div className="relative">
-                    <input
-                      type="text"
-                      placeholder=""
-                      value={formData.limitedToStores || ''}
-                      onChange={(e) => handleChange('limitedToStores', e.target.value)}
-                      className="w-full text-xs px-2.5 py-1.5 rounded border border-[#d2d6de] bg-white focus:border-[#3c8dbc] outline-none text-slate-700 h-9"
-                    />
-                  </div>
-                  <div className="bg-[#f4f4f4] border border-[#d2d6de] rounded-xs px-3 py-2 text-xs text-slate-700 shadow-2xs">
-                    In order to use this functionality, you have to disable the following setting: Catalog settings &gt; Ignore &quot;limit per store&quot; rules.
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
-        )}
-      </div>
 
-      {/* SEO CARD matching media_1790829497071.png (Always visible below Mappings section) */}
-      <div className="bg-white rounded border border-[#d2d6de] border-t-2 border-t-[#00c0ef] shadow-2xs overflow-hidden mb-5">
-        <div
-          onClick={() => setSeoCollapsed(!seoCollapsed)}
-          className="border-b border-[#f4f4f4] px-4 py-2.5 flex items-center justify-between cursor-pointer select-none bg-white hover:bg-slate-50/50 transition"
-        >
-          <div className="flex items-center gap-2 text-slate-800 font-semibold text-xs sm:text-sm">
-            <Search className="w-4 h-4 text-slate-800" />
-            <span>SEO</span>
-          </div>
-          <button
-            type="button"
-            className="p-1 text-slate-500 hover:text-slate-700 focus:outline-none cursor-pointer"
-          >
-            {seoCollapsed ? (
-              <Plus className="w-3.5 h-3.5" />
-            ) : (
-              <Minus className="w-3.5 h-3.5" />
+          {/* SEO CARD matching media_1790829497071.png */}
+          <div className="bg-white rounded border border-[#d2d6de] border-t-2 border-t-[#00c0ef] shadow-2xs overflow-hidden mb-5">
+            <div
+              onClick={() => setSeoCollapsed(!seoCollapsed)}
+              className="border-b border-[#f4f4f4] px-4 py-2.5 flex items-center justify-between cursor-pointer select-none bg-white hover:bg-slate-50/50 transition"
+            >
+              <div className="flex items-center gap-2 text-slate-800 font-semibold text-xs sm:text-sm">
+                <Search className="w-4 h-4 text-slate-800" />
+                <span>SEO</span>
+              </div>
+              <button
+                type="button"
+                className="p-1 text-slate-500 hover:text-slate-700 focus:outline-none cursor-pointer"
+              >
+                {seoCollapsed ? (
+                  <Plus className="w-3.5 h-3.5" />
+                ) : (
+                  <Minus className="w-3.5 h-3.5" />
+                )}
+              </button>
+            </div>
+
+            {!seoCollapsed && (
+              <div className="p-4 sm:p-6 text-xs text-slate-700">
+                <div className="border border-[#d2d6de] rounded-xs bg-white">
+                  <div className="flex border-b border-[#d2d6de] bg-[#fdfdfd]">
+                    <button
+                      type="button"
+                      onClick={() => setSeoActiveTab('standard')}
+                      className={`px-4 py-2 text-xs transition border-r border-[#d2d6de] select-none ${
+                        seoActiveTab === 'standard'
+                          ? 'border-t-2 border-t-[#3c8dbc] bg-white text-slate-800 font-medium -mb-px border-b border-b-white'
+                          : 'border-t-2 border-t-transparent text-slate-600 hover:text-slate-800'
+                      }`}
+                    >
+                      Standard
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setSeoActiveTab('en')}
+                      className={`px-4 py-2 text-xs transition border-r border-[#d2d6de] flex items-center gap-1.5 select-none ${
+                        seoActiveTab === 'en'
+                          ? 'border-t-2 border-t-[#3c8dbc] bg-white text-slate-800 font-medium -mb-px border-b border-b-white'
+                          : 'border-t-2 border-t-transparent text-slate-600 hover:text-slate-800'
+                      }`}
+                    >
+                      <span>🇺🇸</span>
+                      <span>EN</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setSeoActiveTab('rtl')}
+                      className={`px-4 py-2 text-xs transition flex items-center gap-1.5 select-none ${
+                        seoActiveTab === 'rtl'
+                          ? 'border-t-2 border-t-[#3c8dbc] bg-white text-slate-800 font-medium -mb-px border-b border-b-white'
+                          : 'border-t-2 border-t-transparent text-slate-600 hover:text-slate-800'
+                      }`}
+                    >
+                      <span>🇮🇱</span>
+                      <span>RTL</span>
+                    </button>
+                  </div>
+
+                  <div className="p-5 sm:p-6 space-y-4">
+                    {/* Search engine friendly page name */}
+                    <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
+                      <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
+                        <span>Search engine friendly page name</span>
+                        <Tooltip text="Set a search engine friendly page name such as 'the-best-manufacturer' to make your manufacturer page URL more SEO-friendly." />
+                      </div>
+                      <div className="sm:col-span-9">
+                        <input
+                          type="text"
+                          value={formData.seName || ''}
+                          onChange={(e) => handleChange('seName', e.target.value)}
+                          className="w-full text-xs px-2.5 py-1.5 rounded border border-[#d2d6de] bg-white focus:border-[#3c8dbc] outline-none text-slate-700"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Meta title */}
+                    <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
+                      <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
+                        <span>Meta title</span>
+                        <Tooltip text="The title tag is displayed on search engine results pages." />
+                      </div>
+                      <div className="sm:col-span-9">
+                        <input
+                          type="text"
+                          value={formData.metaTitle || ''}
+                          onChange={(e) => handleChange('metaTitle', e.target.value)}
+                          className="w-full text-xs px-2.5 py-1.5 rounded border border-[#d2d6de] bg-white focus:border-[#3c8dbc] outline-none text-slate-700"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Meta keywords */}
+                    <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
+                      <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
+                        <span>Meta keywords</span>
+                        <Tooltip text="Keywords to include in manufacturer page meta tags." />
+                      </div>
+                      <div className="sm:col-span-9">
+                        <input
+                          type="text"
+                          value={formData.metaKeywords || ''}
+                          onChange={(e) => handleChange('metaKeywords', e.target.value)}
+                          className="w-full text-xs px-2.5 py-1.5 rounded border border-[#d2d6de] bg-white focus:border-[#3c8dbc] outline-none text-slate-700"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Meta description */}
+                    <div className="grid grid-cols-1 sm:grid-cols-12 items-start gap-2">
+                      <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700 pt-2">
+                        <span>Meta description</span>
+                        <Tooltip text="Brief description to be included in manufacturer page meta tags." />
+                      </div>
+                      <div className="sm:col-span-9">
+                        <textarea
+                          rows={4}
+                          value={formData.metaDescription || ''}
+                          onChange={(e) => handleChange('metaDescription', e.target.value)}
+                          className="w-full text-xs px-2.5 py-1.5 rounded border border-[#d2d6de] bg-white focus:border-[#3c8dbc] outline-none text-slate-700 resize-y"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             )}
-          </button>
-        </div>
-
-        {!seoCollapsed && (
-          <div className="p-4 sm:p-6 text-xs text-slate-700">
-            <div className="border border-[#d2d6de] rounded-xs bg-white">
-              <div className="flex border-b border-[#d2d6de] bg-[#fdfdfd]">
-                <button
-                  type="button"
-                  onClick={() => setSeoActiveTab('standard')}
-                  className={`px-4 py-2 text-xs transition border-r border-[#d2d6de] select-none ${
-                    seoActiveTab === 'standard'
-                      ? 'border-t-2 border-t-[#3c8dbc] bg-white text-slate-800 font-medium -mb-px border-b border-b-white'
-                      : 'border-t-2 border-t-transparent text-slate-600 hover:text-slate-800'
-                  }`}
-                >
-                  Standard
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setSeoActiveTab('en')}
-                  className={`px-4 py-2 text-xs transition border-r border-[#d2d6de] flex items-center gap-1.5 select-none ${
-                    seoActiveTab === 'en'
-                      ? 'border-t-2 border-t-[#3c8dbc] bg-white text-slate-800 font-medium -mb-px border-b border-b-white'
-                      : 'border-t-2 border-t-transparent text-slate-600 hover:text-slate-800'
-                  }`}
-                >
-                  <span>🇺🇸</span>
-                  <span>EN</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setSeoActiveTab('rtl')}
-                  className={`px-4 py-2 text-xs transition flex items-center gap-1.5 select-none ${
-                    seoActiveTab === 'rtl'
-                      ? 'border-t-2 border-t-[#3c8dbc] bg-white text-slate-800 font-medium -mb-px border-b border-b-white'
-                      : 'border-t-2 border-t-transparent text-slate-600 hover:text-slate-800'
-                  }`}
-                >
-                  <span>🇮🇱</span>
-                  <span>RTL</span>
-                </button>
-              </div>
-
-              <div className="p-5 sm:p-6 space-y-4">
-                {/* Search engine friendly page name */}
-                <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
-                  <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
-                    <span>Search engine friendly page name</span>
-                    <Tooltip text="Set a search engine friendly page name such as 'the-best-manufacturer' to make your manufacturer page URL more SEO-friendly." />
-                  </div>
-                  <div className="sm:col-span-9">
-                    <input
-                      type="text"
-                      value={formData.seName || ''}
-                      onChange={(e) => handleChange('seName', e.target.value)}
-                      className="w-full text-xs px-2.5 py-1.5 rounded border border-[#d2d6de] bg-white focus:border-[#3c8dbc] outline-none text-slate-700"
-                    />
-                  </div>
-                </div>
-
-                {/* Meta title */}
-                <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
-                  <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
-                    <span>Meta title</span>
-                    <Tooltip text="The title tag is displayed on search engine results pages." />
-                  </div>
-                  <div className="sm:col-span-9">
-                    <input
-                      type="text"
-                      value={formData.metaTitle || ''}
-                      onChange={(e) => handleChange('metaTitle', e.target.value)}
-                      className="w-full text-xs px-2.5 py-1.5 rounded border border-[#d2d6de] bg-white focus:border-[#3c8dbc] outline-none text-slate-700"
-                    />
-                  </div>
-                </div>
-
-                {/* Meta keywords */}
-                <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
-                  <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
-                    <span>Meta keywords</span>
-                    <Tooltip text="Keywords to include in manufacturer page meta tags." />
-                  </div>
-                  <div className="sm:col-span-9">
-                    <input
-                      type="text"
-                      value={formData.metaKeywords || ''}
-                      onChange={(e) => handleChange('metaKeywords', e.target.value)}
-                      className="w-full text-xs px-2.5 py-1.5 rounded border border-[#d2d6de] bg-white focus:border-[#3c8dbc] outline-none text-slate-700"
-                    />
-                  </div>
-                </div>
-
-                {/* Meta description */}
-                <div className="grid grid-cols-1 sm:grid-cols-12 items-start gap-2">
-                  <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700 pt-2">
-                    <span>Meta description</span>
-                    <Tooltip text="Brief description to be included in manufacturer page meta tags." />
-                  </div>
-                  <div className="sm:col-span-9">
-                    <textarea
-                      rows={4}
-                      value={formData.metaDescription || ''}
-                      onChange={(e) => handleChange('metaDescription', e.target.value)}
-                      className="w-full text-xs px-2.5 py-1.5 rounded border border-[#d2d6de] bg-white focus:border-[#3c8dbc] outline-none text-slate-700 resize-y"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
-        )}
-      </div>
+        </>
+      )}
 
       {/* PRODUCTS CARD (Shown in Edit mode or when manufacturer exists) */}
       <div className="bg-white rounded border border-[#d2d6de] border-t-2 border-t-[#00c0ef] shadow-2xs mb-6">

@@ -56,6 +56,15 @@ export default function CartPage() {
   const [isCalculating, setIsCalculating] = useState(false);
   const [deliveryPincode, setDeliveryPincode] = useState('580026');
 
+  const syncCartToStorage = (updatedItems: CartItem[]) => {
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem('agri_cart_items', JSON.stringify(updatedItems));
+        window.dispatchEvent(new Event('cartUpdated'));
+      } catch (e) {}
+    }
+  };
+
   const recalculateCart = async (cartItems: CartItem[], code?: string, pin?: string) => {
     if (cartItems.length === 0) {
       setServerCalculation(null);
@@ -90,7 +99,20 @@ export default function CartPage() {
   };
 
   useEffect(() => {
-    recalculateCart(items, couponCode, deliveryPincode);
+    let initialItems = items;
+    if (typeof window !== 'undefined') {
+      try {
+        const stored = localStorage.getItem('agri_cart_items');
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            initialItems = parsed;
+            setItems(parsed);
+          }
+        }
+      } catch (e) {}
+    }
+    recalculateCart(initialItems, couponCode, deliveryPincode);
   }, []);
 
   const updateQuantity = (id: string, delta: number) => {
@@ -115,12 +137,14 @@ export default function CartPage() {
       .filter(Boolean) as CartItem[];
 
     setItems(updated);
+    syncCartToStorage(updated);
     recalculateCart(updated, couponCode, deliveryPincode);
   };
 
   const removeItem = (id: string) => {
     const updated = items.filter((i) => i.id !== id);
     setItems(updated);
+    syncCartToStorage(updated);
     recalculateCart(updated, couponCode, deliveryPincode);
   };
 
@@ -130,14 +154,10 @@ export default function CartPage() {
   };
 
   const handleProceedCheckout = () => {
-    // Store cart items for checkout session
+    // Store cart items for checkout session — open to everyone
     if (typeof window !== 'undefined') {
       sessionStorage.setItem('agri_checkout_items', JSON.stringify(items));
       sessionStorage.setItem('agri_checkout_coupon', couponCode);
-    }
-    if (!isLoggedIn) {
-      router.push('/login?redirect=/checkout');
-      return;
     }
     router.push('/checkout');
   };
@@ -350,23 +370,7 @@ export default function CartPage() {
                 </div>
               </div>
 
-              {!isLoggedIn ? (
-                <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-[11px] text-amber-900 space-y-2">
-                  <div className="flex items-center gap-1.5 font-bold">
-                    <Lock className="w-3.5 h-3.5 text-amber-700" />
-                    <span>Farmer Login Required to Complete Checkout</span>
-                  </div>
-                  <p className="text-slate-600">
-                    Sign in to track warehouse delivery to your farm and access Kisan Wallet rewards.
-                  </p>
-                  <Link
-                    href="/login?redirect=/checkout"
-                    className="block text-center bg-amber-400 hover:bg-amber-500 text-slate-950 font-black py-2 rounded-lg transition"
-                  >
-                    Sign In to Checkout &rarr;
-                  </Link>
-                </div>
-              ) : (
+              {isLoggedIn && user && (
                 <div className="p-2.5 bg-emerald-50 border border-emerald-200 rounded-xl text-[11px] text-emerald-800 flex items-center gap-1.5 font-bold">
                   <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
                   <span>Signed in as {user?.name || user?.phone}</span>
@@ -378,7 +382,7 @@ export default function CartPage() {
                 disabled={isCalculating}
                 className="w-full bg-agri-green hover:bg-agri-green-dark text-white font-extrabold py-3.5 rounded-2xl transition flex items-center justify-center gap-2 shadow-xs"
               >
-                <span>{isLoggedIn ? 'Proceed to Warehouse Routing & Checkout' : 'Sign In & Proceed to Checkout'}</span>
+                <span>Proceed to Warehouse Routing &amp; Checkout</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
 

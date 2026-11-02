@@ -44,7 +44,7 @@ export default function ForumsPage() {
   );
 
   return (
-    <div className="space-y-4 max-w-full text-slate-800 pb-16 font-sans">
+    <div style={{ display: 'none' }} className="hidden space-y-4 max-w-full text-slate-800 pb-16 font-sans">
       {/* ── HEADER ── */}
       <div className="flex items-center justify-between gap-4 pt-1">
         <h1 className="text-2xl font-normal text-slate-800 tracking-tight">Forums</h1>

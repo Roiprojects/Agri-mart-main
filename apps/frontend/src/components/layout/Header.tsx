@@ -30,6 +30,7 @@ export default function Header() {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [logoFlipCount, setLogoFlipCount] = useState(0);
   const { settings: cartSettings } = useShoppingCartSettings();
   const [miniCartOpen, setMiniCartOpen] = useState(false);
   const [cartItems, setCartItems] = useState<any[]>([
@@ -134,17 +135,57 @@ export default function Header() {
       {/* Main Bar: Logo, Location Selector, Prominent Search, Quick Actions */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20 gap-3 sm:gap-4">
-          {/* Logo */}
-          <Link href="/" className="flex-shrink-0 flex items-center py-1 group">
-            <div className="relative w-48 sm:w-56 md:w-64 h-12 sm:h-14 md:h-16 transition-transform duration-200 group-hover:scale-[1.01]">
-              <Image
-                src="/images/agrimart_logo_en_transparent.png"
-                alt="AGRI MART MEGA"
-                fill
-                sizes="(max-width: 640px) 192px, (max-width: 768px) 224px, 256px"
-                className="object-contain object-left"
-                priority
-              />
+          {/* Logo — Flips between English & Kannada logo every time user hovers */}
+          <Link
+            href="/"
+            onMouseEnter={() => setLogoFlipCount((prev) => prev + 1)}
+            className="flex-shrink-0 flex items-center py-1 group"
+            style={{ perspective: '1000px' }}
+            title="Hover to flip between English & Kannada Logo"
+          >
+            <div
+              className="relative w-48 sm:w-56 md:w-64 h-12 sm:h-14 md:h-16 transition-transform duration-700 ease-in-out"
+              style={{
+                transformStyle: 'preserve-3d',
+                transform: `rotateY(${logoFlipCount * 180}deg)`,
+              }}
+            >
+              {/* Front Face: English Logo */}
+              <div
+                className="absolute inset-0 w-full h-full"
+                style={{
+                  backfaceVisibility: 'hidden',
+                  WebkitBackfaceVisibility: 'hidden',
+                }}
+              >
+                <Image
+                  src="/images/agrimart_logo_en_transparent.png"
+                  alt="AGRI MART MEGA - English Logo"
+                  fill
+                  sizes="(max-width: 640px) 192px, (max-width: 768px) 224px, 256px"
+                  className="object-contain object-left"
+                  priority
+                />
+              </div>
+
+              {/* Back Face: Kannada Logo */}
+              <div
+                className="absolute inset-0 w-full h-full"
+                style={{
+                  backfaceVisibility: 'hidden',
+                  WebkitBackfaceVisibility: 'hidden',
+                  transform: 'rotateY(180deg)',
+                }}
+              >
+                <Image
+                  src="/images/agrimart_logo_kn_transparent.png"
+                  alt="ಅಗ್ರಿ ಮಾರ್ಟ್ ಮೆಗಾ - Kannada Logo"
+                  fill
+                  sizes="(max-width: 640px) 192px, (max-width: 768px) 224px, 256px"
+                  className="object-contain object-left"
+                  priority
+                />
+              </div>
             </div>
           </Link>
 
@@ -326,6 +367,7 @@ export default function Header() {
                   <Link
                     key={item.href}
                     href={item.href}
+                    prefetch={true}
                     className={`group relative flex items-center gap-1.5 h-[50px] lg:h-[52px] px-1 sm:px-1.5 lg:px-2 xl:px-2.5 transition-colors duration-200 shrink-0 select-none ${
                       active
                         ? 'text-agri-green font-extrabold'

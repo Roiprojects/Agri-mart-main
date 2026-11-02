@@ -1,7 +1,8 @@
 'use client';
 
+import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Menu, Bell, RefreshCw } from 'lucide-react';
+import { Menu, Bell, RefreshCw, Users } from 'lucide-react';
 import { clsx } from 'clsx';
 
 interface AdminTopbarProps {
@@ -55,6 +56,13 @@ export function AdminTopbar({ onMobileMenuOpen }: AdminTopbarProps) {
 
       {/* Right side */}
       <div className="ml-auto flex items-center gap-2">
+        <Link
+          href="/admin/staff"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold shadow-xs transition"
+        >
+          <Users className="h-3.5 w-3.5" />
+          <span>Staff</span>
+        </Link>
         <button
           onClick={() => window.location.reload()}
           title="Refresh page"

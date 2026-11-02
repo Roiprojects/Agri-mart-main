@@ -64,7 +64,7 @@ export const DEFAULT_SHIPPING_SETTINGS: ShippingSettingsData = {
   googleMapsApiKey: '',
   freeShippingOverX: true,
   valueOfX: 0,
-  valueOfXCurrency: 'USD',
+  valueOfXCurrency: 'INR',
   calculateXIncludingTax: true,
   useWarehouseLocation: true,
   considerAssociatedProductsDimensionsAndWeight: true,

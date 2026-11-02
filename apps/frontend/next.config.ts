@@ -2,8 +2,13 @@ import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
   output: 'standalone',
+  reactStrictMode: false,
   experimental: {
     optimizePackageImports: ['lucide-react', '@agrimart/contracts'],
+    staleTimes: {
+      dynamic: 30,
+      static: 180,
+    },
   },
   images: {
     unoptimized: true,
@@ -19,10 +24,11 @@ const nextConfig: NextConfig = {
     ],
   },
   async rewrites() {
-    const backendUrl =
+    const rawBackendUrl =
       process.env.BACKEND_INTERNAL_URL ||
       process.env.NEXT_PUBLIC_BACKEND_URL ||
-      'http://localhost:3011';
+      'http://127.0.0.1:3011';
+    const backendUrl = rawBackendUrl.replace('://localhost:', '://127.0.0.1:');
 
     return [
       // Proxy backend API routes except local webhooks and package-of-practice

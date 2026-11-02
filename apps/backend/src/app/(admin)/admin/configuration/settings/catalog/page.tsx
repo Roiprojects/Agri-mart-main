@@ -2106,7 +2106,7 @@ export default function CatalogSettingsPage() {
                               className="w-full border border-r-0 border-[#d2d6de] focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none rounded-l px-3 py-1.5 text-xs text-slate-800 bg-white"
                             />
                             <span className="px-3 py-1.5 bg-[#eee] border border-[#d2d6de] text-slate-600 text-xs font-normal rounded-r">
-                              USD
+                              INR
                             </span>
                           </div>
                         </div>
@@ -2129,7 +2129,7 @@ export default function CatalogSettingsPage() {
                               className="w-full border border-r-0 border-[#d2d6de] focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none rounded-l px-3 py-1.5 text-xs text-slate-800 bg-white"
                             />
                             <span className="px-3 py-1.5 bg-[#eee] border border-[#d2d6de] text-slate-600 text-xs font-normal rounded-r">
-                              USD
+                              INR
                             </span>
                           </div>
                         </div>
@@ -2561,7 +2561,7 @@ export default function CatalogSettingsPage() {
                           onChange={(e) => setSearchPagePriceFrom(e.target.value)}
                           className="w-36 border border-[#d2d6de] focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none rounded px-3 py-1.5 text-xs text-slate-800 bg-white"
                         />
-                        <span className="text-xs text-slate-700 font-medium">USD</span>
+                        <span className="text-xs text-slate-700 font-medium">INR</span>
                       </div>
                     </div>
 
@@ -2584,7 +2584,7 @@ export default function CatalogSettingsPage() {
                           onChange={(e) => setSearchPagePriceTo(e.target.value)}
                           className="w-36 border border-[#d2d6de] focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none rounded px-3 py-1.5 text-xs text-slate-800 bg-white"
                         />
-                        <span className="text-xs text-slate-700 font-medium">USD</span>
+                        <span className="text-xs text-slate-700 font-medium">INR</span>
                       </div>
                     </div>
                   </>

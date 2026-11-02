@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { revalidatePath, revalidateTag } from 'next/cache';
+import { clearFrontendApiCache } from '@/lib/api-client';
 
 export async function POST(request: NextRequest) {
   try {
@@ -13,6 +14,8 @@ export async function POST(request: NextRequest) {
         { status: 401 }
       );
     }
+
+    clearFrontendApiCache();
 
     const revalidatedPaths: string[] = [];
     const revalidatedTags: string[] = [];

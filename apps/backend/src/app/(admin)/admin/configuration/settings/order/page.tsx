@@ -261,7 +261,7 @@ export default function OrderSettingsPage() {
       displayPickupInStoreOnShippingMethodPage,
 
       minOrderSubtotalAmount: Number(minOrderSubtotalAmount) || 0,
-      minOrderSubtotalAmountCurrency: 'USD',
+      minOrderSubtotalAmountCurrency: 'INR',
       calculateMinOrderSubtotalIncludingTax,
       minOrderTotalAmount: Number(minOrderTotalAmount) || 0,
       autoUpdateOrderTotals,
@@ -705,7 +705,7 @@ export default function OrderSettingsPage() {
             className="px-4 py-2.5 bg-white border-b border-[#f4f4f4] flex items-center justify-between cursor-pointer select-none text-xs font-semibold text-slate-700 hover:bg-slate-50/70 transition"
           >
             <div className="flex items-center gap-2">
-              <span className="font-mono font-bold text-slate-700 text-sm tracking-tighter">$=</span>
+              <span className="font-mono font-bold text-slate-700 text-sm tracking-tighter">₹=</span>
               <span className="text-sm font-normal text-slate-800">Order totals</span>
             </div>
             <button type="button" className="text-slate-400 hover:text-slate-600">
@@ -730,7 +730,7 @@ export default function OrderSettingsPage() {
                     onChange={(e) => setMinOrderSubtotalAmount(e.target.value)}
                     className="w-36 border border-[#d2d6de] focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none rounded px-3 py-1.5 text-xs text-slate-800 bg-white"
                   />
-                  <span className="text-xs text-slate-700 font-medium">USD</span>
+                  <span className="text-xs text-slate-700 font-medium">INR</span>
                 </div>
               </div>
 

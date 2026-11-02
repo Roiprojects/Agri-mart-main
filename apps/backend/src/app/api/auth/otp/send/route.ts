@@ -1,19 +1,21 @@
 import { NextResponse } from 'next/server';
 import { devDb } from '@/lib/dev-db';
+import { validatePhoneNumber } from '@/lib/validation';
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
     const { mobile } = body;
 
-    if (!mobile || mobile.replace(/[^0-9]/g, '').length < 10) {
+    const phoneValidation = validatePhoneNumber(mobile);
+    if (!phoneValidation.valid) {
       return NextResponse.json(
-        { success: false, message: 'Please provide a valid 10-digit mobile number.' },
+        { success: false, message: phoneValidation.error },
         { status: 400 }
       );
     }
 
-    const cleanMobile = mobile.replace(/[^0-9]/g, '').slice(-10);
+    const cleanMobile = phoneValidation.cleaned!;
     // Generate a 6-digit OTP
     const devCode = Math.floor(100000 + Math.random() * 900000).toString();
     devDb.createOtp(cleanMobile, devCode);

@@ -42,6 +42,7 @@ export default function AdminManufacturersPage() {
 
   // Search Collapsible State
   const [searchOpen, setSearchOpen] = useState(true);
+  const [advancedMode, setAdvancedMode] = useState(true);
 
   // Filter States
   const [filterName, setFilterName] = useState('');
@@ -379,6 +380,30 @@ export default function AdminManufacturersPage() {
         <h1 className="text-2xl font-normal text-slate-800 tracking-tight">Manufacturers</h1>
 
         <div className="flex flex-wrap items-center gap-2">
+          {/* Advanced / Basic Mode Toggle */}
+          <button
+            type="button"
+            onClick={() => setAdvancedMode((prev) => !prev)}
+            className={`inline-flex items-center rounded border text-xs font-semibold transition cursor-pointer overflow-hidden shadow-2xs mr-1 ${
+              advancedMode
+                ? 'bg-[#2585be] border-[#2070a0] text-white'
+                : 'bg-white border-[#3c8dbc] text-[#3c8dbc]'
+            }`}
+            title={advancedMode ? 'Switch to Basic mode (show mandatory fields only)' : 'Switch to Advanced mode (show all fields)'}
+          >
+            {advancedMode ? (
+              <>
+                <span className="px-2.5 py-1">Advanced</span>
+                <span className="w-5 h-6 bg-white/95 block rounded-r-xs m-0.5" />
+              </>
+            ) : (
+              <>
+                <span className="w-5 h-6 bg-[#3c8dbc] block rounded-l-xs m-0.5" />
+                <span className="px-2.5 py-1">Basic</span>
+              </>
+            )}
+          </button>
+
           {/* Add new button */}
           <Link
             href="/admin/catalogue/manufacturers/new"
@@ -509,24 +534,26 @@ export default function AdminManufacturersPage() {
                 </div>
               </div>
 
-              {/* Published */}
-              <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
-                <div className="sm:col-span-4 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
-                  <span>Published</span>
-                  <Tooltip text="Search by a published status." />
+              {/* Published - Advanced only */}
+              {advancedMode && (
+                <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
+                  <div className="sm:col-span-4 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
+                    <span>Published</span>
+                    <Tooltip text="Search by a published status." />
+                  </div>
+                  <div className="sm:col-span-8">
+                    <select
+                      value={filterPublished}
+                      onChange={(e) => setFilterPublished(e.target.value)}
+                      className="w-full text-xs px-2.5 py-1.5 rounded border border-[#d2d6de] bg-white focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none text-slate-700 cursor-pointer"
+                    >
+                      <option value="All">All</option>
+                      <option value="PublishedOnly">Published only</option>
+                      <option value="UnpublishedOnly">Unpublished only</option>
+                    </select>
+                  </div>
                 </div>
-                <div className="sm:col-span-8">
-                  <select
-                    value={filterPublished}
-                    onChange={(e) => setFilterPublished(e.target.value)}
-                    className="w-full text-xs px-2.5 py-1.5 rounded border border-[#d2d6de] bg-white focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none text-slate-700 cursor-pointer"
-                  >
-                    <option value="All">All</option>
-                    <option value="PublishedOnly">Published only</option>
-                    <option value="UnpublishedOnly">Unpublished only</option>
-                  </select>
-                </div>
-              </div>
+              )}
             </div>
 
             {/* Centered Search Button */}

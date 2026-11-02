@@ -608,7 +608,6 @@ model FarmProfile {
   villagePanchayat String
   state            String              @default("Karnataka")
   pincode          String
-  surveyNumber     String?
   vleFpoNumber     String?
   acreage          Float
   gpsLatitude      Float?
@@ -618,6 +617,7 @@ model FarmProfile {
   irrigationType   String
   farmOperations   String
   cropName         String
+  surveyNumber     String?
   cropCycleDays    Int
   sownDate         DateTime?
   activitySchedule String?
@@ -634,6 +634,7 @@ model CropStageTracking {
   farmProfile             FarmProfile @relation(fields: [farmProfileId], references: [id], onDelete: Cascade)
   stageNumber             Int
   stageName               String
+  surveyNumber            String?
   startDate               DateTime
   targetCompletionDate    DateTime?
   status                  String      @default("ACTIVE")
@@ -806,18 +807,81 @@ model PackageOfPractice {
   mobileNumber     String
   emailId          String?
   address          String
-  surveyNumber     String
   acres            Float
   pinCode          String
   jobWorkLocation  String
   distanceFromVle  Float
   irrigation       String[]
   jobWork          String[]
+  // Crop Selection Fields (including Survey Number)
+  cropType         String?
   crop             String
+  variety          String?
+  plantingDate     String?
+  cropAge          String?
+  cropAcreage      String?
+  plantCount       String?
+  spacing          String?
+  currentCropStage String?
+  surveyNumber     String
+  additionalCrops  Json?
   cropCycleDays    Int
+  harvestingDate   String?
+  soilReportFileName String?
+  soilReportFileData String?
   popAttached      String?
   schedule         Json
   status           String   @default("SUBMITTED")
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
+}
+
+model CropGuidanceStage {
+  id                  String   @id @default(uuid())
+  stageNumber         Int
+  crop                String   @default("All Crops")
+  title               String
+  checklistTitle      String?  @default("Agronomist Action Checklist")
+  subtitle            String
+  summary             String
+  keyActions          Json     // String[]
+  recommendedTools    Json     // String[]
+  recommendedProducts Json?    // String[]
+  displayOrder        Int      @default(1)
+  isActive            Boolean  @default(true)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+}
+
+model CropGuidanceMasterCrop {
+  id           String   @id
+  name         String
+  category     String
+  tagline      String
+  sections     Json     // GuideTableSection[] (title, badge, theme, headers, rows)
+  displayOrder Int      @default(1)
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model CropGuidancePageConfig {
+  id                       String   @id @default("default")
+  heroBadge                String
+  heroSubtitle             String
+  heroTitle                String
+  heroDescription          String
+  primaryCtaText           String
+  primaryCtaHref           String
+  secondaryCtaText         String
+  secondaryCtaHref         String
+  masterSectionBadge       String
+  masterSectionTitle       String
+  masterSectionDescription String
+  aiBannerBadge            String
+  aiBannerTitle            String
+  aiBannerDescription      String
+  aiBannerCtaText          String
+  aiBannerCtaHref          String
+  updatedAt                DateTime @updatedAt
 }

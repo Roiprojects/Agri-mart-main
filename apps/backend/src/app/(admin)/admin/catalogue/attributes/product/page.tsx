@@ -14,27 +14,53 @@ import {
   CheckCircle2,
   AlertCircle,
   Sliders,
+  Package,
 } from 'lucide-react';
+
+interface PredefinedValue {
+  id: string;
+  name: string;
+  priceAdjustment: number;
+  weightAdjustment: number;
+  isPreSelected: boolean;
+  displayOrder: number;
+}
+
+interface UsedByProduct {
+  id: string;
+  name: string;
+  sku?: string;
+  price?: number;
+  published?: boolean;
+  categoryHierarchy?: string;
+  attributeValues?: string;
+}
 
 interface ProductAttribute {
   id: string;
   name: string;
   description?: string;
   displayOrder?: number;
+  predefinedValues?: PredefinedValue[];
+  usedByProducts?: UsedByProduct[];
 }
 
 export default function ProductAttributesPage() {
   const [attributes, setAttributes] = useState<ProductAttribute[]>([]);
+  const [allProducts, setAllProducts] = useState<UsedByProduct[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
   // Selection
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
+  // Advanced / Basic Mode State
+  const [advancedMode, setAdvancedMode] = useState(true);
+
   // Search Collapsible State
   const [searchOpen, setSearchOpen] = useState(true);
 
-  // Filter Input
+  // Single Unified Search Input (searches Attribute Name, Product ID, Product Name, and Product SKU)
   const [filterName, setFilterName] = useState('');
   const [appliedName, setAppliedName] = useState('');
 
@@ -66,7 +92,6 @@ export default function ProductAttributesPage() {
       const res = await fetch('/api/admin/catalogue/attributes/product');
       const json = await res.json();
       if (json.success && Array.isArray(json.data)) {
-        // Priority order matching media_1791007940603.png: Color, Frame Color, Pattern
         const priorityOrder = ['Color', 'Frame Color', 'Pattern'];
         const sorted = [...json.data].sort((a: any, b: any) => {
           const idxA = priorityOrder.indexOf(a.name);
@@ -77,6 +102,9 @@ export default function ProductAttributesPage() {
           return (a.displayOrder || 0) - (b.displayOrder || 0);
         });
         setAttributes(sorted);
+        if (Array.isArray(json.products)) {
+          setAllProducts(json.products);
+        }
       } else {
         showToast(json.error || 'Failed to load product attributes', 'error');
       }
@@ -96,11 +124,45 @@ export default function ProductAttributesPage() {
     setCurrentPage(1);
   };
 
+  // Active search query (live + button triggered so typing or clicking Search both work seamlessly)
+  const activeQuery = (filterName.trim() || appliedName.trim()).toLowerCase();
+
+  // Products matching the single search bar (by Product ID, Product Name, or Product SKU)
+  const matchedProducts = useMemo(() => {
+    if (!activeQuery) return [];
+    return allProducts.filter(
+      (p) =>
+        (p.id || '').toLowerCase().includes(activeQuery) ||
+        (p.name || '').toLowerCase().includes(activeQuery) ||
+        (p.sku || '').toLowerCase().includes(activeQuery)
+    );
+  }, [allProducts, activeQuery]);
+
+  // Attributes matching Attribute Name, ID, Description, Predefined Values, OR Product ID / Product Name / Product SKU
   const filteredAttributes = useMemo(() => {
-    if (!appliedName) return attributes;
-    const q = appliedName.toLowerCase();
-    return attributes.filter((a) => a.name.toLowerCase().includes(q));
-  }, [attributes, appliedName]);
+    if (!activeQuery) return attributes;
+    const matchedProdIds = new Set(matchedProducts.map((p) => p.id));
+
+    return attributes.filter((a) => {
+      const matchAttrName = (a.name || '').toLowerCase().includes(activeQuery);
+      const matchAttrId = (a.id || '').toLowerCase().includes(activeQuery);
+      const matchAttrDesc = (a.description || '').toLowerCase().includes(activeQuery);
+      const matchPredefined =
+        Array.isArray(a.predefinedValues) &&
+        a.predefinedValues.some((v) => (v.name || '').toLowerCase().includes(activeQuery));
+      const matchUsedProduct =
+        Array.isArray(a.usedByProducts) &&
+        a.usedByProducts.some(
+          (p) =>
+            matchedProdIds.has(p.id) ||
+            (p.id || '').toLowerCase().includes(activeQuery) ||
+            (p.name || '').toLowerCase().includes(activeQuery) ||
+            (p.sku || '').toLowerCase().includes(activeQuery)
+        );
+
+      return matchAttrName || matchAttrId || matchAttrDesc || matchPredefined || matchUsedProduct;
+    });
+  }, [attributes, activeQuery, matchedProducts]);
 
   const totalItems = filteredAttributes.length;
   const totalPages = Math.ceil(totalItems / pageSize) || 1;
@@ -237,9 +299,51 @@ export default function ProductAttributesPage() {
         </div>
       )}
 
-      {/* TOP HEADER: Title + Add new & Delete selected buttons (Matching media_1791007940603.png) */}
+      {/* TOP HEADER: Title + Advanced/Basic Toggle + Add new & Delete selected buttons */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1 pb-1">
-        <h1 className="text-2xl font-normal text-slate-800 tracking-tight">Product attributes</h1>
+        <div className="flex items-center gap-3 flex-wrap">
+          <h1 className="text-2xl font-normal text-slate-800 tracking-tight">Product attributes</h1>
+
+          {/* ADVANCED / BASIC TOGGLE SWITCH */}
+          <button
+            type="button"
+            onClick={() => setAdvancedMode(!advancedMode)}
+            className={`inline-flex items-center justify-between px-2.5 py-1 rounded text-xs font-semibold border transition cursor-pointer select-none min-w-[96px] h-7 shadow-2xs ${
+              advancedMode
+                ? 'bg-[#2585be] border-[#2585be] text-white hover:bg-[#1f72a3]'
+                : 'bg-white border-[#3c8dbc] text-[#3c8dbc] hover:bg-slate-50'
+            }`}
+            title={
+              advancedMode
+                ? 'Click to switch to Basic mode (show only mandatory & important fields)'
+                : 'Click to switch to Advanced mode (show all hidden fields)'
+            }
+          >
+            {advancedMode ? (
+              <>
+                <span className="text-white font-semibold text-xs">Advanced</span>
+                <span className="w-3.5 h-5 rounded-xs bg-white shadow-xs ml-2" />
+              </>
+            ) : (
+              <>
+                <span className="w-3.5 h-5 rounded-xs bg-[#3c8dbc] border border-[#3c8dbc] shadow-xs mr-2" />
+                <span className="text-[#3c8dbc] font-semibold text-xs">Basic</span>
+              </>
+            )}
+          </button>
+
+          <span
+            className={`text-[11px] px-2.5 py-0.5 rounded border font-medium ${
+              advancedMode
+                ? 'bg-blue-50 text-blue-700 border-blue-200'
+                : 'bg-amber-50 text-amber-800 border-amber-200'
+            }`}
+          >
+            {advancedMode
+              ? 'Advanced mode: All fields visible'
+              : 'Basic mode: Showing only mandatory & important fields'}
+          </span>
+        </div>
 
         <div className="flex flex-wrap items-center gap-2">
           {/* Add new button */}
@@ -264,7 +368,7 @@ export default function ProductAttributesPage() {
         </div>
       </div>
 
-      {/* SEARCH CARD (Collapsible, matching media_1791007940603.png) */}
+      {/* SEARCH CARD (Single Unified Search Bar for Attribute Name, Product ID, Product Name, and Product SKU) */}
       <div className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden">
         {/* Card Header */}
         <div
@@ -290,22 +394,42 @@ export default function ProductAttributesPage() {
         {/* Card Body */}
         {searchOpen && (
           <div className="p-4 sm:p-6 space-y-4 text-xs text-slate-700">
-            <div className="max-w-xl mx-auto space-y-4">
-              {/* Product attribute name Field */}
+            <div className="max-w-2xl mx-auto space-y-4">
+              {/* Unified Search Field */}
               <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-3">
-                <div className="sm:col-span-5 flex items-center justify-start sm:justify-end font-medium text-slate-700">
+                <div className="sm:col-span-4 flex items-center justify-start sm:justify-end font-medium text-slate-700">
                   <span>Product attribute name</span>
-                  <Tooltip text="A product attribute name." />
+                  <Tooltip text="Search by Product Attribute Name, Product ID (e.g. prod-001), Product Name, or Product SKU (e.g. AGP-PW-7HP) all in one search bar." />
                 </div>
-                <div className="sm:col-span-7">
-                  <input
-                    type="text"
-                    value={filterName}
-                    onChange={(e) => setFilterName(e.target.value)}
-                    onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                    placeholder=""
-                    className="w-full text-xs px-2.5 py-1.5 rounded border border-[#d2d6de] bg-white focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none text-slate-700"
-                  />
+                <div className="sm:col-span-8">
+                  <div className="relative">
+                    <input
+                      type="text"
+                      value={filterName}
+                      onChange={(e) => {
+                        setFilterName(e.target.value);
+                        setAppliedName(e.target.value.trim());
+                        setCurrentPage(1);
+                      }}
+                      onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                      placeholder="Search by Attribute Name, Product ID (prod-001), Product Name, or SKU (AGP-PW-7HP)..."
+                      className="w-full text-xs px-2.5 py-1.5 pr-8 rounded border border-[#d2d6de] bg-white focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none text-slate-700"
+                    />
+                    {filterName && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setFilterName('');
+                          setAppliedName('');
+                          setCurrentPage(1);
+                        }}
+                        className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer"
+                        title="Clear search"
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
 
@@ -325,7 +449,80 @@ export default function ProductAttributesPage() {
         )}
       </div>
 
-      {/* TABLE CARD (Matching media_1791007940603.png) */}
+      {/* MATCHED PRODUCT(S) SUMMARY BANNER WHEN SEARCHING BY PRODUCT ID, NAME, OR SKU */}
+      {activeQuery && matchedProducts.length > 0 && (
+        <div className="bg-blue-50/70 rounded border border-blue-200 p-4 space-y-3 shadow-2xs">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2 text-[#1f72a3] font-semibold text-xs sm:text-sm">
+              <Package className="w-4 h-4" />
+              <span>
+                Matched Product(s) for &quot;{filterName || appliedName}&quot; ({matchedProducts.length})
+              </span>
+            </div>
+            <span className="text-[11px] text-slate-600">
+              Showing {filteredAttributes.length} associated product attribute(s) below
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {matchedProducts.map((prod) => {
+              const prodAttrs = filteredAttributes.filter((a) =>
+                a.usedByProducts?.some((u) => u.id === prod.id)
+              );
+              return (
+                <div
+                  key={prod.id}
+                  className="bg-white rounded border border-blue-200 p-3 flex flex-col justify-between gap-2 text-xs shadow-2xs"
+                >
+                  <div className="space-y-1">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <span className="font-bold text-slate-900 text-xs sm:text-sm">{prod.name}</span>
+                      <span className="px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200 font-semibold text-[11px]">
+                        ₹{Number(prod.price || 0).toLocaleString('en-IN')} INR
+                      </span>
+                    </div>
+                    <div className="flex flex-wrap items-center gap-2 text-[11px] text-slate-600 pt-0.5">
+                      <span className="px-2 py-0.5 rounded bg-slate-100 border border-slate-200 font-mono text-slate-800">
+                        <strong>Product ID:</strong> {prod.id}
+                      </span>
+                      <span className="px-2 py-0.5 rounded bg-blue-50 border border-blue-200 font-mono text-blue-800">
+                        <strong>SKU:</strong> {prod.sku}
+                      </span>
+                      {prod.categoryHierarchy && (
+                        <span className="px-2 py-0.5 rounded bg-amber-50 border border-amber-200 text-amber-800">
+                          {prod.categoryHierarchy}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  <div className="pt-2 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2">
+                    <div className="flex flex-wrap items-center gap-1">
+                      <span className="text-[11px] text-slate-500 font-medium">Attributes:</span>
+                      {prodAttrs.map((pa) => (
+                        <Link
+                          key={pa.id}
+                          href={`/admin/catalogue/attributes/product/${pa.id}/edit`}
+                          className="px-1.5 py-0.5 rounded bg-slate-100 hover:bg-blue-100 text-slate-700 hover:text-blue-800 text-[10px] font-medium transition"
+                        >
+                          {pa.name}
+                        </Link>
+                      ))}
+                    </div>
+                    <Link
+                      href={`/admin/catalogue/products?productId=${encodeURIComponent(prod.id)}&sku=${encodeURIComponent(prod.sku || '')}&name=${encodeURIComponent(prod.name || '')}`}
+                      className="inline-flex items-center gap-1 bg-[#2585be] hover:bg-[#1f72a3] text-white text-[11px] font-semibold px-2.5 py-1 rounded shadow-2xs transition shrink-0"
+                    >
+                      <span>View in Products →</span>
+                    </Link>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* TABLE CARD */}
       <div className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden">
         {/* Descriptive Text matching screenshot */}
         <div className="p-4 border-b border-[#f4f4f4] bg-white text-xs text-slate-700 leading-relaxed">
@@ -353,14 +550,17 @@ export default function ProductAttributesPage() {
                     className="rounded border-[#d2d6de] text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
                   />
                 </th>
-                <th className="p-2.5 border-r border-[#d2d6de] min-w-[300px]">Name</th>
+                <th className="p-2.5 border-r border-[#d2d6de] min-w-[240px]">Name</th>
+                <th className="p-2.5 border-r border-[#d2d6de] min-w-[340px]">
+                  Used by Products (Product ID, Name &amp; SKU)
+                </th>
                 <th className="p-2.5 text-center w-28">Edit</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan={3} className="text-center py-12 text-slate-500 bg-white">
+                  <td colSpan={4} className="text-center py-12 text-slate-500 bg-white">
                     <div className="flex flex-col items-center justify-center gap-2">
                       <RotateCw className="w-5 h-5 animate-spin text-[#3c8dbc]" />
                       <span>Loading product attributes...</span>
@@ -369,8 +569,8 @@ export default function ProductAttributesPage() {
                 </tr>
               ) : paginatedAttributes.length === 0 ? (
                 <tr>
-                  <td colSpan={3} className="text-center py-12 text-slate-400 bg-white">
-                    No product attributes found.
+                  <td colSpan={4} className="text-center py-12 text-slate-400 bg-white">
+                    No product attributes found matching &quot;{filterName || appliedName}&quot;.
                   </td>
                 </tr>
               ) : (
@@ -383,10 +583,25 @@ export default function ProductAttributesPage() {
                     ? 'bg-[#f9f9f9]'
                     : 'bg-white';
 
+                  const usedProducts = attr.usedByProducts || [];
+                  const sortedUsedProducts = activeQuery
+                    ? [...usedProducts].sort((a, b) => {
+                        const aMatch =
+                          (a.id || '').toLowerCase().includes(activeQuery) ||
+                          (a.name || '').toLowerCase().includes(activeQuery) ||
+                          (a.sku || '').toLowerCase().includes(activeQuery);
+                        const bMatch =
+                          (b.id || '').toLowerCase().includes(activeQuery) ||
+                          (b.name || '').toLowerCase().includes(activeQuery) ||
+                          (b.sku || '').toLowerCase().includes(activeQuery);
+                        return aMatch === bMatch ? 0 : aMatch ? -1 : 1;
+                      })
+                    : usedProducts;
+
                   return (
                     <tr
                       key={attr.id}
-                      className={`${rowBg} hover:bg-[#f1f1f1] border-b border-[#e9ecef] transition-colors`}
+                      className={`${rowBg} hover:bg-[#f1f1f1] border-b border-[#e9ecef] transition-colors align-top`}
                     >
                       {/* Checkbox */}
                       <td className="p-2.5 text-center border-r border-[#e9ecef]">
@@ -398,9 +613,80 @@ export default function ProductAttributesPage() {
                         />
                       </td>
 
-                      {/* Name */}
-                      <td className="p-2.5 border-r border-[#e9ecef] text-slate-700 font-normal">
-                        {attr.name}
+                      {/* Name & Predefined Values */}
+                      <td className="p-2.5 border-r border-[#e9ecef] text-slate-700">
+                        <div className="font-semibold text-slate-800">{attr.name}</div>
+                        {advancedMode && attr.description && (
+                          <div className="text-[11px] text-slate-500 mt-0.5">{attr.description}</div>
+                        )}
+                        {advancedMode && attr.predefinedValues && attr.predefinedValues.length > 0 && (
+                          <div className="flex flex-wrap gap-1 mt-1.5">
+                            {attr.predefinedValues.map((pv) => (
+                              <span
+                                key={pv.id}
+                                className="px-1.5 py-0.5 rounded bg-slate-100 border border-slate-200 text-[10px] text-slate-700"
+                              >
+                                {pv.name}
+                                {pv.priceAdjustment > 0 ? ` (+₹${pv.priceAdjustment} INR)` : ''}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                      </td>
+
+                      {/* Associated Products (ID, Name, SKU) */}
+                      <td className="p-2.5 border-r border-[#e9ecef] text-slate-700">
+                        {sortedUsedProducts.length === 0 ? (
+                          <span className="text-slate-400 text-[11px]">No products linked</span>
+                        ) : (
+                          <div className="space-y-1.5">
+                            {sortedUsedProducts.slice(0, activeQuery ? 6 : 3).map((p) => {
+                              const isHighlighted =
+                                Boolean(activeQuery) &&
+                                ((p.id || '').toLowerCase().includes(activeQuery) ||
+                                  (p.name || '').toLowerCase().includes(activeQuery) ||
+                                  (p.sku || '').toLowerCase().includes(activeQuery));
+                              return (
+                                <div
+                                  key={p.id}
+                                  className={`p-1.5 rounded border text-[11px] flex flex-wrap items-center justify-between gap-1.5 ${
+                                    isHighlighted
+                                      ? 'bg-amber-50/90 border-amber-300 text-slate-900 font-medium'
+                                      : 'bg-white border-slate-200 text-slate-700'
+                                  }`}
+                                >
+                                  <div className="flex flex-wrap items-center gap-1.5">
+                                    <span className="px-1.5 py-0.5 rounded bg-slate-100 text-slate-700 font-mono text-[10px] border border-slate-200">
+                                      ID: {p.id}
+                                    </span>
+                                    {p.sku && (
+                                      <span className="px-1.5 py-0.5 rounded bg-blue-50 text-blue-700 font-mono text-[10px] border border-blue-200 font-semibold">
+                                        SKU: {p.sku}
+                                      </span>
+                                    )}
+                                    <Link
+                                      href={`/admin/catalogue/products?productId=${encodeURIComponent(p.id)}&sku=${encodeURIComponent(p.sku || '')}&name=${encodeURIComponent(p.name || '')}`}
+                                      className="text-slate-800 hover:text-[#2585be] hover:underline font-medium"
+                                    >
+                                      {p.name}
+                                    </Link>
+                                  </div>
+                                  <Link
+                                    href={`/admin/catalogue/products?productId=${encodeURIComponent(p.id)}&sku=${encodeURIComponent(p.sku || '')}&name=${encodeURIComponent(p.name || '')}`}
+                                    className="text-[10px] font-semibold text-[#2585be] hover:underline shrink-0"
+                                  >
+                                    View in Products →
+                                  </Link>
+                                </div>
+                              );
+                            })}
+                            {sortedUsedProducts.length > (activeQuery ? 6 : 3) && (
+                              <div className="text-[11px] text-[#3c8dbc] font-medium">
+                                +{sortedUsedProducts.length - (activeQuery ? 6 : 3)} more product(s)
+                              </div>
+                            )}
+                          </div>
+                        )}
                       </td>
 
                       {/* Edit Button */}
@@ -421,7 +707,7 @@ export default function ProductAttributesPage() {
           </table>
         </div>
 
-        {/* PAGING FOOTER (Matching media_1791007940603.png) */}
+        {/* PAGING FOOTER */}
         <div className="p-3 border-t border-[#d2d6de] bg-[#fcfcfc] flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-slate-600 select-none">
           {/* Previous / Page / Next */}
           <div className="flex items-center gap-1">
@@ -508,10 +794,33 @@ export default function ProductAttributesPage() {
           <div className="bg-white rounded border border-[#d2d6de] shadow-xl w-full max-w-md overflow-hidden animate-fadeIn">
             {/* Header */}
             <div className="bg-slate-50 border-b border-[#d2d6de] px-4 py-3 flex items-center justify-between">
-              <h3 className="font-semibold text-sm text-slate-800 flex items-center gap-1.5">
-                <Sliders className="w-4 h-4 text-[#3c8dbc]" />
-                <span>{editingAttr ? 'Edit product attribute' : 'Add new product attribute'}</span>
-              </h3>
+              <div className="flex items-center gap-2">
+                <h3 className="font-semibold text-sm text-slate-800 flex items-center gap-1.5">
+                  <Sliders className="w-4 h-4 text-[#3c8dbc]" />
+                  <span>{editingAttr ? 'Edit product attribute' : 'Add new product attribute'}</span>
+                </h3>
+                <button
+                  type="button"
+                  onClick={() => setAdvancedMode(!advancedMode)}
+                  className={`inline-flex items-center justify-between px-2 py-0.5 rounded text-[11px] font-semibold border transition cursor-pointer select-none min-w-[84px] h-6 shadow-2xs ${
+                    advancedMode
+                      ? 'bg-[#2585be] border-[#2585be] text-white'
+                      : 'bg-white border-[#3c8dbc] text-[#3c8dbc]'
+                  }`}
+                >
+                  {advancedMode ? (
+                    <>
+                      <span>Advanced</span>
+                      <span className="w-3 h-4 rounded-xs bg-white ml-1.5" />
+                    </>
+                  ) : (
+                    <>
+                      <span className="w-3 h-4 rounded-xs bg-[#3c8dbc] mr-1.5" />
+                      <span>Basic</span>
+                    </>
+                  )}
+                </button>
+              </div>
               <button
                 type="button"
                 onClick={() => setModalOpen(false)}
@@ -538,19 +847,21 @@ export default function ProductAttributesPage() {
                 />
               </div>
 
-              <div className="space-y-1">
-                <label className="font-medium text-slate-700 flex items-center">
-                  <span>Description</span>
-                  <Tooltip text="The description of the product attribute." />
-                </label>
-                <textarea
-                  rows={2}
-                  placeholder="e.g. Available color variations"
-                  value={formDescription}
-                  onChange={(e) => setFormDescription(e.target.value)}
-                  className="w-full text-xs px-2.5 py-1.5 rounded border border-[#d2d6de] bg-white focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none"
-                />
-              </div>
+              {advancedMode && (
+                <div className="space-y-1">
+                  <label className="font-medium text-slate-700 flex items-center">
+                    <span>Description</span>
+                    <Tooltip text="The description of the product attribute." />
+                  </label>
+                  <textarea
+                    rows={2}
+                    placeholder="e.g. Available color variations"
+                    value={formDescription}
+                    onChange={(e) => setFormDescription(e.target.value)}
+                    className="w-full text-xs px-2.5 py-1.5 rounded border border-[#d2d6de] bg-white focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none"
+                  />
+                </div>
+              )}
 
               {/* Footer */}
               <div className="pt-3 border-t border-[#d2d6de] flex items-center justify-end gap-2">

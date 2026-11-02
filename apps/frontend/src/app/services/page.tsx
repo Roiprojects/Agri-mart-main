@@ -26,8 +26,7 @@ export const metadata: Metadata = {
   },
 };
 
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
+export const revalidate = 60;
 
 export default async function ServicesPage() {
   let services: ServiceDefinition[] = SERVICES_CATALOGUE;
@@ -100,8 +99,10 @@ export default async function ServicesPage() {
                 </Link>
               </h3>
 
-              <div className="text-emerald-800 font-bold text-xs mt-1">
-                Starting from ₹{srv.baseRatePerAcre}/acre
+              <div className="text-emerald-800 font-bold text-xs mt-1 flex items-center gap-2">
+                <span>₹{Math.max(250, Math.round(srv.baseRatePerAcre * 0.65))}/hour</span>
+                <span className="text-slate-400">&bull;</span>
+                <span>₹{srv.baseRatePerAcre}/acre</span>
               </div>
 
               <p className="text-xs text-slate-600 mt-2 leading-relaxed line-clamp-2">

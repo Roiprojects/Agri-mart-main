@@ -76,7 +76,7 @@ export const DEFAULT_ORDER_SETTINGS: OrderSettingsData = {
 
   // Order totals defaults
   minOrderSubtotalAmount: 0,
-  minOrderSubtotalAmountCurrency: 'USD',
+  minOrderSubtotalAmountCurrency: 'INR',
   calculateMinOrderSubtotalIncludingTax: false,
   minOrderTotalAmount: 0,
   autoUpdateOrderTotals: false,

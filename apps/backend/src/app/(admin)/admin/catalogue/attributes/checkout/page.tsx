@@ -38,6 +38,7 @@ export default function CheckoutAttributesPage() {
 
   // Selection for bulk delete
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [advancedMode, setAdvancedMode] = useState(true);
 
   // Pagination
   const [pageSize, setPageSize] = useState<number>(15);
@@ -223,6 +224,30 @@ export default function CheckoutAttributesPage() {
         <h1 className="text-2xl font-normal text-slate-800 tracking-tight">Checkout attributes</h1>
 
         <div className="flex items-center gap-2">
+          {/* Advanced / Basic Mode Toggle */}
+          <button
+            type="button"
+            onClick={() => setAdvancedMode((prev) => !prev)}
+            className={`inline-flex items-center rounded border text-xs font-semibold transition cursor-pointer overflow-hidden shadow-2xs mr-1 ${
+              advancedMode
+                ? 'bg-[#2585be] border-[#2070a0] text-white'
+                : 'bg-white border-[#3c8dbc] text-[#3c8dbc]'
+            }`}
+            title={advancedMode ? 'Switch to Basic mode (show mandatory fields only)' : 'Switch to Advanced mode (show all fields)'}
+          >
+            {advancedMode ? (
+              <>
+                <span className="px-2.5 py-1">Advanced</span>
+                <span className="w-5 h-6 bg-white/95 block rounded-r-xs m-0.5" />
+              </>
+            ) : (
+              <>
+                <span className="w-5 h-6 bg-[#3c8dbc] block rounded-l-xs m-0.5" />
+                <span className="px-2.5 py-1">Basic</span>
+              </>
+            )}
+          </button>
+
           {/* Add new button */}
           <Link
             href="/admin/catalogue/attributes/checkout/new"

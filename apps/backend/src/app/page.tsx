@@ -64,15 +64,27 @@ export default function BackendGatewayPage() {
               </h1>
             </div>
             <p className="text-sm text-slate-500 mt-1">
-              GreenShield Industries Karnataka · Ref No: 2026-27/P163 · Port 3001
+              GreenShield Industries Karnataka · Ref No: 2026-27/P163 · Port 3011
             </p>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3">
             <span className="px-3 py-1 rounded-full bg-emerald-100 border border-emerald-200 text-emerald-800 text-xs font-semibold">
-              API SERVER ACTIVE
+              ALL PORTALS CONNECTED TO ADMIN
             </span>
             <Link
-              href="http://localhost:3000"
+              href="/admin/staff"
+              className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-xs font-semibold rounded-lg transition text-white shadow-sm"
+            >
+              Staff →
+            </Link>
+            <Link
+              href="/admin/portals"
+              className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-xs font-semibold rounded-lg transition text-white shadow-sm"
+            >
+              Master Portals Control Center →
+            </Link>
+            <Link
+              href="http://localhost:3010"
               target="_blank"
               className="px-4 py-2 bg-white hover:bg-slate-50 text-xs font-medium rounded-lg transition border border-slate-300 text-slate-700 shadow-sm"
             >
@@ -83,14 +95,15 @@ export default function BackendGatewayPage() {
 
         <section className="mb-10">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-slate-900">Enterprise Operations Portals</h2>
-            <span className="text-xs text-slate-500">6 Authenticated Portals</span>
+            <h2 className="text-lg font-semibold text-slate-900">Enterprise Operations Portals (Admin Controlled & Editable)</h2>
+            <span className="text-xs text-slate-500">6 Connected Portals</span>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {portals.map((p) => (
               <Link
                 key={p.href}
                 href={p.href}
+                prefetch={true}
                 className={`p-6 rounded-2xl border transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md flex flex-col justify-between ${p.color}`}
               >
                 <div>

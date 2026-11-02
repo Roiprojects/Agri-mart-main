@@ -47,8 +47,8 @@ export function CheckoutAttributeForm({
   saving,
   isEdit = false,
 }: CheckoutAttributeFormProps) {
-  // Advanced / Basic toggle mode (Default to Basic matching media_1791013379418.png)
-  const [isAdvanced, setIsAdvanced] = useState(false);
+  // Advanced / Basic toggle mode (Starts in Advanced mode showing all fields; clicking switches to Basic mode showing only mandatory/important fields)
+  const [isAdvanced, setIsAdvanced] = useState(true);
 
   // Form State
   const [name, setName] = useState(initialValues?.name || '');

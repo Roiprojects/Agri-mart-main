@@ -186,7 +186,7 @@ export default function CropGuidancePage() {
               </span>
             </div>
             <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight leading-tight">
-              7-Stage Scientific Crop Lifecycle Management
+              Scientific Common Practice Crop Management
             </h1>
             <p className="text-sm sm:text-base text-emerald-100 leading-relaxed">
               Maximize your farm productivity, soil carbon, and net margins. Our agronomist-curated

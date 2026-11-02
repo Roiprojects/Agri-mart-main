@@ -24,6 +24,13 @@ export default {
           border: '#E2E8DF',
           'border-focus': '#079447',
         },
+        brand: {
+          green: '#079447',
+          greenDark: '#066832',
+          darkGreen: '#183526',
+          lightGreen: '#EFF7EA',
+          gold: '#F7C629',
+        },
       },
       fontFamily: {
         sans: ['var(--font-sans)', 'Inter', 'system-ui', 'sans-serif'],

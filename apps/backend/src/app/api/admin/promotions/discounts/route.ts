@@ -33,7 +33,7 @@ export async function POST(request: Request) {
       usePercentage: Boolean(body.usePercentage),
       discountAmount: Number(body.discountAmount || 0),
       discountPercentage: Number(body.discountPercentage || 0),
-      currency: body.currency || 'USD',
+      currency: body.currency === 'USD' || !body.currency ? 'INR' : body.currency,
       requiresCouponCode: Boolean(body.requiresCouponCode),
       couponCode: body.couponCode ? body.couponCode.trim() : '',
       startDate: body.startDate || '',

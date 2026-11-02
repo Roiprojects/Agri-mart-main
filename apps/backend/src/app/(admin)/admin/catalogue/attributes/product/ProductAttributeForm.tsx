@@ -52,6 +52,9 @@ export interface PredefinedValue {
 export interface UsedByProduct {
   id: string;
   name: string;
+  sku?: string;
+  price?: number;
+  categoryHierarchy?: string;
   published: boolean;
 }
 
@@ -89,6 +92,10 @@ export function ProductAttributeForm({
   const [usedByProducts, setUsedByProducts] = useState<UsedByProduct[]>(
     initialValues?.usedByProducts || []
   );
+  const [usedProductSearch, setUsedProductSearch] = useState('');
+
+  // Advanced / Basic Mode State (starts in Advanced mode showing all fields; clicking switches to Basic showing only mandatory/important fields)
+  const [advancedMode, setAdvancedMode] = useState(true);
 
   // Localization tabs
   const [activeTab, setActiveTab] = useState<'standard' | 'en' | 'rtl'>('standard');
@@ -276,7 +283,49 @@ export function ProductAttributeForm({
         </div>
       )}
 
-      {/* TOP HEADER: Title + back link + Action buttons (Matching media_1791008524169.png) */}
+      {/* ADVANCED / BASIC TOGGLE SWITCH */}
+      <div className="flex flex-wrap items-center gap-2.5 pt-1 pb-1">
+        <button
+          type="button"
+          onClick={() => setAdvancedMode(!advancedMode)}
+          className={`inline-flex items-center justify-between px-2.5 py-1 rounded text-xs font-semibold border transition cursor-pointer select-none min-w-[96px] h-7 shadow-2xs ${
+            advancedMode
+              ? 'bg-[#2585be] border-[#2585be] text-white hover:bg-[#1f72a3]'
+              : 'bg-white border-[#3c8dbc] text-[#3c8dbc] hover:bg-slate-50'
+          }`}
+          title={
+            advancedMode
+              ? 'Click to switch to Basic mode (show only mandatory & important fields)'
+              : 'Click to switch to Advanced mode (show all hidden fields)'
+          }
+        >
+          {advancedMode ? (
+            <>
+              <span className="text-white font-semibold text-xs">Advanced</span>
+              <span className="w-3.5 h-5 rounded-xs bg-white shadow-xs ml-2" />
+            </>
+          ) : (
+            <>
+              <span className="w-3.5 h-5 rounded-xs bg-[#3c8dbc] border border-[#3c8dbc] shadow-xs mr-2" />
+              <span className="text-[#3c8dbc] font-semibold text-xs">Basic</span>
+            </>
+          )}
+        </button>
+
+        <span
+          className={`text-[11px] px-2.5 py-0.5 rounded border font-medium ${
+            advancedMode
+              ? 'bg-blue-50 text-blue-700 border-blue-200'
+              : 'bg-amber-50 text-amber-800 border-amber-200'
+          }`}
+        >
+          {advancedMode
+            ? 'Advanced mode: Showing all product attribute fields & sections'
+            : 'Basic mode: Showing only mandatory & important fields (click Basic to show all hidden fields)'}
+        </span>
+      </div>
+
+      {/* TOP HEADER: Title + back link + Action buttons */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1 pb-1">
         <div className="flex items-center gap-2 flex-wrap">
           <h1 className="text-2xl font-normal text-slate-800 tracking-tight">
@@ -340,46 +389,48 @@ export function ProductAttributeForm({
         {/* Card Body */}
         {infoOpen && (
           <div className="p-4 sm:p-6 space-y-5 text-xs text-slate-700">
-            {/* Multi-language Tabs (Standard | EN | RTL) */}
-            <div className="flex items-center gap-1 border-b border-[#d2d6de] -mt-1 mb-4 select-none">
-              <button
-                type="button"
-                onClick={() => setActiveTab('standard')}
-                className={`px-4 py-2 text-xs font-medium border-t-2 rounded-t transition-colors cursor-pointer ${
-                  activeTab === 'standard'
-                    ? 'border-t-[#3c8dbc] border-x border-[#d2d6de] bg-white text-slate-800 -mb-px font-semibold'
-                    : 'border-t-transparent text-slate-600 hover:text-slate-900 bg-slate-50/60'
-                }`}
-              >
-                Standard
-              </button>
+            {/* Multi-language Tabs (Standard | EN | RTL) — Advanced mode only */}
+            {advancedMode && (
+              <div className="flex items-center gap-1 border-b border-[#d2d6de] -mt-1 mb-4 select-none">
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('standard')}
+                  className={`px-4 py-2 text-xs font-medium border-t-2 rounded-t transition-colors cursor-pointer ${
+                    activeTab === 'standard'
+                      ? 'border-t-[#3c8dbc] border-x border-[#d2d6de] bg-white text-slate-800 -mb-px font-semibold'
+                      : 'border-t-transparent text-slate-600 hover:text-slate-900 bg-slate-50/60'
+                  }`}
+                >
+                  Standard
+                </button>
 
-              <button
-                type="button"
-                onClick={() => setActiveTab('en')}
-                className={`px-3 py-2 text-xs font-medium border-t-2 rounded-t flex items-center gap-1.5 transition-colors cursor-pointer ${
-                  activeTab === 'en'
-                    ? 'border-t-[#3c8dbc] border-x border-[#d2d6de] bg-white text-slate-800 -mb-px font-semibold'
-                    : 'border-t-transparent text-slate-600 hover:text-slate-900 bg-slate-50/60'
-                }`}
-              >
-                <span>🇺🇸</span>
-                <span>EN</span>
-              </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('en')}
+                  className={`px-3 py-2 text-xs font-medium border-t-2 rounded-t flex items-center gap-1.5 transition-colors cursor-pointer ${
+                    activeTab === 'en'
+                      ? 'border-t-[#3c8dbc] border-x border-[#d2d6de] bg-white text-slate-800 -mb-px font-semibold'
+                      : 'border-t-transparent text-slate-600 hover:text-slate-900 bg-slate-50/60'
+                  }`}
+                >
+                  <span>🇺🇸</span>
+                  <span>EN</span>
+                </button>
 
-              <button
-                type="button"
-                onClick={() => setActiveTab('rtl')}
-                className={`px-3 py-2 text-xs font-medium border-t-2 rounded-t flex items-center gap-1.5 transition-colors cursor-pointer ${
-                  activeTab === 'rtl'
-                    ? 'border-t-[#3c8dbc] border-x border-[#d2d6de] bg-white text-slate-800 -mb-px font-semibold'
-                    : 'border-t-transparent text-slate-600 hover:text-slate-900 bg-slate-50/60'
-                }`}
-              >
-                <span>🇮🇱</span>
-                <span>RTL</span>
-              </button>
-            </div>
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('rtl')}
+                  className={`px-3 py-2 text-xs font-medium border-t-2 rounded-t flex items-center gap-1.5 transition-colors cursor-pointer ${
+                    activeTab === 'rtl'
+                      ? 'border-t-[#3c8dbc] border-x border-[#d2d6de] bg-white text-slate-800 -mb-px font-semibold'
+                      : 'border-t-transparent text-slate-600 hover:text-slate-900 bg-slate-50/60'
+                  }`}
+                >
+                  <span>🇮🇱</span>
+                  <span>RTL</span>
+                </button>
+              </div>
+            )}
 
             {/* FORM FIELDS */}
             <div className="space-y-4 max-w-4xl">
@@ -652,8 +703,10 @@ export function ProductAttributeForm({
         )}
       </div>
 
-      {/* PREDEFINED VALUES CARD (Matching media_1791009053176.png) */}
-      <div className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden">
+      {/* PREDEFINED VALUES & USED BY PRODUCTS CARDS (Advanced mode only) */}
+      {advancedMode && (
+        <>
+          <div className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden">
         {/* Card Header: "☑ Predefined values" with collapse toggle */}
         <div
           onClick={() => setPredefinedOpen(!predefinedOpen)}
@@ -708,7 +761,7 @@ export function ProductAttributeForm({
                               {val.name}
                             </td>
                             <td className="px-3.5 py-2.5 border-r border-[#f0f0f0] text-slate-700">
-                              {val.priceAdjustment !== undefined ? `$${Number(val.priceAdjustment).toFixed(2)}` : '$0.00'}
+                              {val.priceAdjustment !== undefined ? `₹${Number(val.priceAdjustment).toFixed(2)} INR` : '₹0.00 INR'}
                             </td>
                             <td className="px-3.5 py-2.5 border-r border-[#f0f0f0] text-slate-700">
                               {val.weightAdjustment !== undefined ? Number(val.weightAdjustment).toFixed(2) : '0.00'}
@@ -851,9 +904,20 @@ export function ProductAttributeForm({
         {/* Card Body */}
         {usedByOpen && (
           <div className="p-4 sm:p-5 space-y-4">
-            <p className="text-xs text-slate-600 leading-relaxed">
-              Here you can see a list of products which use this attribute.
-            </p>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <p className="text-xs text-slate-600 leading-relaxed">
+                Here you can see a list of products which use this attribute. Search by Product ID, Product Name, or Product SKU in one single search bar.
+              </p>
+              <div className="w-full sm:w-80">
+                <input
+                  type="text"
+                  value={usedProductSearch}
+                  onChange={(e) => setUsedProductSearch(e.target.value)}
+                  placeholder="Search by Product ID, Name, or SKU..."
+                  className="w-full text-xs px-2.5 py-1.5 rounded border border-[#d2d6de] bg-white focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none text-slate-700"
+                />
+              </div>
+            </div>
 
             {/* Table Container */}
             <div className="border border-[#e5e7eb] rounded overflow-hidden">
@@ -861,55 +925,84 @@ export function ProductAttributeForm({
                 <table className="w-full text-xs text-left border-collapse">
                   <thead>
                     <tr className="bg-[#f9fafb] text-slate-700 font-semibold border-b border-[#e5e7eb]">
-                      <th className="px-3.5 py-2.5 border-r border-[#e5e7eb] w-3/5">Product</th>
-                      <th className="px-3.5 py-2.5 border-r border-[#e5e7eb] text-center w-1/5">Published</th>
-                      <th className="px-3.5 py-2.5 text-center w-1/5">View</th>
+                      <th className="px-3.5 py-2.5 border-r border-[#e5e7eb] w-1/6">Product ID</th>
+                      <th className="px-3.5 py-2.5 border-r border-[#e5e7eb] w-2/6">Product Name</th>
+                      <th className="px-3.5 py-2.5 border-r border-[#e5e7eb] w-1/6">Product SKU</th>
+                      <th className="px-3.5 py-2.5 border-r border-[#e5e7eb] text-center w-1/6">Published</th>
+                      <th className="px-3.5 py-2.5 text-center w-1/6">View</th>
                     </tr>
                   </thead>
                   <tbody>
                     {usedLoading ? (
                       <tr>
-                        <td colSpan={3} className="py-12 text-center">
+                        <td colSpan={5} className="py-12 text-center">
                           <div className="flex flex-col items-center justify-center gap-2 text-slate-600">
                             <RotateCw className="w-7 h-7 animate-spin text-slate-700 stroke-[2.5]" />
                             <span className="text-xs font-normal text-slate-600">Loading...</span>
                           </div>
                         </td>
                       </tr>
-                    ) : usedByProducts.length === 0 ? (
+                    ) : usedByProducts.filter((p) => {
+                        if (!usedProductSearch.trim()) return true;
+                        const q = usedProductSearch.toLowerCase().trim();
+                        return (
+                          (p.id || '').toLowerCase().includes(q) ||
+                          (p.name || '').toLowerCase().includes(q) ||
+                          (p.sku || '').toLowerCase().includes(q)
+                        );
+                      }).length === 0 ? (
                       <tr>
-                        <td colSpan={3} className="px-4 py-8 text-center text-slate-500 font-normal">
-                          No data available in table
+                        <td colSpan={5} className="px-4 py-8 text-center text-slate-500 font-normal">
+                          No matching products found
                         </td>
                       </tr>
                     ) : (
-                      usedByProducts.map((p) => (
-                        <tr key={p.id} className="border-b border-[#f0f0f0] hover:bg-slate-50/70 transition">
-                          <td className="px-3.5 py-2.5 border-r border-[#f0f0f0]">
-                            <Link
-                              href={`/admin/catalogue/products/${p.id}/edit`}
-                              className="text-[#2585be] hover:underline font-normal"
-                            >
-                              {p.name}
-                            </Link>
-                          </td>
-                          <td className="px-3.5 py-2.5 border-r border-[#f0f0f0] text-center">
-                            {p.published ? (
-                              <span className="text-[#00a65a] font-bold text-sm">✓</span>
-                            ) : (
-                              <span className="text-red-500 font-bold text-sm">✕</span>
-                            )}
-                          </td>
-                          <td className="px-3.5 py-2.5 text-center">
-                            <Link
-                              href={`/admin/catalogue/products/${p.id}/edit`}
-                              className="inline-flex items-center justify-center bg-[#2585be] hover:bg-[#1f72a3] text-white px-2.5 py-1 rounded text-xs transition"
-                            >
-                              View
-                            </Link>
-                          </td>
-                        </tr>
-                      ))
+                      usedByProducts
+                        .filter((p) => {
+                          if (!usedProductSearch.trim()) return true;
+                          const q = usedProductSearch.toLowerCase().trim();
+                          return (
+                            (p.id || '').toLowerCase().includes(q) ||
+                            (p.name || '').toLowerCase().includes(q) ||
+                            (p.sku || '').toLowerCase().includes(q)
+                          );
+                        })
+                        .map((p) => (
+                          <tr key={p.id} className="border-b border-[#f0f0f0] hover:bg-slate-50/70 transition">
+                            <td className="px-3.5 py-2.5 border-r border-[#f0f0f0] font-mono text-slate-700">
+                              {p.id}
+                            </td>
+                            <td className="px-3.5 py-2.5 border-r border-[#f0f0f0]">
+                              <Link
+                                href={`/admin/catalogue/products?productId=${encodeURIComponent(p.id)}&sku=${encodeURIComponent(p.sku || '')}&name=${encodeURIComponent(p.name || '')}`}
+                                className="text-[#2585be] hover:underline font-medium"
+                              >
+                                {p.name}
+                              </Link>
+                              {p.categoryHierarchy && (
+                                <div className="text-[10px] text-slate-500 mt-0.5">{p.categoryHierarchy}</div>
+                              )}
+                            </td>
+                            <td className="px-3.5 py-2.5 border-r border-[#f0f0f0] font-mono text-blue-700 font-semibold">
+                              {p.sku || '—'}
+                            </td>
+                            <td className="px-3.5 py-2.5 border-r border-[#f0f0f0] text-center">
+                              {p.published ? (
+                                <span className="text-[#00a65a] font-bold text-sm">✓</span>
+                              ) : (
+                                <span className="text-red-500 font-bold text-sm">✕</span>
+                              )}
+                            </td>
+                            <td className="px-3.5 py-2.5 text-center">
+                              <Link
+                                href={`/admin/catalogue/products?productId=${encodeURIComponent(p.id)}&sku=${encodeURIComponent(p.sku || '')}&name=${encodeURIComponent(p.name || '')}`}
+                                className="inline-flex items-center justify-center bg-[#2585be] hover:bg-[#1f72a3] text-white px-2.5 py-1 rounded text-xs transition"
+                              >
+                                View in Products
+                              </Link>
+                            </td>
+                          </tr>
+                        ))
                     )}
                   </tbody>
                 </table>
@@ -945,6 +1038,8 @@ export function ProductAttributeForm({
           </div>
         )}
       </div>
+        </>
+      )}
 
       {/* MODAL: Add / Edit Predefined Value */}
       {modalOpen && (

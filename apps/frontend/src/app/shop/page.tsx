@@ -4,11 +4,21 @@ import React, { useState, useEffect, useMemo } from 'react';
 import ProductCard from '@/components/shop/ProductCard';
 import { Filter, Search, Sparkles, RefreshCw } from 'lucide-react';
 import Link from 'next/link';
+import { SEED_PRODUCTS, SEED_CATEGORIES } from '@/lib/seed-data';
+
+const globalShopCache = globalThis as unknown as {
+  __shopProducts?: any[];
+  __shopCategories?: any[];
+};
 
 export default function ShopPage() {
-  const [products, setProducts] = useState<any[]>([]);
-  const [categories, setCategories] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [products, setProducts] = useState<any[]>(
+    () => globalShopCache.__shopProducts || SEED_PRODUCTS
+  );
+  const [categories, setCategories] = useState<any[]>(
+    () => globalShopCache.__shopCategories || SEED_CATEGORIES
+  );
+  const [loading, setLoading] = useState(false);
 
   const [selectedCategory, setSelectedCategory] = useState<string>('ALL');
   const [selectedCrop, setSelectedCrop] = useState<string>('ALL');
@@ -17,14 +27,19 @@ export default function ShopPage() {
   const [sortBy, setSortBy] = useState<string>('popular');
 
   const fetchCatalogue = () => {
-    setLoading(true);
     Promise.all([
       fetch('/api/products', { cache: 'no-store' }).then((r) => r.json()),
       fetch('/api/categories', { cache: 'no-store' }).then((r) => r.json()),
     ])
       .then(([prodData, catData]) => {
-        if (prodData.success) setProducts(prodData.data);
-        if (catData.success) setCategories(catData.data);
+        if (prodData.success && Array.isArray(prodData.data)) {
+          globalShopCache.__shopProducts = prodData.data;
+          setProducts(prodData.data);
+        }
+        if (catData.success && Array.isArray(catData.data)) {
+          globalShopCache.__shopCategories = catData.data;
+          setCategories(catData.data);
+        }
         setLoading(false);
       })
       .catch((err) => {
