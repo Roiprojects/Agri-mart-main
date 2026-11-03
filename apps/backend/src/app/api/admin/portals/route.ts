@@ -99,7 +99,7 @@ const DEFAULT_PORTAL_CONFIGS: PortalConfig[] = [
     title: 'Customer Storefront Website',
     subtitle: 'Live customer e-commerce storefront, catalogue, crop advisory, rentals, and checkout.',
     badge: 'Live Storefront',
-    href: 'http://localhost:3010',
+    href: '/',
     status: 'ACTIVE',
     managerName: 'Super Admin Digital Commerce Team',
     managerPhone: '+91 98450 99000',

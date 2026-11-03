@@ -129,7 +129,7 @@ const PORTAL_LABELS: Record<string, { label: string; href: string; badgeClass: s
   },
   storefront: {
     label: 'Customer Storefront',
-    href: 'http://localhost:3010',
+    href: '/',
     badgeClass: 'bg-slate-100 text-slate-800 border-slate-200',
   },
 };

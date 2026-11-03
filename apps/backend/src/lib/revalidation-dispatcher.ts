@@ -1,4 +1,5 @@
 import { SyncEventType, RevalidationWebhookPayload } from '@agrimart/contracts';
+import { revalidatePath, revalidateTag } from 'next/cache';
 import { sseManager } from './sse-manager';
 
 export async function dispatchFrontendRevalidation(params: {
@@ -8,11 +9,30 @@ export async function dispatchFrontendRevalidation(params: {
   tags?: string[];
   payload?: any;
 }): Promise<{ success: boolean; error?: string }> {
-  const rawFrontendUrl = process.env.FRONTEND_URL || 'http://127.0.0.1:3010';
-  const frontendUrl = rawFrontendUrl.replace('://localhost:', '://127.0.0.1:');
-  const secret = process.env.REVALIDATION_SECRET || 'agrimart_secret_reval_2026';
+  // 1. Revalidate paths & tags in-process immediately (unified app)
+  try {
+    if (Array.isArray(params.paths)) {
+      for (const p of params.paths) {
+        if (typeof p === 'string' && p.startsWith('/')) {
+          try {
+            revalidatePath(p);
+          } catch {}
+        }
+      }
+    }
+    if (Array.isArray(params.tags)) {
+      for (const t of params.tags) {
+        if (typeof t === 'string' && t.trim().length > 0) {
+          try {
+            // @ts-ignore
+            revalidateTag(t);
+          } catch {}
+        }
+      }
+    }
+  } catch {}
 
-  // 1. Broadcast to active browser clients via Server-Sent Events
+  // 2. Broadcast to active browser clients via Server-Sent Events
   try {
     sseManager.broadcast({
       id: `sync-${Date.now()}`,
@@ -25,33 +45,26 @@ export async function dispatchFrontendRevalidation(params: {
     console.warn('[REVALIDATION] SSE broadcast non-fatal warning:', sseErr);
   }
 
-  // 2. Dispatch authenticated revalidation webhook to Next.js Frontend server asynchronously (non-blocking)
-  const webhookPayload: RevalidationWebhookPayload = {
-    secret,
-    event: params.event,
-    entityId: params.entityId,
-    paths: params.paths || [],
-    tags: params.tags || [],
-    timestamp: new Date().toISOString(),
-  };
+  // 3. Optional external webhook if FRONTEND_URL is explicitly configured
+  if (process.env.FRONTEND_URL) {
+    const frontendUrl = process.env.FRONTEND_URL.replace('://localhost:', '://127.0.0.1:');
+    const secret = process.env.REVALIDATION_SECRET || 'agrimart_secret_reval_2026';
+    const webhookPayload: RevalidationWebhookPayload = {
+      secret,
+      event: params.event,
+      entityId: params.entityId,
+      paths: params.paths || [],
+      tags: params.tags || [],
+      timestamp: new Date().toISOString(),
+    };
 
-  fetch(`${frontendUrl}/api/revalidate`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(webhookPayload),
-    signal: AbortSignal.timeout(4000),
-  })
-    .then(async (res) => {
-      if (!res.ok) {
-        const errText = await res.text().catch(() => '');
-        console.warn(`[REVALIDATION] Frontend revalidation webhook returned ${res.status}: ${errText}`);
-      }
-    })
-    .catch((fetchErr: any) => {
-      console.warn(`[REVALIDATION] Could not contact frontend webhook at ${frontendUrl}/api/revalidate (${fetchErr.message})`);
-    });
+    fetch(`${frontendUrl}/api/revalidate`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(webhookPayload),
+      signal: AbortSignal.timeout(3000),
+    }).catch(() => {});
+  }
 
   return { success: true };
 }
@@ -62,4 +75,3 @@ export async function revalidateFrontendPath(path: string) {
     paths: [path],
   });
 }
-

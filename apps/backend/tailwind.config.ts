@@ -24,6 +24,13 @@ export default {
           border: '#E2E8DF',
           'border-focus': '#079447',
         },
+        brand: {
+          green: '#079447',
+          greenDark: '#066832',
+          darkGreen: '#183526',
+          lightGreen: '#EFF7EA',
+          gold: '#F7C629',
+        },
       },
       fontFamily: {
         sans: ['var(--font-sans)', 'Inter', 'system-ui', 'sans-serif'],
@@ -36,6 +43,10 @@ export default {
       borderRadius: {
         '2xl': '1rem',
         '3xl': '1.5rem',
+      },
+      aspectRatio: {
+        '4/3': '4 / 3',
+        '16/10': '16 / 10',
       },
       keyframes: {
         fadeIn: {

@@ -57,6 +57,12 @@ export function AdminTopbar({ onMobileMenuOpen }: AdminTopbarProps) {
       {/* Right side */}
       <div className="ml-auto flex items-center gap-2">
         <Link
+          href="/"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold shadow-xs transition"
+        >
+          <span>Public Store</span>
+        </Link>
+        <Link
           href="/admin/staff"
           className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold shadow-xs transition"
         >

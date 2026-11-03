@@ -794,15 +794,13 @@ export default function ProcurementCropGuidancePage() {
         </div>
 
         <div className="flex flex-wrap items-center gap-2.5 shrink-0">
-          <a
-            href="http://localhost:3010/crop-guidance"
-            target="_blank"
-            rel="noreferrer"
+          <Link
+            href="/crop-guidance"
             className="bg-[#F7C629] hover:bg-amber-300 text-slate-950 font-black px-4 py-2.5 rounded-xl shadow-md flex items-center gap-1.5 transition"
           >
             <span>View Live Crop Guidance</span>
             <ExternalLink className="w-3.5 h-3.5" />
-          </a>
+          </Link>
         </div>
       </div>
 
