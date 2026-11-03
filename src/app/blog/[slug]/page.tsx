@@ -8,6 +8,7 @@ import { SEED_BLOG_POSTS } from '@/lib/seed-data';
 import { Breadcrumbs } from '@/components/ui/Breadcrumbs';
 import { Badge } from '@/components/ui/Badge';
 import { Calendar, Clock, User, ArrowLeft, ArrowRight, Share2, Sparkles, BookOpen } from 'lucide-react';
+import BlogReviewsSection from '@/components/blog/BlogReviewsSection';
 
 interface BlogDetailPageProps {
   params: Promise<{ slug: string }>;
@@ -77,9 +78,9 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
     datePublished: post.date,
     dateModified: post.date,
     author: {
-      '@type': 'Person',
-      name: post.author,
-      jobTitle: post.authorRole,
+      '@type': 'Organization',
+      name: 'Agri Mart Editorial',
+      url: `https://www.${SITE_CONFIG.domain}/blog`,
     },
     publisher: {
       '@type': 'Organization',
@@ -214,7 +215,7 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
               <Sparkles className="w-5 h-5 text-brand-green" /> Need Instant Field Diagnosis?
             </div>
             <p className="text-xs sm:text-sm text-slate-600">
-              Ask our Gemini-powered AI Crop Advisor any question in Kannada or English.
+              Ask our Gemini-powered AI Crop Advisor any agronomy question.
             </p>
           </div>
           <Link
@@ -224,6 +225,9 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
             Open AI Advisor &rarr;
           </Link>
         </div>
+
+        {/* Reader Reviews & Feedback Section */}
+        <BlogReviewsSection articleSlug={post.slug} articleTitle={post.title} />
 
         {/* Other Articles */}
         {otherArticles.length > 0 && (

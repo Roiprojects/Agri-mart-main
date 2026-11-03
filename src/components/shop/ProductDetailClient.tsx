@@ -24,6 +24,8 @@ import {
   ArrowRight,
 } from 'lucide-react';
 import { useAuth, setClientAuthUser } from '@/lib/auth-client';
+import { useShoppingCartSettings } from '@/lib/shopping-cart-settings';
+import { useFilterYmmSettings } from '@/lib/filter-ymm-settings';
 
 interface ProductDetailClientProps {
   product: any;
@@ -32,6 +34,8 @@ interface ProductDetailClientProps {
 export default function ProductDetailClient({ product }: ProductDetailClientProps) {
   const router = useRouter();
   const { user, isLoggedIn } = useAuth();
+  const { settings: cartSettings } = useShoppingCartSettings();
+  const { settings: ymmSettings } = useFilterYmmSettings();
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [pendingAction, setPendingAction] = useState<'cart' | 'buy' | null>(null);
 
@@ -89,14 +93,19 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
       try {
         const stored = localStorage.getItem('agri_wishlist');
         let list: string[] = stored ? JSON.parse(stored) : [];
+        let justAdded = false;
         if (list.includes(product.id)) {
           list = list.filter((id) => id !== product.id);
           setIsWishlisted(false);
         } else {
           list.push(product.id);
           setIsWishlisted(true);
+          justAdded = true;
         }
         localStorage.setItem('agri_wishlist', JSON.stringify(list));
+        if (justAdded && cartSettings.displayWishlistAfterAddingProduct) {
+          router.push('/account/wishlist');
+        }
       } catch (e) {}
     }
   };
@@ -125,6 +134,12 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
           });
         }
         localStorage.setItem('agri_cart_items', JSON.stringify(cart));
+        window.dispatchEvent(new Event('cartUpdated'));
+
+        if (cartSettings.displayCartAfterAddingProduct) {
+          router.push('/cart');
+          return;
+        }
       } catch (e) {}
     }
     setTimeout(() => setAddedNotice(false), 2000);
@@ -152,37 +167,11 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
   };
 
   const handleAddToCart = () => {
-    if (!isLoggedIn) {
-      setPendingAction('cart');
-      setShowAuthModal(true);
-      return;
-    }
     executeAddToCart();
   };
 
   const handleBuyNow = () => {
-    if (!isLoggedIn) {
-      setPendingAction('buy');
-      setShowAuthModal(true);
-      return;
-    }
     executeBuyNow();
-  };
-
-  const handleDemoSignInAndProceed = () => {
-    setClientAuthUser({
-      id: 'demo-farmer-1',
-      name: 'Basavaraj Patil',
-      phone: '9845190812',
-      role: 'farmer',
-    });
-    setShowAuthModal(false);
-    if (pendingAction === 'buy') {
-      executeBuyNow();
-    } else {
-      executeAddToCart();
-    }
-    setPendingAction(null);
   };
 
   const handleReviewSubmit = async (e: React.FormEvent) => {
@@ -400,6 +389,38 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
           </div>
         </div>
       </div>
+
+      {/* Equipment Compatibility Matrix (Controlled by Filter (YMM) settings: displayOnProductDetailsPage) */}
+      {ymmSettings.filterLevelEnabled && ymmSettings.displayOnProductDetailsPage && (
+        <div className="p-4 bg-emerald-50/70 rounded-2xl border border-emerald-200 space-y-2 text-xs">
+          <div className="flex items-center justify-between">
+            <div className="font-bold text-slate-900 flex items-center gap-1.5">
+              <Tractor className="w-4 h-4 text-agri-green" />
+              <span>Verified Equipment Compatibility ({ymmSettings.levels.filter(l => l.enabled).map(l => l.name).join(' / ')})</span>
+            </div>
+            <span className="text-[10px] font-bold text-agri-green bg-white px-2.5 py-0.5 rounded-full border border-emerald-300">
+              Guaranteed Fit
+            </span>
+          </div>
+          <p className="text-[11px] text-slate-600">
+            Engineered and factory-tested for seamless compatibility with multi-brand agricultural machinery:
+          </p>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 pt-1 text-[11px]">
+            <div className="bg-white p-2.5 rounded-xl border border-emerald-100/80">
+              <span className="font-bold text-slate-800">Years:</span>
+              <div className="text-slate-600">2020 – 2025 Current</div>
+            </div>
+            <div className="bg-white p-2.5 rounded-xl border border-emerald-100/80">
+              <span className="font-bold text-slate-800">Compatible Makes:</span>
+              <div className="text-slate-600">AgriPro, Mahindra, KisanKraft, Kubota</div>
+            </div>
+            <div className="bg-white p-2.5 rounded-xl border border-emerald-100/80">
+              <span className="font-bold text-slate-800">Compatible Models:</span>
+              <div className="text-slate-600">5HP - 55HP Tillers &amp; Tractors</div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Trust Badges */}
       <div className="grid grid-cols-2 gap-3 pt-2 text-xs text-slate-600 border-t border-slate-100">

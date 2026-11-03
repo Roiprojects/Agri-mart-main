@@ -115,6 +115,174 @@
       "displayOrder": 6,
       "createdAt": "2026-09-17T11:18:16.948Z",
       "updatedAt": "2026-09-17T11:18:16.948Z"
+    },
+    {
+      "id": "subcat-weeders-tillers",
+      "name": "Power Weeders & Rotary Tillers",
+      "nameKn": "ಪವರ್ ವೀಡರ್ ಮತ್ತು ರೋಟರಿ ಟಿಲ್ಲರ್",
+      "slug": "power-weeders-rotary-tillers",
+      "description": "Heavy-duty multi-speed power weeders, inter-cultivators, and rotary tillers.",
+      "image": "https://images.unsplash.com/photo-1589923188900-85dae523342b?auto=format&fit=crop&w=600&q=80",
+      "parentId": "cat-machinery",
+      "displayOrder": 11,
+      "published": true,
+      "isPublished": true,
+      "createdAt": "2026-11-03T06:16:39.446Z",
+      "updatedAt": "2026-11-03T06:16:39.446Z"
+    },
+    {
+      "id": "subcat-sprayers",
+      "name": "Agricultural Sprayers & Pumps",
+      "nameKn": "ಕೃಷಿ ಸ್ಪ್ರೇಯರ್ ಮತ್ತು ಪಂಪ್‌ಗಳು",
+      "slug": "agricultural-sprayers-pumps",
+      "description": "Battery sprayers, power sprayers, mist blowers, and diaphragm pumps.",
+      "image": "https://images.unsplash.com/photo-1530595467537-0b5996c41f2d?auto=format&fit=crop&w=600&q=80",
+      "parentId": "cat-machinery",
+      "displayOrder": 12,
+      "published": true,
+      "isPublished": true,
+      "createdAt": "2026-11-03T06:16:39.446Z",
+      "updatedAt": "2026-11-03T06:16:39.446Z"
+    },
+    {
+      "id": "subcat-cereal-seeds",
+      "name": "Cereal & Grain Seeds",
+      "nameKn": "ಧಾನ್ಯ ಮತ್ತು ಕಾಳು ಬೀಜಗಳು",
+      "slug": "cereal-grain-seeds",
+      "description": "Certified foundation and hybrid seeds for wheat, paddy, maize, and jowar.",
+      "image": "https://images.unsplash.com/photo-1574943320219-553eb213f72d?auto=format&fit=crop&w=600&q=80",
+      "parentId": "cat-seeds",
+      "displayOrder": 21,
+      "published": true,
+      "isPublished": true,
+      "createdAt": "2026-11-03T06:16:39.446Z",
+      "updatedAt": "2026-11-03T06:16:39.446Z"
+    },
+    {
+      "id": "subcat-vegetable-seeds",
+      "name": "Vegetable & Cash Crop Seeds",
+      "nameKn": "ತರಕಾರಿ ಮತ್ತು ವಾಣಿಜ್ಯ ಬೆಳೆ ಬೀಜಗಳು",
+      "slug": "vegetable-cash-crop-seeds",
+      "description": "High-yield hybrid seeds for cotton, chili, tomato, onion, and vegetables.",
+      "image": "https://images.unsplash.com/photo-1592417817098-8f3d6eb2251a?auto=format&fit=crop&w=600&q=80",
+      "parentId": "cat-seeds",
+      "displayOrder": 22,
+      "published": true,
+      "isPublished": true,
+      "createdAt": "2026-11-03T06:16:39.446Z",
+      "updatedAt": "2026-11-03T06:16:39.446Z"
+    },
+    {
+      "id": "subcat-bio-fertilizers",
+      "name": "Organic & Bio-Fertilizers",
+      "nameKn": "ಸಾವಯವ ಮತ್ತು ಜೈವಿಕ ಗೊಬ್ಬರಗಳು",
+      "slug": "organic-bio-fertilizers",
+      "description": "NPOP certified organic micronutrients, humic acid, and microbial consortia.",
+      "image": "https://images.unsplash.com/photo-1628352081506-83c43123ed6d?auto=format&fit=crop&w=600&q=80",
+      "parentId": "cat-fertilizers",
+      "displayOrder": 31,
+      "published": true,
+      "isPublished": true,
+      "createdAt": "2026-11-03T06:16:39.446Z",
+      "updatedAt": "2026-11-03T06:16:39.446Z"
+    },
+    {
+      "id": "subcat-soil-conditioners",
+      "name": "Soil Conditioners & Micronutrients",
+      "nameKn": "ಮಣ್ಣು ಸುಧಾರಕಗಳು ಮತ್ತು ಸೂಕ್ಷ್ಮ ಪೋಷಕಾಂಶಗಳು",
+      "slug": "soil-conditioners-micronutrients",
+      "description": "Chelated zinc, iron, boron, gypsum, and organic soil health boosters.",
+      "image": "https://images.unsplash.com/photo-1464226184884-fa280b87c399?auto=format&fit=crop&w=600&q=80",
+      "parentId": "cat-fertilizers",
+      "displayOrder": 32,
+      "published": true,
+      "isPublished": true,
+      "createdAt": "2026-11-03T06:16:39.446Z",
+      "updatedAt": "2026-11-03T06:16:39.446Z"
+    },
+    {
+      "id": "subcat-bio-insecticides",
+      "name": "Botanical & Bio-Insecticides",
+      "nameKn": "ಜೈವಿಕ ಕೀಟನಾಶಕಗಳು",
+      "slug": "botanical-bio-insecticides",
+      "description": "Cold-pressed neem oil, Azadirachtin EC, and organic pest controllers.",
+      "image": "https://images.unsplash.com/photo-1530595467537-0b5996c41f2d?auto=format&fit=crop&w=600&q=80",
+      "parentId": "cat-protection",
+      "displayOrder": 41,
+      "published": true,
+      "isPublished": true,
+      "createdAt": "2026-11-03T06:16:39.446Z",
+      "updatedAt": "2026-11-03T06:16:39.446Z"
+    },
+    {
+      "id": "subcat-pest-traps",
+      "name": "Solar Traps & Lures",
+      "nameKn": "ಸೌರ ಕೀಟ ಬಲೆಗಳು",
+      "slug": "solar-traps-lures",
+      "description": "Automated solar UV insect light traps, yellow sticky traps, and pheromone lures.",
+      "image": "https://images.unsplash.com/photo-1509391365360-2e959784a276?auto=format&fit=crop&w=600&q=80",
+      "parentId": "cat-protection",
+      "displayOrder": 42,
+      "published": true,
+      "isPublished": true,
+      "createdAt": "2026-11-03T06:16:39.446Z",
+      "updatedAt": "2026-11-03T06:16:39.446Z"
+    },
+    {
+      "id": "subcat-drip-fertigation",
+      "name": "Drip & Fertigation Systems",
+      "nameKn": "ಹನಿ ನೀರಾವರಿ ಮತ್ತು ಫರ್ಟಿಗೇಶನ್",
+      "slug": "drip-fertigation-systems",
+      "description": "Venturi injectors, inline drip laterals, fertigation manifolds, and screen filters.",
+      "image": "https://images.unsplash.com/photo-1563514227147-6d2ff665a6a0?auto=format&fit=crop&w=600&q=80",
+      "parentId": "cat-irrigation",
+      "displayOrder": 51,
+      "published": true,
+      "isPublished": true,
+      "createdAt": "2026-11-03T06:16:39.446Z",
+      "updatedAt": "2026-11-03T06:16:39.446Z"
+    },
+    {
+      "id": "subcat-sprinklers-pipes",
+      "name": "Rain Guns & HDPE Pipes",
+      "nameKn": "ರೇನ್ ಗನ್ ಮತ್ತು ಪೈಪ್‌ಗಳು",
+      "slug": "rain-guns-hdpe-pipes",
+      "description": "High-discharge impact rain guns, brass sprinklers, and UV-stabilized HDPE pipes.",
+      "image": "https://images.unsplash.com/photo-1523348837708-15d4a09cfac2?auto=format&fit=crop&w=600&q=80",
+      "parentId": "cat-irrigation",
+      "displayOrder": 52,
+      "published": true,
+      "isPublished": true,
+      "createdAt": "2026-11-03T06:16:39.446Z",
+      "updatedAt": "2026-11-03T06:16:39.446Z"
+    },
+    {
+      "id": "subcat-harvest-storage",
+      "name": "Harvesting & Crop Storage",
+      "nameKn": "ಕಟಾವು ಮತ್ತು ಬೆಳೆ ಸಂಗ್ರಹಣೆ",
+      "slug": "harvesting-crop-storage",
+      "description": "Heavy-duty UV tarpaulins, harvesting baskets, grain storage bags, and pruning tools.",
+      "image": "https://images.unsplash.com/photo-1586771107445-d3ca888129ff?auto=format&fit=crop&w=600&q=80",
+      "parentId": "cat-tools",
+      "displayOrder": 61,
+      "published": true,
+      "isPublished": true,
+      "createdAt": "2026-11-03T06:16:39.446Z",
+      "updatedAt": "2026-11-03T06:16:39.446Z"
+    },
+    {
+      "id": "subcat-machinery-spares",
+      "name": "Machinery Blades & Spares",
+      "nameKn": "ಯಂತ್ರೋಪಕರಣಗಳ ಬಿಡಿಭಾಗಗಳು",
+      "slug": "machinery-blades-spares",
+      "description": "Manganese rotary tines, carburetor kits, recoil starters, and replacement filters.",
+      "image": "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?auto=format&fit=crop&w=600&q=80",
+      "parentId": "cat-tools",
+      "displayOrder": 62,
+      "published": true,
+      "isPublished": true,
+      "createdAt": "2026-11-03T06:16:39.446Z",
+      "updatedAt": "2026-11-03T06:16:39.446Z"
     }
   ],
   "products": [
@@ -139,7 +307,20 @@
       "metaTitle": "Buy AgriPro 7HP Heavy-Duty Power Weeder | Agri Mart Mega",
       "metaDescription": "Shop AgriPro 7HP Power Weeder with free ridger & reverse gear. Delivered from Hubballi & Belagavi Dark Warehouses with 1-Year comprehensive AMC.",
       "createdAt": "2026-09-17T11:18:16.948Z",
-      "updatedAt": "2026-09-17T11:18:16.948Z"
+      "updatedAt": "2026-09-17T11:18:16.948Z",
+      "parentCategoryId": "cat-machinery",
+      "subCategoryId": "subcat-weeders-tillers",
+      "cost": 29500,
+      "weight": 85,
+      "length": 145,
+      "width": 95,
+      "height": 105,
+      "gtin": "8901234560011",
+      "manufacturerPartNumber": "AGP-PW700-IND",
+      "vendor": "Agri-Mart Direct",
+      "taxCategory": "Reduced Rate (12% GST)",
+      "deliveryDate": "3-5 days",
+      "metaKeywords": "power weeder, 7hp rotary tiller, agripro, farm machinery"
     },
     {
       "id": "prod-002",
@@ -162,7 +343,20 @@
       "metaTitle": "KisanKraft 16L Dual Motor Battery Sprayer | Agri Mart Mega",
       "metaDescription": "High pressure 16L battery sprayer for pest control and foliar nutrition. Express delivery across Karnataka.",
       "createdAt": "2026-09-17T11:18:16.948Z",
-      "updatedAt": "2026-09-17T11:18:16.948Z"
+      "updatedAt": "2026-09-17T11:18:16.948Z",
+      "parentCategoryId": "cat-machinery",
+      "subCategoryId": "subcat-sprayers",
+      "cost": 2600,
+      "weight": 6.2,
+      "length": 38,
+      "width": 22,
+      "height": 52,
+      "gtin": "8901234560028",
+      "manufacturerPartNumber": "KK-BS16-DM",
+      "vendor": "Agri-Mart Direct",
+      "taxCategory": "Reduced Rate (12% GST)",
+      "deliveryDate": "1-2 days",
+      "metaKeywords": "battery sprayer, kisankraft 16l, double motor sprayer"
     },
     {
       "id": "prod-003",
@@ -185,7 +379,20 @@
       "metaTitle": "Bhoomi Sanjivani Organic Bio-Fertilizer 5Kg | Agri Mart Mega",
       "metaDescription": "Enrich soil microbial health and boost yield with certified organic humic mycorrhiza consortia.",
       "createdAt": "2026-09-17T11:18:16.948Z",
-      "updatedAt": "2026-09-17T11:18:16.948Z"
+      "updatedAt": "2026-09-17T11:18:16.948Z",
+      "parentCategoryId": "cat-fertilizers",
+      "subCategoryId": "subcat-bio-fertilizers",
+      "cost": 580,
+      "weight": 5,
+      "length": 30,
+      "width": 24,
+      "height": 12,
+      "gtin": "8901234560035",
+      "manufacturerPartNumber": "BS-BIO-5KG",
+      "vendor": "IFFCO Organic",
+      "taxCategory": "Agricultural Essentials (5% GST)",
+      "deliveryDate": "1-2 days",
+      "metaKeywords": "organic fertilizer, bio fertilizer, micronutrients, humic acid"
     },
     {
       "id": "prod-004",
@@ -208,7 +415,20 @@
       "metaTitle": "Neem-Guard 10000 PPM Bio-Insecticide 1L | Agri Mart Mega",
       "metaDescription": "Organic pest control certified under CIB & RC for cotton bollworm and sucking pests.",
       "createdAt": "2026-09-17T11:18:16.948Z",
-      "updatedAt": "2026-09-17T11:18:16.948Z"
+      "updatedAt": "2026-09-17T11:18:16.948Z",
+      "parentCategoryId": "cat-protection",
+      "subCategoryId": "subcat-bio-insecticides",
+      "cost": 450,
+      "weight": 1.1,
+      "length": 10,
+      "width": 10,
+      "height": 24,
+      "gtin": "8901234560042",
+      "manufacturerPartNumber": "NG-AZA-10K",
+      "vendor": "UPL Limited",
+      "taxCategory": "Agricultural Essentials (5% GST)",
+      "deliveryDate": "1-2 days",
+      "metaKeywords": "neem oil 10000 ppm, bio insecticide, azadirachtin, pest control"
     },
     {
       "id": "prod-005",
@@ -231,7 +451,20 @@
       "metaTitle": "UAS Dharwad DWR-1006 Certified Wheat Seeds 20Kg | Agri Mart Mega",
       "metaDescription": "Foundation certified wheat seeds with guaranteed germination from regional agricultural universities.",
       "createdAt": "2026-09-17T11:18:16.948Z",
-      "updatedAt": "2026-09-17T11:18:16.948Z"
+      "updatedAt": "2026-09-17T11:18:16.948Z",
+      "parentCategoryId": "cat-seeds",
+      "subCategoryId": "subcat-cereal-seeds",
+      "cost": 920,
+      "weight": 20,
+      "length": 55,
+      "width": 38,
+      "height": 15,
+      "gtin": "8901234560059",
+      "manufacturerPartNumber": "UASD-DWR1006-20",
+      "vendor": "Agri-Mart Direct",
+      "taxCategory": "Exempt Seeds & Biocides (0% GST)",
+      "deliveryDate": "1-2 days",
+      "metaKeywords": "wheat seeds, dwr 1006, uas dharwad seeds, certified seeds"
     },
     {
       "id": "prod-006",
@@ -254,7 +487,20 @@
       "metaTitle": "2-Inch Venturi Drip Fertigation Kit | Agri Mart Mega",
       "metaDescription": "Accurate fertilizer injector for automated drip systems. Reduces manual labor and nutrient wastage.",
       "createdAt": "2026-09-17T11:18:16.948Z",
-      "updatedAt": "2026-09-17T11:18:16.948Z"
+      "updatedAt": "2026-09-17T11:18:16.948Z",
+      "parentCategoryId": "cat-irrigation",
+      "subCategoryId": "subcat-drip-fertigation",
+      "cost": 3650,
+      "weight": 3.5,
+      "length": 45,
+      "width": 30,
+      "height": 20,
+      "gtin": "8901234560066",
+      "manufacturerPartNumber": "JDT-VEN-2IN",
+      "vendor": "Agri-Mart Direct",
+      "taxCategory": "Reduced Rate (12% GST)",
+      "deliveryDate": "3-5 days",
+      "metaKeywords": "drip irrigation kit, venturi injector, jain drip tech, fertigation"
     },
     {
       "id": "prod-1789644257308",
@@ -274,7 +520,23 @@
       "targetCrops": "Chili, Tomato, Cotton",
       "cropStages": "1, 2",
       "createdAt": "2026-09-17T11:24:17.308Z",
-      "updatedAt": "2026-09-17T11:24:17.308Z"
+      "updatedAt": "2026-09-17T11:24:17.308Z",
+      "parentCategoryId": "cat-machinery",
+      "subCategoryId": "subcat-weeders-tillers",
+      "brandId": "br-agripro",
+      "cost": 22230,
+      "weight": 5,
+      "length": 35,
+      "width": 25,
+      "height": 20,
+      "gtin": "8901234500000",
+      "manufacturerPartNumber": "AGM-TIL-5HP-TEST-IND",
+      "vendor": "Agri-Mart Direct",
+      "taxCategory": "Exempt / Agricultural (5% GST)",
+      "deliveryDate": "1-2 days (Express Hub)",
+      "metaTitle": "Buy AgriMart 5HP Heavy Rotary Tiller (Field Edition) | Agri-Mart India",
+      "metaKeywords": "agrimart 5hp heavy rotary tiller (field edition), agri mart, farming inputs",
+      "metaDescription": "High torque 5HP petrol tiller for inter-row weeding."
     }
   ],
   "variants": [
@@ -553,6 +815,54 @@
       "name": "Dosage Recommendation",
       "value": "2.5 to 3.0 ml per litre of water",
       "displayOrder": 1
+    },
+    {
+      "id": "sp-prod-005-1",
+      "productId": "prod-005",
+      "group": "Quality & Certification",
+      "name": "Quality Standard",
+      "value": "ISO & FCO / BIS Certified Agricultural Grade",
+      "displayOrder": 1
+    },
+    {
+      "id": "sp-prod-005-2",
+      "productId": "prod-005",
+      "group": "Packaging & Dispatch",
+      "name": "Fulfillment Hub",
+      "value": "Hubballi & Dharwad Central Dark Warehouses",
+      "displayOrder": 2
+    },
+    {
+      "id": "sp-prod-006-1",
+      "productId": "prod-006",
+      "group": "Quality & Certification",
+      "name": "Quality Standard",
+      "value": "ISO & FCO / BIS Certified Agricultural Grade",
+      "displayOrder": 1
+    },
+    {
+      "id": "sp-prod-006-2",
+      "productId": "prod-006",
+      "group": "Packaging & Dispatch",
+      "name": "Fulfillment Hub",
+      "value": "Hubballi & Dharwad Central Dark Warehouses",
+      "displayOrder": 2
+    },
+    {
+      "id": "sp-prod-1789644257308-1",
+      "productId": "prod-1789644257308",
+      "group": "Quality & Certification",
+      "name": "Quality Standard",
+      "value": "ISO & FCO / BIS Certified Agricultural Grade",
+      "displayOrder": 1
+    },
+    {
+      "id": "sp-prod-1789644257308-2",
+      "productId": "prod-1789644257308",
+      "group": "Packaging & Dispatch",
+      "name": "Fulfillment Hub",
+      "value": "Hubballi & Dharwad Central Dark Warehouses",
+      "displayOrder": 2
     }
   ],
   "warehouses": [
@@ -13855,6 +14165,713 @@
       "name": "Packaging Size (5kg, 10kg, 25kg)",
       "description": "Bulk bag and granule SKU size",
       "displayOrder": 6
+    }
+  ],
+  "galleryItems": [
+    {
+      "id": "gal-01",
+      "title": "Emerald Terraces & Open Fields",
+      "subject": "Green agricultural fields",
+      "caption": "Lush green agricultural terraces and crop rows thriving during the active vegetative monsoon season.",
+      "image": "/images/gallery/01-green-fields.jpg",
+      "photographer": "Dan Meyers",
+      "sourceUrl": "https://unsplash.com/photos/green-grass-field-under-blue-sky-during-daytime-unsplash",
+      "license": "Unsplash License (Free commercial & non-commercial use)",
+      "alt": "Expansive lush green agricultural fields under open sky",
+      "displayOrder": 1,
+      "isPublished": true
+    },
+    {
+      "id": "gal-02",
+      "title": "Morning Crop Inspection",
+      "subject": "Farmer working in a field",
+      "caption": "Farmer inspecting crop leaf vigor, root moisture, and early growth patterns in dawn sunlight.",
+      "image": "/images/gallery/02-farmer-working.jpg",
+      "photographer": "No One Cares",
+      "sourceUrl": "https://unsplash.com/photos/person-in-black-shirt-standing-on-green-grass-field-during-daytime",
+      "license": "Unsplash License (Free commercial & non-commercial use)",
+      "alt": "Farmer actively working and tending crops in an agricultural field",
+      "displayOrder": 2,
+      "isPublished": true
+    },
+    {
+      "id": "gal-03",
+      "title": "Primary Tillage & Deep Ploughing",
+      "subject": "Tractor preparing soil",
+      "caption": "Heavy tractor turning topsoil to break hard crusts, bury stubble, and establish an aerated seedbed.",
+      "image": "/images/gallery/03-tractor-soil.jpg",
+      "photographer": "Raphael Biscaldi",
+      "sourceUrl": "https://unsplash.com/photos/red-tractor-on-green-field",
+      "license": "Unsplash License (Free commercial & non-commercial use)",
+      "alt": "Red farm tractor cultivating and preparing soil for seasonal sowing",
+      "displayOrder": 3,
+      "isPublished": true
+    },
+    {
+      "id": "gal-04",
+      "title": "Precision Sowing & Seedling Establishment",
+      "subject": "Seed sowing",
+      "caption": "Careful placement of certified seeds into moist, friable soil for optimal root contact and uniform emergence.",
+      "image": "/images/gallery/04-seed-sowing.jpg",
+      "photographer": "Markus Spiske",
+      "sourceUrl": "https://unsplash.com/photos/person-holding-green-plant-during-daytime",
+      "license": "Unsplash License (Free commercial & non-commercial use)",
+      "alt": "Hand and implement sowing seeds and seedlings into rich soil",
+      "displayOrder": 4,
+      "isPublished": true
+    },
+    {
+      "id": "gal-05",
+      "title": "Pressurized Irrigation Network",
+      "subject": "Irrigation",
+      "caption": "Targeted sprinkler and drip irrigation delivering water directly to canopies while preventing runoff losses.",
+      "image": "/images/gallery/05-irrigation.jpg",
+      "photographer": "Etienne Girardet",
+      "sourceUrl": "https://unsplash.com/photos/water-sprinkler-on-green-grass-field",
+      "license": "Unsplash License (Free commercial & non-commercial use)",
+      "alt": "Modern water sprinkler irrigation system watering farm crops",
+      "displayOrder": 5,
+      "isPublished": true
+    },
+    {
+      "id": "gal-06",
+      "title": "Crop Protection & Foliar Spraying",
+      "subject": "Crop spraying",
+      "caption": "Even droplet dispersal across foliage to manage pests and deliver organic bio-nutrients effectively.",
+      "image": "/images/gallery/06-crop-spraying.jpg",
+      "photographer": "James Baltz",
+      "sourceUrl": "https://unsplash.com/photos/white-and-red-plane-flying-over-green-grass-field",
+      "license": "Unsplash License (Free commercial & non-commercial use)",
+      "alt": "Agricultural spraying operation across agricultural fields",
+      "displayOrder": 6,
+      "isPublished": true
+    },
+    {
+      "id": "gal-07",
+      "title": "Golden Grain Field Harvest",
+      "subject": "Harvesting",
+      "caption": "Harvesting mature grain crops during clear dry weather to safeguard grain moisture and quality.",
+      "image": "/images/gallery/07-harvesting.jpg",
+      "photographer": "Kelly Sikkema",
+      "sourceUrl": "https://unsplash.com/photos/wheat-field-during-sunset",
+      "license": "Unsplash License (Free commercial & non-commercial use)",
+      "alt": "Harvesting golden grain crops at the end of a successful crop cycle",
+      "displayOrder": 7,
+      "isPublished": true
+    },
+    {
+      "id": "gal-08",
+      "title": "Farm Mechanization & Power Weeders",
+      "subject": "Farm equipment",
+      "caption": "Modern walk-behind power weeders and multi-crop attachments engineered for inter-cultivation and weed control.",
+      "image": "/images/gallery/08-farm-equipment.jpg",
+      "photographer": "Randy Fath",
+      "sourceUrl": "https://unsplash.com/photos/green-tractor-on-green-grass-field",
+      "license": "Unsplash License (Free commercial & non-commercial use)",
+      "alt": "Modern agricultural power machinery and farm equipment in a field yard",
+      "displayOrder": 8,
+      "isPublished": true
+    },
+    {
+      "id": "gal-09",
+      "title": "Horticulture & Vegetable Rows",
+      "subject": "Vegetable cultivation",
+      "caption": "Raised planting beds and inter-cropped vegetables grown with bio-fertilizers and organic mulch.",
+      "image": "/images/gallery/09-vegetable-cultivation.jpg",
+      "photographer": "Benjamin Davies",
+      "sourceUrl": "https://unsplash.com/photos/green-vegetables-on-field",
+      "license": "Unsplash License (Free commercial & non-commercial use)",
+      "alt": "Lush organic vegetable cultivation in raised garden and farm beds",
+      "displayOrder": 9,
+      "isPublished": true
+    },
+    {
+      "id": "gal-10",
+      "title": "Post-Harvest Grain & Seed Storage",
+      "subject": "Crop storage",
+      "caption": "Dry, well-ventilated warehouse storage and moisture-resistant bags keeping harvest produce safe from spoilage.",
+      "image": "/images/gallery/10-crop-storage.jpg",
+      "photographer": "Peter Miller",
+      "sourceUrl": "https://unsplash.com/photos/brown-sacks-on-brown-wooden-shelf",
+      "license": "Unsplash License (Free commercial & non-commercial use)",
+      "alt": "Well-stored grain sacks in an agricultural storage warehouse",
+      "displayOrder": 10,
+      "isPublished": true
+    }
+  ],
+  "blogPosts": [
+    {
+      "id": "post-1",
+      "slug": "choosing-farm-equipment-for-your-land",
+      "title": "Choosing Farm Equipment for Your Land",
+      "excerpt": "A practical decision guide to evaluate parcel size, soil type, and crop spacing before investing in power tillers, tractors, and attachments.",
+      "content": "Selecting farm equipment is one of the most significant operational decisions a farmer makes. Investing in the wrong machine can lock up scarce capital, while the right machine dramatically cuts turnaround time between seasons and preserves soil structure.\n\n### 1. Assessing Land Size and Topography\nThe scale and slope of your land dictate the horsepower and maneuverability required:\n- Smallholdings (1 to 3 Acres): Compact walk-behind power weeders (5HP to 7HP) excel in narrow terraced plots, orchards, and fragmented holdings where larger tractors cannot turn.\n- Medium Farms (4 to 10 Acres): Multi-speed power tillers and mini-tractors (18HP to 24HP) balance row-crop accessibility with sufficient drawbar pull for rotavators and trailer haulage.\n- Large Acreages (10+ Acres): Standard 40HP to 50HP tractors are best suited for deep primary tillage, heavy disk harrowing, and large laser leveling.\n\n### 2. Matching Machinery to Soil Texture\nHeavy black cotton soils require equipment with high torque and heat-treated boron blades capable of breaking sticky clods without stalling. In contrast, sandy loam and red soils demand lighter machinery that avoids excessive pulverization.\n\n### 3. Attachment Versatility and Multi-Crop Compatibility\nBefore purchasing any power unit, evaluate the accessory ecosystem. A versatile power weeder should accommodate interchangeable attachments such as adjustable ridgers, ditchers, paddy wetland cage wheels, and water pump takeoffs.\n\n### Practical Conclusion\nMatch your equipment choices to your most bottlenecked activity. Starting with versatile, right-sized implements ensures sustainable farm finances and dependable seasonal performance.",
+      "author": "Agri Mart Editorial",
+      "authorRole": "Field Mechanization Desk",
+      "date": "2026-03-10",
+      "category": "Equipment Guide",
+      "image": "https://images.unsplash.com/photo-1592982537447-7440770cbfc9?auto=format&fit=crop&w=800&q=80",
+      "readingTime": "5 min read",
+      "tags": [
+        "Farm Equipment",
+        "Power Weeder",
+        "Tractor",
+        "Mechanization",
+        "Land Planning"
+      ],
+      "isPublished": true
+    },
+    {
+      "id": "post-2",
+      "slug": "beginners-guide-to-soil-preparation",
+      "title": "A Beginner’s Guide to Soil Preparation",
+      "excerpt": "Master the foundational steps of primary ploughing, organic matter incorporation, moisture management, and fine seedbed preparation.",
+      "content": "Healthy crops begin long before seeds are placed in the ground. Thorough soil preparation creates a welcoming root zone, balances soil moisture and aeration, and suppresses early weed competition.\n\n### 1. Checking Soil Moisture: The 'Vapsa' Principle\nNever till soil when it is saturated or bone dry. If a handful of soil holds together gently into a ball and crumbles cleanly under light thumb pressure, it has reached the ideal moisture window ('Vapsa') for tilling.\n\n### 2. Primary vs. Secondary Tillage\nPrimary tillage deep-ploughs using a mouldboard or disc plough to invert soil, bury weed residues, and expose pests to sunlight. Secondary tillage uses rotavators or harrows to break clods into a fine tilth.\n\n### 3. Incorporating Organic Matter Early\nApply well-rotted farmyard manure (FYM) or compost at least 15 to 20 days prior to final harrowing to enrich soil microbiology and water-holding capacity.\n\n### Practical Conclusion\nA well-aerated, friable seedbed enables swift germination, robust taproot elongation, and uniform crop emergence.",
+      "author": "Agri Mart Editorial",
+      "authorRole": "Agronomy & Soil Care Desk",
+      "date": "2026-03-12",
+      "category": "Soil Health",
+      "image": "https://images.unsplash.com/photo-1628352081506-83c43123ed6d?auto=format&fit=crop&w=800&q=80",
+      "readingTime": "6 min read",
+      "tags": [
+        "Soil Preparation",
+        "Ploughing",
+        "Compost",
+        "Tillage",
+        "Seedbed"
+      ],
+      "isPublished": true
+    },
+    {
+      "id": "post-3",
+      "slug": "simple-ways-to-use-water-more-efficiently",
+      "title": "Simple Ways to Use Water More Efficiently",
+      "excerpt": "Accessible field strategies including drip scheduling, organic mulching, and night-time irrigation to prevent evaporation losses.",
+      "content": "Water is increasingly the defining factor for agricultural resilience across peninsular India. Efficient water management does not require complex systems; disciplined practices yield immediate water savings.\n\n### 1. Shifting from Flood to Targeted Drip and Furrow Systems\nTraditional flood irrigation loses up to 45% of applied water. Inline drip emitters deliver water directly to crop collars, while alternate furrow watering reduces consumption without sacrificing canopy vigor.\n\n### 2. The Protective Power of Organic Mulching\nCovering open soil beds with crop straw, dry leaves, or sugarcane trash retards solar evaporation, buffers roots against heat, and enriches soil organic matter as it decomposes.\n\n### 3. Strategic Scheduling and System Maintenance\nIrrigating during early morning or evening hours reduces evaporation losses caused by hot winds. Routine bi-weekly line flushing and filter cleaning guarantee uniform pressure.\n\n### Practical Conclusion\nSimple practices like mulching and pressurized drip lines protect crop yields while securing valuable groundwater reserves.",
+      "author": "Agri Mart Editorial",
+      "authorRole": "Sustainable Irrigation Desk",
+      "date": "2026-03-14",
+      "category": "Water Management",
+      "image": "https://images.unsplash.com/photo-1563514227147-6d2ff665a6a0?auto=format&fit=crop&w=800&q=80",
+      "readingTime": "4 min read",
+      "tags": [
+        "Irrigation",
+        "Water Efficiency",
+        "Drip Systems",
+        "Mulching",
+        "Sustainability"
+      ],
+      "isPublished": true
+    },
+    {
+      "id": "post-4",
+      "slug": "buying-or-renting-farm-equipment",
+      "title": "Buying or Renting Farm Equipment",
+      "excerpt": "A clear cost-per-acre comparison to determine when hiring equipment by the day makes better financial sense than outright purchase.",
+      "content": "Modern farm machinery promises speed, but purchasing heavy equipment outright can strain seasonal liquidity. Deciding between buying and renting requires an honest appraisal of annual operational hours.\n\n### 1. The 100-Hour Annual Threshold\nAs a general benchmark, equipment that operates fewer than 80 to 100 hours per calendar year is cheaper to rent. Specialized implements like combine harvesters and laser levelers are best rented; high-frequency tools like power weeders justify direct ownership.\n\n### 2. Factoring Total Cost of Ownership\nPurchasing involves capital depreciation, routine parts and oil replacement, and covered storage overhead.\n\n### 3. Advantages of On-Demand Rental\nRenting grants immediate access to modern, well-maintained machinery while freeing farm capital for high-quality seeds and soil amendments.\n\n### Practical Conclusion\nCalculate your anticipated operational hours and compare rental day rates against annual ownership costs to make the right capital decision.",
+      "author": "Agri Mart Editorial",
+      "authorRole": "Farm Economics & Operations",
+      "date": "2026-03-15",
+      "category": "Farm Economics",
+      "image": "https://images.unsplash.com/photo-1589923188900-85dae523342b?auto=format&fit=crop&w=800&q=80",
+      "readingTime": "5 min read",
+      "tags": [
+        "Equipment Rental",
+        "Farm Economics",
+        "Machinery Budgeting",
+        "Power Weeder",
+        "Tools"
+      ],
+      "isPublished": true
+    },
+    {
+      "id": "post-5",
+      "slug": "maintaining-your-sprayer-and-farm-tools",
+      "title": "Maintaining Your Sprayer and Farm Tools",
+      "excerpt": "Daily cleanout routines, diaphragm seal checks, nozzle calibration, and seasonal storage steps to keep farm implements lasting for years.",
+      "content": "Agricultural sprayers and handheld tools protect crop investments, yet chemical residues and prolonged neglect frequently cause premature equipment failure. Routine preventive maintenance safeguards both tools and operator safety.\n\n### 1. The Triple-Rinse Cleanout Rule\nEmpty leftover solution safely, fill the tank one-third full with fresh water, pump through all lines and nozzles for two minutes, and store the tank inverted to dry.\n\n### 2. Nozzle Care and Calibration\nNever clean clogged nozzle orifices using metal wire or nails. Soak in warm water and clean gently with a soft-bristled brush to protect precision spray patterns.\n\n### 3. Battery and Engine Maintenance\nRecharge battery sprayers every 30 days during the off-season. For engines, check motor oil levels and clean foam air filters regularly.\n\n### Practical Conclusion\nA disciplined 10-minute cleanup routine at the end of each working day prevents costly repairs and doubles the lifespan of farm implements.",
+      "author": "Agri Mart Editorial",
+      "authorRole": "Workshop & Maintenance Desk",
+      "date": "2026-03-16",
+      "category": "Maintenance",
+      "image": "https://images.unsplash.com/photo-1595974482597-4b8da8879bc5?auto=format&fit=crop&w=800&q=80",
+      "readingTime": "5 min read",
+      "tags": [
+        "Sprayer Maintenance",
+        "Farm Tools",
+        "Preventive Care",
+        "Nozzles",
+        "Workshop"
+      ],
+      "isPublished": true
+    },
+    {
+      "id": "post-6",
+      "slug": "planning-the-seven-stages-of-a-crop-cycle",
+      "title": "Planning the Seven Stages of a Crop Cycle",
+      "excerpt": "From basal land prep to post-harvest storage: how aligning your inputs with crop growth milestones ensures higher yields.",
+      "content": "Successful agriculture relies on synchronized timing. Every crop navigates a predictable biological progression, and applying inputs or mechanization interventions at the exact stage maximizes results.\n\n### 1. Stages 1 & 2: Soil Preparation & Sowing\nDeep tillage and organic matter incorporation establish soil tilth. Seed treatment and precise sowing depth ensure uniform germination.\n\n### 2. Stages 3 & 4: Vegetative Vigor & Flowering\nMechanical weeding between days 20 to 45 shatters crusts and conserves moisture. Adequate moisture during flowering prevents bud drop.\n\n### 3. Stages 5, 6 & 7: Fruit Filling, Harvest & Storage\nOptimize micronutrients during grain filling. Harvest during dry weather and dry grains below 12% moisture before hermetic warehouse storage.\n\n### Practical Conclusion\nOrganize your farm calendar around these seven foundational milestones for consistent seasonal productivity.",
+      "author": "Agri Mart Editorial",
+      "authorRole": "Crop Advisory Desk",
+      "date": "2026-03-17",
+      "category": "Crop Management",
+      "image": "https://images.unsplash.com/photo-1500937386664-56d1dfef3854?auto=format&fit=crop&w=800&q=80",
+      "readingTime": "6 min read",
+      "tags": [
+        "Crop Cycle",
+        "7 Stages",
+        "Crop Guidance",
+        "Harvesting",
+        "Farm Management"
+      ],
+      "isPublished": true
+    }
+  ],
+  "blogReviews": [],
+  "services": [
+    {
+      "id": "srv-tractor",
+      "slug": "tractor-services",
+      "name": "Tractor Precision Ploughing & Land Preparation",
+      "nameKn": "",
+      "category": "Heavy Farm Mechanization",
+      "badge": "High Demand",
+      "iconName": "Tractor",
+      "baseRatePerAcre": 1200,
+      "equipmentUsed": "45–55 HP 4WD Tractors with MB Plough, Disc Harrow & Cultivator",
+      "timeEstimate": "1.5 to 2.5 hours / acre",
+      "shortDescription": "Deep primary tillage, disc harrowing, and field leveling with experienced certified tractor operators.",
+      "description": "Eliminate the heavy capital expenditure of tractor ownership. Agri Mart Mega dispatches modern 4WD tractors with seasoned operators directly to your farm parcel coordinates. Our tractor services cover virgin land breaking, sugarcane ratoon pulverizing, mouldboard deep tilling, and laser precision leveling.",
+      "jobWorkTypes": [
+        {
+          "id": "jw-mb-plough",
+          "name": "Mouldboard (MB) Deep Ploughing",
+          "nameKn": "",
+          "description": "Deep furrow slicing (up to 12 inches) to invert hard pan soil, kill subterranean grubs, and optimize aeration.",
+          "rate": 1400,
+          "rateUnit": "per acre",
+          "equipmentNeeded": "55HP Tractor + 2/3 Bottom MB Plough",
+          "estimatedDuration": "2.0 hours/acre"
+        },
+        {
+          "id": "jw-disc-harrow",
+          "name": "Disc Harrow Clod Crushing & Aeration",
+          "nameKn": "",
+          "description": "Secondary tillage to crush stubborn clay clods, chop weed roots, and prepare a fine seedbed.",
+          "rate": 1100,
+          "rateUnit": "per acre",
+          "equipmentNeeded": "45HP Tractor + 16/20 Disc Harrow",
+          "estimatedDuration": "1.2 hours/acre"
+        },
+        {
+          "id": "jw-laser-level",
+          "name": "Laser Guided Precision Land Leveling",
+          "nameKn": "",
+          "description": "Transmitter guided grading ensuring 0% slope deviations. Reduces water consumption by 25–30% and guarantees uniform germination.",
+          "rate": 1800,
+          "rateUnit": "per acre",
+          "equipmentNeeded": "50HP Tractor + Laser Transmitter Scraper",
+          "estimatedDuration": "2.5 hours/acre"
+        },
+        {
+          "id": "jw-ridger-furrow",
+          "name": "Ridger & Furrow Making for Row Crops",
+          "nameKn": "",
+          "description": "Uniform furrow shaping for sugarcane, cotton, potato, and maize with drip lateral placement alignment.",
+          "rate": 950,
+          "rateUnit": "per acre",
+          "equipmentNeeded": "45HP Tractor + Adjustable 3-Row Ridger",
+          "estimatedDuration": "1.0 hours/acre"
+        }
+      ],
+      "faq": [
+        {
+          "q": "Does the rental service include diesel and operator?",
+          "a": "Yes, all Agri Mart Mega service bookings are all-inclusive (diesel, implement, operator, and transit charges). No hidden surcharges."
+        },
+        {
+          "q": "How does the operator locate my farm bund?",
+          "a": "Our smart GPS service locks onto your submitted GPS latitude/longitude. The tractor unit navigates directly using the driver mobile app."
+        }
+      ]
+    },
+    {
+      "id": "srv-rotavator",
+      "slug": "rotavator-services",
+      "name": "Rotavator Tilling & Wet Puddling",
+      "nameKn": "",
+      "category": "Soil Pulverization",
+      "badge": "Popular",
+      "iconName": "RotateCw",
+      "baseRatePerAcre": 1100,
+      "equipmentUsed": "7-Foot Multi-Speed Heavy Duty Rotavators",
+      "timeEstimate": "1.0 to 1.5 hours / acre",
+      "shortDescription": "High-speed rotary pulverization for uniform seedbed tilth and paddy wet puddling.",
+      "description": "Create the perfect fine tilth in a single pass. Our rotavator fleet features boron steel L/C blades and multi-speed gearboxes suited for both dry black cotton soils and wet paddy wetland puddling.",
+      "jobWorkTypes": [
+        {
+          "id": "jw-dry-rotary",
+          "name": "Dry Soil Fine Tilth Pulverization",
+          "nameKn": "",
+          "description": "Single-pass pulverization breaking stubble and clods into loose, fertile seedbeds ready for vegetable and pulse sowing.",
+          "rate": 1100,
+          "rateUnit": "per acre",
+          "equipmentNeeded": "7-Foot Heavy Duty Rotavator + 45HP Tractor",
+          "estimatedDuration": "1.2 hours/acre"
+        },
+        {
+          "id": "jw-wet-puddling",
+          "name": "Wet Wetland Paddy Puddling",
+          "nameKn": "",
+          "description": "Double pass puddle churning in flooded paddy fields with cage wheels to create impermeable subsoil basin and retain standing water.",
+          "rate": 1350,
+          "rateUnit": "per acre",
+          "equipmentNeeded": "Tractor with Iron Cage Wheels + 6-Foot Wetland Rotavator",
+          "estimatedDuration": "1.5 hours/acre"
+        }
+      ],
+      "faq": [
+        {
+          "q": "Can rotavators chop through green manure crops (sunhemp/dhaincha)?",
+          "a": "Yes, our rotavators incorporate standing green manure into the soil within 1–2 passes, speeding up microbial decomposition."
+        }
+      ]
+    },
+    {
+      "id": "srv-harvesting",
+      "slug": "harvesting-services",
+      "name": "Mechanical Harvesting & Reaping",
+      "nameKn": "",
+      "category": "Crop Harvesting",
+      "badge": "Peak Season",
+      "iconName": "Wheat",
+      "baseRatePerAcre": 2200,
+      "equipmentUsed": "Track Combine Harvesters & Self-Propelled Reapers",
+      "timeEstimate": "45 mins to 1.2 hours / acre",
+      "shortDescription": "Rapid mechanized harvesting for paddy, wheat, soybean, and maize with 99% grain recovery.",
+      "description": "Avoid harvest delays and seasonal labour bottlenecks. Our crawler track combine harvesters operate smoothly even in damp, boggy paddy fields, threshing, de-chaffing, and bagging clean grain directly.",
+      "jobWorkTypes": [
+        {
+          "id": "jw-combine-paddy",
+          "name": "Crawler Track Combine Harvester (Paddy/Wheat)",
+          "nameKn": "",
+          "description": "Complete reaping, threshing, and cleaning with rubber crawlers that prevent bogging in wet black soil.",
+          "rate": 2600,
+          "rateUnit": "per acre",
+          "equipmentNeeded": "Rubber Track 88HP Combine Harvester",
+          "estimatedDuration": "50 mins/acre"
+        },
+        {
+          "id": "jw-reaper-binder",
+          "name": "Self-Propelled Reaper & Straw Bundler",
+          "nameKn": "",
+          "description": "Cuts cereal crops 2 inches from ground level and ties uniform bundles, preserving valuable livestock fodder.",
+          "rate": 1800,
+          "rateUnit": "per acre",
+          "equipmentNeeded": "10HP Self-Propelled Reaper Binder",
+          "estimatedDuration": "1.5 hours/acre"
+        }
+      ],
+      "faq": [
+        {
+          "q": "What is the grain loss percentage with your combine harvesters?",
+          "a": "Grain loss is certified under 1.2%, significantly lower than manual handling and transport losses."
+        }
+      ]
+    },
+    {
+      "id": "srv-spraying",
+      "slug": "spraying-services",
+      "name": "Drone & Boom Precision Spraying",
+      "nameKn": "",
+      "category": "Plant Protection",
+      "badge": "DGCA Certified",
+      "iconName": "CloudRain",
+      "baseRatePerAcre": 450,
+      "equipmentUsed": "10L/16L Hexacopter Agri-Drones & Tractor Boom Sprayers",
+      "timeEstimate": "7 to 12 minutes / acre",
+      "shortDescription": "Uniform droplet micron-spraying minimizing chemical runoff and safeguarding operator health.",
+      "description": "Deploy DGCA-certified drone pilots and ultra-low volume (ULV) atomizers. Agri Mart Mega agricultural drones cover an entire acre in under 8 minutes, penetrating underleaf canopies with prop-wash turbulence for 100% pest eradication.",
+      "jobWorkTypes": [
+        {
+          "id": "jw-drone-micron",
+          "name": "Hexacopter Drone Micron-Spraying",
+          "nameKn": "",
+          "description": "Centrifugal atomizing nozzles producing 120-micron droplets. Covers 1 acre with only 10 litres of water.",
+          "rate": 450,
+          "rateUnit": "per acre",
+          "equipmentNeeded": "DGCA Certified 16L Drone + Pilot & Agronomist",
+          "estimatedDuration": "8 mins/acre"
+        },
+        {
+          "id": "jw-tractor-boom",
+          "name": "Tractor 24-Nozzle Boom Sprayer",
+          "nameKn": "",
+          "description": "High-volume systematic fungicide / micronutrient drenching for broad-acre cotton, groundnut, and sugarcane crops.",
+          "rate": 650,
+          "rateUnit": "per acre",
+          "equipmentNeeded": "400-Litre Tank 30-Foot Boom Sprayer",
+          "estimatedDuration": "25 mins/acre"
+        }
+      ],
+      "faq": [
+        {
+          "q": "Do you provide the chemicals or does the farmer?",
+          "a": "You can provide your own inputs or order certified bio-inputs directly via Agri Mart Mega with a bundled service discount."
+        }
+      ]
+    },
+    {
+      "id": "srv-cultivation",
+      "slug": "cultivation-services",
+      "name": "Inter-Cultivation & Weeding Operations",
+      "nameKn": "",
+      "category": "Crop Maintenance",
+      "badge": "Cost Saver",
+      "iconName": "Sparkles",
+      "baseRatePerAcre": 850,
+      "equipmentUsed": "7HP–9HP Power Weeders with Ridger and Ditcher",
+      "timeEstimate": "1.5 to 2 hours / acre",
+      "shortDescription": "Mechanized inter-row weeding and earthing-up for row crops, reducing manual weeding costs by 70%.",
+      "description": "Keep weed competition at zero during critical vegetative stages. Our operators handle maneuverable mini-power weeders with reverse gearboxes, cutting weeds and aerating roots without damaging crop stems.",
+      "jobWorkTypes": [
+        {
+          "id": "jw-weeder-inter",
+          "name": "Power Weeder Inter-Row Weeding",
+          "nameKn": "",
+          "description": "High RPM rotary tilling between crop rows (2 to 4 feet spacing) uprooting weeds and mulching them into soil.",
+          "rate": 850,
+          "rateUnit": "per acre",
+          "equipmentNeeded": "7HP Petrol Power Weeder + Skilled Operator",
+          "estimatedDuration": "1.5 hours/acre"
+        },
+        {
+          "id": "jw-earthing-up",
+          "name": "Earthing-Up & Root Mound Bedding",
+          "nameKn": "",
+          "description": "Mounding soil around base of sugarcane, banana, or potato plants to support root anchoring and prevent lodging.",
+          "rate": 950,
+          "rateUnit": "per acre",
+          "equipmentNeeded": "Power Weeder with Ditcher Attachment",
+          "estimatedDuration": "1.8 hours/acre"
+        }
+      ],
+      "faq": [
+        {
+          "q": "What is the minimum row spacing required?",
+          "a": "Our adjustable rotary weeders can operate in row spacings as tight as 18 inches up to 5 feet."
+        }
+      ]
+    },
+    {
+      "id": "srv-labour",
+      "slug": "labour-services",
+      "name": "Skilled Agricultural Labour Gangs",
+      "nameKn": "",
+      "category": "Farm Manpower",
+      "badge": "Verified Crews",
+      "iconName": "Users",
+      "baseRatePerAcre": 3500,
+      "equipmentUsed": "Trained farm labor gangs with personal protective gear",
+      "timeEstimate": "1 full day / 2–3 acres",
+      "shortDescription": "Organized, reliable farm labour crews for paddy transplanting, fruit picking, pruning, and sugarcane harvesting.",
+      "description": "Overcome seasonal farm labour shortages. Agri Mart Mega coordinates vetted, experienced labour groups led by designated supervisors (Mestry) for transplanting, manual weeding, harvesting, and sorting.",
+      "jobWorkTypes": [
+        {
+          "id": "jw-paddy-transplant",
+          "name": "Paddy Mat / Line Transplanting Crew",
+          "nameKn": "",
+          "description": "Experienced 10-person gang ensuring proper hill density (30–33 hills/sq.m) and uniform root depth.",
+          "rate": 3800,
+          "rateUnit": "per acre",
+          "equipmentNeeded": "10-Person Verified Labour Gang",
+          "estimatedDuration": "1 Day/acre"
+        },
+        {
+          "id": "jw-harvest-labour",
+          "name": "Manual Harvest, De-husking & Bagging Crew",
+          "nameKn": "",
+          "description": "Cotton picking, maize cob de-husking, or onion bulb harvesting and on-field sorting.",
+          "rate": 3200,
+          "rateUnit": "per acre",
+          "equipmentNeeded": "8-Person Crew with Harvesting Kits",
+          "estimatedDuration": "1 Day/acre"
+        }
+      ],
+      "faq": [
+        {
+          "q": "Are workers insured and verified?",
+          "a": "All labour gangs registered under Agri Mart Mega undergo KYC verification and have standard rural accident cover."
+        }
+      ]
+    },
+    {
+      "id": "srv-soil-testing",
+      "slug": "soil-testing-services",
+      "name": "Comprehensive 14-Parameter Soil & Water Testing",
+      "nameKn": "",
+      "category": "Scientific Diagnostics",
+      "badge": "NABL Certified Lab",
+      "iconName": "FlaskConical",
+      "baseRatePerAcre": 550,
+      "equipmentUsed": "Precision GPS Core Sampler & Spectrophotometer Lab Analyzer",
+      "timeEstimate": "Sample collected in 30 mins; Lab report in 48 hours",
+      "shortDescription": "Field sample collection by agronomist + NABL laboratory testing for NPK, micronutrients, pH, EC, and Organic Carbon.",
+      "description": "Stop guessing your fertilizer dosages. An Agri Mart field technician visits your GPS farm coordinates to draw scientific zig-zag core soil samples. Delivered with a customized Kannada/English Soil Health Card and crop-specific fertilizer prescription.",
+      "jobWorkTypes": [
+        {
+          "id": "jw-soil-14-param",
+          "name": "Full 14-Parameter Soil Fertility Analysis",
+          "nameKn": "",
+          "description": "Measures Nitrogen, Phosphorus, Potassium, Zinc, Boron, Iron, Manganese, Copper, Sulphur, pH, EC, and Organic Carbon.",
+          "rate": 650,
+          "rateUnit": "per sample",
+          "equipmentNeeded": "GPS Core Sampler + Digital Lab Testing",
+          "estimatedDuration": "Report in 48h"
+        },
+        {
+          "id": "jw-water-irrigation",
+          "name": "Borewell / Canal Irrigation Water Suitability Test",
+          "nameKn": "",
+          "description": "Analysis of Total Dissolved Solids (TDS), Sodium Adsorption Ratio (SAR), Boron toxicity, and salinity risks.",
+          "rate": 450,
+          "rateUnit": "per sample",
+          "equipmentNeeded": "Hermetic Sample Flask + Lab Analysis",
+          "estimatedDuration": "Report in 24h"
+        }
+      ],
+      "faq": [
+        {
+          "q": "How does this save fertilizer costs?",
+          "a": "Most farmers over-apply DAP and urea by 35%. The Soil Health Card tells you exactly what nutrients your field already holds."
+        }
+      ]
+    },
+    {
+      "id": "srv-consultation",
+      "slug": "farm-consultation",
+      "name": "Certified Agronomist On-Field Consultation",
+      "nameKn": "",
+      "category": "Agronomy Advisory",
+      "badge": "UAS Dharwad Certified",
+      "iconName": "GraduationCap",
+      "baseRatePerAcre": 750,
+      "equipmentUsed": "Digital Microscope, Chlorophyll Meter & Soil Moisture Probe",
+      "timeEstimate": "1.5 hours on-field consultation",
+      "shortDescription": "Field visit by M.Sc Agronomy scientists for pest diagnosis, fertigation scheduling, and yield enhancement.",
+      "description": "Bring university-level agricultural expertise to your farm bund. Our certified agronomists diagnose persistent wilting, root grubs, nutrient deficiencies, and formulate custom organic or integrated pest management (IPM) regimens.",
+      "jobWorkTypes": [
+        {
+          "id": "jw-field-visit",
+          "name": "On-Field Diagnostic Visit & Prescription",
+          "nameKn": "",
+          "description": "Complete inspection of crop rows, root zone health check, and written spray/fertigation schedule.",
+          "rate": 850,
+          "rateUnit": "per visit",
+          "equipmentNeeded": "Diagnostic Kit + Mobile Farm Report",
+          "estimatedDuration": "1.5 hours"
+        },
+        {
+          "id": "jw-package-season",
+          "name": "Full-Season 4-Visit Advisory Package",
+          "nameKn": "",
+          "description": "Covers Sowing, Vegetative, Flowering, and Pre-Harvest stages with continuous WhatsApp SOS phone support.",
+          "rate": 2800,
+          "rateUnit": "per crop season",
+          "equipmentNeeded": "Dedicated Agronomist Assignment",
+          "estimatedDuration": "Full Crop Cycle"
+        }
+      ],
+      "faq": [
+        {
+          "q": "Which crops do your experts specialize in?",
+          "a": "We specialize in Karnataka agro-climatic crops: Sugarcane, Byadgi Chilli, Cotton, Arecanut, Maize, Paddy, and Horticulture vegetables."
+        }
+      ]
+    },
+    {
+      "id": "srv-operators",
+      "slug": "equipment-operators",
+      "name": "Certified Machinery & Tractor Operators",
+      "nameKn": "",
+      "category": "Machinery Operators",
+      "badge": "Verified Drivers",
+      "iconName": "HardHat",
+      "baseRatePerAcre": 700,
+      "equipmentUsed": "Licensed commercial operators with min. 5 years heavy equipment experience",
+      "timeEstimate": "Per Day (8-hour shift)",
+      "shortDescription": "Hire skilled, background-checked operators to drive your own tractors, power tillers, or harvesters.",
+      "description": "Own farm equipment but lack trained drivers? Hire certified machinery operators by the day or week. Every operator is trained in safety protocols, implement hitching, and fuel-efficient gear management.",
+      "jobWorkTypes": [
+        {
+          "id": "jw-tractor-driver",
+          "name": "Experienced Tractor Driver Deployment",
+          "nameKn": "",
+          "description": "8-hour duty shift for ploughing, harrowing, or trailer haulage on the farmer’s own machinery.",
+          "rate": 750,
+          "rateUnit": "per day (8 hrs)",
+          "equipmentNeeded": "Driver Deployment with Safety Gear",
+          "estimatedDuration": "8 hours/day"
+        },
+        {
+          "id": "jw-harvester-driver",
+          "name": "Combine Harvester Master Operator",
+          "nameKn": "",
+          "description": "Specialist driver for multi-crop combine harvesters capable of handling tricky wet wetland maneuvers.",
+          "rate": 1200,
+          "rateUnit": "per day (8 hrs)",
+          "equipmentNeeded": "Master Harvester Operator",
+          "estimatedDuration": "8 hours/day"
+        }
+      ],
+      "faq": [
+        {
+          "q": "What if equipment gets damaged during operation?",
+          "a": "Our operators are professionally certified and follow standardized RPM and gear parameters to prevent implement wear and tear."
+        }
+      ]
+    },
+    {
+      "id": "srv-custom-agri",
+      "slug": "custom-agri-services",
+      "name": "Custom Agricultural & Smart Farm Engineering",
+      "nameKn": "",
+      "category": "Farm Infrastructure",
+      "badge": "Turnkey Solutions",
+      "iconName": "Wrench",
+      "baseRatePerAcre": 1500,
+      "equipmentUsed": "High-voltage solar energizers, trenchers & HDPE butt-fusion machines",
+      "timeEstimate": "Project based (1 to 3 days)",
+      "shortDescription": "Custom engineering including solar wild-boar fencing, drip fertigation automation, and shaded nursery setup.",
+      "description": "Turnkey solutions for farm infrastructure. Protect your standing yield with government-compliant solar pulsating electric fencing or automate your drip irrigation valves with solar controllers.",
+      "jobWorkTypes": [
+        {
+          "id": "jw-solar-fence",
+          "name": "Solar Wild-Boar Protection Electric Fence Setup",
+          "nameKn": "",
+          "description": "Non-lethal pulsed energizer with 4-strand galvanised steel wire, solar panel, battery, and earth pit rods.",
+          "rate": 65,
+          "rateUnit": "per running meter",
+          "equipmentNeeded": "Solar Energizer + Installation Crew",
+          "estimatedDuration": "1–2 Days"
+        },
+        {
+          "id": "jw-drip-manifold",
+          "name": "Drip Irrigation Screen Filter & Venturi Setup",
+          "nameKn": "",
+          "description": "Installation of sand/screen filter batteries, pressure release valves, and venturi injectors for fertilizer dosing.",
+          "rate": 2200,
+          "rateUnit": "per setup",
+          "equipmentNeeded": "Plumbing & Pressure Testing Rig",
+          "estimatedDuration": "4–6 Hours"
+        }
+      ],
+      "faq": [
+        {
+          "q": "Is the solar electric fence safe for livestock and humans?",
+          "a": "Yes, it delivers short 0.1-second pulsating non-lethal shocks complying with BIS standards that deter animals without harm."
+        }
+      ]
     }
   ]
 }

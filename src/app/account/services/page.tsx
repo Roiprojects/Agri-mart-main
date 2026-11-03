@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import { devDb } from '@/lib/dev-db';
+import { ApiClient } from '@/lib/api-client';
 import {
   ArrowLeft,
   Wrench,
@@ -16,8 +16,16 @@ import {
 } from 'lucide-react';
 import { Badge } from '@/components/ui/Badge';
 
-export default function CustomerServicesPage() {
-  const requests = devDb.getServiceRequests({ userId: 'usr-farmer-01' });
+export default async function CustomerServicesPage() {
+  let requests: any[] = [];
+  try {
+    const res = await ApiClient.getCustomerServices('usr-farmer-01');
+    if (res.success && res.data) {
+      requests = res.data;
+    }
+  } catch (e) {
+    // Fallback
+  }
 
   const getStatusBadge = (status: string) => {
     switch (status) {

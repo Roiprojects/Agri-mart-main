@@ -1,13 +1,22 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { devDb } from '@/lib/dev-db';
+import { ApiClient } from '@/lib/api-client';
 import { SEED_RENTAL_PRODUCTS } from '@/lib/seed-data';
 import { Tractor, Calendar, ShieldCheck, ArrowRight } from 'lucide-react';
 
-export default function RentalsPage() {
-  const dbRentals = devDb.getRentalProducts();
-  const rentalProducts = dbRentals && dbRentals.length > 0 ? dbRentals : SEED_RENTAL_PRODUCTS;
+export const revalidate = 60;
+
+export default async function RentalsPage() {
+  let rentalProducts = SEED_RENTAL_PRODUCTS;
+  try {
+    const res = await ApiClient.getRentals();
+    if (res.success && res.data && res.data.length > 0) {
+      rentalProducts = res.data;
+    }
+  } catch (err) {
+    // Fallback to seed data
+  }
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
@@ -17,24 +26,29 @@ export default function RentalsPage() {
           <span className="text-amber-400 text-xs font-bold uppercase tracking-wider">Rent a Product Module</span>
           <h1 className="text-2xl sm:text-4xl font-extrabold mt-1">Agricultural Equipment Rental Marketplace</h1>
           <p className="text-xs sm:text-sm text-emerald-100 mt-2 max-w-2xl">
-            Mechanize your farm operations without heavy capital investment. Rent power weeders, brush cutters, sprayers, and reapers by Day, Week, or Month.
+            Mechanize your farm operations without heavy capital investment. Rent power weeders, brush cutters, sprayers, and reapers by Hour, Day, Week, or Month.
           </p>
         </div>
         <div className="bg-white/10 p-4 rounded-xl border border-white/20 text-xs space-y-1">
-          <div className="font-bold text-amber-300">✓ 100% Refundable Deposits</div>
-          <div className="text-slate-300">✓ Complete Maintenance Included</div>
+          <div className="font-bold text-amber-300">✓ Hourly &amp; Daily Rental Options</div>
+          <div className="text-slate-300">✓ 100% Refundable Deposits</div>
           <div className="text-slate-300">✓ Doorstep Dark Warehouse Dispatch</div>
         </div>
       </div>
 
       {/* Rentals List */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {rentalProducts.map((machine) => (
+        {rentalProducts.map((machine) => {
+          const hourlyRate = (machine as any).hourlyRate || Math.max(50, Math.round(machine.dailyRate / 6));
+          return (
           <div key={machine.id} className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-md transition flex flex-col justify-between">
             <div className="relative aspect-video w-full bg-slate-100">
               <Image src={machine.images[0]} alt={machine.title} fill className="object-cover" />
               <span className="absolute top-3 left-3 bg-slate-900/80 text-white font-bold text-[10px] px-2.5 py-1 rounded-full">
                 {machine.category}
+              </span>
+              <span className="absolute top-3 right-3 bg-emerald-700 text-white font-extrabold text-[10px] px-2.5 py-1 rounded-full shadow-xs">
+                ₹{hourlyRate}/hr Available
               </span>
             </div>
 
@@ -54,7 +68,9 @@ export default function RentalsPage() {
 
               <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
                 <div>
-                  <div className="text-lg font-black text-slate-900">₹{machine.dailyRate}/day</div>
+                  <div className="text-base font-black text-emerald-800">
+                    ₹{hourlyRate}/hr <span className="text-slate-400 font-normal">&bull;</span> <span className="text-slate-900">₹{machine.dailyRate}/day</span>
+                  </div>
                   <div className="text-[10px] text-slate-500">₹{machine.weeklyRate}/week | ₹{machine.monthlyRate}/month</div>
                 </div>
 
@@ -68,7 +84,8 @@ export default function RentalsPage() {
               </div>
             </div>
           </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );

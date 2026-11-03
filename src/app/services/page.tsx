@@ -2,7 +2,8 @@ import React from 'react';
 import { Metadata } from 'next';
 import Link from 'next/link';
 import { SITE_CONFIG } from '@/lib/config';
-import { SERVICES_CATALOGUE } from '@/lib/services-data';
+import { SERVICES_CATALOGUE, ServiceDefinition } from '@/lib/services-data';
+import { ApiClient } from '@/lib/api-client';
 import { Wrench, MapPin, ArrowRight, ShieldCheck, Tractor, Layers, CheckCircle2 } from 'lucide-react';
 import { Badge } from '@/components/ui/Badge';
 import { Breadcrumbs } from '@/components/ui/Breadcrumbs';
@@ -25,7 +26,19 @@ export const metadata: Metadata = {
   },
 };
 
-export default function ServicesPage() {
+export const revalidate = 60;
+
+export default async function ServicesPage() {
+  let services: ServiceDefinition[] = SERVICES_CATALOGUE;
+  try {
+    const res = await ApiClient.getServicesCatalogue();
+    if (res?.success && res.services?.length > 0) {
+      services = res.services;
+    }
+  } catch (err) {
+    // Fall back to seed catalog
+  }
+
   const breadcrumbItems = [{ label: 'Home', href: '/' }, { label: 'Services' }];
 
   return (
@@ -61,7 +74,7 @@ export default function ServicesPage() {
 
       {/* 10 Services Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {SERVICES_CATALOGUE.map((srv) => (
+        {services.map((srv) => (
           <div
             key={srv.id}
             className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:shadow-md hover:border-slate-300 transition flex flex-col justify-between space-y-4"
@@ -86,8 +99,10 @@ export default function ServicesPage() {
                 </Link>
               </h3>
 
-              <div className="text-emerald-800 font-bold text-xs mt-1">
-                Starting from ₹{srv.baseRatePerAcre}/acre
+              <div className="text-emerald-800 font-bold text-xs mt-1 flex items-center gap-2">
+                <span>₹{Math.max(250, Math.round(srv.baseRatePerAcre * 0.65))}/hour</span>
+                <span className="text-slate-400">&bull;</span>
+                <span>₹{srv.baseRatePerAcre}/acre</span>
               </div>
 
               <p className="text-xs text-slate-600 mt-2 leading-relaxed line-clamp-2">

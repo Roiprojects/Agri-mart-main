@@ -92,26 +92,44 @@ export default function WarehousePortalPage() {
   const [stockInProduct, setStockInProduct] = useState('prod-001');
   const [stockInQty, setStockInQty] = useState(10);
   const [stockInNotes, setStockInNotes] = useState('Bulk factory consignment received from Bangalore hub');
+  const [editStockItem, setEditStockItem] = useState<InventoryItem | null>(null);
+  const [editQty, setEditQty] = useState(0);
+  const [editReserved, setEditReserved] = useState(0);
+  const [editThreshold, setEditThreshold] = useState(5);
 
-  const WAREHOUSES = [
+  const [warehousesList, setWarehousesList] = useState([
     { id: 'wh-hubballi', name: 'Hubballi Central Dark Warehouse', code: 'DWH-HBX-01', location: 'Tarihal Industrial Area' },
     { id: 'wh-dharwad', name: 'Dharwad Rural Fulfillment Hub', code: 'DWH-DWD-02', location: 'Belur Estate, PB Road' },
     { id: 'wh-belagavi', name: 'Belagavi Agro Logistics Center', code: 'DWH-IXG-03', location: 'Auto Nagar Industrial Area' },
     { id: 'wh-davanagere', name: 'Davanagere Central Agro Hub', code: 'DWH-DVG-04', location: 'Lokikere Road' },
     { id: 'wh-haveri', name: 'Haveri Agricultural Transit Hub', code: 'DWH-HVR-05', location: 'APMC Yard, PB Road' },
-  ];
+  ]);
 
+  const WAREHOUSES = warehousesList;
   const currentWh = WAREHOUSES.find((w) => w.id === selectedWarehouseId) || WAREHOUSES[0];
 
   const fetchData = async () => {
     setLoading(true);
     try {
-      const [ordersRes, invRes] = await Promise.all([
+      const [ordersRes, invRes, whRes] = await Promise.all([
         fetch(`/api/warehouse/orders?warehouseId=${selectedWarehouseId}`),
         fetch(`/api/warehouse/inventory?warehouseId=${selectedWarehouseId}`),
+        fetch('/api/admin/warehouses'),
       ]);
       const ordersData = await ordersRes.json();
       const invData = await invRes.json();
+      const whData = await whRes.json().catch(() => ({}));
+
+      if (whData?.warehouses && Array.isArray(whData.warehouses) && whData.warehouses.length > 0) {
+        setWarehousesList(
+          whData.warehouses.map((w: any) => ({
+            id: w.id,
+            name: w.name,
+            code: w.code || 'DWH-HUB',
+            location: w.address || w.location || 'Karnataka',
+          }))
+        );
+      }
 
       if (ordersData.success) setOrders(ordersData.orders || []);
       if (invData.success) {
@@ -123,6 +141,35 @@ export default function WarehousePortalPage() {
       setActionError('Failed to load warehouse data');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleSaveEditedStock = async () => {
+    if (!editStockItem) return;
+    try {
+      const res = await fetch('/api/admin/portals', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          panel: 'WAREHOUSE',
+          action: 'UPDATE_STOCK',
+          payload: {
+            warehouseId: selectedWarehouseId,
+            productId: editStockItem.productId,
+            quantity: editQty,
+            reservedQuantity: editReserved,
+            reorderThreshold: editThreshold,
+          },
+        }),
+      });
+      const json = await res.json();
+      if (json.success) {
+        setActionSuccess(`Updated stock & threshold for ${editStockItem.name}`);
+        setEditStockItem(null);
+        fetchData();
+      }
+    } catch {
+      setActionError('Failed to update stock');
     }
   };
 
@@ -621,7 +668,21 @@ export default function WarehousePortalPage() {
 
                 <div className="text-[10px] text-slate-500 mt-2 flex justify-between items-center">
                   <span>Reorder Level: {item.reorderThreshold}</span>
-                  <span className="font-semibold text-slate-700">₹{item.price.toLocaleString('en-IN')}</span>
+                  <div className="flex items-center gap-2">
+                    <span className="font-semibold text-slate-700">₹{item.price.toLocaleString('en-IN')}</span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setEditStockItem(item);
+                        setEditQty(item.quantity);
+                        setEditReserved(item.reservedQuantity);
+                        setEditThreshold(item.reorderThreshold);
+                      }}
+                      className="px-2 py-0.5 rounded bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold border border-blue-200 cursor-pointer"
+                    >
+                      Edit
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}
@@ -981,6 +1042,62 @@ export default function WarehousePortalPage() {
                 className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded-lg shadow-md transition"
               >
                 Post to Stock Ledger
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ADMIN EDIT STOCK & THRESHOLD MODAL */}
+      {editStockItem && (
+        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-2xl border border-slate-200 max-w-md w-full p-6 space-y-4 shadow-xl text-xs">
+            <h3 className="text-sm font-black text-slate-900">
+              Edit Inventory & Threshold — {editStockItem.name}
+            </h3>
+            <div className="space-y-3">
+              <div>
+                <label className="block font-bold text-slate-700 mb-1">On-Hand Quantity</label>
+                <input
+                  type="number"
+                  value={editQty}
+                  onChange={(e) => setEditQty(Number(e.target.value))}
+                  className="w-full border border-slate-300 rounded-lg p-2 font-bold"
+                />
+              </div>
+              <div>
+                <label className="block font-bold text-slate-700 mb-1">Reserved Quantity</label>
+                <input
+                  type="number"
+                  value={editReserved}
+                  onChange={(e) => setEditReserved(Number(e.target.value))}
+                  className="w-full border border-slate-300 rounded-lg p-2 font-bold"
+                />
+              </div>
+              <div>
+                <label className="block font-bold text-slate-700 mb-1">Reorder Threshold</label>
+                <input
+                  type="number"
+                  value={editThreshold}
+                  onChange={(e) => setEditThreshold(Number(e.target.value))}
+                  className="w-full border border-slate-300 rounded-lg p-2 font-bold"
+                />
+              </div>
+            </div>
+            <div className="flex justify-end gap-2 pt-2">
+              <button
+                type="button"
+                onClick={() => setEditStockItem(null)}
+                className="px-4 py-2 border border-slate-300 rounded-lg font-bold text-slate-700"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleSaveEditedStock}
+                className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-bold"
+              >
+                Save Inventory
               </button>
             </div>
           </div>

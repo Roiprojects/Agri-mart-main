@@ -4,7 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { SITE_CONFIG } from '@/lib/config';
-import { CatalogueService } from '@/lib/catalogue-service';
+import { ApiClient } from '@/lib/api-client';
 import { SEED_PRODUCTS, SEED_CATEGORIES } from '@/lib/seed-data';
 import { Breadcrumbs } from '@/components/ui/Breadcrumbs';
 import {
@@ -17,20 +17,38 @@ import {
 } from 'lucide-react';
 import ProductCard from '@/components/shop/ProductCard';
 import ProductDetailClient from '@/components/shop/ProductDetailClient';
+import ProductImageGallery from '@/components/shop/ProductImageGallery';
 
 interface ProductDetailPageProps {
   params: Promise<{ slug: string }>;
 }
 
-export async function generateStaticParams() {
-  const dbProducts = await CatalogueService.getProducts();
-  const slugs = new Set([...dbProducts.map((p) => p.slug), ...SEED_PRODUCTS.map((p) => p.slug)]);
-  return Array.from(slugs).map((slug) => ({ slug }));
+async function fetchDbProduct(slug: string) {
+  try {
+    const res = await ApiClient.getProductBySlug(slug);
+    if (res.success && res.data) return res.data;
+  } catch (e) {
+    // Fallback if backend temporarily unavailable during static generation
+  }
+  return null;
 }
+
+async function fetchAllDbProducts() {
+  try {
+    const res = await ApiClient.getProducts();
+    if (res.success && res.data) return res.data;
+  } catch (e) {
+    // Fallback
+  }
+  return [];
+}
+
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 export async function generateMetadata({ params }: ProductDetailPageProps): Promise<Metadata> {
   const resolvedParams = await params;
-  const dbProduct = await CatalogueService.getProductBySlug(resolvedParams.slug);
+  const dbProduct = await fetchDbProduct(resolvedParams.slug);
   const fallbackProduct = SEED_PRODUCTS.find((p) => p.slug === resolvedParams.slug);
   const product = dbProduct || fallbackProduct;
 
@@ -76,7 +94,7 @@ export async function generateMetadata({ params }: ProductDetailPageProps): Prom
 
 export default async function ProductDetailPage({ params }: ProductDetailPageProps) {
   const resolvedParams = await params;
-  const dbProduct = await CatalogueService.getProductBySlug(resolvedParams.slug);
+  const dbProduct = await fetchDbProduct(resolvedParams.slug);
   const fallbackProduct = SEED_PRODUCTS.find((p) => p.slug === resolvedParams.slug);
 
   const product = dbProduct || (fallbackProduct ? {
@@ -120,9 +138,9 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
   }
 
   const category = dbProduct?.category || SEED_CATEGORIES.find((c) => c.id === fallbackProduct?.categoryId);
-  const allProducts = await CatalogueService.getProducts();
-  const relatedProducts = allProducts
-    .filter((p) => p.id !== product.id && (!category || p.categoryId === category.id))
+  const allProducts = await fetchAllDbProducts();
+  const relatedProducts = (allProducts.length > 0 ? allProducts : SEED_PRODUCTS)
+    .filter((p: any) => p.id !== product.id && (!category || p.categoryId === category.id))
     .slice(0, 3);
 
   const canonicalUrl = `https://www.${SITE_CONFIG.domain}/products/${product.slug}`;
@@ -192,30 +210,13 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
 
       {/* Main Info Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
-        {/* Gallery */}
-        <div className="lg:col-span-6 space-y-4">
-          <div className="relative aspect-square w-full bg-slate-100 rounded-3xl overflow-hidden border border-slate-200 shadow-sm">
-            <Image
-              src={mainImage}
-              alt={product.name}
-              fill
-              className="object-cover"
-              priority
-            />
-          </div>
-
-          {images.length > 1 && (
-            <div className="grid grid-cols-4 gap-3">
-              {images.map((img: string, idx: number) => (
-                <div
-                  key={idx}
-                  className="relative aspect-square rounded-2xl overflow-hidden border border-slate-200 bg-slate-50"
-                >
-                  <Image src={img} alt="" fill className="object-cover" />
-                </div>
-              ))}
-            </div>
-          )}
+        {/* Interactive Gallery */}
+        <div className="lg:col-span-6 space-y-6">
+          <ProductImageGallery
+            images={images}
+            productName={product.name}
+            badge={product.isBestSeller ? 'Best Seller' : product.isFeatured ? 'Featured Input' : undefined}
+          />
 
           {/* Description Box */}
           <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-3">

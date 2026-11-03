@@ -10,7 +10,6 @@ const STAGE_DETAILS_TIMELINE = [
   {
     id: 1,
     title: 'Preparation of Soil',
-    titleKn: ' ',
     timing: 'Pre-Sowing (30 Days)',
     action: 'Conduct 12-parameter soil health audit. Shatter hardpans using 55HP reversible ploughs.',
     tools: 'Heavy Tractors, Multi-Speed Rotavators, Gypsum',
@@ -19,7 +18,6 @@ const STAGE_DETAILS_TIMELINE = [
   {
     id: 2,
     title: 'Sowing & Seed Treatment',
-    titleKn: '  ',
     timing: 'Onset of Monsoon',
     action: 'Bio-prime certified hybrid seeds with Trichoderma & PSB to eliminate seedling damping-off.',
     tools: 'Certified Hybrids, Bio-Consortia, Pneumatic Drills',
@@ -28,7 +26,6 @@ const STAGE_DETAILS_TIMELINE = [
   {
     id: 3,
     title: 'Manure & Fertilizers',
-    titleKn: '  ',
     timing: '15-45 DAS (Vegetative)',
     action: 'Split nitrogen application into 3 doses. Top-dress chelated Zinc-EDTA and Boron 20%.',
     tools: 'Organic NPK Bio-Fertilizers, Micronutrients, Broadcasters',
@@ -37,7 +34,6 @@ const STAGE_DETAILS_TIMELINE = [
   {
     id: 4,
     title: 'Precision Irrigation',
-    titleKn: ' ',
     timing: 'Critical Growth Phases',
     action: 'Deploy drip fertigation kits to save 50% water while maintaining optimal soil field capacity.',
     tools: 'Inline Drip Systems, Solar Water Pumps, Tensiometers',
@@ -46,7 +42,6 @@ const STAGE_DETAILS_TIMELINE = [
   {
     id: 5,
     title: 'Weed & Pest Protection',
-    titleKn: '   ',
     timing: '25-60 DAS',
     action: 'Mechanized inter-row rotary weeding combined with GPS drone canopy micron-spraying.',
     tools: '7HP Power Weeders, 16L Agri Drones, Neem Bio-Care',
@@ -55,7 +50,6 @@ const STAGE_DETAILS_TIMELINE = [
   {
     id: 6,
     title: 'Harvesting Mechanization',
-    titleKn: ' ',
     timing: 'Physiological Maturity',
     action: 'Rapid field cutting with self-propelled reapers to eliminate shatter loss below 1.5%.',
     tools: 'Self-Propelled Paddy Reapers, Multi-Crop Harvesters',
@@ -64,7 +58,6 @@ const STAGE_DETAILS_TIMELINE = [
   {
     id: 7,
     title: 'Safe Grain Storage',
-    titleKn: '  ',
     timing: 'Post-Harvest',
     action: 'Solar-dry grains to <12% moisture and seal inside multi-layer hermetic PICS grain bags.',
     tools: 'Hermetic Storage Bags, HDPE Tarpaulins, Moisture Meters',
@@ -118,7 +111,7 @@ export default function CropJourneyTimeline() {
                   <span className="text-[10px] text-slate-400 font-mono">Stage 0{stage.id}</span>
                 </div>
                 <div className="text-xs font-extrabold leading-tight">{stage.title}</div>
-                <div className="text-[10px] text-agri-secondary mt-0.5 opacity-80">{stage.titleKn}</div>
+                <div className="text-[10px] text-agri-secondary mt-0.5 opacity-80">{stage.timing}</div>
               </button>
             );
           })}
@@ -135,7 +128,6 @@ export default function CropJourneyTimeline() {
             <Badge variant="brand" size="md">
               Stage {activeStage.id} &bull; {activeStage.timing}
             </Badge>
-            <span className="text-xs font-bold text-agri-secondary">{activeStage.titleKn}</span>
           </div>
 
           <h3 className="text-xl sm:text-2xl font-black text-slate-900 leading-snug">

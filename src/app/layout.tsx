@@ -2,10 +2,7 @@ import type { Metadata } from 'next';
 import { Plus_Jakarta_Sans } from 'next/font/google';
 import './globals.css';
 import { SITE_CONFIG } from '@/lib/config';
-import Header from '@/components/layout/Header';
-import Footer from '@/components/layout/Footer';
-import RoleSwitcher from '@/components/common/RoleSwitcher';
-import AIChatbotWrapper from '@/components/ai/AIChatbotWrapper';
+import AppChromeWrapper from '@/components/layout/AppChromeWrapper';
 
 const plusJakartaSans = Plus_Jakarta_Sans({
   subsets: ['latin'],
@@ -64,7 +61,7 @@ export default function RootLayout({
     '@context': 'https://schema.org',
     '@type': 'Organization',
     name: SITE_CONFIG.name,
-    alternateName: [SITE_CONFIG.nameKannada, 'Agri Mart', 'GreenShield Industries'],
+    alternateName: ['Agri Mart', 'GreenShield Industries'],
     url: `https://www.${SITE_CONFIG.domain}`,
     logo: `https://www.${SITE_CONFIG.domain}/images/agrimart_logo_en_transparent.png`,
     contactPoint: {
@@ -72,7 +69,7 @@ export default function RootLayout({
       telephone: SITE_CONFIG.tollFree,
       contactType: 'customer service',
       areaServed: 'IN',
-      availableLanguage: ['en', 'kn', 'hi'],
+      availableLanguage: ['en'],
     },
   };
 
@@ -80,17 +77,17 @@ export default function RootLayout({
     <html lang="en" className={plusJakartaSans.variable}>
       <head>
         <script
+          dangerouslySetInnerHTML={{
+            __html: `try{['agrimart_lang','lang','language','isKannada','agri_kannada'].forEach(function(k){localStorage.removeItem(k);sessionStorage.removeItem(k);});document.documentElement.lang='en';}catch(e){}`,
+          }}
+        />
+        <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
-      <body className="min-h-screen flex flex-col font-sans bg-agri-cream text-agri-dark antialiased selection:bg-agri-green selection:text-white">
-        <RoleSwitcher />
-        <Header />
-        <main className="flex-1">{children}</main>
-        <Footer />
-        {/* Floating AI Farm Assistant removed as requested */}
-        {/* <AIChatbotWrapper /> */}
+      <body className="min-h-screen font-sans bg-agri-cream text-agri-dark antialiased selection:bg-agri-green selection:text-white">
+        <AppChromeWrapper>{children}</AppChromeWrapper>
       </body>
     </html>
   );

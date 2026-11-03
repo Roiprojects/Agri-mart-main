@@ -1,11 +1,22 @@
 import React from 'react';
 import Link from 'next/link';
-import { devDb } from '@/lib/dev-db';
+import { ApiClient } from '@/lib/api-client';
 import { ArrowLeft, Tractor, Calendar, ShieldCheck, AlertTriangle, CheckCircle2, Clock, Truck } from 'lucide-react';
 import { Badge } from '@/components/ui/Badge';
 
-export default function CustomerRentalsPage() {
-  const bookings = devDb.getRentalBookings({ userId: 'usr-farmer-01' });
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
+export default async function CustomerRentalsPage() {
+  let bookings: any[] = [];
+  try {
+    const res = await ApiClient.getCustomerRentals('');
+    if (res.success && res.data) {
+      bookings = res.data;
+    }
+  } catch (e) {
+    // Fallback
+  }
 
   const getStatusBadge = (status: string) => {
     switch (status) {

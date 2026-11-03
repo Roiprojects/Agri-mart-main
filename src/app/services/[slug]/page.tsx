@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { SITE_CONFIG } from '@/lib/config';
 import { SERVICES_CATALOGUE, getServiceBySlug } from '@/lib/services-data';
+import { ApiClient } from '@/lib/api-client';
 import { Breadcrumbs } from '@/components/ui/Breadcrumbs';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
@@ -26,15 +27,18 @@ interface ServiceDetailPageProps {
   params: Promise<{ slug: string }>;
 }
 
-export async function generateStaticParams() {
-  return SERVICES_CATALOGUE.map((service) => ({
-    slug: service.slug,
-  }));
-}
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 export async function generateMetadata({ params }: ServiceDetailPageProps): Promise<Metadata> {
   const resolvedParams = await params;
-  const service = getServiceBySlug(resolvedParams.slug);
+  let service = getServiceBySlug(resolvedParams.slug);
+  try {
+    const res = await ApiClient.getServicesCatalogue({ slug: resolvedParams.slug });
+    if (res?.success && (res as any).service) {
+      service = (res as any).service;
+    }
+  } catch {}
 
   if (!service) {
     return { title: 'Service Not Found | AGRI MART MEGA' };
@@ -68,7 +72,16 @@ export async function generateMetadata({ params }: ServiceDetailPageProps): Prom
 
 export default async function ServiceDetailPage({ params }: ServiceDetailPageProps) {
   const resolvedParams = await params;
-  const service = getServiceBySlug(resolvedParams.slug);
+  let service = getServiceBySlug(resolvedParams.slug);
+
+  try {
+    const res = await ApiClient.getServicesCatalogue({ slug: resolvedParams.slug });
+    if (res?.success && (res as any).service) {
+      service = (res as any).service;
+    }
+  } catch (e) {
+    console.error('ServiceDetailPage fetch error:', e);
+  }
 
   if (!service) {
     notFound();
@@ -202,10 +215,10 @@ export default async function ServiceDetailPage({ params }: ServiceDetailPagePro
 
                 <div className="p-4 bg-emerald-50/70 rounded-xl border border-emerald-200/80 space-y-1">
                   <div className="text-emerald-900 font-medium flex items-center gap-1.5">
-                    <IndianRupee className="w-4 h-4 text-emerald-700" /> Standard Base Rate:
+                    <IndianRupee className="w-4 h-4 text-emerald-700" /> Standard Hourly &amp; Acre Rates:
                   </div>
                   <div className="font-black text-emerald-900 text-base">
-                    ₹{service.baseRatePerAcre} / acre
+                    ₹{Math.max(250, Math.round(service.baseRatePerAcre * 0.65))} / hour &bull; ₹{service.baseRatePerAcre} / acre
                   </div>
                 </div>
 
@@ -237,12 +250,9 @@ export default async function ServiceDetailPage({ params }: ServiceDetailPagePro
                       <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-1">
                         <div>
                           <span className="font-extrabold text-sm text-slate-900">{jw.name}</span>
-                          {jw.nameKn && (
-                            <span className="text-[11px] text-slate-500 block">{jw.nameKn}</span>
-                          )}
                         </div>
                         <span className="bg-emerald-100 text-emerald-900 font-black px-3 py-1 rounded-lg text-xs self-start sm:self-auto border border-emerald-300">
-                          ₹{jw.rate} <span className="font-normal text-[10px]">/{jw.rateUnit}</span>
+                          ₹{Math.max(200, Math.round(jw.rate * 0.65))} <span className="font-normal text-[10px]">/hour</span> &bull; ₹{jw.rate} <span className="font-normal text-[10px]">/{jw.rateUnit}</span>
                         </span>
                       </div>
 
@@ -299,11 +309,14 @@ export default async function ServiceDetailPage({ params }: ServiceDetailPagePro
                 </p>
               </div>
 
-              <div className="p-4 bg-emerald-50 rounded-2xl border border-emerald-200 text-center">
-                <span className="text-xs text-emerald-800 font-medium">Starting from</span>
-                <div className="text-3xl font-black text-slate-950 mt-0.5">
+              <div className="p-4 bg-emerald-50 rounded-2xl border border-emerald-200 text-center space-y-1">
+                <span className="text-xs text-emerald-800 font-medium">Available on Hourly &amp; Acre Basis</span>
+                <div className="text-2xl font-black text-slate-950">
+                  ₹{Math.max(250, Math.round(service.baseRatePerAcre * 0.65))}
+                  <span className="text-xs font-normal text-slate-600"> / hour</span>
+                  <span className="text-slate-300 mx-2">|</span>
                   ₹{service.baseRatePerAcre}
-                  <span className="text-sm font-normal text-slate-600"> / acre</span>
+                  <span className="text-xs font-normal text-slate-600"> / acre</span>
                 </div>
               </div>
 
@@ -321,6 +334,15 @@ export default async function ServiceDetailPage({ params }: ServiceDetailPagePro
                 >
                   <PhoneCall className="w-3.5 h-3.5 text-emerald-700" /> Agronomist Booking Desk: {SITE_CONFIG.supportPhone}
                 </a>
+              </div>
+
+              <div className="p-3 bg-emerald-50/60 rounded-xl border border-emerald-200 text-[11px] text-emerald-950 space-y-1.5">
+                <div className="font-bold text-slate-900">Accepted Payment Methods:</div>
+                <div className="flex flex-wrap gap-1.5">
+                  <span className="px-2 py-0.5 bg-white rounded-md border border-emerald-200 font-bold text-emerald-800">UPI Pay</span>
+                  <span className="px-2 py-0.5 bg-white rounded-md border border-emerald-200 font-bold text-emerald-800">NetBanking</span>
+                  <span className="px-2 py-0.5 bg-white rounded-md border border-emerald-200 font-bold text-emerald-800">Cash on Delivery</span>
+                </div>
               </div>
 
               <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 text-[11px] text-slate-600 space-y-1">

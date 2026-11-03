@@ -44,7 +44,7 @@ export default function TermsPage() {
         <section className="space-y-3">
           <h2 className="text-lg font-bold text-slate-900">1. Acceptance of Terms</h2>
           <p>
-            By using the {SITE_CONFIG.name} portal, purchasing agricultural machinery, booking on-field services, or entering into farm equipment rental agreements, you agree to comply with these terms, established under the laws of Karnataka and India.
+            By using the {SITE_CONFIG.name} platform, purchasing agricultural machinery, booking on-field services, or entering into farm equipment rental agreements, you agree to comply with these terms, established under the laws of Karnataka and India.
           </p>
         </section>
 

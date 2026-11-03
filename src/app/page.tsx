@@ -9,11 +9,13 @@ import {
   SEED_RENTAL_PRODUCTS,
   SEED_BLOG_POSTS,
 } from '@/lib/seed-data';
+import { ApiClient } from '@/lib/api-client';
 import FieldContourDecoration from '@/components/home/FieldContourDecoration';
 import HeroBannerSlider from '@/components/home/HeroBannerSlider';
 import CropStageFilter from '@/components/home/CropStageFilter';
 import CropJourneyTimeline from '@/components/home/CropJourneyTimeline';
 import ProductCard from '@/components/shop/ProductCard';
+import YmmFilterWidget from '@/components/shop/YmmFilterWidget';
 import { Accordion, AccordionItemData } from '@/components/ui/Accordion';
 import { Badge } from '@/components/ui/Badge';
 import {
@@ -56,10 +58,44 @@ export const metadata: Metadata = {
   },
 };
 
-export default function HomePage() {
-  const featuredProducts = SEED_PRODUCTS.slice(0, 4);
-  const featuredRentals = SEED_RENTAL_PRODUCTS;
-  const topServices = SITE_CONFIG.services.slice(0, 4);
+export const revalidate = 60;
+
+export default async function HomePage() {
+  const [productsRes, categoriesRes, rentalsRes, servicesRes] = await Promise.all([
+    ApiClient.getProducts().catch(() => null),
+    ApiClient.getCategories().catch(() => null),
+    ApiClient.getRentals().catch(() => null),
+    ApiClient.getServicesCatalogue().catch(() => null),
+  ]);
+
+  const featuredProducts = productsRes?.data && productsRes.data.length > 0
+    ? productsRes.data.slice(0, 4)
+    : SEED_PRODUCTS.slice(0, 4);
+
+  const displayCategories = categoriesRes?.data && categoriesRes.data.length > 0
+    ? categoriesRes.data.slice(0, 6).map((c: any) => ({
+        id: c.id,
+        name: c.name,
+        slug: c.slug,
+        image: c.image || 'https://images.unsplash.com/photo-1592982537447-6f2a6a0c7c18?auto=format&fit=crop&w=600&q=80',
+      }))
+    : SEED_CATEGORIES.slice(0, 6);
+
+  const featuredRentals = rentalsRes?.data && rentalsRes.data.length > 0
+    ? rentalsRes.data.slice(0, 3)
+    : SEED_RENTAL_PRODUCTS;
+
+  const topServices = servicesRes?.services && servicesRes.services.length > 0
+    ? servicesRes.services.slice(0, 4).map((s: any) => ({
+        id: s.id,
+        name: s.name,
+        slug: s.slug,
+        description: s.shortDescription || s.description,
+        rate: `₹${s.baseRatePerAcre}/acre`,
+        icon: s.iconName || 'Tractor',
+      }))
+    : SITE_CONFIG.services.slice(0, 4);
+
   const blogs = SEED_BLOG_POSTS;
 
   // FAQ items for Section 13
@@ -117,76 +153,18 @@ export default function HomePage() {
   return (
     <div className="space-y-16 sm:space-y-24 pb-20 bg-agri-cream/30">
       {/* =========================================================================
-          SECTION 1: HERO (Split Composition + 4-Banner Showcase + Contour Graphics)
+          SECTION 1: HERO (Edge-to-Edge Full-Width Banner & Viewport-Optimized)
          ========================================================================= */}
-      <section className="relative bg-gradient-to-b from-white via-agri-cream to-white pt-6 pb-12 lg:pt-12 lg:pb-18 border-b border-agri-border/60 overflow-hidden">
-        {/* Subtle gently animated field contour lines */}
-        <FieldContourDecoration />
-
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-            {/* Left Content Side with Staggered Entrance Animation */}
-            <div className="lg:col-span-6 space-y-6 text-left">
-              <div className="inline-flex items-center gap-2 bg-agri-pale border border-emerald-200/80 px-3.5 py-1.5 rounded-full text-xs font-bold text-agri-green-dark shadow-xs animate-fadeSlideUp">
-                <Sparkles className="w-3.5 h-3.5 text-agri-yellow-dark" />
-                <span>Farm Equipment &bull; Green Care &bull; Services</span>
-              </div>
-
-              <h1 className="text-3xl sm:text-5xl lg:text-5.5xl font-black text-agri-dark tracking-tight leading-[1.15] animate-fadeSlideUp [animation-delay:100ms]">
-                Everything Your Farm Needs.{' '}
-                <span className="text-agri-green underline decoration-agri-yellow decoration-4 underline-offset-8">
-                  In One Place.
-                </span>
-              </h1>
-
-              <p className="text-sm sm:text-base text-agri-secondary leading-relaxed max-w-xl animate-fadeSlideUp [animation-delay:200ms]">
-                Shop farm essentials, rent equipment, book agricultural services, and find guidance
-                for every stage of your crop.
-              </p>
-
-              {/* Primary Dual Action Buttons */}
-              <div className="flex flex-wrap items-center gap-3.5 pt-2 animate-fadeSlideUp [animation-delay:300ms]">
-                <Link
-                  href="/shop"
-                  className="bg-agri-green hover:bg-agri-green-dark text-white font-extrabold text-sm sm:text-base px-6 sm:px-8 py-3.5 sm:py-4 rounded-2xl shadow-md hover:shadow-lg transition-all duration-200 transform hover:-translate-y-0.5 active:translate-y-0 flex items-center gap-2.5"
-                >
-                  <span>Shop Products</span>
-                  <ArrowRight className="w-4 h-4" />
-                </Link>
-
-                <Link
-                  href="/crop-guidance"
-                  className="bg-white hover:bg-agri-cream text-agri-green-dark border-2 border-agri-green/30 hover:border-agri-green font-bold text-sm sm:text-base px-6 sm:px-8 py-3.5 sm:py-4 rounded-2xl transition-all duration-200 shadow-xs flex items-center gap-2.5 transform hover:-translate-y-0.5 active:translate-y-0"
-                >
-                  <Sprout className="w-4 h-4 text-agri-green" />
-                  <span>Get Crop Guidance</span>
-                </Link>
-              </div>
-
-              {/* Trust Indicators Pill Grid */}
-              <div className="grid grid-cols-3 gap-2 pt-4 border-t border-agri-border/60 text-[11px] sm:text-xs text-agri-secondary animate-fadeSlideUp [animation-delay:400ms]">
-                <div className="flex items-center gap-1.5 font-semibold text-agri-dark">
-                  <CheckCircle2 className="w-4 h-4 text-agri-green shrink-0" />
-                  <span>40-60km Dark Hubs</span>
-                </div>
-                <div className="flex items-center gap-1.5 font-semibold text-agri-dark">
-                  <CheckCircle2 className="w-4 h-4 text-agri-green shrink-0" />
-                  <span>1-Year Free AMC</span>
-                </div>
-                <div className="flex items-center gap-1.5 font-semibold text-agri-dark">
-                  <CheckCircle2 className="w-4 h-4 text-agri-green shrink-0" />
-                  <span>GPS Field Mechanization</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Right Side: 4-Banner Interactive Showcase Slider */}
-            <div className="lg:col-span-6 relative animate-fadeIn">
-              <HeroBannerSlider />
-            </div>
-          </div>
-        </div>
+      <section className="relative w-full overflow-hidden border-b border-agri-border/60">
+        <HeroBannerSlider />
       </section>
+
+      {/* =========================================================================
+          YMM FILTER WIDGET (Controlled by Filter (YMM) settings: displayOnHomePage)
+         ========================================================================= */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8 sm:-mt-12 relative z-20">
+        <YmmFilterWidget />
+      </div>
 
       {/* =========================================================================
           SECTION 2: SHOP BY CATEGORY (Asymmetrical Visual Tiles)
@@ -210,7 +188,7 @@ export default function HomePage() {
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-          {SEED_CATEGORIES.map((category) => (
+          {displayCategories.map((category) => (
             <Link
               key={category.id}
               href={`/categories/${category.slug}`}
@@ -301,7 +279,7 @@ export default function HomePage() {
             <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
               Describe your crop symptom or upload a leaf photo. Our AI advisor identifies nutrient
               deficiencies, fungal blights, and pest attacks according to Karnataka University of
-              Agricultural Sciences (UAS) standards in Kannada and English.
+              Agricultural Sciences (UAS) agronomic standards.
             </p>
 
             {/* Quick Symptom Chips */}
@@ -560,10 +538,10 @@ export default function HomePage() {
               </div>
             </div>
             <Link
-              href="/repairs"
+              href="/dealers"
               className="text-xs font-bold text-agri-green hover:underline shrink-0"
             >
-              Track Existing Repair Job Card &rarr;
+              Find Authorized Dealer Workshops &rarr;
             </Link>
           </div>
         </div>
@@ -621,9 +599,9 @@ export default function HomePage() {
             <div className="w-12 h-12 rounded-2xl bg-amber-100 text-amber-800 flex items-center justify-center font-black">
               <PhoneCall className="w-6 h-6" />
             </div>
-            <h3 className="font-extrabold text-base text-slate-900">Kisan Helpline</h3>
+            <h3 className="font-extrabold text-base text-slate-900">Farmer Helpline</h3>
             <p className="text-xs text-slate-600 leading-relaxed">
-              Toll-free telephone assistance in Kannada, Hindi, and English at {SITE_CONFIG.tollFree}.
+              Toll-free telephone assistance for farmers at {SITE_CONFIG.tollFree}.
             </p>
           </div>
         </div>

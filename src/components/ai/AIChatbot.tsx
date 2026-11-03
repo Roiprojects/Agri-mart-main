@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React, { useState } from 'react';
 import { Bot, Sparkles, X, Send } from 'lucide-react';
@@ -19,7 +19,7 @@ export default function AIChatbot() {
     {
       id: '1',
       sender: 'bot',
-      text: 'Namaskara! I am your AgriMart AI Farming Assistant. How can I help you today?',
+      text: 'Hello! I am your AgriMart AI Farming Assistant. How can I help you today?',
       timestamp: 'Just now',
     },
     {
@@ -63,8 +63,8 @@ export default function AIChatbot() {
         link = { label: 'Book On-Field Service', href: '/services/book' };
       } else if (lower.includes('repair') || lower.includes('job card') || lower.includes('mechanic')) {
         replyText =
-          'AgriMart operates 1,500+ dealer service centers with 9-stage job cards, spare parts inventory, and warranty tracking.';
-        link = { label: 'Workshop & Repairs Portal', href: '/repairs' };
+          'AgriMart operates 1,500+ authorized dealer service centers with certified technicians, genuine OEM spare parts, and warranty support across Karnataka.';
+        link = { label: 'Authorized Dealer Workshops', href: '/dealers' };
       }
 
       const botReply: ChatMessage = {
@@ -87,7 +87,7 @@ export default function AIChatbot() {
         aria-label="Open AI Farm Assistant"
       >
         <Sparkles className="w-5 h-5 text-amber-300 animate-pulse" />
-        <span className="hidden sm:inline text-xs font-bold uppercase tracking-wider">AI Kisan Chat</span>
+        <span className="hidden sm:inline text-xs font-bold uppercase tracking-wider">AI Farm Assistant</span>
       </button>
 
       {isOpen && (
@@ -98,7 +98,7 @@ export default function AIChatbot() {
                 <Bot className="w-4 h-4 text-amber-300" />
               </div>
               <div>
-                <div className="text-xs font-bold">AgriMart AI Kisan Assistant</div>
+                <div className="text-xs font-bold">AgriMart AI Farm Assistant</div>
                 <div className="text-[10px] text-emerald-200">{SITE_CONFIG.domain} Online</div>
               </div>
             </div>

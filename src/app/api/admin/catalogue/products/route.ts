@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { CatalogueService } from '@/lib/catalogue-service';
 import { devDb } from '@/lib/dev-db';
 
+// Catalogue products admin route with full nopCommerce pricing and metadata support
 export async function GET() {
   const products = devDb.getProducts({ onlyPublished: false });
   const fullProducts = products.map((p) => devDb.getProductWithDetails(p.id));
@@ -11,6 +12,30 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
+
+    // Support batch updates for bulk editing
+    if (Array.isArray(body)) {
+      const results = [];
+      for (const item of body) {
+        if (item.id) {
+          const existing = devDb.getProductById(item.id);
+          if (existing) {
+            const updated = await CatalogueService.saveProduct({
+              ...existing,
+              ...item,
+            });
+            results.push(updated);
+          }
+        }
+      }
+      return NextResponse.json({
+        success: true,
+        count: results.length,
+        data: results,
+        message: `${results.length} product(s) updated successfully.`,
+      });
+    }
+
     if (!body.name || !body.sku) {
       return NextResponse.json({ success: false, message: 'Product name and SKU are required.' }, { status: 400 });
     }

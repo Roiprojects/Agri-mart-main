@@ -9,16 +9,16 @@ import { Badge } from '@/components/ui/Badge';
 import { Calendar, Clock, ArrowRight, User, BookOpen } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'Agronomy Guides & Farm Mechanization Blog | AGRI MART MEGA',
+  title: 'Farming Knowledge & Practical Machinery Guides | AGRI MART MEGA',
   description:
-    'Scientific crop guidance, power weeder maintenance tips, agricultural drone spraying guides, and soil organic carbon management for Karnataka farmers.',
+    'Practical equipment guides, soil preparation fundamentals, water conservation strategies, and crop cycle planning from Agri Mart Editorial.',
   alternates: {
     canonical: `https://www.${SITE_CONFIG.domain}/blog`,
   },
   openGraph: {
-    title: 'Agronomy Guides & Mechanization Insights | AGRI MART MEGA',
+    title: 'Farming Knowledge & Practical Machinery Guides | AGRI MART MEGA',
     description:
-      'Explore research-backed farming techniques, machinery maintenance, and crop package of practices.',
+      'Practical guides for equipment choice, soil preparation, water efficiency, and crop cycle planning.',
     url: `https://www.${SITE_CONFIG.domain}/blog`,
     siteName: SITE_CONFIG.name,
     locale: 'en_IN',
@@ -27,7 +27,7 @@ export const metadata: Metadata = {
 };
 
 export default function BlogPage() {
-  const breadcrumbItems = [{ label: 'Home', href: '/' }, { label: 'Blog & Insights' }];
+  const breadcrumbItems = [{ label: 'Home', href: '/' }, { label: 'Blogs' }];
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
@@ -36,14 +36,13 @@ export default function BlogPage() {
       {/* Hero Header */}
       <div className="bg-gradient-to-r from-brand-darkGreen via-slate-900 to-emerald-950 text-white rounded-3xl p-6 sm:p-10 shadow-lg">
         <Badge variant="warning" size="sm">
-          Kisan Knowledge Hub
+          Agri Mart Editorial
         </Badge>
         <h1 className="text-2xl sm:text-4xl font-extrabold mt-2 tracking-tight">
-          Agronomy & Machinery Insights
+          Practical Farming &amp; Equipment Guides
         </h1>
         <p className="text-xs sm:text-sm text-emerald-100 mt-2 max-w-2xl leading-relaxed">
-          Scientific farming advice, crop stage schedules, equipment maintenance protocols, and
-          soil diagnostics curated by UAS Dharwad agronomists and GreenShield engineers.
+          Clear, actionable guides on soil preparation, equipment selection, water efficiency, maintenance, and seasonal crop cycles to support farmers at every stage.
         </p>
       </div>
 

@@ -46,7 +46,7 @@ export default function CustomerOrdersPage() {
       const res = await fetch(`/api/orders/${orderId}/cancel`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ reason: 'Farmer cancelled via online account portal' }),
+        body: JSON.stringify({ reason: 'Farmer cancelled via online account' }),
       });
       const data = await res.json();
       if (data.success) {

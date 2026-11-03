@@ -22,10 +22,10 @@ export default function NotFound() {
           <Compass className="w-10 h-10 animate-spin-slow" />
         </div>
 
-        {/* Heading & Bilingual Explanation */}
+        {/* Heading & Explanation */}
         <div className="space-y-3">
           <div className="inline-block bg-agri-pale text-agri-green-dark text-xs font-black uppercase tracking-widest px-3 py-1 rounded-full border border-emerald-200">
-            Error 404 &bull;  
+            Error 404 &bull; Page Not Found
           </div>
           <h1 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">
             We Can’t Find That Field or Page

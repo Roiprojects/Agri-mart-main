@@ -3,7 +3,6 @@ import type { NextConfig } from 'next';
 const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3010';
 
 const nextConfig: NextConfig = {
-  output: 'standalone',
   reactStrictMode: false,
   typescript: {
     ignoreBuildErrors: true,

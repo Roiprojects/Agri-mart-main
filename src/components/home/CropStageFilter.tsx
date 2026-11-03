@@ -9,13 +9,13 @@ import { Sprout, Layers, ArrowRight } from 'lucide-react';
 import { Badge } from '@/components/ui/Badge';
 
 const CROPS = [
-  { id: 'all', name: 'All Crops', nameKn: '' },
-  { id: 'Paddy', name: 'Paddy / Rice', nameKn: '' },
-  { id: 'Cotton', name: 'Cotton', nameKn: '' },
-  { id: 'Sugarcane', name: 'Sugarcane', nameKn: '' },
-  { id: 'Maize', name: 'Maize / Corn', nameKn: '' },
-  { id: 'Chili', name: 'Byadgi Chili', nameKn: '' },
-  { id: 'Groundnut', name: 'Groundnut', nameKn: '' },
+  { id: 'all', name: 'All Crops' },
+  { id: 'Paddy', name: 'Paddy / Rice' },
+  { id: 'Cotton', name: 'Cotton' },
+  { id: 'Sugarcane', name: 'Sugarcane' },
+  { id: 'Maize', name: 'Maize / Corn' },
+  { id: 'Chili', name: 'Byadgi Chili' },
+  { id: 'Groundnut', name: 'Groundnut' },
 ];
 
 export default function CropStageFilter() {
@@ -53,7 +53,6 @@ export default function CropStageFilter() {
                 }`}
               >
                 <span>{crop.name}</span>
-                <span className="text-[10px] opacity-80 ml-1">({crop.nameKn})</span>
               </button>
             ))}
           </div>

@@ -1,5 +1,6 @@
 import { devDb, DbProduct, DbCategory, DbBrand, DbCoupon, DbReview } from './dev-db';
 import { revalidatePath } from 'next/cache';
+import { dispatchFrontendRevalidation } from './revalidation-dispatcher';
 
 export interface CatalogueFilters {
   categoryId?: string;
@@ -61,7 +62,7 @@ export class CatalogueService {
   static async saveProduct(productData: any): Promise<DbProduct> {
     const saved = devDb.saveProduct(productData);
 
-    // Deliberate Cache Revalidation across public storefront pages
+    // Revalidate frontend Next.js server caches across all relevant routes
     try {
       revalidatePath('/shop');
       revalidatePath('/products/' + saved.slug);
@@ -71,8 +72,16 @@ export class CatalogueService {
         if (cat) revalidatePath('/categories/' + cat.slug);
       }
       revalidatePath('/crop-guidance');
+
+      // Dispatch to Frontend server on port 3010
+      await dispatchFrontendRevalidation({
+        event: 'PRODUCT_UPDATED',
+        paths: ['/', '/shop', `/products/${saved.slug}`, '/crop-guidance'],
+        tags: ['products', 'catalogue', `product-${saved.slug}`],
+        entityId: saved.id,
+      });
     } catch (e) {
-      // Revalidation within route handlers / server actions
+      // Revalidation error handling
     }
 
     return saved;
@@ -88,6 +97,13 @@ export class CatalogueService {
       if (slug) revalidatePath('/products/' + slug);
       revalidatePath('/');
       revalidatePath('/crop-guidance');
+
+      await dispatchFrontendRevalidation({
+        event: 'PRODUCT_DELETED',
+        paths: ['/', '/shop', '/crop-guidance'],
+        tags: ['products', 'catalogue'],
+        entityId: id,
+      });
     } catch (e) {}
 
     return deleted;
@@ -100,6 +116,13 @@ export class CatalogueService {
       revalidatePath('/shop');
       revalidatePath('/categories/' + saved.slug);
       revalidatePath('/');
+
+      await dispatchFrontendRevalidation({
+        event: 'CATEGORY_UPDATED',
+        paths: ['/', '/shop', `/categories/${saved.slug}`],
+        tags: ['categories'],
+        entityId: saved.id,
+      });
     } catch (e) {}
 
     return saved;

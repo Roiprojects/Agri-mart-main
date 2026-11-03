@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { SITE_CONFIG } from '@/lib/config';
 import { SEED_RENTAL_PRODUCTS } from '@/lib/seed-data';
-import { devDb } from '@/lib/dev-db';
+import { ApiClient } from '@/lib/api-client';
 import { Breadcrumbs } from '@/components/ui/Breadcrumbs';
 import { Badge } from '@/components/ui/Badge';
 import RentalBookingCalendar from '@/components/rentals/RentalBookingCalendar';
@@ -23,19 +23,22 @@ interface RentalDetailPageProps {
   params: Promise<{ slug: string }>;
 }
 
-export async function generateStaticParams() {
-  const dbRentals = devDb.getRentalProducts();
-  if (dbRentals && dbRentals.length > 0) {
-    return dbRentals.map((machine) => ({ slug: machine.slug }));
+async function fetchDbRental(slug: string) {
+  try {
+    const res = await ApiClient.getRentalBySlug(slug);
+    if (res.success && res.data) return res.data;
+  } catch (e) {
+    // Fallback
   }
-  return SEED_RENTAL_PRODUCTS.map((machine) => ({
-    slug: machine.slug,
-  }));
+  return null;
 }
+
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 export async function generateMetadata({ params }: RentalDetailPageProps): Promise<Metadata> {
   const resolvedParams = await params;
-  const dbProduct = devDb.getRentalProductBySlug(resolvedParams.slug);
+  const dbProduct = await fetchDbRental(resolvedParams.slug);
   const seedProduct = SEED_RENTAL_PRODUCTS.find((r) => r.slug === resolvedParams.slug);
   const machine = dbProduct || seedProduct;
 
@@ -58,7 +61,7 @@ export async function generateMetadata({ params }: RentalDetailPageProps): Promi
       description,
       url: canonical,
       siteName: SITE_CONFIG.name,
-      images: machine.images.map((img) => ({
+      images: machine.images.map((img: string) => ({
         url: img,
         width: 800,
         height: 600,
@@ -78,7 +81,7 @@ export async function generateMetadata({ params }: RentalDetailPageProps): Promi
 
 export default async function RentalDetailPage({ params }: RentalDetailPageProps) {
   const resolvedParams = await params;
-  const dbProduct = devDb.getRentalProductBySlug(resolvedParams.slug);
+  const dbProduct = await fetchDbRental(resolvedParams.slug);
   const seedProduct = SEED_RENTAL_PRODUCTS.find((r) => r.slug === resolvedParams.slug);
   const machine = (dbProduct || seedProduct) as any;
 
@@ -216,25 +219,31 @@ export default async function RentalDetailPage({ params }: RentalDetailPageProps
               {/* Machine Rental Rates Slab */}
               <div className="space-y-2 pt-2">
                 <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500">
-                  Transparent Rental Rate Structure
+                  Transparent Rental Rate Structure (Hourly &bull; Daily &bull; Weekly &bull; Monthly)
                 </h3>
-                <div className="grid grid-cols-3 gap-3 text-center">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
+                  <div className="p-3 bg-emerald-50 rounded-xl border border-emerald-200">
+                    <div className="text-xs text-emerald-800 font-semibold">Hourly Rate</div>
+                    <div className="text-base font-black text-emerald-900 mt-0.5">
+                      ₹{(machine.hourlyRate || Math.max(50, Math.round(machine.dailyRate / 6))).toLocaleString('en-IN')}/hr
+                    </div>
+                  </div>
                   <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
                     <div className="text-xs text-slate-500">Daily Rate</div>
                     <div className="text-base font-black text-slate-900 mt-0.5">
-                      ₹{machine.dailyRate.toLocaleString('en-IN')}
+                      ₹{machine.dailyRate.toLocaleString('en-IN')}/day
                     </div>
                   </div>
                   <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
                     <div className="text-xs text-slate-500">Weekly Rate</div>
                     <div className="text-base font-black text-slate-900 mt-0.5">
-                      ₹{machine.weeklyRate.toLocaleString('en-IN')}
+                      ₹{machine.weeklyRate.toLocaleString('en-IN')}/wk
                     </div>
                   </div>
                   <div className="p-3 bg-brand-lightGreen/50 rounded-xl border border-brand-green/30">
                     <div className="text-xs text-brand-greenDark">Monthly Rate</div>
                     <div className="text-base font-black text-brand-green mt-0.5">
-                      ₹{machine.monthlyRate.toLocaleString('en-IN')}
+                      ₹{machine.monthlyRate.toLocaleString('en-IN')}/mo
                     </div>
                   </div>
                 </div>

@@ -221,21 +221,21 @@ export default function DesignSystemPage() {
               </p>
             </div>
 
-            {/* Kannada Logo */}
-            <div className="p-6 rounded-2xl bg-agri-cream border border-agri-border flex flex-col justify-between items-center space-y-4 text-center">
-              <span className="text-[11px] font-bold text-agri-secondary uppercase tracking-wider">
-                 (Kannada) Horizontal Badge Artwork
+            {/* English Logo on Dark Canvas */}
+            <div className="p-6 rounded-2xl bg-emerald-950 border border-emerald-900 flex flex-col justify-between items-center space-y-4 text-center">
+              <span className="text-[11px] font-bold text-emerald-300 uppercase tracking-wider">
+                English Horizontal Badge on Dark Canvas
               </span>
               <div className="relative w-72 sm:w-80 h-20">
                 <Image
-                  src="/images/agrimart_logo_kn_transparent.png"
-                  alt="AGRI MART MEGA Kannada Logo"
+                  src="/images/agrimart_logo_en_transparent.png"
+                  alt="AGRI MART MEGA English Logo Dark"
                   fill
-                  className="object-contain"
+                  className="object-contain brightness-110"
                 />
               </div>
-              <p className="text-[11px] text-agri-secondary">
-                  |   |  &bull; Authentic bilingual identity
+              <p className="text-[11px] text-emerald-200/80">
+                High-contrast presentation &bull; Subtitle: <em>FARM EQUIPMENT | GREEN CARE | SERVICES</em>
               </p>
             </div>
           </div>

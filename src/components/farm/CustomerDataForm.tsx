@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React, { useState } from 'react';
 import { Save, CheckCircle2, MapPin, Calendar, Sprout, FileCheck } from 'lucide-react';
@@ -89,7 +89,7 @@ export default function CustomerDataForm() {
       {isSaved && (
         <div className="p-3 bg-emerald-50 border border-emerald-200 text-emerald-900 rounded-xl flex items-center gap-2">
           <CheckCircle2 className="w-4 h-4 text-emerald-700" />
-          <span className="font-semibold">Customer Data Form successfully updated and synchronized with CRM & Procurement portals!</span>
+          <span className="font-semibold">Customer Data Form successfully updated and saved!</span>
         </div>
       )}
 

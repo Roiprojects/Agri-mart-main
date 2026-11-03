@@ -1,33 +1,58 @@
 import { NextResponse } from 'next/server';
+import { devDb } from '@/lib/dev-db';
 
-export async function POST(req: Request) {
+export async function POST(request: Request) {
   try {
-    const body = await req.json().catch(() => ({}));
+    const body = await request.json();
     const { mobile, code } = body;
 
-    // In sandbox demo mode, accept 123456 or any 6-digit code
-    if (!code || code.length !== 6) {
+    if (!mobile || !code) {
       return NextResponse.json(
-        { success: false, message: 'Please enter a valid 6-digit OTP' },
+        { success: false, message: 'Mobile number and OTP code are required.' },
         { status: 400 }
       );
     }
 
-    return NextResponse.json({
+    const result = devDb.verifyOtp(mobile, code);
+
+    if (!result.success || !result.user) {
+      return NextResponse.json(
+        { success: false, message: result.message },
+        { status: 400 }
+      );
+    }
+
+    const response = NextResponse.json({
       success: true,
-      message: 'OTP verified successfully',
+      message: 'Authentication successful.',
       user: {
-        id: 'usr-' + (mobile || '9845190812'),
-        name: 'Basavaraj Patil',
-        mobile: mobile || '9845190812',
-        role: 'farmer',
-        isVerified: true,
+        id: result.user.id,
+        name: result.user.name,
+        mobile: result.user.mobile,
+        email: result.user.email,
+        role: result.user.role,
+        isVerified: result.user.isVerified,
       },
     });
-  } catch (err: any) {
+
+    // Set auth cookie
+    response.cookies.set('agri_auth_user', JSON.stringify({
+      id: result.user.id,
+      name: result.user.name,
+      mobile: result.user.mobile,
+      role: result.user.role,
+    }), {
+      path: '/',
+      httpOnly: false, // accessible to client for greeting display
+      sameSite: 'lax',
+      maxAge: 86400 * 30, // 30 days
+    });
+
+    return response;
+  } catch (error: any) {
     return NextResponse.json(
-      { success: false, message: err.message || 'Verification error' },
-      { status: 400 }
+      { success: false, message: error.message || 'OTP verification failed' },
+      { status: 500 }
     );
   }
 }

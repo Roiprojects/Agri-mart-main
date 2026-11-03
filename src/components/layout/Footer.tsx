@@ -51,7 +51,7 @@ export default function Footer() {
             <span className="text-brand-gold">AGRI MART</span> MEGA
           </div>
           <p className="text-xs text-slate-400 leading-relaxed">
-            {SITE_CONFIG.nameKannada} — {SITE_CONFIG.taglineKannada}. An end-to-end digital agriculture platform by{' '}
+            {SITE_CONFIG.name} — {SITE_CONFIG.tagline}. An end-to-end digital agriculture platform by{' '}
             <strong className="text-slate-200">{SITE_CONFIG.parentCompany}</strong>. Connecting farmers to products, equipment rentals, on-field services, and AI agronomy guidance.
           </p>
           <div className="text-xs text-slate-400 space-y-1 pt-1">
@@ -95,7 +95,7 @@ export default function Footer() {
         </div>
 
         <div>
-          <h4 className="text-white font-semibold text-xs uppercase tracking-wider mb-3">Portals & Farmer Care</h4>
+          <h4 className="text-white font-semibold text-xs uppercase tracking-wider mb-3">Farmer Care & Support</h4>
           <ul className="space-y-2 text-xs text-slate-400">
             <li><Link href="/login" className="hover:text-white transition">Farmer & Partner Login</Link></li>
             <li><Link href="/account" className="hover:text-white transition">Customer Dashboard</Link></li>

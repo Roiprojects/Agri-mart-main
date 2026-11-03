@@ -42,6 +42,7 @@ export interface RentalProductType {
   title: string;
   slug: string;
   category: string;
+  hourlyRate?: number;
   dailyRate: number;
   weeklyRate: number;
   monthlyRate: number;
@@ -213,7 +214,7 @@ export const SEED_PRODUCTS: ProductType[] = [
     rating: 4.8,
     reviewsCount: 142,
     stock: 28,
-    images: ['https://images.unsplash.com/photo-1589923188900-85dae523342b?auto=format&fit=crop&w=800&q=80'],
+    images: ['/images/gallery/08-farm-equipment.jpg', 'https://images.unsplash.com/photo-1589923188900-85dae523342b?auto=format&fit=crop&w=800&q=80'],
     description:
       'Engineered for inter-cultivation, weeding, and soil aeration in cotton, sugarcane, maize, and vegetable fields. Features 2 forward and 1 reverse gear with heat-treated carbon steel rotary blades.',
     specifications: {
@@ -243,7 +244,7 @@ export const SEED_PRODUCTS: ProductType[] = [
     rating: 4.7,
     reviewsCount: 230,
     stock: 85,
-    images: ['https://images.unsplash.com/photo-1586771107445-d3ca888129ff?auto=format&fit=crop&w=800&q=80'],
+    images: ['/images/gallery/06-crop-spraying.jpg', 'https://images.unsplash.com/photo-1586771107445-d3ca888129ff?auto=format&fit=crop&w=800&q=80'],
     description:
       'Heavy-duty battery knapsack sprayer with double brass pump generating 110 PSI pressure. Includes telescopic stainless lance and 4 multi-pattern spray nozzles.',
     specifications: {
@@ -271,7 +272,7 @@ export const SEED_PRODUCTS: ProductType[] = [
     rating: 4.9,
     reviewsCount: 310,
     stock: 450,
-    images: ['https://images.unsplash.com/photo-1628352081506-83c43123ed6d?auto=format&fit=crop&w=800&q=80'],
+    images: ['/images/gallery/01-green-fields.jpg', 'https://images.unsplash.com/photo-1628352081506-83c43123ed6d?auto=format&fit=crop&w=800&q=80'],
     description:
       'Fortified with mycorrhiza, humic acid (65%), fulvic acid, and organic carbon. Revives degraded soils, enhances root elongation, and increases crop nutrient uptake efficiency by 35%.',
     specifications: {
@@ -299,7 +300,7 @@ export const SEED_PRODUCTS: ProductType[] = [
     rating: 4.6,
     reviewsCount: 180,
     stock: 220,
-    images: ['https://images.unsplash.com/photo-1595974482597-4b8da8879bc5?auto=format&fit=crop&w=800&q=80'],
+    images: ['/images/gallery/02-farmer-working.jpg', 'https://images.unsplash.com/photo-1595974482597-4b8da8879bc5?auto=format&fit=crop&w=800&q=80'],
     description:
       'Pure cold-pressed Azadirachtin 10,000 PPM repellent and insect growth regulator. Highly effective against aphids, thrips, whiteflies, bollworms, and leaf miners without killing honeybees.',
     specifications: {
@@ -326,7 +327,7 @@ export const SEED_PRODUCTS: ProductType[] = [
     rating: 4.8,
     reviewsCount: 95,
     stock: 140,
-    images: ['https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&w=800&q=80'],
+    images: ['/images/gallery/04-seed-sowing.jpg', 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&w=800&q=80'],
     description:
       'High-performing single cross hybrid maize. Excellent stay-green characteristics, lodging tolerance, orange flint kernels, and outstanding shelling percentage (83%).',
     specifications: {
@@ -354,7 +355,7 @@ export const SEED_PRODUCTS: ProductType[] = [
     rating: 4.9,
     reviewsCount: 88,
     stock: 15,
-    images: ['https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=800&q=80'],
+    images: ['/images/gallery/03-tractor-soil.jpg', 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=800&q=80'],
     description:
       'Legendary OHV commercial overhead valve engine with cast iron cylinder sleeve, dual element air cleaner, and low oil sensor alert. Prime mover for weeders, pumps, and generators.',
     specifications: {
@@ -382,7 +383,7 @@ export const SEED_PRODUCTS: ProductType[] = [
     rating: 4.7,
     reviewsCount: 64,
     stock: 60,
-    images: ['https://images.unsplash.com/photo-1563514227147-6d2ff665a6a0?auto=format&fit=crop&w=800&q=80'],
+    images: ['/images/gallery/05-irrigation.jpg', 'https://images.unsplash.com/photo-1563514227147-6d2ff665a6a0?auto=format&fit=crop&w=800&q=80'],
     description:
       'Virgin linear low-density polyethylene (LLDPE) pipe with cylindrical pressure-compensating emitters spaced at 40 cm. Delivers 2.4 Liters/Hour uniform flow rate.',
     specifications: {
@@ -487,10 +488,11 @@ export const SEED_WAREHOUSES: WarehouseType[] = [
 
 export const SEED_RENTAL_PRODUCTS: RentalProductType[] = [
   {
-    id: 'rent-001',
-    title: '7HP Petrol Rotary Power Weeder with Ridger & Ditcher',
-    slug: 'rent-7hp-power-weeder-ridger',
+    id: 'rnt-weeder-7hp',
+    title: 'AgriPro 7HP Multi-Speed Heavy-Duty Power Weeder',
+    slug: 'power-weeder-7hp',
     category: 'Power Weeder',
+    hourlyRate: 120,
     dailyRate: 650,
     weeklyRate: 3800,
     monthlyRate: 12500,
@@ -503,36 +505,38 @@ export const SEED_RENTAL_PRODUCTS: RentalProductType[] = [
     isAvailable: true,
   },
   {
-    id: 'rent-002',
-    title: 'Self-Propelled 4-Stroke Paddy & Wheat Reaper Harvester',
-    slug: 'rent-self-propelled-paddy-reaper',
+    id: 'rnt-reaper-binder',
+    title: 'Self-Propelled 10HP Multi-Crop Reaper Binder',
+    slug: 'power-reaper-binder',
     category: 'Reaper & Harvester',
+    hourlyRate: 250,
     dailyRate: 1450,
     weeklyRate: 8500,
     monthlyRate: 28000,
     securityDeposit: 6000,
     images: ['https://images.unsplash.com/photo-1595974482597-4b8da8879bc5?auto=format&fit=crop&w=600&q=80'],
     description: 'Harvests 1 acre in 60-90 minutes with neat windrow laying. Low grain loss (<1.5%).',
-    powerRating: '6.5 HP Commercial Diesel',
+    powerRating: '10.0 HP Commercial Diesel',
     fuelType: 'Diesel',
     suitableFor: 'Paddy, Wheat, Soybean, Ragi',
     isAvailable: true,
   },
   {
-    id: 'rent-003',
-    title: '16-Liter Tractor-Mounted Boom Sprayer with 24 Brass Nozzles',
-    slug: 'rent-tractor-boom-sprayer',
+    id: 'rnt-battery-sprayer-16l',
+    title: 'KisanKraft 16L Dual-Motor High-Pressure Knapsack Sprayer',
+    slug: 'battery-sprayer-16l',
     category: 'Sprayer Attachment',
-    dailyRate: 950,
-    weeklyRate: 5400,
-    monthlyRate: 18000,
-    securityDeposit: 4000,
+    hourlyRate: 60,
+    dailyRate: 350,
+    weeklyRate: 2100,
+    monthlyRate: 7000,
+    securityDeposit: 1500,
     images: ['https://images.unsplash.com/photo-1586771107445-d3ca888129ff?auto=format&fit=crop&w=600&q=80'],
-    description: 'Covers 30 feet swath per pass. Connects to tractor 3-point linkage with 540 RPM PTO drive.',
-    powerRating: 'Requires 25+ HP Tractor',
-    fuelType: 'Tractor PTO',
+    description: 'Dual motor high-pressure knapsack sprayer for uniform pesticide & micronutrient foliar application.',
+    powerRating: '12V 12Ah Dual Motor',
+    fuelType: 'Rechargeable Battery',
     suitableFor: 'Field crops, Cotton, Sugarcane canopy',
-    isAvailable: false,
+    isAvailable: true,
   },
 ];
 

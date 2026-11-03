@@ -28,7 +28,7 @@ export default function CustomerNotificationsPage() {
 
       <div>
         <h1 className="text-2xl font-extrabold text-slate-900">Notification History &amp; Dispatch Alerts</h1>
-        <p className="text-xs text-slate-500 mt-0.5">Audit log of SMS, WhatsApp, and portal notifications dispatched to your registered mobile.</p>
+        <p className="text-xs text-slate-500 mt-0.5">Audit log of SMS, WhatsApp, and account notifications dispatched to your registered mobile.</p>
       </div>
 
       {loading ? (

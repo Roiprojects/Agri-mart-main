@@ -59,6 +59,15 @@
   background: #9ab495;
 }
 
+/* Hide scrollbar utility */
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
 /* Strict respect for prefers-reduced-motion */
 @media (prefers-reduced-motion: reduce) {
   *, ::before, ::after {

@@ -34,11 +34,16 @@ import {
 
 export default function SuperAdminPortalPage() {
   const [activeTab, setActiveTab] = useState<
-    'overview' | 'catalogue' | 'coupons' | 'rentals' | 'services' | 'allocation' | 'integrations' | 'warehouses' | 'rbac' | 'settings'
+    'overview' | 'catalogue' | 'coupons' | 'rentals' | 'services' | 'allocation' | 'integrations' | 'warehouses' | 'rbac' | 'settings' | 'gallery' | 'blogs' | 'reviews'
   >('catalogue');
 
   const [domainConfig, setDomainConfig] = useState(SITE_CONFIG.domain);
   const [saveNotice, setSaveNotice] = useState('');
+
+  // Gallery, Blogs & Reviews State
+  const [galleryList, setGalleryList] = useState<any[]>([]);
+  const [blogsList, setBlogsList] = useState<any[]>([]);
+  const [reviewsList, setReviewsList] = useState<any[]>([]);
 
   // Catalogue State
   const [products, setProducts] = useState<any[]>([]);
@@ -261,8 +266,11 @@ export default function SuperAdminPortalPage() {
       fetch('/api/admin/allocation').then((r) => r.json()),
       fetch('/api/integrations/diagnostics').then((r) => r.json()),
       fetch('/api/notifications/queue').then((r) => r.json()),
+      fetch('/api/admin/gallery').then((r) => r.json()),
+      fetch('/api/admin/blog').then((r) => r.json()),
+      fetch('/api/admin/blog-reviews').then((r) => r.json()),
     ])
-      .then(([prodData, catData, couponData, rentData, srvData, allocData, integData, notifData]) => {
+      .then(([prodData, catData, couponData, rentData, srvData, allocData, integData, notifData, galData, blogData, revData]) => {
         if (prodData.success) setProducts(prodData.data);
         if (catData.success) setCategories(catData.data);
         if (couponData.success) setCoupons(couponData.data);
@@ -283,6 +291,15 @@ export default function SuperAdminPortalPage() {
         if (notifData?.success) {
           setNotifQueue(notifData.queue || []);
           setNotifStats(notifData.stats || {});
+        }
+        if (galData?.success) {
+          setGalleryList(galData.data || []);
+        }
+        if (blogData?.success) {
+          setBlogsList(blogData.data || []);
+        }
+        if (revData?.success) {
+          setReviewsList(revData.data || []);
         }
         setLoadingCatalogue(false);
       })
@@ -524,6 +541,57 @@ export default function SuperAdminPortalPage() {
     }
   };
 
+  const handleToggleGalleryPublish = async (item: any) => {
+    try {
+      const res = await fetch('/api/admin/gallery', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...item, isPublished: !item.isPublished }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setSaveNotice(`Gallery item "${item.title}" ${!item.isPublished ? 'published' : 'unpublished'}!`);
+        fetchCatalogue();
+      }
+    } catch (e: any) {
+      alert(e.message);
+    }
+  };
+
+  const handleToggleBlogPublish = async (post: any) => {
+    try {
+      const res = await fetch('/api/admin/blog', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...post, isPublished: !post.isPublished }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setSaveNotice(`Article "${post.title}" ${!post.isPublished ? 'published' : 'unpublished'}!`);
+        fetchCatalogue();
+      }
+    } catch (e: any) {
+      alert(e.message);
+    }
+  };
+
+  const handleModerateReview = async (id: string, status: 'APPROVED' | 'REJECTED') => {
+    try {
+      const res = await fetch(`/api/admin/blog-reviews/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setSaveNotice(`Review successfully ${status.toLowerCase()}!`);
+        fetchCatalogue();
+      }
+    } catch (e: any) {
+      alert(e.message);
+    }
+  };
+
   const orders = dataStore.orders;
   const totalGMV = orders.reduce((sum, o) => sum + o.totalAmount, 0) + 1485000;
 
@@ -576,6 +644,24 @@ export default function SuperAdminPortalPage() {
             className={`px-3.5 py-2 rounded-xl font-bold transition ${activeTab === 'integrations' ? 'bg-agri-green text-white shadow-xs' : 'bg-white/10 text-slate-300 hover:bg-white/20'}`}
           >
             Integrations &amp; Matrix
+          </button>
+          <button
+            onClick={() => setActiveTab('gallery')}
+            className={`px-3.5 py-2 rounded-xl font-bold transition ${activeTab === 'gallery' ? 'bg-agri-green text-white shadow-xs' : 'bg-white/10 text-slate-300 hover:bg-white/20'}`}
+          >
+            Gallery Archive ({galleryList.length})
+          </button>
+          <button
+            onClick={() => setActiveTab('blogs')}
+            className={`px-3.5 py-2 rounded-xl font-bold transition ${activeTab === 'blogs' ? 'bg-agri-green text-white shadow-xs' : 'bg-white/10 text-slate-300 hover:bg-white/20'}`}
+          >
+            Blog Articles ({blogsList.length})
+          </button>
+          <button
+            onClick={() => setActiveTab('reviews')}
+            className={`px-3.5 py-2 rounded-xl font-bold transition ${activeTab === 'reviews' ? 'bg-amber-500 text-slate-950 shadow-xs' : 'bg-white/10 text-slate-300 hover:bg-white/20'}`}
+          >
+            Reader Reviews ({reviewsList.filter((r) => r.status === 'PENDING').length} Pending)
           </button>
           <button
             onClick={() => setActiveTab('coupons')}
@@ -910,6 +996,253 @@ export default function SuperAdminPortalPage() {
               Save &amp; Apply Domain Configuration
             </button>
           </form>
+        </div>
+      )}
+
+      {/* TAB: GALLERY ARCHIVE MANAGER */}
+      {activeTab === 'gallery' && (
+        <div className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-sm space-y-6">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-slate-100 pb-4">
+            <div>
+              <div className="flex items-center gap-2">
+                <h3 className="font-black text-base text-slate-900">Life on the Farm &mdash; Gallery Photography</h3>
+                <span className="bg-slate-100 text-slate-700 font-bold px-2.5 py-0.5 rounded-full text-[10px]">
+                  {galleryList.length} Photographs Curated
+                </span>
+              </div>
+              <p className="text-slate-500 text-[11px] mt-0.5">
+                Curated illustrative agriculture photographs with source attribution, captions, and publication status.
+              </p>
+            </div>
+
+            <button
+              onClick={fetchCatalogue}
+              className="p-2 border border-slate-200 rounded-xl hover:bg-slate-50 text-slate-600 transition"
+              title="Refresh"
+            >
+              <RefreshCw className={`w-4 h-4 ${loadingCatalogue ? 'animate-spin' : ''}`} />
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {galleryList.map((item, idx) => (
+              <div key={item.id} className="border border-slate-200 rounded-2xl overflow-hidden bg-slate-50/50 flex flex-col justify-between">
+                <div className="relative aspect-[4/3] w-full bg-slate-100">
+                  <img src={item.image} alt={item.alt || item.title} className="w-full h-full object-cover" />
+                  <div className="absolute top-2 left-2 bg-slate-900/80 text-white text-[10px] font-bold px-2 py-0.5 rounded">
+                    #{idx + 1} &bull; {item.subject}
+                  </div>
+                  <div className="absolute top-2 right-2">
+                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded ${item.isPublished ? 'bg-emerald-500 text-white' : 'bg-slate-500 text-white'}`}>
+                      {item.isPublished ? 'Published' : 'Draft'}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="p-4 space-y-2 flex-1 flex flex-col justify-between">
+                  <div>
+                    <h4 className="font-bold text-sm text-slate-900">{item.title}</h4>
+                    <p className="text-xs text-slate-600 line-clamp-2 mt-1">{item.caption}</p>
+                    <div className="text-[10px] text-slate-400 mt-2">
+                      Credit: <strong>{item.photographer}</strong> &bull; {item.license}
+                    </div>
+                  </div>
+
+                  <div className="pt-3 border-t border-slate-200/80 flex items-center justify-between">
+                    <button
+                      onClick={() => handleToggleGalleryPublish(item)}
+                      className={`text-xs font-bold px-3 py-1.5 rounded-lg transition ${
+                        item.isPublished
+                          ? 'bg-amber-50 text-amber-700 hover:bg-amber-100 border border-amber-200'
+                          : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200'
+                      }`}
+                    >
+                      {item.isPublished ? 'Unpublish Item' : 'Publish to /gallery'}
+                    </button>
+                    <a
+                      href={item.sourceUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-[11px] text-emerald-700 hover:underline"
+                    >
+                      Original Source &rarr;
+                    </a>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* TAB: BLOG ARTICLES CMS */}
+      {activeTab === 'blogs' && (
+        <div className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-sm space-y-6">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-slate-100 pb-4">
+            <div>
+              <div className="flex items-center gap-2">
+                <h3 className="font-black text-base text-slate-900">Agri Mart Editorial &mdash; Blog CMS</h3>
+                <span className="bg-slate-100 text-slate-700 font-bold px-2.5 py-0.5 rounded-full text-[10px]">
+                  {blogsList.length} Practical Guides
+                </span>
+              </div>
+              <p className="text-slate-500 text-[11px] mt-0.5">
+                Original practical articles published to /blog and indexed with Article structured data.
+              </p>
+            </div>
+
+            <button
+              onClick={fetchCatalogue}
+              className="p-2 border border-slate-200 rounded-xl hover:bg-slate-50 text-slate-600 transition"
+              title="Refresh"
+            >
+              <RefreshCw className={`w-4 h-4 ${loadingCatalogue ? 'animate-spin' : ''}`} />
+            </button>
+          </div>
+
+          <div className="space-y-3">
+            {blogsList.map((post) => (
+              <div key={post.id} className="border border-slate-200 rounded-2xl p-4 bg-slate-50/50 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                <div className="flex items-center gap-4">
+                  <div className="relative w-16 h-16 rounded-xl overflow-hidden bg-slate-200 shrink-0">
+                    <img src={post.image} alt={post.title} className="w-full h-full object-cover" />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] font-bold text-emerald-700 uppercase bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                        {post.category}
+                      </span>
+                      <span className="text-[10px] text-slate-400">{post.readingTime}</span>
+                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded ${post.isPublished ? 'bg-emerald-500 text-white' : 'bg-slate-400 text-white'}`}>
+                        {post.isPublished ? 'Live on Website' : 'Draft'}
+                      </span>
+                    </div>
+                    <h4 className="font-bold text-sm text-slate-900 mt-1">{post.title}</h4>
+                    <p className="text-xs text-slate-500 line-clamp-1 mt-0.5">{post.excerpt}</p>
+                    <div className="text-[10px] text-slate-400 mt-1">By {post.author} &bull; {post.date} &bull; slug: /{post.slug}</div>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 shrink-0">
+                  <button
+                    onClick={() => handleToggleBlogPublish(post)}
+                    className={`text-xs font-bold px-3 py-1.5 rounded-xl transition ${
+                      post.isPublished
+                        ? 'bg-amber-50 text-amber-700 hover:bg-amber-100 border border-amber-200'
+                        : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200'
+                    }`}
+                  >
+                    {post.isPublished ? 'Unpublish' : 'Publish Article'}
+                  </button>
+                  <a
+                    href={`http://localhost:3000/blog/${post.slug}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-3 py-1.5 text-xs font-bold bg-white border border-slate-200 text-slate-700 rounded-xl hover:bg-slate-50 transition flex items-center gap-1"
+                  >
+                    View on Storefront &rarr;
+                  </a>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* TAB: READER REVIEWS MODERATION */}
+      {activeTab === 'reviews' && (
+        <div className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-sm space-y-6">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-slate-100 pb-4">
+            <div>
+              <div className="flex items-center gap-2">
+                <h3 className="font-black text-base text-slate-900">Reader Reviews Moderation</h3>
+                <span className="bg-amber-100 text-amber-800 font-bold px-2.5 py-0.5 rounded-full text-[10px]">
+                  {reviewsList.filter((r) => r.status === 'PENDING').length} Pending Approval
+                </span>
+                <span className="bg-emerald-100 text-emerald-800 font-bold px-2.5 py-0.5 rounded-full text-[10px]">
+                  {reviewsList.filter((r) => r.status === 'APPROVED').length} Approved
+                </span>
+              </div>
+              <p className="text-slate-500 text-[11px] mt-0.5">
+                Moderate reader feedback submitted on blog articles. Only approved reviews appear on public pages.
+              </p>
+            </div>
+
+            <button
+              onClick={fetchCatalogue}
+              className="p-2 border border-slate-200 rounded-xl hover:bg-slate-50 text-slate-600 transition"
+              title="Refresh"
+            >
+              <RefreshCw className={`w-4 h-4 ${loadingCatalogue ? 'animate-spin' : ''}`} />
+            </button>
+          </div>
+
+          {reviewsList.length === 0 ? (
+            <div className="py-12 text-center text-slate-500 text-xs bg-slate-50/50 rounded-2xl border border-dashed border-slate-200 space-y-2">
+              <CheckSquare className="w-8 h-8 text-slate-300 mx-auto" />
+              <p className="font-bold">No Reader Reviews in Queue</p>
+              <p className="text-slate-400 text-[11px]">When customers submit reviews on /blog/[slug], they will appear here for verification.</p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {reviewsList.map((rev) => (
+                <div key={rev.id} className="border border-slate-200 rounded-2xl p-4 bg-slate-50/50 space-y-3">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-8 h-8 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold text-xs">
+                        <Users className="w-4 h-4" />
+                      </div>
+                      <div>
+                        <div className="font-bold text-xs text-slate-900 flex items-center gap-2">
+                          <span>{rev.userName}</span>
+                          <span className="text-slate-400 font-normal">({rev.userMobile})</span>
+                        </div>
+                        <div className="text-[10px] text-slate-400">
+                          Article: <strong className="text-slate-700 font-mono">/{rev.articleSlug}</strong> &bull; {new Date(rev.createdAt).toLocaleString()}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <div className="flex text-amber-400">
+                        {Array.from({ length: 5 }).map((_, i) => (
+                          <span key={i} className={i < rev.rating ? 'text-amber-400 font-bold' : 'text-slate-200'}>★</span>
+                        ))}
+                      </div>
+                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded ${
+                        rev.status === 'APPROVED' ? 'bg-emerald-500 text-white' : rev.status === 'REJECTED' ? 'bg-red-500 text-white' : 'bg-amber-500 text-slate-950 font-black'
+                      }`}>
+                        {rev.status}
+                      </span>
+                    </div>
+                  </div>
+
+                  <p className="text-xs text-slate-700 bg-white p-3 rounded-xl border border-slate-200/60 leading-relaxed">
+                    &ldquo;{rev.comment}&rdquo;
+                  </p>
+
+                  <div className="flex justify-end gap-2 pt-1 border-t border-slate-200/60">
+                    {rev.status !== 'APPROVED' && (
+                      <button
+                        onClick={() => handleModerateReview(rev.id, 'APPROVED')}
+                        className="px-3 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-xl shadow-xs transition"
+                      >
+                        ✓ Approve Review
+                      </button>
+                    )}
+                    {rev.status !== 'REJECTED' && (
+                      <button
+                        onClick={() => handleModerateReview(rev.id, 'REJECTED')}
+                        className="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white text-xs font-bold rounded-xl shadow-xs transition"
+                      >
+                        ✕ Reject Review
+                      </button>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
 

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { devDb } from '@/lib/dev-db';
+import { revalidateFrontendPath } from '@/lib/revalidation-dispatcher';
 
 export async function GET(request: NextRequest) {
   try {
@@ -73,6 +74,14 @@ export async function POST(request: NextRequest) {
       notes: notes || 'Manual warehouse inventory adjustment',
       performedBy: performedBy || 'Warehouse Manager',
     });
+
+    if (result.success) {
+      const prod = devDb.getProductById(productId);
+      if (prod?.slug) {
+        try { await revalidateFrontendPath(`/products/${prod.slug}`); } catch {}
+      }
+      try { await revalidateFrontendPath('/shop'); await revalidateFrontendPath('/'); } catch {}
+    }
 
     return NextResponse.json(result, { status: result.success ? 200 : 400 });
   } catch (error: any) {

@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { SITE_CONFIG } from '@/lib/config';
 
 export default function AboutPage() {
@@ -18,7 +18,7 @@ export default function AboutPage() {
         <li><strong>Pillar 1: E-Commerce & AI:</strong> Product catalog, 9-point guided agronomy questionnaire, automated crop & soil recommendations.</li>
         <li><strong>Pillar 2: Dark Warehouse Logistics:</strong> Automated GPS & PIN code routing across 5 regional dark warehouses in Karnataka.</li>
         <li><strong>Pillar 3: Equipment Rental & Smart Services:</strong> Daily/monthly machinery rentals and GPS-dispatched on-field farm services.</li>
-        <li><strong>Pillar 4: Crop Lifecycle Management:</strong> Dedicated procurement portal tracking farmers through all 7 standardized crop stages.</li>
+        <li><strong>Pillar 4: Crop Lifecycle Management:</strong> Comprehensive crop advisory tracking farmers through all 7 standardized growth stages from seed to harvest.</li>
         <li><strong>Pillar 5: Service & Dealer Commissions:</strong> 9-stage automotive-grade equipment repair system across 1,500+ dealers and incentive commission disbursements.</li>
       </ul>
     </div>
