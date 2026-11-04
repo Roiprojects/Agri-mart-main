@@ -116,6 +116,7 @@ export interface PopSubmissionRecord {
   vleFpoNo?: string;
   distanceFromVle?: string;
   schedule: any[];
+  isPopTableEnabled?: boolean;
   status: 'SUBMITTED' | 'VERIFIED' | 'IN_PROGRESS' | 'COMPLETED';
   submittedAt: string;
   updatedAt: string;
@@ -1216,9 +1217,21 @@ export async function GET(request: NextRequest) {
         return false;
       });
 
-      const effectiveRecord = found || null;
+      const globalPopTableEnabled =
+        raw.globalPopTableEnabled !== undefined ? Boolean(raw.globalPopTableEnabled) : true;
+      const effectiveRecord = found
+        ? {
+            ...found,
+            isPopTableEnabled:
+              found.isPopTableEnabled !== undefined
+                ? Boolean(found.isPopTableEnabled)
+                : globalPopTableEnabled,
+          }
+        : null;
+
       return NextResponse.json({
         success: true,
+        globalPopTableEnabled,
         record: effectiveRecord,
         matchedUserRecord: found || null,
         lastBackendUpdatedId: found ? found.id : null,
@@ -1257,9 +1270,13 @@ export async function GET(request: NextRequest) {
       records = records.filter((r) => (r.crop || '').toLowerCase() === crop.toLowerCase());
     }
 
+    const globalPopTableEnabled =
+      raw.globalPopTableEnabled !== undefined ? Boolean(raw.globalPopTableEnabled) : true;
+
     return NextResponse.json({
       success: true,
       total: records.length,
+      globalPopTableEnabled,
       records,
       farmerAccounts,
       customSoilTypes: getCustomSoilTypes(),
@@ -1280,6 +1297,24 @@ export async function POST(request: NextRequest) {
         success: true,
         message: `Saved custom soil type "${data.soilType}" successfully.`,
         customSoilTypes: updatedSoilTypes,
+      });
+    }
+
+    // Quick endpoint to toggle POP Activity Schedule Table enabled/disabled status
+    if (data.action === 'TOGGLE_POP_TABLE') {
+      const raw = devDb.getRawData() as any;
+      const records = getPopFormsList();
+      raw.globalPopTableEnabled = Boolean(data.isPopTableEnabled);
+      if (data.recordId) {
+        const rIdx = records.findIndex((r) => r.id === data.recordId);
+        if (rIdx >= 0) {
+          records[rIdx].isPopTableEnabled = Boolean(data.isPopTableEnabled);
+        }
+      }
+      saveToSharedDisk();
+      return NextResponse.json({
+        success: true,
+        globalPopTableEnabled: raw.globalPopTableEnabled,
       });
     }
 
@@ -1558,10 +1593,15 @@ export async function POST(request: NextRequest) {
       vleFpoNo: String(data.vleFpoNo || '').trim(),
       distanceFromVle: String(data.distanceFromVle || '').trim(),
       schedule: Array.isArray(data.schedule) ? data.schedule : [],
+      isPopTableEnabled: data.isPopTableEnabled !== undefined ? Boolean(data.isPopTableEnabled) : true,
       status: data.status || 'SUBMITTED',
       submittedAt: data.submittedAt || now,
       updatedAt: now,
     };
+
+    if (data.isPopTableEnabled !== undefined) {
+      raw.globalPopTableEnabled = Boolean(data.isPopTableEnabled);
+    }
 
     if (existingIdx >= 0) {
       records[existingIdx] = {
@@ -1718,11 +1758,21 @@ export async function PUT(request: NextRequest) {
     records[idx] = {
       ...records[idx],
       ...body,
+      isPopTableEnabled:
+        body.isPopTableEnabled !== undefined
+          ? Boolean(body.isPopTableEnabled)
+          : records[idx].isPopTableEnabled !== undefined
+          ? records[idx].isPopTableEnabled
+          : true,
       loginUsername: updatedFarmerAccount.username,
       loginPassword: updatedFarmerAccount.password,
       isUserSubmitted: true,
       updatedAt: now,
     };
+
+    if (body.isPopTableEnabled !== undefined) {
+      raw.globalPopTableEnabled = Boolean(body.isPopTableEnabled);
+    }
 
     raw.popForms = records;
     raw.lastBackendUpdatedPopId = records[idx].id;

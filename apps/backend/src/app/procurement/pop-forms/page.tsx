@@ -39,6 +39,7 @@ export interface PopScheduleStage {
   endDay: number;
   sownDate: string;
   stageStatus?: 'COMPLETED' | 'CURRENT' | 'UPCOMING';
+  isEnabled?: boolean;
   soilPrep: string;
   manuring: string;
   irrigation: string;
@@ -200,6 +201,7 @@ export interface PopSubmissionRecord {
   problemSummary?: string;
   solutionSummary?: string;
   schedule: PopScheduleStage[];
+  isPopTableEnabled?: boolean;
   status: 'SUBMITTED' | 'VERIFIED' | 'IN_PROGRESS' | 'COMPLETED';
   submittedAt: string;
   updatedAt: string;
@@ -905,6 +907,7 @@ const EMPTY_RECORD: Omit<PopSubmissionRecord, 'id' | 'submittedAt' | 'updatedAt'
   problemSummary: '',
   solutionSummary: '',
   schedule: POP_SCHEDULES_BY_CROP.Maize.schedule,
+  isPopTableEnabled: true,
   status: 'SUBMITTED',
 };
 
@@ -1856,6 +1859,7 @@ export default function ProcurementPopFormsPage() {
       distanceFromVle: rec.distanceFromVle || '',
       ...primaryLifecycle,
       schedule: cropSchedule,
+      isPopTableEnabled: rec.isPopTableEnabled !== undefined ? Boolean(rec.isPopTableEnabled) : true,
       status: rec.status || 'SUBMITTED',
     });
   };
@@ -2108,7 +2112,7 @@ export default function ProcurementPopFormsPage() {
   const handleScheduleRowChange = (
     rowIdx: number,
     field: keyof PopScheduleStage,
-    value: string | number
+    value: any
   ) => {
     if (modalMode === 'VIEW') return;
     setFormData((prev) => {
@@ -2139,6 +2143,7 @@ export default function ProcurementPopFormsPage() {
         endDay: nextNum * 25,
         sownDate: `Day ${(nextNum - 1) * 25 + 1}`,
         stageStatus: 'UPCOMING',
+        isEnabled: true,
         soilPrep: '',
         manuring: '',
         irrigation: '',
@@ -4556,12 +4561,47 @@ export default function ProcurementPopFormsPage() {
                   </div>
 
                   <div className="flex flex-wrap items-center gap-2">
-                    <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold">
-                      <Activity className="w-4 h-4 text-emerald-600" />
-                      <span>
-                        Crop Progress: {progressPercent}% (Day {numericAgeDays} / {totalCycleDays})
-                      </span>
-                    </div>
+                    {/* Master POP Schedule Table Enable/Disable Toggle Button */}
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        const nextVal = formData.isPopTableEnabled === false ? true : false;
+                        setFormData((prev) => ({
+                          ...prev,
+                          isPopTableEnabled: nextVal,
+                        }));
+                        try {
+                          await fetch('/api/package-of-practice', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                              action: 'TOGGLE_POP_TABLE',
+                              recordId: activeRecord?.id || formData.id || '',
+                              isPopTableEnabled: nextVal,
+                            }),
+                          });
+                        } catch {
+                          // local state updated
+                        }
+                      }}
+                      className={`px-3.5 py-1.5 rounded-xl text-xs font-extrabold inline-flex items-center gap-1.5 transition shadow-sm cursor-pointer border ${
+                        formData.isPopTableEnabled !== false
+                          ? 'bg-emerald-600 hover:bg-emerald-700 text-white border-emerald-700'
+                          : 'bg-rose-600 hover:bg-rose-700 text-white border-rose-700'
+                      }`}
+                    >
+                      {formData.isPopTableEnabled !== false ? (
+                        <>
+                          <Check className="w-3.5 h-3.5 text-white" />
+                          <span>POP Schedule: Enabled</span>
+                        </>
+                      ) : (
+                        <>
+                          <X className="w-3.5 h-3.5 text-white" />
+                          <span>POP Schedule: Disabled</span>
+                        </>
+                      )}
+                    </button>
 
                     {!isReadOnly && (
                       <button
@@ -4576,13 +4616,20 @@ export default function ProcurementPopFormsPage() {
                   </div>
                 </div>
 
-                {/* Progress Bar */}
-                <div className="w-full h-2.5 bg-slate-200 rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-gradient-to-r from-emerald-500 to-amber-400 rounded-full"
-                    style={{ width: `${progressPercent}%` }}
-                  />
-                </div>
+                {/* Notice when POP Schedule is Disabled in Backend */}
+                {formData.isPopTableEnabled === false && (
+                  <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-900 text-xs font-medium flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2">
+                      <span className="w-2.5 h-2.5 rounded-full bg-rose-600 shrink-0" />
+                      <span>
+                        <strong>POP Activity Schedule Table is Disabled:</strong> This section is hidden on the farmer frontend, but fully preserved here in the backend for management.
+                      </span>
+                    </div>
+                    <span className="text-[10px] font-bold text-rose-700 uppercase bg-rose-100 px-2 py-0.5 rounded shrink-0">
+                      Backend Only
+                    </span>
+                  </div>
+                )}
 
                 {/* POP Activity Schedule Table (Clean Inline Editable with Thin Gray Scrollbar) */}
                 <style>{`
@@ -4663,6 +4710,17 @@ export default function ProcurementPopFormsPage() {
                                   <div className="text-[10px] font-mono text-slate-400">
                                     {row.dayRange}
                                   </div>
+                                  <div className="mt-1">
+                                    <span
+                                      className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold ${
+                                        row.isEnabled !== false
+                                          ? 'bg-emerald-600 text-white'
+                                          : 'bg-rose-600 text-white'
+                                      }`}
+                                    >
+                                      {row.isEnabled !== false ? '✓ Enabled' : '✕ Disabled'}
+                                    </span>
+                                  </div>
                                 </>
                               ) : (
                                 <div className="space-y-1">
@@ -4687,6 +4745,32 @@ export default function ProcurementPopFormsPage() {
                                     placeholder="Day 0 – Day 20"
                                     className="w-full bg-white text-[10px] font-mono text-slate-500 px-2 py-1 rounded-md border border-emerald-500/40 focus:border-emerald-600 focus:ring-1 focus:ring-emerald-500 focus:outline-none"
                                   />
+
+                                  {/* Enable / Disable Button for Stage Row (Exactly in the red marked box under dayRange!) */}
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      const current = row.isEnabled !== false;
+                                      handleScheduleRowChange(idx, 'isEnabled', !current);
+                                    }}
+                                    className={`w-full py-1 px-2 rounded-md text-[10px] font-extrabold flex items-center justify-center gap-1 transition shadow-xs cursor-pointer border ${
+                                      row.isEnabled !== false
+                                        ? 'bg-emerald-600 hover:bg-emerald-700 text-white border-emerald-700'
+                                        : 'bg-rose-600 hover:bg-rose-700 text-white border-rose-700'
+                                    }`}
+                                  >
+                                    {row.isEnabled !== false ? (
+                                      <>
+                                        <Check className="w-3 h-3 text-white" />
+                                        <span>Enabled</span>
+                                      </>
+                                    ) : (
+                                      <>
+                                        <X className="w-3 h-3 text-white" />
+                                        <span>Disabled</span>
+                                      </>
+                                    )}
+                                  </button>
                                 </div>
                               )}
                             </td>

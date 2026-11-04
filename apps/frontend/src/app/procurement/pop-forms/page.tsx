@@ -28,6 +28,8 @@ import {
   FileText,
   Download,
 } from 'lucide-react';
+import CropConfirmationModal from '@/components/crop/CropConfirmationModal';
+import { CROP_VARIETIES_BY_CATEGORY, ALL_CROP_VARIETIES } from '@/lib/crop-varieties';
 
 export interface PopScheduleStage {
   id: string;
@@ -37,6 +39,7 @@ export interface PopScheduleStage {
   endDay: number;
   sownDate: string;
   stageStatus?: 'COMPLETED' | 'CURRENT' | 'UPCOMING';
+  isEnabled?: boolean;
   soilPrep: string;
   manuring: string;
   irrigation: string;
@@ -198,6 +201,7 @@ export interface PopSubmissionRecord {
   problemSummary?: string;
   solutionSummary?: string;
   schedule: PopScheduleStage[];
+  isPopTableEnabled?: boolean;
   status: 'SUBMITTED' | 'VERIFIED' | 'IN_PROGRESS' | 'COMPLETED';
   submittedAt: string;
   updatedAt: string;
@@ -903,6 +907,7 @@ const EMPTY_RECORD: Omit<PopSubmissionRecord, 'id' | 'submittedAt' | 'updatedAt'
   problemSummary: '',
   solutionSummary: '',
   schedule: POP_SCHEDULES_BY_CROP.Maize.schedule,
+  isPopTableEnabled: true,
   status: 'SUBMITTED',
 };
 
@@ -956,6 +961,12 @@ export default function ProcurementPopFormsPage() {
   const [isCropDropdownOpen, setIsCropDropdownOpen] = useState(false);
   const [customCropText, setCustomCropText] = useState('');
   const cropDropdownRef = useRef<HTMLDivElement>(null);
+
+  const [isVarietyDropdownOpen, setIsVarietyDropdownOpen] = useState(false);
+  const [customVarietyText, setCustomVarietyText] = useState('');
+  const varietyDropdownRef = useRef<HTMLDivElement>(null);
+  const [extraVarietyOpenId, setExtraVarietyOpenId] = useState<string | null>(null);
+  const [extraVarietyInputs, setExtraVarietyInputs] = useState<Record<string, string>>({});
 
   const [isCurrentCropStageDropdownOpen, setIsCurrentCropStageDropdownOpen] = useState(false);
   const [customCurrentCropStageText, setCustomCurrentCropStageText] = useState('');
@@ -1220,6 +1231,88 @@ export default function ProcurementPopFormsPage() {
       ...prev,
       additionalCrops: (prev.additionalCrops || []).filter((item) => item.id !== blockId),
     }));
+  };
+
+  // Confirmation Modal state for Adding / Deleting Crops
+  const [cropConfirmModal, setCropConfirmModal] = useState<{
+    isOpen: boolean;
+    type: 'add' | 'delete';
+    targetId?: string;
+    cropName?: string;
+  }>({
+    isOpen: false,
+    type: 'add',
+  });
+
+  const handleOpenAddCropModal = () => {
+    if (modalMode === 'VIEW') return;
+    setCropConfirmModal({
+      isOpen: true,
+      type: 'add',
+    });
+  };
+
+  const handleOpenDeleteCropModal = (targetId: string, cropName?: string) => {
+    if (modalMode === 'VIEW') return;
+    setCropConfirmModal({
+      isOpen: true,
+      type: 'delete',
+      targetId,
+      cropName: cropName || 'this crop',
+    });
+  };
+
+  const handleConfirmCropModal = () => {
+    if (cropConfirmModal.type === 'add') {
+      handleAddNewCropBlock();
+    } else if (cropConfirmModal.type === 'delete' && cropConfirmModal.targetId) {
+      if (cropConfirmModal.targetId === 'primary') {
+        if (formData.additionalCrops && formData.additionalCrops.length > 0) {
+          const [firstAdditional, ...remaining] = formData.additionalCrops;
+          const promotedLifecycle = cropLifecycleMap[firstAdditional.id] || EMPTY_LIFECYCLE_DATA;
+          setCropLifecycleMap((prev) => {
+            const copy = { ...prev };
+            copy['primary'] = promotedLifecycle;
+            delete copy[firstAdditional.id];
+            return copy;
+          });
+          setFormData((prev) => ({
+            ...prev,
+            cropType: firstAdditional.cropType,
+            crop: firstAdditional.crop,
+            variety: firstAdditional.variety,
+            plantingDate: firstAdditional.plantingDate,
+            cropAge: firstAdditional.cropAge,
+            cropAcreage: firstAdditional.cropAcreage,
+            plantCount: firstAdditional.plantCount,
+            spacing: firstAdditional.spacing,
+            currentCropStage: firstAdditional.currentCropStage || '',
+            surveyNumber: firstAdditional.surveyNumber || prev.surveyNumber,
+            additionalCrops: remaining,
+          }));
+        } else {
+          setCropLifecycleMap((prev) => ({
+            ...prev,
+            primary: { ...EMPTY_LIFECYCLE_DATA },
+          }));
+          setFormData((prev) => ({
+            ...prev,
+            cropType: '',
+            crop: '',
+            variety: '',
+            plantingDate: '',
+            cropAge: '',
+            cropAcreage: '',
+            plantCount: '',
+            spacing: '',
+            currentCropStage: '',
+          }));
+        }
+      } else {
+        handleRemoveAdditionalCrop(cropConfirmModal.targetId);
+      }
+    }
+    setCropConfirmModal({ isOpen: false, type: 'add' });
   };
 
   const autoPersistSoilReportToBackend = async (
@@ -1578,6 +1671,8 @@ export default function ProcurementPopFormsPage() {
     setIsIrrigationDropdownOpen(false);
     setIsCropTypeDropdownOpen(false);
     setIsCropDropdownOpen(false);
+    setIsVarietyDropdownOpen(false);
+    setExtraVarietyOpenId(null);
     setIsCurrentCropStageDropdownOpen(false);
     setIsStateDropdownOpen(false);
     setIsDistrictDropdownOpen(false);
@@ -1600,6 +1695,7 @@ export default function ProcurementPopFormsPage() {
         irrigationDropdownRef,
         cropTypeDropdownRef,
         cropDropdownRef,
+        varietyDropdownRef,
         currentCropStageDropdownRef,
         stateDropdownRef,
         districtDropdownRef,
@@ -1763,6 +1859,7 @@ export default function ProcurementPopFormsPage() {
       distanceFromVle: rec.distanceFromVle || '',
       ...primaryLifecycle,
       schedule: cropSchedule,
+      isPopTableEnabled: rec.isPopTableEnabled !== undefined ? Boolean(rec.isPopTableEnabled) : true,
       status: rec.status || 'SUBMITTED',
     });
   };
@@ -2015,7 +2112,7 @@ export default function ProcurementPopFormsPage() {
   const handleScheduleRowChange = (
     rowIdx: number,
     field: keyof PopScheduleStage,
-    value: string | number
+    value: any
   ) => {
     if (modalMode === 'VIEW') return;
     setFormData((prev) => {
@@ -2046,6 +2143,7 @@ export default function ProcurementPopFormsPage() {
         endDay: nextNum * 25,
         sownDate: `Day ${(nextNum - 1) * 25 + 1}`,
         stageStatus: 'UPCOMING',
+        isEnabled: true,
         soilPrep: '',
         manuring: '',
         irrigation: '',
@@ -3119,14 +3217,27 @@ export default function ProcurementPopFormsPage() {
                       <span>Crop Selection</span>
                     </h3>
                     {!isReadOnly && (
-                      <button
-                        type="button"
-                        onClick={handleAddNewCropBlock}
-                        className="px-3.5 py-1.5 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold inline-flex items-center gap-1.5 shadow-xs transition cursor-pointer"
-                      >
-                        <Plus className="w-3.5 h-3.5" />
-                        <span>Add New Crop</span>
-                      </button>
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={handleOpenAddCropModal}
+                          className="px-3.5 py-1.5 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold inline-flex items-center gap-1.5 shadow-xs transition cursor-pointer"
+                        >
+                          <Plus className="w-3.5 h-3.5" />
+                          <span>Add New Crop</span>
+                        </button>
+                        {(formData.crop || formData.cropType || (formData.additionalCrops && formData.additionalCrops.length > 0)) && (
+                          <button
+                            type="button"
+                            onClick={() => handleOpenDeleteCropModal('primary', formData.crop || 'Crop #1')}
+                            className="px-3 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold inline-flex items-center gap-1 shadow-xs transition cursor-pointer"
+                            title="Delete this crop"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                            <span>Delete Crop</span>
+                          </button>
+                        )}
+                      </div>
                     )}
                   </div>
 
@@ -3306,17 +3417,92 @@ export default function ProcurementPopFormsPage() {
                         Variety
                       </label>
                       <div className="md:col-span-4 bg-white p-2 border-b md:border-b-0 md:border-r border-black">
-                        <input
-                          type="text"
-                          name="variety"
-                          readOnly={isReadOnly}
-                          value={formData.variety}
-                          onChange={handleFieldChange}
-                          placeholder={isReadOnly ? '-' : 'Enter Variety'}
-                          className={`w-full bg-white px-2.5 py-1.5 text-sm text-black placeholder:text-neutral-500 focus:outline-none rounded ${
-                            isReadOnly ? 'cursor-default' : 'focus:ring-1 focus:ring-black'
-                          }`}
-                        />
+                        {isReadOnly ? (
+                          <input
+                            type="text"
+                            name="variety"
+                            readOnly
+                            value={formData.variety || '-'}
+                            className="w-full bg-white px-2.5 py-1.5 text-sm text-black cursor-default focus:outline-none"
+                          />
+                        ) : (
+                          <div className="relative" ref={varietyDropdownRef}>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const next = !isVarietyDropdownOpen;
+                                resetAllDropdowns();
+                                setIsVarietyDropdownOpen(next);
+                              }}
+                              className="w-full bg-white px-2.5 py-1.5 text-sm font-bold text-black flex items-center justify-between border border-black rounded focus:outline-none cursor-pointer"
+                            >
+                              <span className={formData.variety ? 'text-black font-bold' : 'text-neutral-500'}>
+                                {formData.variety || '-- Select Variety --'}
+                              </span>
+                              <ChevronDown className="w-4 h-4 text-black shrink-0" />
+                            </button>
+
+                            {isVarietyDropdownOpen && (
+                              <div className="absolute left-0 right-0 top-full mt-1 z-[999] bg-white border-2 border-black rounded-lg shadow-2xl max-h-64 overflow-y-auto">
+                                <div className="p-2 border-b border-black bg-neutral-50 sticky top-0 z-10">
+                                  <div className="text-[10px] font-bold text-black uppercase mb-1">
+                                    Row 1: Other Variety (Type below)
+                                  </div>
+                                  <div className="flex items-center gap-1.5">
+                                    <input
+                                      type="text"
+                                      value={customVarietyText}
+                                      onChange={(e) => {
+                                        const val = e.target.value;
+                                        setCustomVarietyText(val);
+                                        setFormData((prev) => ({ ...prev, variety: val }));
+                                      }}
+                                      onKeyDown={(e) => {
+                                        if (e.key === 'Enter') {
+                                          e.preventDefault();
+                                          setIsVarietyDropdownOpen(false);
+                                        }
+                                      }}
+                                      placeholder="Type custom variety..."
+                                      className="w-full bg-white px-2 py-1 text-xs text-black border border-black rounded focus:outline-none"
+                                    />
+                                    <button
+                                      type="button"
+                                      onClick={() => setIsVarietyDropdownOpen(false)}
+                                      className="px-2.5 py-1 bg-black text-white text-xs font-bold rounded cursor-pointer shrink-0"
+                                    >
+                                      Done
+                                    </button>
+                                  </div>
+                                </div>
+                                {CROP_VARIETIES_BY_CATEGORY.map((group) => (
+                                  <div key={group.category} className="py-1">
+                                    <div className="px-3 py-1 bg-neutral-100 text-[10px] font-bold uppercase tracking-wider text-black border-y border-neutral-200">
+                                      {group.category}
+                                    </div>
+                                    {group.varieties.map((varOpt) => (
+                                      <button
+                                        key={varOpt}
+                                        type="button"
+                                        onClick={() => {
+                                          setFormData((prev) => ({ ...prev, variety: varOpt }));
+                                          setCustomVarietyText('');
+                                          setIsVarietyDropdownOpen(false);
+                                        }}
+                                        className={`w-full text-left px-3 py-1.5 text-xs font-semibold hover:bg-emerald-50 border-b border-neutral-200 last:border-b-0 flex items-center justify-between cursor-pointer ${
+                                          formData.variety === varOpt ? 'bg-emerald-100 text-black font-bold' : 'text-black'
+                                        }`}
+                                      >
+                                        <span>{varOpt}</span>
+                                        {formData.variety === varOpt && <Check className="w-3.5 h-3.5 text-emerald-700" />}
+                                      </button>
+                                    ))}
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        )}
                       </div>
 
                       <label className="md:col-span-2 bg-white px-4 py-3 text-xs font-bold text-black flex items-center border-b md:border-b-0 md:border-r border-black">
@@ -3456,14 +3642,24 @@ export default function ProcurementPopFormsPage() {
                           Additional Crop #{index + 2}
                         </span>
                         {!isReadOnly && (
-                          <button
-                            type="button"
-                            onClick={() => handleRemoveAdditionalCrop(cropBlock.id)}
-                            className="px-2.5 py-1 rounded bg-red-600 hover:bg-red-700 text-white text-[11px] font-bold inline-flex items-center gap-1 cursor-pointer"
-                          >
-                            <Trash2 className="w-3 h-3" />
-                            <span>Remove Crop</span>
-                          </button>
+                          <div className="flex items-center gap-2">
+                            <button
+                              type="button"
+                              onClick={handleOpenAddCropModal}
+                              className="px-2.5 py-1 rounded bg-emerald-700 hover:bg-emerald-800 text-white text-[11px] font-bold inline-flex items-center gap-1 cursor-pointer"
+                            >
+                              <Plus className="w-3 h-3" />
+                              <span>Add New Crop</span>
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleOpenDeleteCropModal(cropBlock.id, cropBlock.crop || `Additional Crop #${index + 2}`)}
+                              className="px-2.5 py-1 rounded bg-red-600 hover:bg-red-700 text-white text-[11px] font-bold inline-flex items-center gap-1 cursor-pointer"
+                            >
+                              <Trash2 className="w-3 h-3" />
+                              <span>Delete Crop</span>
+                            </button>
+                          </div>
                         )}
                       </div>
 
@@ -3530,14 +3726,89 @@ export default function ProcurementPopFormsPage() {
                           Variety
                         </label>
                         <div className="md:col-span-4 bg-white p-2 border-b md:border-b-0 md:border-r border-black">
-                          <input
-                            type="text"
-                            readOnly={isReadOnly}
-                            value={cropBlock.variety}
-                            onChange={(e) => handleUpdateAdditionalCrop(cropBlock.id, 'variety', e.target.value)}
-                            placeholder={isReadOnly ? '-' : 'Enter Variety'}
-                            className="w-full bg-white px-2.5 py-1.5 text-sm text-black focus:outline-none rounded"
-                          />
+                          {isReadOnly ? (
+                            <input
+                              type="text"
+                              readOnly
+                              value={cropBlock.variety || '-'}
+                              className="w-full bg-white px-2.5 py-1.5 text-sm text-black cursor-default focus:outline-none rounded"
+                            />
+                          ) : (
+                            <div className="relative">
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  setExtraVarietyOpenId((prev) => (prev === cropBlock.id ? null : cropBlock.id))
+                                }
+                                className="w-full bg-white px-2.5 py-1.5 text-sm font-bold text-black flex items-center justify-between border border-black rounded focus:outline-none cursor-pointer"
+                              >
+                                <span className={cropBlock.variety ? 'text-black font-bold' : 'text-neutral-500'}>
+                                  {cropBlock.variety || '-- Select Variety --'}
+                                </span>
+                                <ChevronDown className="w-4 h-4 text-black shrink-0" />
+                              </button>
+
+                              {extraVarietyOpenId === cropBlock.id && (
+                                <div className="absolute left-0 right-0 top-full mt-1 z-[999] bg-white border-2 border-black rounded-lg shadow-2xl max-h-64 overflow-y-auto">
+                                  <div className="p-2 border-b border-black bg-neutral-50 sticky top-0 z-10">
+                                    <div className="text-[10px] font-bold text-black uppercase mb-1">
+                                      Row 1: Other Variety (Type below)
+                                    </div>
+                                    <div className="flex items-center gap-1.5">
+                                      <input
+                                        type="text"
+                                        value={extraVarietyInputs[cropBlock.id] || ''}
+                                        onChange={(e) => {
+                                          const val = e.target.value;
+                                          setExtraVarietyInputs((prev) => ({ ...prev, [cropBlock.id]: val }));
+                                          handleUpdateAdditionalCrop(cropBlock.id, 'variety', val);
+                                        }}
+                                        onKeyDown={(e) => {
+                                          if (e.key === 'Enter') {
+                                            e.preventDefault();
+                                            setExtraVarietyOpenId(null);
+                                          }
+                                        }}
+                                        placeholder="Type custom variety..."
+                                        className="w-full bg-white px-2 py-1 text-xs text-black border border-black rounded focus:outline-none"
+                                      />
+                                      <button
+                                        type="button"
+                                        onClick={() => setExtraVarietyOpenId(null)}
+                                        className="px-2.5 py-1 bg-black text-white text-xs font-bold rounded cursor-pointer shrink-0"
+                                      >
+                                        Done
+                                      </button>
+                                    </div>
+                                  </div>
+                                  {CROP_VARIETIES_BY_CATEGORY.map((group) => (
+                                    <div key={group.category} className="py-1">
+                                      <div className="px-3 py-1 bg-neutral-100 text-[10px] font-bold uppercase tracking-wider text-black border-y border-neutral-200">
+                                        {group.category}
+                                      </div>
+                                      {group.varieties.map((varOpt) => (
+                                        <button
+                                          key={varOpt}
+                                          type="button"
+                                          onClick={() => {
+                                            handleUpdateAdditionalCrop(cropBlock.id, 'variety', varOpt);
+                                            setExtraVarietyInputs((prev) => ({ ...prev, [cropBlock.id]: '' }));
+                                            setExtraVarietyOpenId(null);
+                                          }}
+                                          className={`w-full text-left px-3 py-1.5 text-xs font-semibold hover:bg-emerald-50 border-b border-neutral-200 last:border-b-0 flex items-center justify-between cursor-pointer ${
+                                            cropBlock.variety === varOpt ? 'bg-emerald-100 text-black font-bold' : 'text-black'
+                                          }`}
+                                        >
+                                          <span>{varOpt}</span>
+                                          {cropBlock.variety === varOpt && <Check className="w-3.5 h-3.5 text-emerald-700" />}
+                                        </button>
+                                      ))}
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          )}
                         </div>
 
                         <label className="md:col-span-2 bg-white px-4 py-3 text-xs font-bold text-black flex items-center border-b md:border-b-0 md:border-r border-black">
@@ -4290,12 +4561,47 @@ export default function ProcurementPopFormsPage() {
                   </div>
 
                   <div className="flex flex-wrap items-center gap-2">
-                    <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold">
-                      <Activity className="w-4 h-4 text-emerald-600" />
-                      <span>
-                        Crop Progress: {progressPercent}% (Day {numericAgeDays} / {totalCycleDays})
-                      </span>
-                    </div>
+                    {/* Master POP Schedule Table Enable/Disable Toggle Button */}
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        const nextVal = formData.isPopTableEnabled === false ? true : false;
+                        setFormData((prev) => ({
+                          ...prev,
+                          isPopTableEnabled: nextVal,
+                        }));
+                        try {
+                          await fetch('/api/package-of-practice', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                              action: 'TOGGLE_POP_TABLE',
+                              recordId: activeRecord?.id || formData.id || '',
+                              isPopTableEnabled: nextVal,
+                            }),
+                          });
+                        } catch {
+                          // local state updated
+                        }
+                      }}
+                      className={`px-3.5 py-1.5 rounded-xl text-xs font-extrabold inline-flex items-center gap-1.5 transition shadow-sm cursor-pointer border ${
+                        formData.isPopTableEnabled !== false
+                          ? 'bg-emerald-600 hover:bg-emerald-700 text-white border-emerald-700'
+                          : 'bg-rose-600 hover:bg-rose-700 text-white border-rose-700'
+                      }`}
+                    >
+                      {formData.isPopTableEnabled !== false ? (
+                        <>
+                          <Check className="w-3.5 h-3.5 text-white" />
+                          <span>POP Schedule: Enabled</span>
+                        </>
+                      ) : (
+                        <>
+                          <X className="w-3.5 h-3.5 text-white" />
+                          <span>POP Schedule: Disabled</span>
+                        </>
+                      )}
+                    </button>
 
                     {!isReadOnly && (
                       <button
@@ -4310,13 +4616,20 @@ export default function ProcurementPopFormsPage() {
                   </div>
                 </div>
 
-                {/* Progress Bar */}
-                <div className="w-full h-2.5 bg-slate-200 rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-gradient-to-r from-emerald-500 to-amber-400 rounded-full"
-                    style={{ width: `${progressPercent}%` }}
-                  />
-                </div>
+                {/* Notice when POP Schedule is Disabled in Backend */}
+                {formData.isPopTableEnabled === false && (
+                  <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-900 text-xs font-medium flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2">
+                      <span className="w-2.5 h-2.5 rounded-full bg-rose-600 shrink-0" />
+                      <span>
+                        <strong>POP Activity Schedule Table is Disabled:</strong> This section is hidden on the farmer frontend, but fully preserved here in the backend for management.
+                      </span>
+                    </div>
+                    <span className="text-[10px] font-bold text-rose-700 uppercase bg-rose-100 px-2 py-0.5 rounded shrink-0">
+                      Backend Only
+                    </span>
+                  </div>
+                )}
 
                 {/* POP Activity Schedule Table (Clean Inline Editable with Thin Gray Scrollbar) */}
                 <style>{`
@@ -4397,6 +4710,17 @@ export default function ProcurementPopFormsPage() {
                                   <div className="text-[10px] font-mono text-slate-400">
                                     {row.dayRange}
                                   </div>
+                                  <div className="mt-1">
+                                    <span
+                                      className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold ${
+                                        row.isEnabled !== false
+                                          ? 'bg-emerald-600 text-white'
+                                          : 'bg-rose-600 text-white'
+                                      }`}
+                                    >
+                                      {row.isEnabled !== false ? '✓ Enabled' : '✕ Disabled'}
+                                    </span>
+                                  </div>
                                 </>
                               ) : (
                                 <div className="space-y-1">
@@ -4421,6 +4745,32 @@ export default function ProcurementPopFormsPage() {
                                     placeholder="Day 0 – Day 20"
                                     className="w-full bg-white text-[10px] font-mono text-slate-500 px-2 py-1 rounded-md border border-emerald-500/40 focus:border-emerald-600 focus:ring-1 focus:ring-emerald-500 focus:outline-none"
                                   />
+
+                                  {/* Enable / Disable Button for Stage Row (Exactly in the red marked box under dayRange!) */}
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      const current = row.isEnabled !== false;
+                                      handleScheduleRowChange(idx, 'isEnabled', !current);
+                                    }}
+                                    className={`w-full py-1 px-2 rounded-md text-[10px] font-extrabold flex items-center justify-center gap-1 transition shadow-xs cursor-pointer border ${
+                                      row.isEnabled !== false
+                                        ? 'bg-emerald-600 hover:bg-emerald-700 text-white border-emerald-700'
+                                        : 'bg-rose-600 hover:bg-rose-700 text-white border-rose-700'
+                                    }`}
+                                  >
+                                    {row.isEnabled !== false ? (
+                                      <>
+                                        <Check className="w-3 h-3 text-white" />
+                                        <span>Enabled</span>
+                                      </>
+                                    ) : (
+                                      <>
+                                        <X className="w-3 h-3 text-white" />
+                                        <span>Disabled</span>
+                                      </>
+                                    )}
+                                  </button>
                                 </div>
                               )}
                             </td>
@@ -6723,6 +7073,15 @@ export default function ProcurementPopFormsPage() {
           </div>
         </div>
       )}
+
+      {/* Pop-up Confirmation Modal for Adding / Deleting Crops */}
+      <CropConfirmationModal
+        isOpen={cropConfirmModal.isOpen}
+        type={cropConfirmModal.type}
+        cropName={cropConfirmModal.cropName}
+        onConfirm={handleConfirmCropModal}
+        onCancel={() => setCropConfirmModal({ isOpen: false, type: 'add' })}
+      />
     </div>
   );
 }

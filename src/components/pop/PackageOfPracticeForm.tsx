@@ -40,6 +40,7 @@ export interface ScheduleRow {
   startDay: number;
   endDay: number;
   sownDate: string;
+  isEnabled?: boolean;
   soilPrep: string;
   manuring: string;
   irrigation: string;
@@ -1047,6 +1048,7 @@ const EMPTY_FORM_DATA = {
   // 7. Problem and Solution Summary
   problemSummary: '',
   solutionSummary: '',
+  isPopTableEnabled: true,
 };
 
 export default function PackageOfPracticeForm() {
@@ -1547,9 +1549,16 @@ export default function PackageOfPracticeForm() {
             );
             const activeCropId = prevCropId !== 'primary' && existsInExtra ? prevCropId : 'primary';
             const activeLc = initialLifecycleMap[activeCropId] || initialLifecycleMap.primary;
+            const isTableActive =
+              rec.isPopTableEnabled !== undefined
+                ? Boolean(rec.isPopTableEnabled)
+                : json.globalPopTableEnabled !== undefined
+                ? Boolean(json.globalPopTableEnabled)
+                : true;
             setFormData({
               ...loadedForm,
               ...activeLc,
+              isPopTableEnabled: isTableActive,
             });
             return activeCropId;
           });
@@ -1572,7 +1581,9 @@ export default function PackageOfPracticeForm() {
           }
         } else {
           // User has NOT filled data earlier -> keep all fields completely empty
-          setFormData({ ...EMPTY_FORM_DATA });
+          const isTableActive =
+            json.globalPopTableEnabled !== undefined ? Boolean(json.globalPopTableEnabled) : true;
+          setFormData({ ...EMPTY_FORM_DATA, isPopTableEnabled: isTableActive });
           setSelectedLifecycleCropId('primary');
           setCropLifecycleMap({});
           setCropExtraLifecycleStagesMap({});
@@ -4352,7 +4363,8 @@ export default function PackageOfPracticeForm() {
         {/* SECTION 4: Package of Practice (POP) Activity Schedule Table          */}
         {/* Read-Only on Front Page — Shows Full Crop Progress, Details & Solution */}
         {/* ===================================================================== */}
-        <div className="bg-white rounded-2xl border border-agri-border shadow-card p-6 sm:p-8 space-y-6">
+        {formData.isPopTableEnabled !== false && (
+          <div className="bg-white rounded-2xl border border-agri-border shadow-card p-6 sm:p-8 space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-agri-border">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-agri-pale flex items-center justify-center text-agri-green font-black">
@@ -4394,7 +4406,9 @@ export default function PackageOfPracticeForm() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-agri-border bg-white">
-                {schedule.map((row) => {
+                {schedule
+                  .filter((row) => row.isEnabled !== false)
+                  .map((row) => {
                   const status = getStageStatus(row);
                   return (
                     <tr
@@ -4479,13 +4493,14 @@ export default function PackageOfPracticeForm() {
 
           <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-agri-secondary">
             <span>
-              Showing all <strong>{schedule.length}</strong> standardized POP crop stages with progress & solutions
+              Showing <strong>{schedule.filter((row) => row.isEnabled !== false).length}</strong> standardized POP crop stages with progress & solutions
             </span>
             <span className="text-[11px] text-slate-500 italic">
               Read-only university schedule — managed and synchronized via Agri-Mart Admin & Agronomy Registry
             </span>
           </div>
         </div>
+      )}
           </>
         )}
 
@@ -6271,45 +6286,51 @@ export default function PackageOfPracticeForm() {
           </tbody>
         </table>
 
-        <div className="font-bold text-xs uppercase">
-          4. Package of Practice (POP) Activity Schedule Table:
-        </div>
+        {formData.isPopTableEnabled !== false && (
+          <>
+            <div className="font-bold text-xs uppercase">
+              4. Package of Practice (POP) Activity Schedule Table:
+            </div>
 
-        <table className="w-full border-collapse border border-black text-[10px]">
-          <thead>
-            <tr className="bg-slate-100 font-bold">
-              <th className="border border-black p-1">Sown Date & Stage</th>
-              <th className="border border-black p-1">Soil Preparation</th>
-              <th className="border border-black p-1">Manuring</th>
-              <th className="border border-black p-1">Irrigation</th>
-              <th className="border border-black p-1">Weeding Schedule</th>
-              <th className="border border-black p-1">Spraying Schedule</th>
-              <th className="border border-black p-1">Maintenance</th>
-              <th className="border border-black p-1">Harvesting</th>
-              <th className="border border-black p-1">Problem & Solution</th>
-            </tr>
-          </thead>
-          <tbody>
-            {schedule.map((r, i) => (
-              <tr key={i}>
-                <td className="border border-black p-1 font-bold">
-                  {r.sownDate} ({r.stageName})
-                </td>
-                <td className="border border-black p-1">{r.soilPrep}</td>
-                <td className="border border-black p-1">{r.manuring}</td>
-                <td className="border border-black p-1">{r.irrigation}</td>
-                <td className="border border-black p-1">{r.weedingSchedule}</td>
-                <td className="border border-black p-1">{r.sprayingSchedule}</td>
-                <td className="border border-black p-1">{r.maintenanceSchedule}</td>
-                <td className="border border-black p-1">{r.harvestingSchedule}</td>
-                <td className="border border-black p-1">
-                  <strong>Problem:</strong> {r.keyProblem} <br />
-                  <strong>Solution:</strong> {r.recommendedSolution}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+            <table className="w-full border-collapse border border-black text-[10px]">
+              <thead>
+                <tr className="bg-slate-100 font-bold">
+                  <th className="border border-black p-1">Sown Date & Stage</th>
+                  <th className="border border-black p-1">Soil Preparation</th>
+                  <th className="border border-black p-1">Manuring</th>
+                  <th className="border border-black p-1">Irrigation</th>
+                  <th className="border border-black p-1">Weeding Schedule</th>
+                  <th className="border border-black p-1">Spraying Schedule</th>
+                  <th className="border border-black p-1">Maintenance</th>
+                  <th className="border border-black p-1">Harvesting</th>
+                  <th className="border border-black p-1">Problem & Solution</th>
+                </tr>
+              </thead>
+              <tbody>
+                {schedule
+                  .filter((r) => r.isEnabled !== false)
+                  .map((r, i) => (
+                    <tr key={i}>
+                      <td className="border border-black p-1 font-bold">
+                        {r.sownDate} ({r.stageName})
+                      </td>
+                      <td className="border border-black p-1">{r.soilPrep}</td>
+                      <td className="border border-black p-1">{r.manuring}</td>
+                      <td className="border border-black p-1">{r.irrigation}</td>
+                      <td className="border border-black p-1">{r.weedingSchedule}</td>
+                      <td className="border border-black p-1">{r.sprayingSchedule}</td>
+                      <td className="border border-black p-1">{r.maintenanceSchedule}</td>
+                      <td className="border border-black p-1">{r.harvestingSchedule}</td>
+                      <td className="border border-black p-1">
+                        <strong>Problem:</strong> {r.keyProblem} <br />
+                        <strong>Solution:</strong> {r.recommendedSolution}
+                      </td>
+                    </tr>
+                  ))}
+              </tbody>
+            </table>
+          </>
+        )}
 
         <div className="mt-8 pt-6 flex justify-between text-xs">
           <div>Farmer Signature / Thumb Impression: ___________________</div>

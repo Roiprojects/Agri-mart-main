@@ -28,6 +28,8 @@ import {
   Clock,
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
+import CropConfirmationModal from '@/components/crop/CropConfirmationModal';
+import { CROP_VARIETIES_BY_CATEGORY, ALL_CROP_VARIETIES } from '@/lib/crop-varieties';
 import { useAuth } from '@/lib/auth-client';
 import { validatePhoneNumber, validateEmailOptional, validatePinCode } from '@/lib/validation';
 
@@ -38,6 +40,7 @@ export interface ScheduleRow {
   startDay: number;
   endDay: number;
   sownDate: string;
+  isEnabled?: boolean;
   soilPrep: string;
   manuring: string;
   irrigation: string;
@@ -1045,6 +1048,7 @@ const EMPTY_FORM_DATA = {
   // 7. Problem and Solution Summary
   problemSummary: '',
   solutionSummary: '',
+  isPopTableEnabled: true,
 };
 
 export default function PackageOfPracticeForm() {
@@ -1076,6 +1080,8 @@ export default function PackageOfPracticeForm() {
   const [newCropTypeInput, setNewCropTypeInput] = useState('');
   const [cropDropdownOpen, setCropDropdownOpen] = useState(false);
   const [newCropInput, setNewCropInput] = useState('');
+  const [varietyDropdownOpen, setVarietyDropdownOpen] = useState(false);
+  const [newVarietyInput, setNewVarietyInput] = useState('');
   const [stateDropdownOpen, setStateDropdownOpen] = useState(false);
   const [newStateInput, setNewStateInput] = useState('');
   const [districtDropdownOpen, setDistrictDropdownOpen] = useState(false);
@@ -1113,11 +1119,13 @@ export default function PackageOfPracticeForm() {
   const [newCurrentCropStageInput, setNewCurrentCropStageInput] = useState('');
   const [extraCropTypeOpenId, setExtraCropTypeOpenId] = useState<string | null>(null);
   const [extraCropOpenId, setExtraCropOpenId] = useState<string | null>(null);
+  const [extraVarietyOpenId, setExtraVarietyOpenId] = useState<string | null>(null);
   const [extraCurrentCropStageOpenId, setExtraCurrentCropStageOpenId] = useState<string | null>(
     null
   );
   const [extraCropTypeInputs, setExtraCropTypeInputs] = useState<Record<string, string>>({});
   const [extraCropInputs, setExtraCropInputs] = useState<Record<string, string>>({});
+  const [extraVarietyInputs, setExtraVarietyInputs] = useState<Record<string, string>>({});
   const [extraCurrentCropStageInputs, setExtraCurrentCropStageInputs] = useState<
     Record<string, string>
   >({});
@@ -1132,6 +1140,86 @@ export default function PackageOfPracticeForm() {
 
   // Inline Login / Sign In state (Phone Number or Username + Password)
   const [authMode, setAuthMode] = useState<'login' | 'signin'>('login');
+
+  // Confirmation Modal state for Adding / Deleting Crops
+  const [cropConfirmModal, setCropConfirmModal] = useState<{
+    isOpen: boolean;
+    type: 'add' | 'delete';
+    targetId?: string;
+    cropName?: string;
+  }>({
+    isOpen: false,
+    type: 'add',
+  });
+
+  const handleOpenAddCropModal = () => {
+    setCropConfirmModal({
+      isOpen: true,
+      type: 'add',
+    });
+  };
+
+  const handleOpenDeleteCropModal = (targetId: string, cropName?: string) => {
+    setCropConfirmModal({
+      isOpen: true,
+      type: 'delete',
+      targetId,
+      cropName: cropName || 'this crop',
+    });
+  };
+
+  const handleConfirmCropModal = () => {
+    if (cropConfirmModal.type === 'add') {
+      handleAddNewCropBlock();
+    } else if (cropConfirmModal.type === 'delete' && cropConfirmModal.targetId) {
+      if (cropConfirmModal.targetId === 'primary') {
+        if (formData.additionalCrops && formData.additionalCrops.length > 0) {
+          const [firstAdditional, ...remaining] = formData.additionalCrops;
+          const promotedLifecycle = cropLifecycleMap[firstAdditional.id] || EMPTY_LIFECYCLE_DATA;
+          setCropLifecycleMap((prev) => {
+            const copy = { ...prev };
+            copy['primary'] = promotedLifecycle;
+            delete copy[firstAdditional.id];
+            return copy;
+          });
+          setFormData((prev) => ({
+            ...prev,
+            cropType: firstAdditional.cropType,
+            crop: firstAdditional.crop,
+            variety: firstAdditional.variety,
+            plantingDate: firstAdditional.plantingDate,
+            cropAge: firstAdditional.cropAge,
+            cropAcreage: firstAdditional.cropAcreage,
+            plantCount: firstAdditional.plantCount,
+            spacing: firstAdditional.spacing,
+            currentCropStage: firstAdditional.currentCropStage || '',
+            surveyNumber: firstAdditional.surveyNumber || prev.surveyNumber,
+            additionalCrops: remaining,
+          }));
+        } else {
+          setCropLifecycleMap((prev) => ({
+            ...prev,
+            primary: { ...EMPTY_LIFECYCLE_DATA },
+          }));
+          setFormData((prev) => ({
+            ...prev,
+            cropType: '',
+            crop: '',
+            variety: '',
+            plantingDate: '',
+            cropAge: '',
+            cropAcreage: '',
+            plantCount: '',
+            spacing: '',
+            currentCropStage: '',
+          }));
+        }
+      } else {
+        handleRemoveAdditionalCrop(cropConfirmModal.targetId);
+      }
+    }
+    setCropConfirmModal({ isOpen: false, type: 'add' });
+  };
   const [authIdentifier, setAuthIdentifier] = useState('');
   const [authPassword, setAuthPassword] = useState('');
   const [authFullName, setAuthFullName] = useState('');
@@ -1461,9 +1549,16 @@ export default function PackageOfPracticeForm() {
             );
             const activeCropId = prevCropId !== 'primary' && existsInExtra ? prevCropId : 'primary';
             const activeLc = initialLifecycleMap[activeCropId] || initialLifecycleMap.primary;
+            const isTableActive =
+              rec.isPopTableEnabled !== undefined
+                ? Boolean(rec.isPopTableEnabled)
+                : json.globalPopTableEnabled !== undefined
+                ? Boolean(json.globalPopTableEnabled)
+                : true;
             setFormData({
               ...loadedForm,
               ...activeLc,
+              isPopTableEnabled: isTableActive,
             });
             return activeCropId;
           });
@@ -1486,7 +1581,9 @@ export default function PackageOfPracticeForm() {
           }
         } else {
           // User has NOT filled data earlier -> keep all fields completely empty
-          setFormData({ ...EMPTY_FORM_DATA });
+          const isTableActive =
+            json.globalPopTableEnabled !== undefined ? Boolean(json.globalPopTableEnabled) : true;
+          setFormData({ ...EMPTY_FORM_DATA, isPopTableEnabled: isTableActive });
           setSelectedLifecycleCropId('primary');
           setCropLifecycleMap({});
           setCropExtraLifecycleStagesMap({});
@@ -2917,11 +3014,21 @@ export default function PackageOfPracticeForm() {
               <div className="flex items-center gap-2">
                 <button
                   type="button"
-                  onClick={handleAddNewCropBlock}
+                  onClick={handleOpenAddCropModal}
                   className="bg-white hover:bg-amber-50 text-amber-950 font-black text-xs px-3.5 py-1.5 rounded-full shadow-sm border border-amber-200 transition flex items-center gap-1.5 cursor-pointer"
                 >
                   <span>+ Add New Crop</span>
                 </button>
+                {(formData.crop || formData.cropType || (formData.additionalCrops && formData.additionalCrops.length > 0)) && (
+                  <button
+                    type="button"
+                    onClick={() => handleOpenDeleteCropModal('primary', formData.crop || 'Crop #1')}
+                    className="bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs px-3 py-1.5 rounded-full shadow-sm transition cursor-pointer flex items-center gap-1"
+                    title="Delete this crop"
+                  >
+                    <span>Delete Crop</span>
+                  </button>
+                )}
               </div>
             </div>
 
@@ -3086,15 +3193,91 @@ export default function PackageOfPracticeForm() {
                 <label className="md:col-span-2 bg-amber-50/90 px-4 py-3 text-xs font-bold text-amber-950 flex items-center border-b md:border-b-0 md:border-r border-amber-200">
                   Variety
                 </label>
-                <div className="md:col-span-4 bg-white p-2 border-b md:border-b-0 md:border-r border-amber-200">
-                  <input
-                    type="text"
-                    name="variety"
-                    value={formData.variety}
-                    onChange={handleInputChange}
-                    placeholder="Enter Variety"
-                    className="w-full bg-white px-2.5 py-1.5 text-sm font-semibold text-black placeholder:text-neutral-400 border border-amber-300 focus:outline-none focus:ring-2 focus:ring-amber-500 rounded-lg"
-                  />
+                <div className="md:col-span-4 bg-white p-2 border-b md:border-b-0 md:border-r border-amber-200 relative">
+                  {/* Custom Dropdown Trigger Button for Variety */}
+                  <button
+                    type="button"
+                    onClick={() => setVarietyDropdownOpen((prev) => !prev)}
+                    className="w-full bg-white px-3 py-1.5 text-sm font-semibold text-left text-black border border-amber-300 focus:outline-none focus:ring-2 focus:ring-amber-500 rounded-lg flex items-center justify-between gap-2 cursor-pointer"
+                  >
+                    <span className={formData.variety ? 'text-black font-semibold' : 'text-neutral-400 font-normal'}>
+                      {formData.variety || '-- Select or Enter Variety --'}
+                    </span>
+                    <span className="text-amber-700 text-xs font-black">
+                      {varietyDropdownOpen ? '▲' : '▼'}
+                    </span>
+                  </button>
+
+                  {/* Dropdown Menu with "Other Variety" on the 1st Row at the Top */}
+                  {varietyDropdownOpen && (
+                    <div className="absolute left-2 right-2 top-full mt-1 z-50 bg-white border-2 border-amber-500 rounded-xl shadow-2xl overflow-hidden">
+                      <div className="max-h-64 overflow-y-auto divide-y divide-amber-100">
+                        {/* 1st Row at the Top: "Other Variety" + Text Box */}
+                        <div className="w-full px-3.5 py-2 bg-white hover:bg-amber-50/50 flex items-center gap-2.5">
+                          <span className="text-xs font-bold text-black shrink-0">
+                            Other Variety
+                          </span>
+                          <input
+                            type="text"
+                            value={newVarietyInput}
+                            onChange={(e) => {
+                              const val = e.target.value;
+                              setNewVarietyInput(val);
+                              setFormData((prev) => ({ ...prev, variety: val }));
+                            }}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') {
+                                e.preventDefault();
+                                setVarietyDropdownOpen(false);
+                              }
+                            }}
+                            placeholder="Enter the variety"
+                            className="flex-1 bg-white px-3 py-1 text-xs font-semibold text-black placeholder:text-neutral-400 border border-amber-400 rounded-full focus:outline-none focus:ring-2 focus:ring-amber-500"
+                          />
+                          {newVarietyInput.trim() && (
+                            <button
+                              type="button"
+                              onClick={() => setVarietyDropdownOpen(false)}
+                              className="text-[11px] font-bold px-2 py-0.5 bg-amber-600 text-white rounded hover:bg-amber-700 cursor-pointer"
+                            >
+                              Done
+                            </button>
+                          )}
+                        </div>
+
+                        {/* Variety Options Grouped by Category */}
+                        {CROP_VARIETIES_BY_CATEGORY.map((group) => (
+                          <div key={group.category} className="py-1">
+                            <div className="px-3.5 py-1 bg-amber-100/70 text-[10px] font-black uppercase tracking-wider text-amber-950">
+                              {group.category}
+                            </div>
+                            {group.varieties.map((varOption) => {
+                              const isSelected = formData.variety === varOption;
+                              return (
+                                <button
+                                  key={varOption}
+                                  type="button"
+                                  onClick={() => {
+                                    setNewVarietyInput('');
+                                    setFormData((prev) => ({ ...prev, variety: varOption }));
+                                    setVarietyDropdownOpen(false);
+                                  }}
+                                  className={`w-full px-3.5 py-1.5 text-left text-xs font-semibold flex items-center justify-between transition cursor-pointer ${
+                                    isSelected
+                                      ? 'bg-amber-500 text-slate-950 font-bold'
+                                      : 'bg-white hover:bg-amber-50 text-black'
+                                  }`}
+                                >
+                                  <span>{varOption}</span>
+                                  {isSelected && <span className="text-xs font-black">✓</span>}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 <label className="md:col-span-2 bg-amber-50/90 px-4 py-3 text-xs font-bold text-amber-950 flex items-center border-b md:border-b-0 md:border-r border-amber-200">
@@ -3212,9 +3395,11 @@ export default function PackageOfPracticeForm() {
           {(formData.additionalCrops || []).map((cropBlock, idx) => {
             const isExtraTypeOpen = extraCropTypeOpenId === cropBlock.id;
             const isExtraCropOpen = extraCropOpenId === cropBlock.id;
+            const isExtraVarietyOpen = extraVarietyOpenId === cropBlock.id;
             const isExtraStageOpen = extraCurrentCropStageOpenId === cropBlock.id;
             const customTypeVal = extraCropTypeInputs[cropBlock.id] || '';
             const customCropVal = extraCropInputs[cropBlock.id] || '';
+            const customVarietyVal = extraVarietyInputs[cropBlock.id] || '';
             const customStageVal = extraCurrentCropStageInputs[cropBlock.id] || '';
 
             return (
@@ -3229,17 +3414,17 @@ export default function PackageOfPracticeForm() {
                   <div className="flex items-center gap-2">
                     <button
                       type="button"
-                      onClick={handleAddNewCropBlock}
+                      onClick={handleOpenAddCropModal}
                       className="bg-white hover:bg-amber-50 text-amber-950 font-black text-xs px-3.5 py-1.5 rounded-full shadow-sm border border-amber-200 transition flex items-center gap-1.5 cursor-pointer"
                     >
                       <span>+ Add New Crop</span>
                     </button>
                     <button
                       type="button"
-                      onClick={() => handleRemoveAdditionalCrop(cropBlock.id)}
+                      onClick={() => handleOpenDeleteCropModal(cropBlock.id, cropBlock.crop || `Crop #${idx + 2}`)}
                       className="bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs px-3 py-1.5 rounded-full shadow-sm transition cursor-pointer"
                     >
-                      Remove
+                      <span>Delete Crop</span>
                     </button>
                   </div>
                 </div>
@@ -3395,16 +3580,91 @@ export default function PackageOfPracticeForm() {
                     <label className="md:col-span-2 bg-amber-50/90 px-4 py-3 text-xs font-bold text-amber-950 flex items-center border-b md:border-b-0 md:border-r border-amber-200">
                       Variety
                     </label>
-                    <div className="md:col-span-4 bg-white p-2 border-b md:border-b-0 md:border-r border-amber-200">
-                      <input
-                        type="text"
-                        value={cropBlock.variety}
-                        onChange={(e) =>
-                          handleUpdateAdditionalCrop(cropBlock.id, 'variety', e.target.value)
+                    <div className="md:col-span-4 bg-white p-2 border-b md:border-b-0 md:border-r border-amber-200 relative">
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setExtraVarietyOpenId((prev) => (prev === cropBlock.id ? null : cropBlock.id))
                         }
-                        placeholder="Enter Variety"
-                        className="w-full bg-white px-2.5 py-1.5 text-sm font-semibold text-black placeholder:text-neutral-400 border border-amber-300 focus:outline-none focus:ring-2 focus:ring-amber-500 rounded-lg"
-                      />
+                        className="w-full bg-white px-3 py-1.5 text-sm font-semibold text-left text-black border border-amber-300 focus:outline-none focus:ring-2 focus:ring-amber-500 rounded-lg flex items-center justify-between gap-2 cursor-pointer"
+                      >
+                        <span className={cropBlock.variety ? 'text-black font-semibold' : 'text-neutral-400 font-normal'}>
+                          {cropBlock.variety || '-- Select or Enter Variety --'}
+                        </span>
+                        <span className="text-amber-700 text-xs font-black">
+                          {isExtraVarietyOpen ? '▲' : '▼'}
+                        </span>
+                      </button>
+
+                      {isExtraVarietyOpen && (
+                        <div className="absolute left-2 right-2 top-full mt-1 z-50 bg-white border-2 border-amber-500 rounded-xl shadow-2xl overflow-hidden">
+                          <div className="max-h-64 overflow-y-auto divide-y divide-amber-100">
+                            {/* 1st Row at the Top: "Other Variety" + Text Box */}
+                            <div className="w-full px-3.5 py-2 bg-white hover:bg-amber-50/50 flex items-center gap-2.5">
+                              <span className="text-xs font-bold text-black shrink-0">
+                                Other Variety
+                              </span>
+                              <input
+                                type="text"
+                                value={customVarietyVal}
+                                onChange={(e) => {
+                                  const val = e.target.value;
+                                  setExtraVarietyInputs((prev) => ({ ...prev, [cropBlock.id]: val }));
+                                  handleUpdateAdditionalCrop(cropBlock.id, 'variety', val);
+                                }}
+                                onKeyDown={(e) => {
+                                  if (e.key === 'Enter') {
+                                    e.preventDefault();
+                                    setExtraVarietyOpenId(null);
+                                  }
+                                }}
+                                placeholder="Enter the variety"
+                                className="flex-1 bg-white px-3 py-1 text-xs font-semibold text-black placeholder:text-neutral-400 border border-amber-400 rounded-full focus:outline-none focus:ring-2 focus:ring-amber-500"
+                              />
+                              {customVarietyVal.trim() && (
+                                <button
+                                  type="button"
+                                  onClick={() => setExtraVarietyOpenId(null)}
+                                  className="text-[11px] font-bold px-2 py-0.5 bg-amber-600 text-white rounded hover:bg-amber-700 cursor-pointer"
+                                >
+                                  Done
+                                </button>
+                              )}
+                            </div>
+
+                            {/* Variety Options Grouped by Category */}
+                            {CROP_VARIETIES_BY_CATEGORY.map((group) => (
+                              <div key={group.category} className="py-1">
+                                <div className="px-3.5 py-1 bg-amber-100/70 text-[10px] font-black uppercase tracking-wider text-amber-950">
+                                  {group.category}
+                                </div>
+                                {group.varieties.map((varOption) => {
+                                  const isSelected = cropBlock.variety === varOption;
+                                  return (
+                                    <button
+                                      key={varOption}
+                                      type="button"
+                                      onClick={() => {
+                                        setExtraVarietyInputs((prev) => ({ ...prev, [cropBlock.id]: '' }));
+                                        handleUpdateAdditionalCrop(cropBlock.id, 'variety', varOption);
+                                        setExtraVarietyOpenId(null);
+                                      }}
+                                      className={`w-full px-3.5 py-1.5 text-left text-xs font-semibold flex items-center justify-between transition cursor-pointer ${
+                                        isSelected
+                                          ? 'bg-amber-500 text-slate-950 font-bold'
+                                          : 'bg-white hover:bg-amber-50 text-black'
+                                      }`}
+                                    >
+                                      <span>{varOption}</span>
+                                      {isSelected && <span className="text-xs font-black">✓</span>}
+                                    </button>
+                                  );
+                                })}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
                     </div>
 
                     <label className="md:col-span-2 bg-amber-50/90 px-4 py-3 text-xs font-bold text-amber-950 flex items-center border-b md:border-b-0 md:border-r border-amber-200">
@@ -4103,7 +4363,8 @@ export default function PackageOfPracticeForm() {
         {/* SECTION 4: Package of Practice (POP) Activity Schedule Table          */}
         {/* Read-Only on Front Page — Shows Full Crop Progress, Details & Solution */}
         {/* ===================================================================== */}
-        <div className="bg-white rounded-2xl border border-agri-border shadow-card p-6 sm:p-8 space-y-6">
+        {formData.isPopTableEnabled !== false && (
+          <div className="bg-white rounded-2xl border border-agri-border shadow-card p-6 sm:p-8 space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-agri-border">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-agri-pale flex items-center justify-center text-agri-green font-black">
@@ -4145,7 +4406,9 @@ export default function PackageOfPracticeForm() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-agri-border bg-white">
-                {schedule.map((row) => {
+                {schedule
+                  .filter((row) => row.isEnabled !== false)
+                  .map((row) => {
                   const status = getStageStatus(row);
                   return (
                     <tr
@@ -4230,13 +4493,14 @@ export default function PackageOfPracticeForm() {
 
           <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-agri-secondary">
             <span>
-              Showing all <strong>{schedule.length}</strong> standardized POP crop stages with progress & solutions
+              Showing <strong>{schedule.filter((row) => row.isEnabled !== false).length}</strong> standardized POP crop stages with progress & solutions
             </span>
             <span className="text-[11px] text-slate-500 italic">
               Read-only university schedule — managed and synchronized via Agri-Mart Admin & Agronomy Registry
             </span>
           </div>
         </div>
+      )}
           </>
         )}
 
@@ -6022,51 +6286,66 @@ export default function PackageOfPracticeForm() {
           </tbody>
         </table>
 
-        <div className="font-bold text-xs uppercase">
-          4. Package of Practice (POP) Activity Schedule Table:
-        </div>
+        {formData.isPopTableEnabled !== false && (
+          <>
+            <div className="font-bold text-xs uppercase">
+              4. Package of Practice (POP) Activity Schedule Table:
+            </div>
 
-        <table className="w-full border-collapse border border-black text-[10px]">
-          <thead>
-            <tr className="bg-slate-100 font-bold">
-              <th className="border border-black p-1">Sown Date & Stage</th>
-              <th className="border border-black p-1">Soil Preparation</th>
-              <th className="border border-black p-1">Manuring</th>
-              <th className="border border-black p-1">Irrigation</th>
-              <th className="border border-black p-1">Weeding Schedule</th>
-              <th className="border border-black p-1">Spraying Schedule</th>
-              <th className="border border-black p-1">Maintenance</th>
-              <th className="border border-black p-1">Harvesting</th>
-              <th className="border border-black p-1">Problem & Solution</th>
-            </tr>
-          </thead>
-          <tbody>
-            {schedule.map((r, i) => (
-              <tr key={i}>
-                <td className="border border-black p-1 font-bold">
-                  {r.sownDate} ({r.stageName})
-                </td>
-                <td className="border border-black p-1">{r.soilPrep}</td>
-                <td className="border border-black p-1">{r.manuring}</td>
-                <td className="border border-black p-1">{r.irrigation}</td>
-                <td className="border border-black p-1">{r.weedingSchedule}</td>
-                <td className="border border-black p-1">{r.sprayingSchedule}</td>
-                <td className="border border-black p-1">{r.maintenanceSchedule}</td>
-                <td className="border border-black p-1">{r.harvestingSchedule}</td>
-                <td className="border border-black p-1">
-                  <strong>Problem:</strong> {r.keyProblem} <br />
-                  <strong>Solution:</strong> {r.recommendedSolution}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+            <table className="w-full border-collapse border border-black text-[10px]">
+              <thead>
+                <tr className="bg-slate-100 font-bold">
+                  <th className="border border-black p-1">Sown Date & Stage</th>
+                  <th className="border border-black p-1">Soil Preparation</th>
+                  <th className="border border-black p-1">Manuring</th>
+                  <th className="border border-black p-1">Irrigation</th>
+                  <th className="border border-black p-1">Weeding Schedule</th>
+                  <th className="border border-black p-1">Spraying Schedule</th>
+                  <th className="border border-black p-1">Maintenance</th>
+                  <th className="border border-black p-1">Harvesting</th>
+                  <th className="border border-black p-1">Problem & Solution</th>
+                </tr>
+              </thead>
+              <tbody>
+                {schedule
+                  .filter((r) => r.isEnabled !== false)
+                  .map((r, i) => (
+                    <tr key={i}>
+                      <td className="border border-black p-1 font-bold">
+                        {r.sownDate} ({r.stageName})
+                      </td>
+                      <td className="border border-black p-1">{r.soilPrep}</td>
+                      <td className="border border-black p-1">{r.manuring}</td>
+                      <td className="border border-black p-1">{r.irrigation}</td>
+                      <td className="border border-black p-1">{r.weedingSchedule}</td>
+                      <td className="border border-black p-1">{r.sprayingSchedule}</td>
+                      <td className="border border-black p-1">{r.maintenanceSchedule}</td>
+                      <td className="border border-black p-1">{r.harvestingSchedule}</td>
+                      <td className="border border-black p-1">
+                        <strong>Problem:</strong> {r.keyProblem} <br />
+                        <strong>Solution:</strong> {r.recommendedSolution}
+                      </td>
+                    </tr>
+                  ))}
+              </tbody>
+            </table>
+          </>
+        )}
 
         <div className="mt-8 pt-6 flex justify-between text-xs">
           <div>Farmer Signature / Thumb Impression: ___________________</div>
           <div>Authorized VLE / FPO Signature: ___________________</div>
         </div>
       </div>
+
+      {/* Pop-up Confirmation Modal for Adding / Deleting Crops */}
+      <CropConfirmationModal
+        isOpen={cropConfirmModal.isOpen}
+        type={cropConfirmModal.type}
+        cropName={cropConfirmModal.cropName}
+        onConfirm={handleConfirmCropModal}
+        onCancel={() => setCropConfirmModal({ isOpen: false, type: 'add' })}
+      />
     </div>
   );
 }
