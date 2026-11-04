@@ -3,7 +3,7 @@ import { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { SITE_CONFIG } from '@/lib/config';
-import { SERVICES_CATALOGUE, getServiceBySlug } from '@/lib/services-data';
+import { SERVICES_CATALOGUE, getServiceBySlug, getServiceDefaultImage } from '@/lib/services-data';
 import { ApiClient } from '@/lib/api-client';
 import { Breadcrumbs } from '@/components/ui/Breadcrumbs';
 import { Badge } from '@/components/ui/Badge';
@@ -162,8 +162,8 @@ export default async function ServiceDetailPage({ params }: ServiceDetailPagePro
         <Breadcrumbs items={breadcrumbItems} />
 
         {/* Hero Banner */}
-        <div className="bg-gradient-to-br from-emerald-950 via-slate-900 to-emerald-900 text-white rounded-3xl p-6 sm:p-10 shadow-xl border border-emerald-900/40">
-          <div className="max-w-3xl space-y-3">
+        <div className="bg-gradient-to-br from-emerald-950 via-slate-900 to-emerald-900 text-white rounded-3xl p-6 sm:p-10 shadow-xl border border-emerald-900/40 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+          <div className="max-w-2xl space-y-3">
             <div className="flex items-center gap-2">
               <span className="bg-amber-400 text-slate-950 font-black text-[10px] px-2.5 py-0.5 rounded-full uppercase tracking-wider">
                 {service.badge}
@@ -178,6 +178,14 @@ export default async function ServiceDetailPage({ params }: ServiceDetailPagePro
             <p className="text-sm sm:text-base text-emerald-100 leading-relaxed">
               {service.description}
             </p>
+          </div>
+
+          <div className="w-full md:w-80 h-48 rounded-2xl overflow-hidden border border-emerald-500/30 shadow-lg shrink-0 bg-slate-900">
+            <img
+              src={service.image || service.imageUrl || getServiceDefaultImage(service.id)}
+              alt={service.name}
+              className="w-full h-full object-cover"
+            />
           </div>
         </div>
 

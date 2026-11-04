@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { readDb, writeDb } from '@/lib/dev-db';
-import { SERVICES_CATALOGUE, ServiceDefinition } from '@/lib/services-data';
+import { SERVICES_CATALOGUE, ServiceDefinition, SERVICE_DEFAULT_IMAGES } from '@/lib/services-data';
 import { revalidateFrontendPath } from '@/lib/revalidation-dispatcher';
 
 export const dynamic = 'force-dynamic';
@@ -18,7 +18,11 @@ export async function GET(request: Request) {
     const category = searchParams.get('category');
     const search = searchParams.get('search');
 
-    let services: ServiceDefinition[] = db.services;
+    let services: ServiceDefinition[] = db.services.map((s: ServiceDefinition) => ({
+      ...s,
+      image: s.image || s.imageUrl || SERVICE_DEFAULT_IMAGES[s.id] || '/images/gallery/03-tractor-soil.jpg',
+      imageUrl: s.imageUrl || s.image || SERVICE_DEFAULT_IMAGES[s.id] || '/images/gallery/03-tractor-soil.jpg',
+    }));
 
     if (slug) {
       const found = services.find((s) => s.slug === slug);
@@ -71,6 +75,8 @@ export async function POST(request: Request) {
       category: body.category || 'Agricultural Mechanization',
       badge: body.badge || 'New',
       iconName: body.iconName || 'Wrench',
+      image: body.image || body.imageUrl || '/images/gallery/03-tractor-soil.jpg',
+      imageUrl: body.imageUrl || body.image || '/images/gallery/03-tractor-soil.jpg',
       baseRatePerAcre: Number(body.baseRatePerAcre) || 1000,
       equipmentUsed: body.equipmentUsed || 'Standard Machinery',
       timeEstimate: body.timeEstimate || '1.0 to 2.0 hours / acre',

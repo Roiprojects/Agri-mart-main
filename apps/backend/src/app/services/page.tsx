@@ -74,89 +74,80 @@ export default async function ServicesPage() {
 
       {/* 10 Services Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {services.map((srv) => (
-          <div
-            key={srv.id}
-            className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:shadow-md hover:border-slate-300 transition flex flex-col justify-between space-y-4"
-          >
-            <div>
-              <div className="flex items-center justify-between mb-3">
-                <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center font-bold">
-                  <Tractor className="w-5 h-5" />
-                </div>
-                <span className="bg-amber-100 text-amber-900 font-bold px-2.5 py-0.5 rounded-full text-[10px] border border-amber-200">
-                  {srv.badge}
-                </span>
-              </div>
+        {services.map((srv) => {
+          const serviceImage = srv.image || srv.imageUrl || '/images/gallery/03-tractor-soil.jpg';
+          const hourlyRate = Math.max(250, Math.round(srv.baseRatePerAcre * 0.65));
 
-              <div className="text-[11px] font-bold text-emerald-800 uppercase tracking-wider mb-1">
-                {srv.category}
-              </div>
-
-              <h3 className="font-extrabold text-base text-slate-900 leading-snug">
-                <Link href={`/services/${srv.slug}`} className="hover:text-emerald-700 transition">
-                  {srv.name}
-                </Link>
-              </h3>
-
-              <div className="text-emerald-800 font-bold text-xs mt-1 flex items-center gap-2">
-                <span>₹{Math.max(250, Math.round(srv.baseRatePerAcre * 0.65))}/hour</span>
-                <span className="text-slate-400">&bull;</span>
-                <span>₹{srv.baseRatePerAcre}/acre</span>
-              </div>
-
-              <p className="text-xs text-slate-600 mt-2 leading-relaxed line-clamp-2">
-                {srv.shortDescription}
-              </p>
-
-              {/* Job-Work Sub-Operations preview */}
-              <div className="mt-3.5 bg-slate-50 p-3 rounded-xl border border-slate-100 space-y-1.5">
-                <div className="text-[11px] font-bold text-slate-700 flex items-center gap-1">
-                  <Layers className="w-3.5 h-3.5 text-emerald-700" />
-                  <span>{srv.jobWorkTypes.length} Documented Job-Work Types:</span>
-                </div>
-                <div className="space-y-1 text-[11px] text-slate-600">
-                  {srv.jobWorkTypes.slice(0, 2).map((jw) => (
-                    <div key={jw.id} className="flex justify-between items-center">
-                      <span className="truncate pr-2">&bull; {jw.name}</span>
-                      <span className="font-bold text-slate-900 shrink-0">₹{jw.rate} {jw.rateUnit}</span>
-                    </div>
-                  ))}
-                  {srv.jobWorkTypes.length > 2 && (
-                    <div className="text-[10px] text-slate-400 font-medium">
-                      + {srv.jobWorkTypes.length - 2} more operations available
-                    </div>
+          return (
+            <div
+              key={srv.id}
+              className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-md hover:border-slate-300 transition flex flex-col justify-between"
+            >
+              <div>
+                {/* Service Card Image */}
+                <div className="relative h-48 w-full overflow-hidden bg-slate-100 group">
+                  <img
+                    src={serviceImage}
+                    alt={srv.name}
+                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  />
+                  {srv.badge && (
+                    <span className="absolute top-3 right-3 bg-amber-400 text-slate-950 font-black text-[10px] px-2.5 py-0.5 rounded-full uppercase tracking-wider shadow-sm">
+                      {srv.badge}
+                    </span>
                   )}
                 </div>
+
+                {/* Card Content - Clean matching exact details requested */}
+                <div className="p-5 space-y-2.5">
+                  <div className="text-[11px] font-bold text-emerald-800 uppercase tracking-wider">
+                    {srv.category}
+                  </div>
+
+                  <h3 className="font-extrabold text-base text-slate-900 leading-snug">
+                    <Link href={`/services/${srv.slug}`} className="hover:text-emerald-700 transition">
+                      {srv.name}
+                    </Link>
+                  </h3>
+
+                  <div className="text-emerald-800 font-bold text-xs flex items-center gap-2">
+                    <span>₹{hourlyRate}/hour</span>
+                    <span className="text-slate-400">&bull;</span>
+                    <span>₹{srv.baseRatePerAcre}/acre</span>
+                  </div>
+
+                  <div className="pt-2 text-[11px] text-slate-600 space-y-1">
+                    <div>
+                      <strong className="text-slate-800 font-semibold">Fleet:</strong> {srv.equipmentUsed}
+                    </div>
+                    <div>
+                      <strong className="text-slate-800 font-semibold">Operational Speed:</strong> {srv.timeEstimate}
+                    </div>
+                  </div>
+                </div>
               </div>
 
-              <div className="mt-3 text-[11px] text-slate-500 space-y-1">
-                <div>
-                  <strong className="text-slate-700">Fleet:</strong> {srv.equipmentUsed}
-                </div>
-                <div>
-                  <strong className="text-slate-700">Operational Speed:</strong> {srv.timeEstimate}
+              {/* Bottom Card Actions */}
+              <div className="p-5 pt-0">
+                <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
+                  <Link
+                    href={`/services/${srv.slug}`}
+                    className="text-xs font-bold text-slate-600 hover:text-emerald-700 flex items-center gap-1 transition"
+                  >
+                    View Details <ArrowRight className="w-3.5 h-3.5" />
+                  </Link>
+
+                  <Link
+                    href={`/services/book?service=${srv.id}`}
+                    className="bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs px-4 py-2 rounded-xl transition shadow-xs"
+                  >
+                    Book with GPS
+                  </Link>
                 </div>
               </div>
             </div>
-
-            <div className="pt-4 border-t border-slate-100 flex items-center justify-between gap-2">
-              <Link
-                href={`/services/${srv.slug}`}
-                className="text-xs font-bold text-slate-600 hover:text-emerald-700 flex items-center gap-1"
-              >
-                View Details <ArrowRight className="w-3.5 h-3.5" />
-              </Link>
-
-              <Link
-                href={`/services/book?service=${srv.id}`}
-                className="bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs px-4 py-2 rounded-xl transition shadow-xs"
-              >
-                Book with GPS
-              </Link>
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );

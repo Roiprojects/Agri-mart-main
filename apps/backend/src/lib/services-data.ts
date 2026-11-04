@@ -22,9 +22,24 @@ export interface ServiceDefinition {
   timeEstimate: string;
   badge: string;
   iconName: string;
+  image?: string;
+  imageUrl?: string;
   jobWorkTypes: JobWorkType[];
   faq: { q: string; a: string }[];
 }
+
+export const SERVICE_DEFAULT_IMAGES: Record<string, string> = {
+  'srv-tractor': '/images/gallery/03-tractor-soil.jpg',
+  'srv-rotavator': '/images/gallery/04-seed-sowing.jpg',
+  'srv-harvesting': '/images/gallery/07-harvesting.jpg',
+  'srv-spraying': '/images/banners/hero_service_drone.jpg',
+  'srv-cultivation': '/images/gallery/08-farm-equipment.jpg',
+  'srv-labour': '/images/gallery/02-farmer-working.jpg',
+  'srv-soil-testing': '/images/gallery/05-irrigation.jpg',
+  'srv-consultation': '/images/gallery/01-green-fields.jpg',
+  'srv-operators': '/images/gallery/09-vegetable-cultivation.jpg',
+  'srv-custom-agri': '/images/banners/hero_rental.jpg',
+};
 
 export const SERVICES_CATALOGUE: ServiceDefinition[] = [
   {
@@ -35,6 +50,7 @@ export const SERVICES_CATALOGUE: ServiceDefinition[] = [
     category: 'Heavy Farm Mechanization',
     badge: 'High Demand',
     iconName: 'Tractor',
+    image: '/images/gallery/03-tractor-soil.jpg',
     baseRatePerAcre: 1200,
     equipmentUsed: '45–55 HP 4WD Tractors with MB Plough, Disc Harrow & Cultivator',
     timeEstimate: '1.5 to 2.5 hours / acre',
@@ -102,6 +118,7 @@ export const SERVICES_CATALOGUE: ServiceDefinition[] = [
     category: 'Soil Pulverization',
     badge: 'Popular',
     iconName: 'RotateCw',
+    image: '/images/gallery/04-seed-sowing.jpg',
     baseRatePerAcre: 1100,
     equipmentUsed: '7-Foot Multi-Speed Heavy Duty Rotavators',
     timeEstimate: '1.0 to 1.5 hours / acre',
@@ -145,6 +162,7 @@ export const SERVICES_CATALOGUE: ServiceDefinition[] = [
     category: 'Crop Harvesting',
     badge: 'Peak Season',
     iconName: 'Wheat',
+    image: '/images/gallery/07-harvesting.jpg',
     baseRatePerAcre: 2200,
     equipmentUsed: 'Track Combine Harvesters & Self-Propelled Reapers',
     timeEstimate: '45 mins to 1.2 hours / acre',
@@ -188,6 +206,7 @@ export const SERVICES_CATALOGUE: ServiceDefinition[] = [
     category: 'Plant Protection',
     badge: 'DGCA Certified',
     iconName: 'CloudRain',
+    image: '/images/banners/hero_service_drone.jpg',
     baseRatePerAcre: 450,
     equipmentUsed: '10L/16L Hexacopter Agri-Drones & Tractor Boom Sprayers',
     timeEstimate: '7 to 12 minutes / acre',
@@ -231,6 +250,7 @@ export const SERVICES_CATALOGUE: ServiceDefinition[] = [
     category: 'Crop Maintenance',
     badge: 'Cost Saver',
     iconName: 'Sparkles',
+    image: '/images/gallery/08-farm-equipment.jpg',
     baseRatePerAcre: 850,
     equipmentUsed: '7HP–9HP Power Weeders with Ridger and Ditcher',
     timeEstimate: '1.5 to 2 hours / acre',
@@ -274,6 +294,7 @@ export const SERVICES_CATALOGUE: ServiceDefinition[] = [
     category: 'Farm Manpower',
     badge: 'Verified Crews',
     iconName: 'Users',
+    image: '/images/gallery/02-farmer-working.jpg',
     baseRatePerAcre: 3500,
     equipmentUsed: 'Trained farm labor gangs with personal protective gear',
     timeEstimate: '1 full day / 2–3 acres',
@@ -317,6 +338,7 @@ export const SERVICES_CATALOGUE: ServiceDefinition[] = [
     category: 'Scientific Diagnostics',
     badge: 'NABL Certified Lab',
     iconName: 'FlaskConical',
+    image: '/images/gallery/05-irrigation.jpg',
     baseRatePerAcre: 550,
     equipmentUsed: 'Precision GPS Core Sampler & Spectrophotometer Lab Analyzer',
     timeEstimate: 'Sample collected in 30 mins; Lab report in 48 hours',
@@ -360,6 +382,7 @@ export const SERVICES_CATALOGUE: ServiceDefinition[] = [
     category: 'Agronomy Advisory',
     badge: 'UAS Dharwad Certified',
     iconName: 'GraduationCap',
+    image: '/images/gallery/01-green-fields.jpg',
     baseRatePerAcre: 750,
     equipmentUsed: 'Digital Microscope, Chlorophyll Meter & Soil Moisture Probe',
     timeEstimate: '1.5 hours on-field consultation',
@@ -403,6 +426,7 @@ export const SERVICES_CATALOGUE: ServiceDefinition[] = [
     category: 'Machinery Operators',
     badge: 'Verified Drivers',
     iconName: 'HardHat',
+    image: '/images/gallery/09-vegetable-cultivation.jpg',
     baseRatePerAcre: 700,
     equipmentUsed: 'Licensed commercial operators with min. 5 years heavy equipment experience',
     timeEstimate: 'Per Day (8-hour shift)',
@@ -446,6 +470,7 @@ export const SERVICES_CATALOGUE: ServiceDefinition[] = [
     category: 'Farm Infrastructure',
     badge: 'Turnkey Solutions',
     iconName: 'Wrench',
+    image: '/images/banners/hero_rental.jpg',
     baseRatePerAcre: 1500,
     equipmentUsed: 'High-voltage solar energizers, trenchers & HDPE butt-fusion machines',
     timeEstimate: 'Project based (1 to 3 days)',
@@ -489,4 +514,9 @@ export function getServiceBySlug(slug: string): ServiceDefinition | undefined {
 
 export function getServiceById(id: string): ServiceDefinition | undefined {
   return SERVICES_CATALOGUE.find((s) => s.id === id);
+}
+
+export function getServiceDefaultImage(id?: string): string {
+  if (!id) return '/images/gallery/03-tractor-soil.jpg';
+  return SERVICE_DEFAULT_IMAGES[id] || '/images/gallery/03-tractor-soil.jpg';
 }
