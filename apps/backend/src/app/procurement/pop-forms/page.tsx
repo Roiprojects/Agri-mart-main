@@ -29,6 +29,7 @@ import {
   Download,
 } from 'lucide-react';
 import CropConfirmationModal from '@/components/crop/CropConfirmationModal';
+import { CROP_VARIETIES_BY_CATEGORY, ALL_CROP_VARIETIES } from '@/lib/crop-varieties';
 
 export interface PopScheduleStage {
   id: string;
@@ -958,6 +959,12 @@ export default function ProcurementPopFormsPage() {
   const [customCropText, setCustomCropText] = useState('');
   const cropDropdownRef = useRef<HTMLDivElement>(null);
 
+  const [isVarietyDropdownOpen, setIsVarietyDropdownOpen] = useState(false);
+  const [customVarietyText, setCustomVarietyText] = useState('');
+  const varietyDropdownRef = useRef<HTMLDivElement>(null);
+  const [extraVarietyOpenId, setExtraVarietyOpenId] = useState<string | null>(null);
+  const [extraVarietyInputs, setExtraVarietyInputs] = useState<Record<string, string>>({});
+
   const [isCurrentCropStageDropdownOpen, setIsCurrentCropStageDropdownOpen] = useState(false);
   const [customCurrentCropStageText, setCustomCurrentCropStageText] = useState('');
   const currentCropStageDropdownRef = useRef<HTMLDivElement>(null);
@@ -1661,6 +1668,8 @@ export default function ProcurementPopFormsPage() {
     setIsIrrigationDropdownOpen(false);
     setIsCropTypeDropdownOpen(false);
     setIsCropDropdownOpen(false);
+    setIsVarietyDropdownOpen(false);
+    setExtraVarietyOpenId(null);
     setIsCurrentCropStageDropdownOpen(false);
     setIsStateDropdownOpen(false);
     setIsDistrictDropdownOpen(false);
@@ -1683,6 +1692,7 @@ export default function ProcurementPopFormsPage() {
         irrigationDropdownRef,
         cropTypeDropdownRef,
         cropDropdownRef,
+        varietyDropdownRef,
         currentCropStageDropdownRef,
         stateDropdownRef,
         districtDropdownRef,
@@ -3402,17 +3412,92 @@ export default function ProcurementPopFormsPage() {
                         Variety
                       </label>
                       <div className="md:col-span-4 bg-white p-2 border-b md:border-b-0 md:border-r border-black">
-                        <input
-                          type="text"
-                          name="variety"
-                          readOnly={isReadOnly}
-                          value={formData.variety}
-                          onChange={handleFieldChange}
-                          placeholder={isReadOnly ? '-' : 'Enter Variety'}
-                          className={`w-full bg-white px-2.5 py-1.5 text-sm text-black placeholder:text-neutral-500 focus:outline-none rounded ${
-                            isReadOnly ? 'cursor-default' : 'focus:ring-1 focus:ring-black'
-                          }`}
-                        />
+                        {isReadOnly ? (
+                          <input
+                            type="text"
+                            name="variety"
+                            readOnly
+                            value={formData.variety || '-'}
+                            className="w-full bg-white px-2.5 py-1.5 text-sm text-black cursor-default focus:outline-none"
+                          />
+                        ) : (
+                          <div className="relative" ref={varietyDropdownRef}>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const next = !isVarietyDropdownOpen;
+                                resetAllDropdowns();
+                                setIsVarietyDropdownOpen(next);
+                              }}
+                              className="w-full bg-white px-2.5 py-1.5 text-sm font-bold text-black flex items-center justify-between border border-black rounded focus:outline-none cursor-pointer"
+                            >
+                              <span className={formData.variety ? 'text-black font-bold' : 'text-neutral-500'}>
+                                {formData.variety || '-- Select Variety --'}
+                              </span>
+                              <ChevronDown className="w-4 h-4 text-black shrink-0" />
+                            </button>
+
+                            {isVarietyDropdownOpen && (
+                              <div className="absolute left-0 right-0 top-full mt-1 z-[999] bg-white border-2 border-black rounded-lg shadow-2xl max-h-64 overflow-y-auto">
+                                <div className="p-2 border-b border-black bg-neutral-50 sticky top-0 z-10">
+                                  <div className="text-[10px] font-bold text-black uppercase mb-1">
+                                    Row 1: Other Variety (Type below)
+                                  </div>
+                                  <div className="flex items-center gap-1.5">
+                                    <input
+                                      type="text"
+                                      value={customVarietyText}
+                                      onChange={(e) => {
+                                        const val = e.target.value;
+                                        setCustomVarietyText(val);
+                                        setFormData((prev) => ({ ...prev, variety: val }));
+                                      }}
+                                      onKeyDown={(e) => {
+                                        if (e.key === 'Enter') {
+                                          e.preventDefault();
+                                          setIsVarietyDropdownOpen(false);
+                                        }
+                                      }}
+                                      placeholder="Type custom variety..."
+                                      className="w-full bg-white px-2 py-1 text-xs text-black border border-black rounded focus:outline-none"
+                                    />
+                                    <button
+                                      type="button"
+                                      onClick={() => setIsVarietyDropdownOpen(false)}
+                                      className="px-2.5 py-1 bg-black text-white text-xs font-bold rounded cursor-pointer shrink-0"
+                                    >
+                                      Done
+                                    </button>
+                                  </div>
+                                </div>
+                                {CROP_VARIETIES_BY_CATEGORY.map((group) => (
+                                  <div key={group.category} className="py-1">
+                                    <div className="px-3 py-1 bg-neutral-100 text-[10px] font-bold uppercase tracking-wider text-black border-y border-neutral-200">
+                                      {group.category}
+                                    </div>
+                                    {group.varieties.map((varOpt) => (
+                                      <button
+                                        key={varOpt}
+                                        type="button"
+                                        onClick={() => {
+                                          setFormData((prev) => ({ ...prev, variety: varOpt }));
+                                          setCustomVarietyText('');
+                                          setIsVarietyDropdownOpen(false);
+                                        }}
+                                        className={`w-full text-left px-3 py-1.5 text-xs font-semibold hover:bg-emerald-50 border-b border-neutral-200 last:border-b-0 flex items-center justify-between cursor-pointer ${
+                                          formData.variety === varOpt ? 'bg-emerald-100 text-black font-bold' : 'text-black'
+                                        }`}
+                                      >
+                                        <span>{varOpt}</span>
+                                        {formData.variety === varOpt && <Check className="w-3.5 h-3.5 text-emerald-700" />}
+                                      </button>
+                                    ))}
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        )}
                       </div>
 
                       <label className="md:col-span-2 bg-white px-4 py-3 text-xs font-bold text-black flex items-center border-b md:border-b-0 md:border-r border-black">
@@ -3636,14 +3721,89 @@ export default function ProcurementPopFormsPage() {
                           Variety
                         </label>
                         <div className="md:col-span-4 bg-white p-2 border-b md:border-b-0 md:border-r border-black">
-                          <input
-                            type="text"
-                            readOnly={isReadOnly}
-                            value={cropBlock.variety}
-                            onChange={(e) => handleUpdateAdditionalCrop(cropBlock.id, 'variety', e.target.value)}
-                            placeholder={isReadOnly ? '-' : 'Enter Variety'}
-                            className="w-full bg-white px-2.5 py-1.5 text-sm text-black focus:outline-none rounded"
-                          />
+                          {isReadOnly ? (
+                            <input
+                              type="text"
+                              readOnly
+                              value={cropBlock.variety || '-'}
+                              className="w-full bg-white px-2.5 py-1.5 text-sm text-black cursor-default focus:outline-none rounded"
+                            />
+                          ) : (
+                            <div className="relative">
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  setExtraVarietyOpenId((prev) => (prev === cropBlock.id ? null : cropBlock.id))
+                                }
+                                className="w-full bg-white px-2.5 py-1.5 text-sm font-bold text-black flex items-center justify-between border border-black rounded focus:outline-none cursor-pointer"
+                              >
+                                <span className={cropBlock.variety ? 'text-black font-bold' : 'text-neutral-500'}>
+                                  {cropBlock.variety || '-- Select Variety --'}
+                                </span>
+                                <ChevronDown className="w-4 h-4 text-black shrink-0" />
+                              </button>
+
+                              {extraVarietyOpenId === cropBlock.id && (
+                                <div className="absolute left-0 right-0 top-full mt-1 z-[999] bg-white border-2 border-black rounded-lg shadow-2xl max-h-64 overflow-y-auto">
+                                  <div className="p-2 border-b border-black bg-neutral-50 sticky top-0 z-10">
+                                    <div className="text-[10px] font-bold text-black uppercase mb-1">
+                                      Row 1: Other Variety (Type below)
+                                    </div>
+                                    <div className="flex items-center gap-1.5">
+                                      <input
+                                        type="text"
+                                        value={extraVarietyInputs[cropBlock.id] || ''}
+                                        onChange={(e) => {
+                                          const val = e.target.value;
+                                          setExtraVarietyInputs((prev) => ({ ...prev, [cropBlock.id]: val }));
+                                          handleUpdateAdditionalCrop(cropBlock.id, 'variety', val);
+                                        }}
+                                        onKeyDown={(e) => {
+                                          if (e.key === 'Enter') {
+                                            e.preventDefault();
+                                            setExtraVarietyOpenId(null);
+                                          }
+                                        }}
+                                        placeholder="Type custom variety..."
+                                        className="w-full bg-white px-2 py-1 text-xs text-black border border-black rounded focus:outline-none"
+                                      />
+                                      <button
+                                        type="button"
+                                        onClick={() => setExtraVarietyOpenId(null)}
+                                        className="px-2.5 py-1 bg-black text-white text-xs font-bold rounded cursor-pointer shrink-0"
+                                      >
+                                        Done
+                                      </button>
+                                    </div>
+                                  </div>
+                                  {CROP_VARIETIES_BY_CATEGORY.map((group) => (
+                                    <div key={group.category} className="py-1">
+                                      <div className="px-3 py-1 bg-neutral-100 text-[10px] font-bold uppercase tracking-wider text-black border-y border-neutral-200">
+                                        {group.category}
+                                      </div>
+                                      {group.varieties.map((varOpt) => (
+                                        <button
+                                          key={varOpt}
+                                          type="button"
+                                          onClick={() => {
+                                            handleUpdateAdditionalCrop(cropBlock.id, 'variety', varOpt);
+                                            setExtraVarietyInputs((prev) => ({ ...prev, [cropBlock.id]: '' }));
+                                            setExtraVarietyOpenId(null);
+                                          }}
+                                          className={`w-full text-left px-3 py-1.5 text-xs font-semibold hover:bg-emerald-50 border-b border-neutral-200 last:border-b-0 flex items-center justify-between cursor-pointer ${
+                                            cropBlock.variety === varOpt ? 'bg-emerald-100 text-black font-bold' : 'text-black'
+                                          }`}
+                                        >
+                                          <span>{varOpt}</span>
+                                          {cropBlock.variety === varOpt && <Check className="w-3.5 h-3.5 text-emerald-700" />}
+                                        </button>
+                                      ))}
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          )}
                         </div>
 
                         <label className="md:col-span-2 bg-white px-4 py-3 text-xs font-bold text-black flex items-center border-b md:border-b-0 md:border-r border-black">
