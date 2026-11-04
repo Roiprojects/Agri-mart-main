@@ -4561,7 +4561,7 @@ export default function ProcurementPopFormsPage() {
                   </div>
 
                   <div className="flex flex-wrap items-center gap-2">
-                    {/* Master POP Schedule Table Enable/Disable Toggle Button */}
+                    {/* Master POP Schedule Table Enable/Disable Switch Toggle */}
                     <button
                       type="button"
                       onClick={async () => {
@@ -4584,23 +4584,31 @@ export default function ProcurementPopFormsPage() {
                           // local state updated
                         }
                       }}
-                      className={`px-3.5 py-1.5 rounded-xl text-xs font-extrabold inline-flex items-center gap-1.5 transition shadow-sm cursor-pointer border ${
+                      title={
                         formData.isPopTableEnabled !== false
-                          ? 'bg-emerald-600 hover:bg-emerald-700 text-white border-emerald-700'
-                          : 'bg-rose-600 hover:bg-rose-700 text-white border-rose-700'
-                      }`}
+                          ? 'Click to disable POP Activity Schedule Table'
+                          : 'Click to enable POP Activity Schedule Table'
+                      }
+                      className="bg-white border border-slate-200 hover:border-slate-300 px-3.5 py-1.5 rounded-full inline-flex items-center gap-2.5 transition shadow-xs cursor-pointer select-none"
                     >
-                      {formData.isPopTableEnabled !== false ? (
-                        <>
-                          <Check className="w-3.5 h-3.5 text-white" />
-                          <span>POP Schedule: Enabled</span>
-                        </>
-                      ) : (
-                        <>
-                          <X className="w-3.5 h-3.5 text-white" />
-                          <span>POP Schedule: Disabled</span>
-                        </>
-                      )}
+                      <span
+                        className={`text-xs font-bold transition-colors ${
+                          formData.isPopTableEnabled !== false ? 'text-emerald-600' : 'text-rose-600'
+                        }`}
+                      >
+                        {formData.isPopTableEnabled !== false ? 'Enabled' : 'Disabled'}
+                      </span>
+                      <div
+                        className={`relative inline-flex h-5 w-10 shrink-0 items-center rounded-full transition-colors duration-200 ease-in-out p-0.5 ${
+                          formData.isPopTableEnabled !== false ? 'bg-emerald-500' : 'bg-rose-500'
+                        }`}
+                      >
+                        <span
+                          className={`inline-block h-4 w-4 transform rounded-full bg-white shadow-sm transition-transform duration-200 ease-in-out ${
+                            formData.isPopTableEnabled !== false ? 'translate-x-5' : 'translate-x-0'
+                          }`}
+                        />
+                      </div>
                     </button>
 
                     {!isReadOnly && (
@@ -4710,16 +4718,25 @@ export default function ProcurementPopFormsPage() {
                                   <div className="text-[10px] font-mono text-slate-400">
                                     {row.dayRange}
                                   </div>
-                                  <div className="mt-1">
+                                  <div className="w-full bg-white border border-slate-200 rounded-md px-2 py-1 flex items-center justify-between gap-1 shadow-2xs mt-1 select-none">
                                     <span
-                                      className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold ${
-                                        row.isEnabled !== false
-                                          ? 'bg-emerald-600 text-white'
-                                          : 'bg-rose-600 text-white'
+                                      className={`text-[10px] font-bold ${
+                                        row.isEnabled !== false ? 'text-emerald-600' : 'text-rose-600'
                                       }`}
                                     >
-                                      {row.isEnabled !== false ? '✓ Enabled' : '✕ Disabled'}
+                                      {row.isEnabled !== false ? 'Enabled' : 'Disabled'}
                                     </span>
+                                    <div
+                                      className={`relative inline-flex h-4 w-8 shrink-0 items-center rounded-full p-0.5 ${
+                                        row.isEnabled !== false ? 'bg-emerald-500' : 'bg-rose-500'
+                                      }`}
+                                    >
+                                      <span
+                                        className={`inline-block h-3 w-3 transform rounded-full bg-white shadow-xs ${
+                                          row.isEnabled !== false ? 'translate-x-4' : 'translate-x-0'
+                                        }`}
+                                      />
+                                    </div>
                                   </div>
                                 </>
                               ) : (
@@ -4746,30 +4763,38 @@ export default function ProcurementPopFormsPage() {
                                     className="w-full bg-white text-[10px] font-mono text-slate-500 px-2 py-1 rounded-md border border-emerald-500/40 focus:border-emerald-600 focus:ring-1 focus:ring-emerald-500 focus:outline-none"
                                   />
 
-                                  {/* Enable / Disable Button for Stage Row (Exactly in the red marked box under dayRange!) */}
+                                  {/* Enable / Disable Switch Toggle for Stage Row */}
                                   <button
                                     type="button"
                                     onClick={() => {
                                       const current = row.isEnabled !== false;
                                       handleScheduleRowChange(idx, 'isEnabled', !current);
                                     }}
-                                    className={`w-full py-1 px-2 rounded-md text-[10px] font-extrabold flex items-center justify-center gap-1 transition shadow-xs cursor-pointer border ${
+                                    title={
                                       row.isEnabled !== false
-                                        ? 'bg-emerald-600 hover:bg-emerald-700 text-white border-emerald-700'
-                                        : 'bg-rose-600 hover:bg-rose-700 text-white border-rose-700'
-                                    }`}
+                                        ? 'Click to disable this stage row'
+                                        : 'Click to enable this stage row'
+                                    }
+                                    className="w-full bg-white border border-slate-200 hover:border-slate-300 rounded-md px-2 py-1 flex items-center justify-between gap-1 shadow-2xs cursor-pointer select-none transition-colors"
                                   >
-                                    {row.isEnabled !== false ? (
-                                      <>
-                                        <Check className="w-3 h-3 text-white" />
-                                        <span>Enabled</span>
-                                      </>
-                                    ) : (
-                                      <>
-                                        <X className="w-3 h-3 text-white" />
-                                        <span>Disabled</span>
-                                      </>
-                                    )}
+                                    <span
+                                      className={`text-[10px] font-bold transition-colors ${
+                                        row.isEnabled !== false ? 'text-emerald-600' : 'text-rose-600'
+                                      }`}
+                                    >
+                                      {row.isEnabled !== false ? 'Enabled' : 'Disabled'}
+                                    </span>
+                                    <div
+                                      className={`relative inline-flex h-4 w-8 shrink-0 items-center rounded-full transition-colors duration-200 ease-in-out p-0.5 ${
+                                        row.isEnabled !== false ? 'bg-emerald-500' : 'bg-rose-500'
+                                      }`}
+                                    >
+                                      <span
+                                        className={`inline-block h-3 w-3 transform rounded-full bg-white shadow-xs transition-transform duration-200 ease-in-out ${
+                                          row.isEnabled !== false ? 'translate-x-4' : 'translate-x-0'
+                                        }`}
+                                      />
+                                    </div>
                                   </button>
                                 </div>
                               )}
