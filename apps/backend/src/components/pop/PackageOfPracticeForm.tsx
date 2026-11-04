@@ -4363,7 +4363,7 @@ export default function PackageOfPracticeForm() {
                   Package of Practice (POP) Activity Schedule Table
                 </h2>
                 <p className="text-xs text-agri-secondary">
-                  Live Crop Lifecycle Progress, Stage-Wise Agronomic Details & Verified Solutions (Read-Only View)
+                  Stage-Wise Agronomic Details & Verified Solutions (Read-Only View)
                 </p>
               </div>
             </div>
@@ -4371,117 +4371,6 @@ export default function PackageOfPracticeForm() {
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-emerald-50 border border-emerald-200 text-agri-green-dark text-xs font-bold">
               <ShieldCheck className="w-4 h-4 text-agri-green" />
               <span>University Verified POP Schedule ({formData.crop || 'Maize'})</span>
-            </div>
-          </div>
-
-          {/* CROP PROGRESS TRACKER & COMPLETE CROP DETAILS WITH SOLUTION */}
-          <div className="rounded-2xl bg-slate-900 text-white p-5 sm:p-6 space-y-5 border border-slate-800">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-              <div className="space-y-1">
-                <div className="inline-flex items-center gap-1.5 text-emerald-400 text-[11px] font-black uppercase tracking-wider">
-                  <Activity className="w-3.5 h-3.5" />
-                  <span>Live Crop Progress & Agronomic Solution Overview</span>
-                </div>
-                <h3 className="text-lg sm:text-xl font-extrabold text-white">
-                  {formData.crop || 'Maize'} {formData.variety ? `— ${formData.variety}` : ''}
-                </h3>
-                <p className="text-xs text-slate-300">
-                  Planting Date: <strong>{formData.plantingDate || 'N/A'}</strong> · Current Crop Age:{' '}
-                  <strong className="text-emerald-300">{numericAgeDays} Days</strong> of{' '}
-                  <strong>{totalCycleDays} Days</strong> Total Cycle · Acreage:{' '}
-                  <strong>{formData.cropAcreage || formData.acres || 'N/A'}</strong>
-                </p>
-              </div>
-
-              <div className="bg-white/10 rounded-xl px-4 py-3 border border-white/15 text-right shrink-0">
-                <div className="text-[11px] text-slate-300 font-semibold">Overall Crop Progress</div>
-                <div className="text-2xl font-black text-emerald-400">{progressPercent}%</div>
-                <div className="text-[10px] text-emerald-200">
-                  Day {numericAgeDays} / {totalCycleDays} Days
-                </div>
-              </div>
-            </div>
-
-            {/* Progress Bar */}
-            <div className="space-y-2">
-              <div className="w-full h-3 bg-slate-800 rounded-full overflow-hidden border border-slate-700">
-                <div
-                  className="h-full bg-gradient-to-r from-emerald-500 via-agri-green to-agri-yellow transition-all duration-500 rounded-full"
-                  style={{ width: `${progressPercent}%` }}
-                />
-              </div>
-
-              {/* Stage Milestones */}
-              <div className="grid grid-cols-1 sm:grid-cols-4 gap-2.5 pt-2">
-                {schedule.map((row) => {
-                  const status = getStageStatus(row);
-                  return (
-                    <div
-                      key={row.id}
-                      className={`p-3 rounded-xl border text-xs transition ${
-                        status === 'COMPLETED'
-                          ? 'bg-emerald-950/70 border-emerald-500/40 text-emerald-100'
-                          : status === 'CURRENT'
-                          ? 'bg-amber-500/20 border-amber-400 text-white shadow-sm'
-                          : 'bg-slate-800/70 border-slate-700 text-slate-300'
-                      }`}
-                    >
-                      <div className="flex items-center justify-between gap-1 mb-1">
-                        <span className="font-bold text-[11px] truncate">{row.stageName}</span>
-                        {status === 'COMPLETED' && (
-                          <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 text-[10px] font-bold shrink-0">
-                            <Check className="w-3 h-3" /> Done
-                          </span>
-                        )}
-                        {status === 'CURRENT' && (
-                          <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-amber-400 text-slate-950 text-[10px] font-black shrink-0">
-                            <Clock className="w-3 h-3" /> Active
-                          </span>
-                        )}
-                        {status === 'UPCOMING' && (
-                          <span className="inline-flex items-center px-1.5 py-0.5 rounded bg-slate-700 text-slate-300 text-[10px] font-semibold shrink-0">
-                            Upcoming
-                          </span>
-                        )}
-                      </div>
-                      <div className="text-[11px] text-slate-300 font-mono">{row.dayRange}</div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Complete Crop Details & Solution Summary Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-2 border-t border-slate-800 text-xs">
-              <div className="p-3.5 rounded-xl bg-slate-800/90 border border-slate-700 space-y-1">
-                <div className="text-[10px] font-bold uppercase tracking-wider text-amber-400">
-                  Identified Crop Problem & Requirement
-                </div>
-                <div className="font-bold text-white">{formData.problemType || '-'}</div>
-                <div className="text-[11px] text-slate-300">
-                  Requirement: {formData.mainRequirement || '-'}
-                </div>
-              </div>
-
-              <div className="p-3.5 rounded-xl bg-emerald-950/80 border border-emerald-500/40 space-y-1">
-                <div className="text-[10px] font-bold uppercase tracking-wider text-emerald-400">
-                  Recommended Agronomic Solution & Method
-                </div>
-                <div className="font-bold text-emerald-200">{formData.solutionType || '-'}</div>
-                <div className="text-[11px] text-emerald-100/90">
-                  Method: {formData.applicationMethod || '-'}
-                </div>
-              </div>
-
-              <div className="p-3.5 rounded-xl bg-slate-800/90 border border-slate-700 space-y-1">
-                <div className="text-[10px] font-bold uppercase tracking-wider text-sky-400">
-                  Inputs, Equipment & Harvest Plan
-                </div>
-                <div className="font-bold text-white">{formData.farmMaterial || '-'}</div>
-                <div className="text-[11px] text-slate-300">
-                  Equipment: {formData.equipment || '-'} · Packaging: {formData.packagingType || '-'}
-                </div>
-              </div>
             </div>
           </div>
 
