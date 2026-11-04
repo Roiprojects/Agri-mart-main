@@ -28,6 +28,7 @@ import {
   FileText,
   Download,
 } from 'lucide-react';
+import CropConfirmationModal from '@/components/crop/CropConfirmationModal';
 
 export interface PopScheduleStage {
   id: string;
@@ -1220,6 +1221,88 @@ export default function ProcurementPopFormsPage() {
       ...prev,
       additionalCrops: (prev.additionalCrops || []).filter((item) => item.id !== blockId),
     }));
+  };
+
+  // Confirmation Modal state for Adding / Deleting Crops
+  const [cropConfirmModal, setCropConfirmModal] = useState<{
+    isOpen: boolean;
+    type: 'add' | 'delete';
+    targetId?: string;
+    cropName?: string;
+  }>({
+    isOpen: false,
+    type: 'add',
+  });
+
+  const handleOpenAddCropModal = () => {
+    if (modalMode === 'VIEW') return;
+    setCropConfirmModal({
+      isOpen: true,
+      type: 'add',
+    });
+  };
+
+  const handleOpenDeleteCropModal = (targetId: string, cropName?: string) => {
+    if (modalMode === 'VIEW') return;
+    setCropConfirmModal({
+      isOpen: true,
+      type: 'delete',
+      targetId,
+      cropName: cropName || 'this crop',
+    });
+  };
+
+  const handleConfirmCropModal = () => {
+    if (cropConfirmModal.type === 'add') {
+      handleAddNewCropBlock();
+    } else if (cropConfirmModal.type === 'delete' && cropConfirmModal.targetId) {
+      if (cropConfirmModal.targetId === 'primary') {
+        if (formData.additionalCrops && formData.additionalCrops.length > 0) {
+          const [firstAdditional, ...remaining] = formData.additionalCrops;
+          const promotedLifecycle = cropLifecycleMap[firstAdditional.id] || EMPTY_LIFECYCLE_DATA;
+          setCropLifecycleMap((prev) => {
+            const copy = { ...prev };
+            copy['primary'] = promotedLifecycle;
+            delete copy[firstAdditional.id];
+            return copy;
+          });
+          setFormData((prev) => ({
+            ...prev,
+            cropType: firstAdditional.cropType,
+            crop: firstAdditional.crop,
+            variety: firstAdditional.variety,
+            plantingDate: firstAdditional.plantingDate,
+            cropAge: firstAdditional.cropAge,
+            cropAcreage: firstAdditional.cropAcreage,
+            plantCount: firstAdditional.plantCount,
+            spacing: firstAdditional.spacing,
+            currentCropStage: firstAdditional.currentCropStage || '',
+            surveyNumber: firstAdditional.surveyNumber || prev.surveyNumber,
+            additionalCrops: remaining,
+          }));
+        } else {
+          setCropLifecycleMap((prev) => ({
+            ...prev,
+            primary: { ...EMPTY_LIFECYCLE_DATA },
+          }));
+          setFormData((prev) => ({
+            ...prev,
+            cropType: '',
+            crop: '',
+            variety: '',
+            plantingDate: '',
+            cropAge: '',
+            cropAcreage: '',
+            plantCount: '',
+            spacing: '',
+            currentCropStage: '',
+          }));
+        }
+      } else {
+        handleRemoveAdditionalCrop(cropConfirmModal.targetId);
+      }
+    }
+    setCropConfirmModal({ isOpen: false, type: 'add' });
   };
 
   const autoPersistSoilReportToBackend = async (
@@ -3119,14 +3202,27 @@ export default function ProcurementPopFormsPage() {
                       <span>Crop Selection</span>
                     </h3>
                     {!isReadOnly && (
-                      <button
-                        type="button"
-                        onClick={handleAddNewCropBlock}
-                        className="px-3.5 py-1.5 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold inline-flex items-center gap-1.5 shadow-xs transition cursor-pointer"
-                      >
-                        <Plus className="w-3.5 h-3.5" />
-                        <span>Add New Crop</span>
-                      </button>
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={handleOpenAddCropModal}
+                          className="px-3.5 py-1.5 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold inline-flex items-center gap-1.5 shadow-xs transition cursor-pointer"
+                        >
+                          <Plus className="w-3.5 h-3.5" />
+                          <span>Add New Crop</span>
+                        </button>
+                        {(formData.crop || formData.cropType || (formData.additionalCrops && formData.additionalCrops.length > 0)) && (
+                          <button
+                            type="button"
+                            onClick={() => handleOpenDeleteCropModal('primary', formData.crop || 'Crop #1')}
+                            className="px-3 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold inline-flex items-center gap-1 shadow-xs transition cursor-pointer"
+                            title="Delete this crop"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                            <span>Delete Crop</span>
+                          </button>
+                        )}
+                      </div>
                     )}
                   </div>
 
@@ -3456,14 +3552,24 @@ export default function ProcurementPopFormsPage() {
                           Additional Crop #{index + 2}
                         </span>
                         {!isReadOnly && (
-                          <button
-                            type="button"
-                            onClick={() => handleRemoveAdditionalCrop(cropBlock.id)}
-                            className="px-2.5 py-1 rounded bg-red-600 hover:bg-red-700 text-white text-[11px] font-bold inline-flex items-center gap-1 cursor-pointer"
-                          >
-                            <Trash2 className="w-3 h-3" />
-                            <span>Remove Crop</span>
-                          </button>
+                          <div className="flex items-center gap-2">
+                            <button
+                              type="button"
+                              onClick={handleOpenAddCropModal}
+                              className="px-2.5 py-1 rounded bg-emerald-700 hover:bg-emerald-800 text-white text-[11px] font-bold inline-flex items-center gap-1 cursor-pointer"
+                            >
+                              <Plus className="w-3 h-3" />
+                              <span>Add New Crop</span>
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleOpenDeleteCropModal(cropBlock.id, cropBlock.crop || `Additional Crop #${index + 2}`)}
+                              className="px-2.5 py-1 rounded bg-red-600 hover:bg-red-700 text-white text-[11px] font-bold inline-flex items-center gap-1 cursor-pointer"
+                            >
+                              <Trash2 className="w-3 h-3" />
+                              <span>Delete Crop</span>
+                            </button>
+                          </div>
                         )}
                       </div>
 
@@ -6723,6 +6829,15 @@ export default function ProcurementPopFormsPage() {
           </div>
         </div>
       )}
+
+      {/* Pop-up Confirmation Modal for Adding / Deleting Crops */}
+      <CropConfirmationModal
+        isOpen={cropConfirmModal.isOpen}
+        type={cropConfirmModal.type}
+        cropName={cropConfirmModal.cropName}
+        onConfirm={handleConfirmCropModal}
+        onCancel={() => setCropConfirmModal({ isOpen: false, type: 'add' })}
+      />
     </div>
   );
 }

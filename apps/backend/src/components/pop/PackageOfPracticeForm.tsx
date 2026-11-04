@@ -28,6 +28,7 @@ import {
   Clock,
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
+import CropConfirmationModal from '@/components/crop/CropConfirmationModal';
 import { useAuth } from '@/lib/auth-client';
 import { validatePhoneNumber, validateEmailOptional, validatePinCode } from '@/lib/validation';
 
@@ -1132,6 +1133,86 @@ export default function PackageOfPracticeForm() {
 
   // Inline Login / Sign In state (Phone Number or Username + Password)
   const [authMode, setAuthMode] = useState<'login' | 'signin'>('login');
+
+  // Confirmation Modal state for Adding / Deleting Crops
+  const [cropConfirmModal, setCropConfirmModal] = useState<{
+    isOpen: boolean;
+    type: 'add' | 'delete';
+    targetId?: string;
+    cropName?: string;
+  }>({
+    isOpen: false,
+    type: 'add',
+  });
+
+  const handleOpenAddCropModal = () => {
+    setCropConfirmModal({
+      isOpen: true,
+      type: 'add',
+    });
+  };
+
+  const handleOpenDeleteCropModal = (targetId: string, cropName?: string) => {
+    setCropConfirmModal({
+      isOpen: true,
+      type: 'delete',
+      targetId,
+      cropName: cropName || 'this crop',
+    });
+  };
+
+  const handleConfirmCropModal = () => {
+    if (cropConfirmModal.type === 'add') {
+      handleAddNewCropBlock();
+    } else if (cropConfirmModal.type === 'delete' && cropConfirmModal.targetId) {
+      if (cropConfirmModal.targetId === 'primary') {
+        if (formData.additionalCrops && formData.additionalCrops.length > 0) {
+          const [firstAdditional, ...remaining] = formData.additionalCrops;
+          const promotedLifecycle = cropLifecycleMap[firstAdditional.id] || EMPTY_LIFECYCLE_DATA;
+          setCropLifecycleMap((prev) => {
+            const copy = { ...prev };
+            copy['primary'] = promotedLifecycle;
+            delete copy[firstAdditional.id];
+            return copy;
+          });
+          setFormData((prev) => ({
+            ...prev,
+            cropType: firstAdditional.cropType,
+            crop: firstAdditional.crop,
+            variety: firstAdditional.variety,
+            plantingDate: firstAdditional.plantingDate,
+            cropAge: firstAdditional.cropAge,
+            cropAcreage: firstAdditional.cropAcreage,
+            plantCount: firstAdditional.plantCount,
+            spacing: firstAdditional.spacing,
+            currentCropStage: firstAdditional.currentCropStage || '',
+            surveyNumber: firstAdditional.surveyNumber || prev.surveyNumber,
+            additionalCrops: remaining,
+          }));
+        } else {
+          setCropLifecycleMap((prev) => ({
+            ...prev,
+            primary: { ...EMPTY_LIFECYCLE_DATA },
+          }));
+          setFormData((prev) => ({
+            ...prev,
+            cropType: '',
+            crop: '',
+            variety: '',
+            plantingDate: '',
+            cropAge: '',
+            cropAcreage: '',
+            plantCount: '',
+            spacing: '',
+            currentCropStage: '',
+          }));
+        }
+      } else {
+        handleRemoveAdditionalCrop(cropConfirmModal.targetId);
+      }
+    }
+    setCropConfirmModal({ isOpen: false, type: 'add' });
+  };
   const [authIdentifier, setAuthIdentifier] = useState('');
   const [authPassword, setAuthPassword] = useState('');
   const [authFullName, setAuthFullName] = useState('');
@@ -2917,11 +2998,21 @@ export default function PackageOfPracticeForm() {
               <div className="flex items-center gap-2">
                 <button
                   type="button"
-                  onClick={handleAddNewCropBlock}
+                  onClick={handleOpenAddCropModal}
                   className="bg-white hover:bg-amber-50 text-amber-950 font-black text-xs px-3.5 py-1.5 rounded-full shadow-sm border border-amber-200 transition flex items-center gap-1.5 cursor-pointer"
                 >
                   <span>+ Add New Crop</span>
                 </button>
+                {(formData.crop || formData.cropType || (formData.additionalCrops && formData.additionalCrops.length > 0)) && (
+                  <button
+                    type="button"
+                    onClick={() => handleOpenDeleteCropModal('primary', formData.crop || 'Crop #1')}
+                    className="bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs px-3 py-1.5 rounded-full shadow-sm transition cursor-pointer flex items-center gap-1"
+                    title="Delete this crop"
+                  >
+                    <span>Delete Crop</span>
+                  </button>
+                )}
               </div>
             </div>
 
@@ -3229,17 +3320,17 @@ export default function PackageOfPracticeForm() {
                   <div className="flex items-center gap-2">
                     <button
                       type="button"
-                      onClick={handleAddNewCropBlock}
+                      onClick={handleOpenAddCropModal}
                       className="bg-white hover:bg-amber-50 text-amber-950 font-black text-xs px-3.5 py-1.5 rounded-full shadow-sm border border-amber-200 transition flex items-center gap-1.5 cursor-pointer"
                     >
                       <span>+ Add New Crop</span>
                     </button>
                     <button
                       type="button"
-                      onClick={() => handleRemoveAdditionalCrop(cropBlock.id)}
+                      onClick={() => handleOpenDeleteCropModal(cropBlock.id, cropBlock.crop || `Crop #${idx + 2}`)}
                       className="bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs px-3 py-1.5 rounded-full shadow-sm transition cursor-pointer"
                     >
-                      Remove
+                      <span>Delete Crop</span>
                     </button>
                   </div>
                 </div>
@@ -6178,6 +6269,15 @@ export default function PackageOfPracticeForm() {
           <div>Authorized VLE / FPO Signature: ___________________</div>
         </div>
       </div>
+
+      {/* Pop-up Confirmation Modal for Adding / Deleting Crops */}
+      <CropConfirmationModal
+        isOpen={cropConfirmModal.isOpen}
+        type={cropConfirmModal.type}
+        cropName={cropConfirmModal.cropName}
+        onConfirm={handleConfirmCropModal}
+        onCancel={() => setCropConfirmModal({ isOpen: false, type: 'add' })}
+      />
     </div>
   );
 }

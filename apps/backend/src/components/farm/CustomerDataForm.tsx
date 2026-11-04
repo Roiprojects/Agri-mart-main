@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Save, CheckCircle2, MapPin, Calendar, Sprout, FileCheck } from 'lucide-react';
+import { Save, CheckCircle2, MapPin, Calendar, Sprout, FileCheck, Plus, Trash2 } from 'lucide-react';
+import CropConfirmationModal from '@/components/crop/CropConfirmationModal';
 
 export default function CustomerDataForm() {
   const [isSaved, setIsSaved] = useState(false);
@@ -28,6 +29,7 @@ export default function CustomerDataForm() {
     farmOperations: ['Soil Preparation', 'Wet Weeding', 'Spraying', 'Harvesting', 'Logistics'],
     cropName: 'Sugarcane (Co 86032)',
     cropCycleDays: '360',
+    additionalCrops: [] as { id: string; name: string; cycleDays: string }[],
     popAttached: true,
     // Section 26.3 Activity Schedule
     sownDate: '2026-06-10',
@@ -50,6 +52,70 @@ export default function CustomerDataForm() {
     'Soil Preparation',
     'Logistics',
   ];
+
+  const [cropModal, setCropModal] = useState<{
+    isOpen: boolean;
+    type: 'add' | 'delete';
+    targetId?: string;
+    cropName?: string;
+  }>({
+    isOpen: false,
+    type: 'add',
+  });
+
+  const handleOpenAddCrop = () => {
+    setCropModal({
+      isOpen: true,
+      type: 'add',
+    });
+  };
+
+  const handleOpenDeleteCrop = (targetId: string, cropName?: string) => {
+    setCropModal({
+      isOpen: true,
+      type: 'delete',
+      targetId,
+      cropName: cropName || 'this crop',
+    });
+  };
+
+  const handleConfirmCropModal = (customName?: string) => {
+    if (cropModal.type === 'add') {
+      const newCrop = {
+        id: `crop_${Date.now()}`,
+        name: customName || '',
+        cycleDays: '',
+      };
+      setFormData((prev) => ({
+        ...prev,
+        additionalCrops: [...(prev.additionalCrops || []), newCrop],
+      }));
+    } else if (cropModal.type === 'delete' && cropModal.targetId) {
+      if (cropModal.targetId === 'primary') {
+        if (formData.additionalCrops && formData.additionalCrops.length > 0) {
+          const [first, ...rest] = formData.additionalCrops;
+          setFormData((prev) => ({
+            ...prev,
+            cropName: first.name,
+            cropCycleDays: first.cycleDays,
+            additionalCrops: rest,
+          }));
+        } else {
+          setFormData((prev) => ({
+            ...prev,
+            cropName: '',
+            cropCycleDays: '',
+          }));
+        }
+      } else {
+        setFormData((prev) => ({
+          ...prev,
+          additionalCrops: (prev.additionalCrops || []).filter((c) => c.id !== cropModal.targetId),
+        }));
+      }
+    }
+    setCropModal({ isOpen: false, type: 'add' });
+  };
 
   const handleToggleOperation = (op: string) => {
     setFormData((prev) => {
@@ -264,10 +330,20 @@ export default function CustomerDataForm() {
 
       {/* 26.2 Farm Operations Details */}
       <div className="space-y-4 pt-4 border-t border-slate-200">
-        <h3 className="font-bold text-sm text-slate-900 text-emerald-800 flex items-center gap-2">
-          <Sprout className="w-4 h-4 text-emerald-700" />
-          26.2 Farm Operations Details
-        </h3>
+        <div className="flex items-center justify-between gap-2 flex-wrap">
+          <h3 className="font-bold text-sm text-slate-900 text-emerald-800 flex items-center gap-2">
+            <Sprout className="w-4 h-4 text-emerald-700" />
+            26.2 Farm Operations & Crop Details
+          </h3>
+          <button
+            type="button"
+            onClick={handleOpenAddCrop}
+            className="inline-flex items-center gap-1.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs px-3 py-1.5 rounded-lg transition shadow-xs cursor-pointer"
+          >
+            <Plus className="w-3.5 h-3.5" />
+            <span>Add New Crop</span>
+          </button>
+        </div>
 
         <div>
           <label className="block font-semibold text-slate-700 mb-2">Job Work Operations (Select all required):</label>
@@ -295,40 +371,118 @@ export default function CustomerDataForm() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
-          <div>
-            <label className="block font-semibold text-slate-700 mb-1">Primary Crop Cultivated *</label>
-            <input
-              type="text"
-              value={formData.cropName}
-              onChange={(e) => setFormData({ ...formData, cropName: e.target.value })}
-              className="w-full p-2 border border-slate-300 rounded-lg focus:ring-1 focus:ring-emerald-600"
-            />
+        {/* Primary Crop */}
+        <div className="p-4 rounded-xl border border-slate-200 bg-slate-50/50 space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="font-bold text-xs text-slate-800 uppercase tracking-wide">
+              Primary Crop (Crop #1)
+            </span>
+            {(formData.cropName || (formData.additionalCrops && formData.additionalCrops.length > 0)) && (
+              <button
+                type="button"
+                onClick={() => handleOpenDeleteCrop('primary', formData.cropName || 'Primary Crop')}
+                className="inline-flex items-center gap-1 text-[11px] font-bold text-rose-600 hover:text-rose-700 hover:bg-rose-50 px-2 py-1 rounded transition cursor-pointer"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+                <span>Delete Crop</span>
+              </button>
+            )}
           </div>
 
-          <div>
-            <label className="block font-semibold text-slate-700 mb-1">Crop Cycle Duration (Days)</label>
-            <input
-              type="number"
-              value={formData.cropCycleDays}
-              onChange={(e) => setFormData({ ...formData, cropCycleDays: e.target.value })}
-              className="w-full p-2 border border-slate-300 rounded-lg focus:ring-1 focus:ring-emerald-600"
-            />
-          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-1">
+            <div>
+              <label className="block font-semibold text-slate-700 mb-1">Primary Crop Cultivated *</label>
+              <input
+                type="text"
+                value={formData.cropName}
+                onChange={(e) => setFormData({ ...formData, cropName: e.target.value })}
+                className="w-full p-2 border border-slate-300 rounded-lg focus:ring-1 focus:ring-emerald-600 bg-white"
+              />
+            </div>
 
-          <div className="flex items-center gap-3 pt-5">
-            <input
-              type="checkbox"
-              id="popAttached"
-              checked={formData.popAttached}
-              onChange={(e) => setFormData({ ...formData, popAttached: e.target.checked })}
-              className="w-4 h-4 text-emerald-700 rounded focus:ring-emerald-600"
-            />
-            <label htmlFor="popAttached" className="font-semibold text-slate-700">
-              POP (Package of Practices) Attached
-            </label>
+            <div>
+              <label className="block font-semibold text-slate-700 mb-1">Crop Cycle Duration (Days)</label>
+              <input
+                type="number"
+                value={formData.cropCycleDays}
+                onChange={(e) => setFormData({ ...formData, cropCycleDays: e.target.value })}
+                className="w-full p-2 border border-slate-300 rounded-lg focus:ring-1 focus:ring-emerald-600 bg-white"
+              />
+            </div>
+
+            <div className="flex items-center gap-3 pt-5">
+              <input
+                type="checkbox"
+                id="popAttached"
+                checked={formData.popAttached}
+                onChange={(e) => setFormData({ ...formData, popAttached: e.target.checked })}
+                className="w-4 h-4 text-emerald-700 rounded focus:ring-emerald-600"
+              />
+              <label htmlFor="popAttached" className="font-semibold text-slate-700">
+                POP (Package of Practices) Attached
+              </label>
+            </div>
           </div>
         </div>
+
+        {/* Additional Crops */}
+        {(formData.additionalCrops || []).map((cropItem, idx) => (
+          <div key={cropItem.id} className="p-4 rounded-xl border border-emerald-300 bg-emerald-50/30 space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="font-bold text-xs text-emerald-900 uppercase tracking-wide">
+                Additional Crop #{idx + 2}
+              </span>
+              <button
+                type="button"
+                onClick={() => handleOpenDeleteCrop(cropItem.id, cropItem.name || `Crop #${idx + 2}`)}
+                className="inline-flex items-center gap-1 text-[11px] font-bold text-rose-600 hover:text-rose-700 hover:bg-rose-50 px-2 py-1 rounded transition cursor-pointer"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+                <span>Delete Crop</span>
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
+              <div>
+                <label className="block font-semibold text-slate-700 mb-1">Crop Name *</label>
+                <input
+                  type="text"
+                  value={cropItem.name}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setFormData((prev) => ({
+                      ...prev,
+                      additionalCrops: (prev.additionalCrops || []).map((c) =>
+                        c.id === cropItem.id ? { ...c, name: val } : c
+                      ),
+                    }));
+                  }}
+                  placeholder="Enter Crop Name"
+                  className="w-full p-2 border border-slate-300 rounded-lg focus:ring-1 focus:ring-emerald-600 bg-white"
+                />
+              </div>
+
+              <div>
+                <label className="block font-semibold text-slate-700 mb-1">Crop Cycle Duration (Days)</label>
+                <input
+                  type="number"
+                  value={cropItem.cycleDays}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setFormData((prev) => ({
+                      ...prev,
+                      additionalCrops: (prev.additionalCrops || []).map((c) =>
+                        c.id === cropItem.id ? { ...c, cycleDays: val } : c
+                      ),
+                    }));
+                  }}
+                  placeholder="e.g. 120"
+                  className="w-full p-2 border border-slate-300 rounded-lg focus:ring-1 focus:ring-emerald-600 bg-white"
+                />
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
 
       {/* 26.3 Crop Activity Schedule */}
@@ -430,6 +584,16 @@ export default function CustomerDataForm() {
           <span>Save Customer & Farm Profile</span>
         </button>
       </div>
+
+      {/* Pop-up Confirmation Modal for Adding / Deleting Crops */}
+      <CropConfirmationModal
+        isOpen={cropModal.isOpen}
+        type={cropModal.type}
+        cropName={cropModal.cropName}
+        showNameInput={true}
+        onConfirm={handleConfirmCropModal}
+        onCancel={() => setCropModal({ isOpen: false, type: 'add' })}
+      />
     </form>
   );
 }
