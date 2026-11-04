@@ -988,7 +988,7 @@
       "warehouseId": "wh-dharwad",
       "productId": "prod-003",
       "variantId": "var-003-1",
-      "quantity": 32,
+      "quantity": 30,
       "reservedQuantity": 14,
       "reorderThreshold": 10
     },
@@ -1670,6 +1670,39 @@
       "status": "RELEASED",
       "expiresAt": "2026-09-18T06:21:21.908Z",
       "createdAt": "2026-09-18T05:51:21.908Z"
+    },
+    {
+      "id": "res-1793793475771-7w8d",
+      "orderId": "ord-1793793475771",
+      "productId": "prod-003",
+      "variantId": "var-003-1",
+      "warehouseId": "wh-dharwad",
+      "quantity": 2,
+      "status": "ACTIVE",
+      "expiresAt": "2026-11-04T12:27:55.771Z",
+      "createdAt": "2026-11-04T11:57:55.771Z"
+    },
+    {
+      "id": "res-1793793475830-mkcz",
+      "orderId": "ord-1793793475830",
+      "productId": "prod-003",
+      "variantId": "var-003-1",
+      "warehouseId": "wh-hubballi",
+      "quantity": 2,
+      "status": "RELEASED",
+      "expiresAt": "2026-11-04T12:27:55.830Z",
+      "createdAt": "2026-11-04T11:57:55.830Z"
+    },
+    {
+      "id": "res-1793793475831-3lx9",
+      "orderId": "ord-1793793475830",
+      "productId": "prod-003",
+      "variantId": "var-003-1",
+      "warehouseId": "wh-dharwad",
+      "quantity": 2,
+      "status": "RELEASED",
+      "expiresAt": "2026-11-04T12:27:55.831Z",
+      "createdAt": "2026-11-04T11:57:55.831Z"
     }
   ],
   "users": [
@@ -1705,12 +1738,21 @@
     },
     {
       "id": "usr-1789710451699",
-      "name": "Farmer 9991",
+      "name": "Shivanand Patil",
       "mobile": "9886099991",
       "role": "CUSTOMER",
       "isVerified": true,
       "createdAt": "2026-09-18T05:47:31.699Z",
-      "updatedAt": "2026-09-18T05:47:31.699Z"
+      "updatedAt": "2026-11-04T11:57:55.770Z"
+    },
+    {
+      "id": "usr-1793793475830",
+      "name": "Basavaraj Patil",
+      "mobile": "9480188888",
+      "role": "CUSTOMER",
+      "isVerified": true,
+      "createdAt": "2026-11-04T11:57:55.830Z",
+      "updatedAt": "2026-11-04T11:57:55.830Z"
     }
   ],
   "addresses": [
@@ -1817,13 +1859,207 @@
       "pincode": "580007",
       "gpsLatitude": 15.4589,
       "gpsLongitude": 75.0078,
-      "isDefaultShipping": true,
+      "isDefaultShipping": false,
       "isDefaultBilling": false,
       "createdAt": "2026-09-18T05:51:21.604Z",
       "updatedAt": "2026-09-18T05:51:21.604Z"
+    },
+    {
+      "id": "addr-1793793475769",
+      "userId": "usr-1789710451699",
+      "fullName": "Shivanand Patil",
+      "mobile": "9886099991",
+      "addressLine": "Farm Plot #28, Near Kelageri Lake",
+      "taluk": "Dharwad",
+      "village": "Kelageri",
+      "district": "Dharwad",
+      "state": "Karnataka",
+      "pincode": "580007",
+      "gpsLatitude": 15.4589,
+      "gpsLongitude": 75.0078,
+      "isDefaultShipping": true,
+      "isDefaultBilling": false,
+      "createdAt": "2026-11-04T11:57:55.769Z",
+      "updatedAt": "2026-11-04T11:57:55.769Z"
+    },
+    {
+      "id": "addr-1793793723908",
+      "userId": "usr-audit-test",
+      "fullName": "Anand Kulkarni",
+      "mobile": "9886012345",
+      "addressLine": "Ramanagar Farm, Main Road",
+      "taluk": "Haveri",
+      "village": "Ramanagar",
+      "district": "Haveri",
+      "state": "Karnataka",
+      "pincode": "581110",
+      "isDefaultShipping": true,
+      "isDefaultBilling": true,
+      "createdAt": "2026-11-04T12:02:03.908Z",
+      "updatedAt": "2026-11-04T12:02:03.908Z"
     }
   ],
   "orders": [
+    {
+      "id": "ord-1793793475830",
+      "orderNumber": "AGM-2026-3399",
+      "userId": "usr-1793793475830",
+      "subtotalAmount": 1700,
+      "discountAmount": 0,
+      "deliveryFee": 250,
+      "taxAmount": 85,
+      "totalAmount": 2035,
+      "status": "CANCELLED",
+      "paymentMethod": "COD",
+      "paymentStatus": "PENDING",
+      "assignedWarehouseId": "wh-dharwad",
+      "assignedWarehouseName": "Dharwad Rural Fulfillment Hub",
+      "assignmentMode": "AUTO",
+      "allocationStatus": "ALLOCATED",
+      "isHold": false,
+      "shippingAddress": {
+        "fullName": "Basavaraj Patil",
+        "mobile": "9480188888",
+        "addressLine": "Farm Plot #12",
+        "village": "Haveri Rural",
+        "taluk": "Haveri",
+        "district": "Haveri",
+        "pincode": "581110",
+        "gpsLatitude": 14.7954,
+        "gpsLongitude": 75.3991
+      },
+      "trackingNumber": "AGM-TRK-3399",
+      "courierName": "VRL Logistics Agri Express",
+      "assignmentAuditLogs": [
+        {
+          "id": "audit-1793793475830",
+          "orderId": "ord-1793793475830",
+          "toWarehouseId": "wh-hubballi",
+          "toWarehouseName": "Hubballi Central Dark Warehouse",
+          "reason": "Auto-allocated by GPS/PIN distance (69.9 km) & confirmed stock",
+          "changedBy": "SYSTEM_ALLOCATOR",
+          "timestamp": "2026-11-04T11:57:55.830Z"
+        },
+        {
+          "id": "audit-1793793475831",
+          "orderId": "ord-1793793475830",
+          "fromWarehouseId": "wh-hubballi",
+          "fromWarehouseName": "Hubballi Central Dark Warehouse",
+          "toWarehouseId": "wh-dharwad",
+          "toWarehouseName": "Dharwad Rural Fulfillment Hub",
+          "reason": "Automated Recovery Failover: Hubballi Central Dark Warehouse rejected (Damaged stock packaging during transit intake)",
+          "changedBy": "AUTO_RECOVERY_ENGINE",
+          "timestamp": "2026-11-04T11:57:55.831Z"
+        }
+      ],
+      "trackingMilestones": [
+        {
+          "milestone": "ORDER_PLACED",
+          "location": "Haveri",
+          "timestamp": "2026-11-04T11:57:55.830Z",
+          "description": "Order confirmed via COD. Total: ₹2,035"
+        },
+        {
+          "milestone": "ALLOCATED",
+          "location": "Hubballi Central Dark Warehouse",
+          "timestamp": "2026-11-04T11:57:55.830Z",
+          "description": "Assigned to Hubballi Central Dark Warehouse for express rural dispatch"
+        }
+      ],
+      "createdAt": "2026-11-04T11:57:55.830Z",
+      "updatedAt": "2026-11-04T11:57:55.831Z",
+      "rejectionHistory": [
+        {
+          "warehouseId": "wh-hubballi",
+          "warehouseName": "Hubballi Central Dark Warehouse",
+          "reason": "Damaged stock packaging during transit intake",
+          "rejectedAt": "2026-11-04T11:57:55.830Z"
+        }
+      ],
+      "cancellationReason": "Farmer requested cancellation before dispatch",
+      "cancelledAt": "2026-11-04T11:57:55.831Z"
+    },
+    {
+      "id": "ord-1793793475771",
+      "orderNumber": "AGM-2026-1063",
+      "userId": "usr-1789710451699",
+      "subtotalAmount": 1700,
+      "discountAmount": 0,
+      "deliveryFee": 250,
+      "taxAmount": 85,
+      "totalAmount": 2035,
+      "status": "DELIVERED",
+      "paymentMethod": "UPI",
+      "paymentStatus": "PAID",
+      "assignedWarehouseId": "wh-dharwad",
+      "assignedWarehouseName": "Dharwad Rural Fulfillment Hub",
+      "assignmentMode": "AUTO",
+      "allocationStatus": "ACCEPTED",
+      "isHold": false,
+      "shippingAddress": {
+        "fullName": "Shivanand Patil",
+        "mobile": "9886099991",
+        "addressLine": "Farm Plot #28, Near Kelageri Lake",
+        "village": "Kelageri",
+        "taluk": "Dharwad",
+        "district": "Dharwad",
+        "pincode": "580007",
+        "gpsLatitude": 15.4589,
+        "gpsLongitude": 75.0078
+      },
+      "trackingNumber": "VRL-DWD-8910472",
+      "courierName": "VRL Express Rural",
+      "assignmentAuditLogs": [
+        {
+          "id": "audit-1793793475771",
+          "orderId": "ord-1793793475771",
+          "toWarehouseId": "wh-dharwad",
+          "toWarehouseName": "Dharwad Rural Fulfillment Hub",
+          "reason": "Auto-allocated by GPS/PIN distance (0 km) & confirmed stock",
+          "changedBy": "SYSTEM_ALLOCATOR",
+          "timestamp": "2026-11-04T11:57:55.771Z"
+        }
+      ],
+      "trackingMilestones": [
+        {
+          "milestone": "ORDER_PLACED",
+          "location": "Dharwad",
+          "timestamp": "2026-11-04T11:57:55.771Z",
+          "description": "Order confirmed via UPI. Total: ₹2,035"
+        },
+        {
+          "milestone": "ALLOCATED",
+          "location": "Dharwad Rural Fulfillment Hub",
+          "timestamp": "2026-11-04T11:57:55.804Z",
+          "description": "Assigned to Dharwad Rural Fulfillment Hub for express rural dispatch"
+        },
+        {
+          "milestone": "PACKED",
+          "location": "Dharwad Rural Fulfillment Hub",
+          "timestamp": "2026-11-04T11:57:55.807Z",
+          "description": "Packed & verified by Suresh Patil (Hub Operator). Packing slip #PKG-DHA-1063 attached."
+        },
+        {
+          "milestone": "DISPATCHED",
+          "location": "Dharwad Rural Fulfillment Hub",
+          "timestamp": "2026-11-04T11:57:55.809Z",
+          "description": "Dispatched with VRL Express Rural. Tracking AWB: VRL-DWD-8910472"
+        },
+        {
+          "milestone": "DELIVERED",
+          "location": "Kelageri Farm Gate, Dharwad",
+          "timestamp": "2026-11-04T11:57:55.809Z",
+          "description": "Farmer received doorstep delivery with OTP verification"
+        }
+      ],
+      "createdAt": "2026-11-04T11:57:55.804Z",
+      "updatedAt": "2026-11-04T11:57:55.810Z",
+      "packingSlipNumber": "PKG-DHA-1063",
+      "packedAt": "2026-11-04T11:57:55.807Z",
+      "dispatchedAt": "2026-11-04T11:57:55.808Z",
+      "estimatedDeliveryDate": "2026-10-02",
+      "deliveredAt": "2026-11-04T11:57:55.809Z"
+    },
     {
       "id": "ord-1789710681883",
       "orderNumber": "AGM-2026-3475",
@@ -4676,6 +4912,32 @@
       "unitPrice": 850,
       "taxRate": 0.05,
       "totalPrice": 1700
+    },
+    {
+      "id": "oi-1793793475804-p9y8",
+      "orderId": "ord-1793793475771",
+      "productId": "prod-003",
+      "variantId": "var-003-1",
+      "productName": "Bhoomi Sanjivani Organic Micro-Nutrient Bio-Fertilizer (5 Kg)",
+      "variantTitle": "5 Kg Eco-Bag Pack",
+      "sku": "BS-OMN-5KG-BAG",
+      "quantity": 2,
+      "unitPrice": 850,
+      "taxRate": 0.05,
+      "totalPrice": 1700
+    },
+    {
+      "id": "oi-1793793475830-zdr0",
+      "orderId": "ord-1793793475830",
+      "productId": "prod-003",
+      "variantId": "var-003-1",
+      "productName": "Bhoomi Sanjivani Organic Micro-Nutrient Bio-Fertilizer (5 Kg)",
+      "variantTitle": "5 Kg Eco-Bag Pack",
+      "sku": "BS-OMN-5KG-BAG",
+      "quantity": 2,
+      "unitPrice": 850,
+      "taxRate": 0.05,
+      "totalPrice": 1700
     }
   ],
   "payments": [
@@ -4896,6 +5158,220 @@
     }
   ],
   "notifications": [
+    {
+      "id": "notif-1793793739904",
+      "userId": "usr-farmer-01",
+      "channel": "SMS",
+      "recipient": "9845190812",
+      "event": "SERVICE_OPERATOR_ASSIGNED",
+      "title": "Service Operator Assigned",
+      "message": "Verified operator assigned for Request #REQ-SRV-2026-486! Provider: Mandya Precision Agro Fleet #11 (9480188990). Unit: Tractor Unit KA-11-T-4912 (Basavaraj). Scheduled: 2026-09-24 (08:00 AM - 12:00 PM).",
+      "status": "SENT",
+      "sentAt": "2026-11-04T12:02:19.904Z"
+    },
+    {
+      "id": "notif-1793793739903",
+      "userId": "usr-farmer-01",
+      "channel": "SMS",
+      "recipient": "9845190812",
+      "event": "SERVICE_REQUESTED",
+      "title": "Service Request Dispatched",
+      "message": "Namaskara! Service request #REQ-SRV-2026-486 for Tractor Precision Ploughing & Land Preparation received with GPS coordinates (12.5218, 76.8951). Super Admin is assigning the nearest verified operator.",
+      "status": "SENT",
+      "sentAt": "2026-11-04T12:02:19.903Z"
+    },
+    {
+      "id": "notif-1793793739902",
+      "userId": "usr-farmer-03",
+      "channel": "SMS",
+      "recipient": "9480111223",
+      "event": "RENTAL_RETURN_SETTLED",
+      "title": "Rental Return & Deposit Settled",
+      "message": "AgriMart Rental #RNT-2026-7695 return processed. Late Fee: ₹0, Damage Fee: ₹1200. Net Refundable Deposit: ₹1,800 initiated to your account.",
+      "status": "SENT",
+      "sentAt": "2026-11-04T12:02:19.902Z"
+    },
+    {
+      "id": "notif-1793793739901",
+      "userId": "usr-farmer-03",
+      "channel": "SMS",
+      "recipient": "9480111223",
+      "event": "RENTAL_RETURN_SETTLED",
+      "title": "Rental Return & Deposit Settled",
+      "message": "AgriMart Rental #RNT-2026-7695 return processed. Late Fee: ₹2550, Damage Fee: ₹0. Net Refundable Deposit: ₹450 initiated to your account.",
+      "status": "SENT",
+      "sentAt": "2026-11-04T12:02:19.901Z"
+    },
+    {
+      "id": "notif-1793793739900",
+      "userId": "usr-farmer-01",
+      "channel": "SMS",
+      "recipient": "9845190812",
+      "event": "RENTAL_RETURN_SETTLED",
+      "title": "Rental Return & Deposit Settled",
+      "message": "AgriMart Rental #RNT-2026-8961 return processed. Late Fee: ₹0, Damage Fee: ₹0. Net Refundable Deposit: ₹3,000 initiated to your account.",
+      "status": "SENT",
+      "sentAt": "2026-11-04T12:02:19.900Z"
+    },
+    {
+      "id": "notif-1793793739898",
+      "userId": "usr-farmer-03",
+      "channel": "SMS",
+      "recipient": "9480111223",
+      "event": "RENTAL_BOOKED",
+      "title": "Rental Request Received",
+      "message": "Namaskara! Rental booking #RNT-2026-7695 for AgriPro 7HP Multi-Speed Heavy-Duty Power Weeder received. Security deposit ₹3,000 held securely. Dark warehouse coordinator will verify dispatch.",
+      "status": "SENT",
+      "sentAt": "2026-11-04T12:02:19.898Z"
+    },
+    {
+      "id": "notif-1793793739898",
+      "userId": "usr-farmer-02",
+      "channel": "SMS",
+      "recipient": "9886054321",
+      "event": "RENTAL_BOOKED",
+      "title": "Rental Request Received",
+      "message": "Namaskara! Rental booking #RNT-2026-5022 for AgriPro 7HP Multi-Speed Heavy-Duty Power Weeder received. Security deposit ₹3,000 held securely. Dark warehouse coordinator will verify dispatch.",
+      "status": "SENT",
+      "sentAt": "2026-11-04T12:02:19.898Z"
+    },
+    {
+      "id": "notif-1793793739862",
+      "userId": "usr-farmer-01",
+      "channel": "SMS",
+      "recipient": "9845190812",
+      "event": "RENTAL_BOOKED",
+      "title": "Rental Request Received",
+      "message": "Namaskara! Rental booking #RNT-2026-8961 for AgriPro 7HP Multi-Speed Heavy-Duty Power Weeder received. Security deposit ₹3,000 held securely. Dark warehouse coordinator will verify dispatch.",
+      "status": "SENT",
+      "sentAt": "2026-11-04T12:02:19.898Z"
+    },
+    {
+      "id": "notif-1793793475831",
+      "userId": "usr-1793793475830",
+      "channel": "SMS",
+      "recipient": "9480188888",
+      "event": "ORDER_CANCELLED",
+      "title": "Order Cancelled",
+      "message": "Order #AGM-2026-3399 has been cancelled. Reserved items have been returned to warehouse inventory.",
+      "status": "SENT",
+      "sentAt": "2026-11-04T11:57:55.831Z"
+    },
+    {
+      "id": "notif-1793793475830",
+      "channel": "SMS",
+      "recipient": "9480188888",
+      "event": "ORDER_CONFIRMED",
+      "title": "Order Confirmed",
+      "message": "Namaskara! Order #AGM-2026-3399 for ₹2,035 confirmed. Routing via Hubballi Central Dark Warehouse.",
+      "status": "SENT",
+      "sentAt": "2026-11-04T11:57:55.830Z"
+    },
+    {
+      "id": "notif-1793793475830",
+      "channel": "SMS",
+      "recipient": "9886099991",
+      "event": "ORDER_DISPATCHED",
+      "title": "Order Dispatched",
+      "message": "Your AgriMart order is out for delivery.",
+      "status": "SENT",
+      "sentAt": "2026-11-04T11:57:55.830Z"
+    },
+    {
+      "id": "notif-1793793475829",
+      "userId": "usr-farmer-02",
+      "channel": "SMS",
+      "recipient": "9480112345",
+      "event": "RENTAL_BOOKED",
+      "title": "Rental Request Received",
+      "message": "Namaskara! Rental booking #RNT-2026-9195 for AgriPro 7HP Multi-Speed Heavy-Duty Power Weeder received. Security deposit ₹3,000 held securely. Dark warehouse coordinator will verify dispatch.",
+      "status": "SENT",
+      "sentAt": "2026-11-04T11:57:55.829Z"
+    },
+    {
+      "id": "notif-1793793475822",
+      "userId": "usr-1789710451699",
+      "channel": "SMS",
+      "recipient": "9886099991",
+      "event": "SERVICE_OPERATOR_ASSIGNED",
+      "title": "Service Operator Assigned",
+      "message": "Verified operator assigned for Request #REQ-SRV-2026-926! Provider: Basavaraj Tractor Services (55HP 4WD) (9845012345). Unit: John Deere 5050D + 3-MB Reversible Plough. Scheduled: 2026-10-20 (07:30 AM - 11:30 AM).",
+      "status": "SENT",
+      "sentAt": "2026-11-04T11:57:55.822Z"
+    },
+    {
+      "id": "notif-1793793475821",
+      "userId": "usr-1789710451699",
+      "channel": "SMS",
+      "recipient": "9886099991",
+      "event": "SERVICE_REQUESTED",
+      "title": "Service Request Dispatched",
+      "message": "Namaskara! Service request #REQ-SRV-2026-926 for Tractor Precision Ploughing & Land Preparation received with GPS coordinates (15.4589, 75.0078). Super Admin is assigning the nearest verified operator.",
+      "status": "SENT",
+      "sentAt": "2026-11-04T11:57:55.821Z"
+    },
+    {
+      "id": "notif-1793793475821",
+      "userId": "usr-1789710451699",
+      "channel": "SMS",
+      "recipient": "9886099991",
+      "event": "RENTAL_RETURN_SETTLED",
+      "title": "Rental Return & Deposit Settled",
+      "message": "AgriMart Rental #RNT-2026-3260 return processed. Late Fee: ₹0, Damage Fee: ₹0. Net Refundable Deposit: ₹3,000 initiated to your account.",
+      "status": "SENT",
+      "sentAt": "2026-11-04T11:57:55.821Z"
+    },
+    {
+      "id": "notif-1793793475820",
+      "userId": "usr-1789710451699",
+      "channel": "SMS",
+      "recipient": "9886099991",
+      "event": "RENTAL_BOOKED",
+      "title": "Rental Request Received",
+      "message": "Namaskara! Rental booking #RNT-2026-3260 for AgriPro 7HP Multi-Speed Heavy-Duty Power Weeder received. Security deposit ₹3,000 held securely. Dark warehouse coordinator will verify dispatch.",
+      "status": "SENT",
+      "sentAt": "2026-11-04T11:57:55.820Z"
+    },
+    {
+      "id": "notif-1793793475810",
+      "channel": "WHATSAPP",
+      "recipient": "9886099991",
+      "event": "ORDER_DELIVERED",
+      "title": "Order Delivered",
+      "message": "Order #AGM-2026-1063 has been delivered successfully to your farm. Thank you for choosing Agri Mart Mega!",
+      "status": "SENT",
+      "sentAt": "2026-11-04T11:57:55.810Z"
+    },
+    {
+      "id": "notif-1793793475809",
+      "channel": "SMS",
+      "recipient": "9886099991",
+      "event": "ORDER_DISPATCHED",
+      "title": "Order Dispatched",
+      "message": "Kisan Bandhu! Order #AGM-2026-1063 is dispatched via VRL Express Rural. AWB: VRL-DWD-8910472.",
+      "status": "SENT",
+      "sentAt": "2026-11-04T11:57:55.809Z"
+    },
+    {
+      "id": "notif-1793793475807",
+      "channel": "SMS",
+      "recipient": "9886099991",
+      "event": "ORDER_PACKED",
+      "title": "Order Packed",
+      "message": "Kisan Bandhu, Order #AGM-2026-1063 is packed at Dharwad Rural Fulfillment Hub. Slip: PKG-DHA-1063.",
+      "status": "SENT",
+      "sentAt": "2026-11-04T11:57:55.807Z"
+    },
+    {
+      "id": "notif-1793793475805",
+      "channel": "SMS",
+      "recipient": "9886099991",
+      "event": "ORDER_CONFIRMED",
+      "title": "Order Confirmed",
+      "message": "Namaskara! Order #AGM-2026-1063 for ₹2,035 confirmed. Routing via Dharwad Rural Fulfillment Hub.",
+      "status": "SENT",
+      "sentAt": "2026-11-04T11:57:55.805Z"
+    },
     {
       "id": "notif-1789710681926",
       "userId": "usr-1789710451699",
@@ -5940,13 +6416,13 @@
       "createdAt": "2026-09-17T11:24:17.101Z"
     },
     {
-      "id": "otp-1789710681590",
+      "id": "otp-1793793475767",
       "mobile": "9886099991",
       "codeHash": "123456",
-      "expiresAt": "2026-09-18T06:01:21.590Z",
+      "expiresAt": "2026-11-04T12:07:55.767Z",
       "verified": true,
       "attempts": 0,
-      "createdAt": "2026-09-18T05:51:21.590Z"
+      "createdAt": "2026-11-04T11:57:55.767Z"
     }
   ],
   "rentalProducts": [
@@ -6062,6 +6538,161 @@
     }
   ],
   "rentalBookings": [
+    {
+      "id": "rnt-bk-1793793739898",
+      "bookingNumber": "RNT-2026-7695",
+      "rentalProductId": "rnt-weeder-7hp",
+      "productTitle": "AgriPro 7HP Multi-Speed Heavy-Duty Power Weeder",
+      "userId": "usr-farmer-03",
+      "customerName": "Test Farmer C",
+      "customerMobile": "9480111223",
+      "deliveryAddress": "Belagavi Farm",
+      "pincode": "591313",
+      "warehouseId": "wh-hubballi",
+      "startDate": "2026-10-01",
+      "endDate": "2026-10-05",
+      "totalDays": 5,
+      "rentalBasis": "DAILY",
+      "pricingTier": "DAILY",
+      "dailyRate": 850,
+      "rentAmount": 4250,
+      "securityDeposit": 3000,
+      "totalPaid": 7250,
+      "paymentMethod": "ONLINE_UPI",
+      "paymentStatus": "PAID",
+      "status": "RETURNED_DAMAGED",
+      "depositRefundStatus": "PROCESSED",
+      "createdAt": "2026-11-04T12:02:19.898Z",
+      "updatedAt": "2026-11-04T12:02:19.902Z",
+      "actualReturnDate": "2026-10-05",
+      "damageNotes": "Left rotary tiller tine broken, needs replacement.",
+      "lateDays": 0,
+      "lateFee": 0,
+      "damageFee": 1200,
+      "depositRefundAmount": 1800
+    },
+    {
+      "id": "rnt-bk-1793793739898",
+      "bookingNumber": "RNT-2026-5022",
+      "rentalProductId": "rnt-weeder-7hp",
+      "productTitle": "AgriPro 7HP Multi-Speed Heavy-Duty Power Weeder",
+      "userId": "usr-farmer-02",
+      "customerName": "Test Farmer B",
+      "customerMobile": "9886054321",
+      "deliveryAddress": "Dharwad Farm",
+      "pincode": "580004",
+      "warehouseId": "wh-hubballi",
+      "startDate": "2026-10-01",
+      "endDate": "2026-10-05",
+      "totalDays": 5,
+      "rentalBasis": "DAILY",
+      "pricingTier": "DAILY",
+      "dailyRate": 850,
+      "rentAmount": 4250,
+      "securityDeposit": 3000,
+      "totalPaid": 7250,
+      "paymentMethod": "ONLINE_UPI",
+      "paymentStatus": "PAID",
+      "status": "APPROVED",
+      "depositRefundStatus": "PENDING",
+      "createdAt": "2026-11-04T12:02:19.898Z",
+      "updatedAt": "2026-11-04T12:02:19.898Z"
+    },
+    {
+      "id": "rnt-bk-1793793739862",
+      "bookingNumber": "RNT-2026-8961",
+      "rentalProductId": "rnt-weeder-7hp",
+      "productTitle": "AgriPro 7HP Multi-Speed Heavy-Duty Power Weeder",
+      "userId": "usr-farmer-01",
+      "customerName": "Test Farmer A",
+      "customerMobile": "9845190812",
+      "deliveryAddress": "Mandya Farm",
+      "pincode": "571401",
+      "warehouseId": "wh-hubballi",
+      "startDate": "2026-10-01",
+      "endDate": "2026-10-05",
+      "totalDays": 5,
+      "rentalBasis": "DAILY",
+      "pricingTier": "DAILY",
+      "dailyRate": 850,
+      "rentAmount": 4250,
+      "securityDeposit": 3000,
+      "totalPaid": 7250,
+      "paymentMethod": "ONLINE_UPI",
+      "paymentStatus": "PAID",
+      "status": "RETURNED_ON_TIME",
+      "depositRefundStatus": "PROCESSED",
+      "createdAt": "2026-11-04T12:02:19.862Z",
+      "updatedAt": "2026-11-04T12:02:19.900Z",
+      "actualReturnDate": "2026-10-05",
+      "damageNotes": "",
+      "lateDays": 0,
+      "lateFee": 0,
+      "damageFee": 0,
+      "depositRefundAmount": 3000
+    },
+    {
+      "id": "rnt-bk-1793793475829",
+      "bookingNumber": "RNT-2026-9195",
+      "rentalProductId": "rnt-weeder-7hp",
+      "productTitle": "AgriPro 7HP Multi-Speed Heavy-Duty Power Weeder",
+      "userId": "usr-farmer-02",
+      "customerName": "Mallikarjun Patil",
+      "customerMobile": "9480112345",
+      "deliveryAddress": "Plot #9, Hubballi Bypass",
+      "pincode": "580020",
+      "warehouseId": "wh-hubballi",
+      "startDate": "2026-10-15",
+      "endDate": "2026-10-18",
+      "totalDays": 4,
+      "rentalBasis": "DAILY",
+      "pricingTier": "DAILY",
+      "dailyRate": 850,
+      "rentAmount": 3400,
+      "securityDeposit": 3000,
+      "totalPaid": 6400,
+      "paymentMethod": "UPI",
+      "paymentStatus": "PAID",
+      "paymentId": "pay_rent_collision_01",
+      "status": "PENDING_APPROVAL",
+      "depositRefundStatus": "PENDING",
+      "createdAt": "2026-11-04T11:57:55.829Z",
+      "updatedAt": "2026-11-04T11:57:55.829Z"
+    },
+    {
+      "id": "rnt-bk-1793793475820",
+      "bookingNumber": "RNT-2026-3260",
+      "rentalProductId": "rnt-weeder-7hp",
+      "productTitle": "AgriPro 7HP Multi-Speed Heavy-Duty Power Weeder",
+      "userId": "usr-1789710451699",
+      "customerName": "Shivanand Patil",
+      "customerMobile": "9886099991",
+      "deliveryAddress": "Farm Plot #28, Near Kelageri Lake, Dharwad",
+      "pincode": "580007",
+      "warehouseId": "wh-hubballi",
+      "startDate": "2026-10-15",
+      "endDate": "2026-10-18",
+      "totalDays": 4,
+      "rentalBasis": "DAILY",
+      "pricingTier": "DAILY",
+      "dailyRate": 850,
+      "rentAmount": 3400,
+      "securityDeposit": 3000,
+      "totalPaid": 6400,
+      "paymentMethod": "UPI",
+      "paymentStatus": "PAID",
+      "paymentId": "pay_rent_test_902",
+      "status": "RETURNED_ON_TIME",
+      "depositRefundStatus": "PROCESSED",
+      "createdAt": "2026-11-04T11:57:55.820Z",
+      "updatedAt": "2026-11-04T11:57:55.821Z",
+      "actualReturnDate": "2026-10-18",
+      "damageNotes": "Pre-return inspection passed. Zero structural damage. Oil levels verified.",
+      "lateDays": 0,
+      "lateFee": 0,
+      "damageFee": 0,
+      "depositRefundAmount": 3000
+    },
     {
       "id": "rnt-bk-1789710681873",
       "bookingNumber": "RNT-2026-3104",
@@ -6437,6 +7068,77 @@
   ],
   "serviceRequests": [
     {
+      "id": "srv-req-1793793739903",
+      "requestNumber": "REQ-SRV-2026-486",
+      "userId": "usr-farmer-01",
+      "customerName": "Ramesh Kumar Gowda",
+      "customerMobile": "9845190812",
+      "serviceId": "srv-tractor",
+      "serviceName": "Tractor Precision Ploughing & Land Preparation",
+      "jobWorkId": "jw-mb-plough",
+      "jobWorkName": "Mouldboard (MB) Deep Ploughing",
+      "bookingBasis": "ACRE",
+      "farmAcreage": 4.5,
+      "cropType": "Sugarcane",
+      "district": "Mandya",
+      "taluk": "Mandya",
+      "village": "Kothathi",
+      "address": "Plot #14, Sy. No 124, Kothathi Hobli",
+      "pincode": "571401",
+      "gpsLatitude": 12.5218,
+      "gpsLongitude": 76.8951,
+      "preferredDate": "2026-09-24",
+      "preferredTime": "08:00 AM - 12:00 PM",
+      "notes": "Incorporating sugarcane trash for 4.5 acres.",
+      "photoUrl": "https://images.unsplash.com/photo-1589923188900-85dae523342b",
+      "status": "ASSIGNED",
+      "estimatedCost": 6300,
+      "advancePaid": 0,
+      "paymentMethod": "UPI",
+      "paymentStatus": "PAID",
+      "createdAt": "2026-11-04T12:02:19.903Z",
+      "updatedAt": "2026-11-04T12:02:19.904Z",
+      "assignedProviderId": "prv-mandya-fleet-11",
+      "assignedProviderName": "Mandya Precision Agro Fleet #11",
+      "assignedOperatorMobile": "9480188990",
+      "assignedFleetUnit": "Tractor Unit KA-11-T-4912 (Basavaraj)"
+    },
+    {
+      "id": "srv-req-1793793475821",
+      "requestNumber": "REQ-SRV-2026-926",
+      "userId": "usr-1789710451699",
+      "customerName": "Shivanand Patil",
+      "customerMobile": "9886099991",
+      "serviceId": "srv-tractor",
+      "serviceName": "Tractor Precision Ploughing & Land Preparation",
+      "jobWorkId": "jw-plowing",
+      "jobWorkName": "Deep Summer Plowing",
+      "bookingBasis": "ACRE",
+      "farmAcreage": 3.5,
+      "cropType": "Cotton",
+      "district": "Dharwad",
+      "taluk": "Dharwad",
+      "village": "Kelageri",
+      "address": "Sy. No 89, Kelageri, Dharwad",
+      "pincode": "580007",
+      "gpsLatitude": 15.4589,
+      "gpsLongitude": 75.0078,
+      "preferredDate": "2026-10-20",
+      "preferredTime": "07:30 AM - 11:30 AM",
+      "notes": "Hard black cotton soil requiring heavy tractor with mouldboard plough",
+      "status": "COMPLETED",
+      "estimatedCost": 4200,
+      "advancePaid": 0,
+      "paymentMethod": "UPI",
+      "paymentStatus": "PAID",
+      "createdAt": "2026-11-04T11:57:55.821Z",
+      "updatedAt": "2026-11-04T11:57:55.824Z",
+      "assignedProviderId": "op-01",
+      "assignedProviderName": "Basavaraj Tractor Services (55HP 4WD)",
+      "assignedOperatorMobile": "9845012345",
+      "assignedFleetUnit": "John Deere 5050D + 3-MB Reversible Plough"
+    },
+    {
       "id": "srv-req-1789710681743",
       "requestNumber": "REQ-SRV-2026-965",
       "userId": "usr-1789710451699",
@@ -6659,6 +7361,21 @@
     }
   ],
   "stockLedger": [
+    {
+      "id": "led-1793793475809-h67a",
+      "warehouseId": "wh-dharwad",
+      "warehouseName": "Dharwad Rural Fulfillment Hub",
+      "productId": "prod-003",
+      "productName": "Bhoomi Sanjivani Organic Micro-Nutrient Bio-Fertilizer (5 Kg)",
+      "variantId": "var-003-1",
+      "type": "DISPATCHED",
+      "quantity": 2,
+      "balanceAfter": 30,
+      "referenceId": "AGM-2026-1063",
+      "notes": "Order #AGM-2026-1063 dispatched via VRL Express Rural (AWB: VRL-DWD-8910472)",
+      "performedBy": "Warehouse Dispatch Operator",
+      "createdAt": "2026-11-04T11:57:55.809Z"
+    },
     {
       "id": "led-1789710681666-10ch",
       "warehouseId": "wh-dharwad",
@@ -7074,9 +7791,9 @@
       "successfulOrdersCount": 2,
       "lastOrderDate": "2026-09-17",
       "assignedAgronomist": "Dr. H. M. Patil",
-      "notes": "Progressive sugarcane grower using drip irrigation. Adopter of mechanized power weeder.\n[17/9/2026] Sugarcane ready for mechanized harvesting\n[17/9/2026] Sugarcane ready for mechanized harvesting\n[17/9/2026] Sugarcane ready for mechanized harvesting\n[17/9/2026] Sugarcane ready for mechanized harvesting\n[18/9/2026] Sugarcane ready for mechanized harvesting\n[18/9/2026] Sugarcane ready for mechanized harvesting\n[18/9/2026] Sugarcane ready for mechanized harvesting\n[18/9/2026] Sugarcane ready for mechanized harvesting\n[18/9/2026] Cotton crop entering active vegetative branch formation\n[18/9/2026] Cotton crop entering active vegetative branch formation\n[18/9/2026] Cotton crop entering active vegetative branch formation\n[18/9/2026] Cotton crop entering active vegetative branch formation",
+      "notes": "Progressive sugarcane grower using drip irrigation. Adopter of mechanized power weeder.\n[17/9/2026] Sugarcane ready for mechanized harvesting\n[17/9/2026] Sugarcane ready for mechanized harvesting\n[17/9/2026] Sugarcane ready for mechanized harvesting\n[17/9/2026] Sugarcane ready for mechanized harvesting\n[18/9/2026] Sugarcane ready for mechanized harvesting\n[18/9/2026] Sugarcane ready for mechanized harvesting\n[18/9/2026] Sugarcane ready for mechanized harvesting\n[18/9/2026] Sugarcane ready for mechanized harvesting\n[18/9/2026] Cotton crop entering active vegetative branch formation\n[18/9/2026] Cotton crop entering active vegetative branch formation\n[18/9/2026] Cotton crop entering active vegetative branch formation\n[18/9/2026] Cotton crop entering active vegetative branch formation\n[4/11/2026] Cotton crop entering active vegetative branch formation",
       "createdAt": "2026-06-01T08:00:00Z",
-      "updatedAt": "2026-09-18T05:51:21.698Z"
+      "updatedAt": "2026-11-04T11:57:55.818Z"
     },
     {
       "id": "fp-002",
@@ -7147,7 +7864,7 @@
       "status": "COMPLETED",
       "agronomistNotes": "Advised foliar spray of micronutrient mixture + yellow sticky traps for whitefly prevention.",
       "assignedAgronomist": "Dr. H. M. Patil",
-      "completedAt": "2026-09-18T05:51:21.703Z",
+      "completedAt": "2026-11-04T11:57:55.819Z",
       "createdAt": "2026-08-28T09:00:00Z"
     },
     {
@@ -7223,6 +7940,43 @@
     }
   ],
   "salesLeads": [
+    {
+      "id": "lead-1793793475819",
+      "leadNumber": "SL-2026-817",
+      "communicationLog": [
+        {
+          "type": "VISIT",
+          "note": "Farm visit by Anand Kulkarni at GPS (15.4589, 75.0078). Summary: Demonstrated 16L battery sprayer at Kelageri farm plot. High conversion intent. [Outcome: DEMO_COMPLETED]",
+          "timestamp": "2026-11-04T11:57:55.819Z"
+        },
+        {
+          "type": "WHATSAPP",
+          "note": "Stage changed to [QUOTATION_SENT]: Sent official quotation for battery sprayer + biological fungicide package",
+          "timestamp": "2026-11-04T11:57:55.819Z"
+        },
+        {
+          "type": "SMS",
+          "note": "Lead created via AI_ADVISORY. Assigned to Anand Kulkarni.",
+          "timestamp": "2026-11-04T11:57:55.819Z"
+        }
+      ],
+      "createdAt": "2026-11-04T11:57:55.819Z",
+      "updatedAt": "2026-11-04T11:57:55.819Z",
+      "farmerName": "Shivanand Patil",
+      "mobile": "9886099991",
+      "village": "Kelageri",
+      "taluk": "Dharwad",
+      "district": "Dharwad",
+      "leadSource": "AI_ADVISORY",
+      "aiDiagnosisSummary": "Cotton foliar nutrition and pest management advice",
+      "cropInterested": "Cotton",
+      "stage": "QUOTATION_SENT",
+      "estimatedValue": 48000,
+      "assignedExecutiveName": "Anand Kulkarni",
+      "assignedExecutiveId": "exec-01",
+      "notes": "Commercial cotton cultivator with 8.5 acres interested in automated sprayers.",
+      "remarks": "Sent official quotation for battery sprayer + biological fungicide package"
+    },
     {
       "id": "lead-1789710681709",
       "leadNumber": "SL-2026-816",
@@ -7801,6 +8555,17 @@
   ],
   "salesVisits": [
     {
+      "id": "sv-1793793475819",
+      "createdAt": "2026-11-04T11:57:55.819Z",
+      "leadId": "lead-1793793475819",
+      "executiveName": "Anand Kulkarni",
+      "visitDate": "2026-09-18",
+      "gpsLatitude": 15.4589,
+      "gpsLongitude": 75.0078,
+      "outcome": "DEMO_COMPLETED",
+      "visitSummary": "Demonstrated 16L battery sprayer at Kelageri farm plot. High conversion intent."
+    },
+    {
       "id": "sv-1789710681719",
       "createdAt": "2026-09-18T05:51:21.719Z",
       "leadId": "lead-1789710681709",
@@ -8019,6 +8784,141 @@
     }
   ],
   "notificationQueue": [
+    {
+      "id": "qnotif-1793793475831-3czq",
+      "idempotencyKey": "recovery-ord-1793793475830-wh-dharwad",
+      "event": "WAREHOUSE_ASSIGNED",
+      "channel": "EMAIL",
+      "recipient": "+91 94481 55667",
+      "recipientRole": "WAREHOUSE_MANAGER",
+      "title": "Urgent: Failover Order Allocated",
+      "message": "Failover order #AGM-2026-3399 transferred to Dharwad Rural Fulfillment Hub following rejection at Hubballi Central Dark Warehouse.",
+      "status": "SENT",
+      "attempts": 1,
+      "maxRetries": 3,
+      "scheduledAt": "2026-11-04T11:57:55.831Z",
+      "sentAt": "2026-11-04T11:57:55.831Z"
+    },
+    {
+      "id": "qnotif-1793793475830-oatl",
+      "idempotencyKey": "ord-assign-wh-ord-1793793475830",
+      "event": "WAREHOUSE_ASSIGNED",
+      "channel": "EMAIL",
+      "recipient": "+91 94481 22334",
+      "recipientRole": "WAREHOUSE_MANAGER",
+      "title": "New Order Allocated",
+      "message": "Order #AGM-2026-3399 assigned to Hubballi Central Dark Warehouse (1 items). Please inspect and pack.",
+      "status": "SENT",
+      "attempts": 1,
+      "maxRetries": 3,
+      "scheduledAt": "2026-11-04T11:57:55.830Z",
+      "sentAt": "2026-11-04T11:57:55.830Z"
+    },
+    {
+      "id": "qnotif-1793793475830-ifma",
+      "idempotencyKey": "ord-confirm-sms-ord-1793793475830",
+      "event": "ORDER_CONFIRMED",
+      "channel": "SMS",
+      "recipient": "9480188888",
+      "recipientRole": "CUSTOMER",
+      "title": "Order Confirmed",
+      "message": "Namaskara! Order #AGM-2026-3399 for ₹2,035 confirmed. Routing via Hubballi Central Dark Warehouse.",
+      "status": "SENT",
+      "attempts": 1,
+      "maxRetries": 3,
+      "scheduledAt": "2026-11-04T11:57:55.830Z",
+      "sentAt": "2026-11-04T11:57:55.830Z"
+    },
+    {
+      "id": "qnotif-1793793475829-k2vx",
+      "idempotencyKey": "sms_dispatch_1793793475829",
+      "event": "ORDER_DISPATCHED",
+      "channel": "SMS",
+      "recipient": "9886099991",
+      "recipientRole": "CUSTOMER",
+      "title": "Order Dispatched",
+      "message": "Your AgriMart order is out for delivery.",
+      "status": "SENT",
+      "attempts": 1,
+      "maxRetries": 3,
+      "scheduledAt": "2026-11-04T11:57:55.829Z",
+      "sentAt": "2026-11-04T11:57:55.829Z"
+    },
+    {
+      "id": "qnotif-1793793475810-s10v",
+      "idempotencyKey": "delivered-ord-1793793475771",
+      "event": "ORDER_DELIVERED",
+      "channel": "WHATSAPP",
+      "recipient": "9886099991",
+      "recipientRole": "CUSTOMER",
+      "title": "Order Delivered",
+      "message": "Order #AGM-2026-1063 has been delivered successfully to your farm. Thank you for choosing Agri Mart Mega!",
+      "status": "SENT",
+      "attempts": 1,
+      "maxRetries": 3,
+      "scheduledAt": "2026-11-04T11:57:55.810Z",
+      "sentAt": "2026-11-04T11:57:55.810Z"
+    },
+    {
+      "id": "qnotif-1793793475809-egro",
+      "idempotencyKey": "dispatch-ord-1793793475771",
+      "event": "ORDER_DISPATCHED",
+      "channel": "SMS",
+      "recipient": "9886099991",
+      "recipientRole": "CUSTOMER",
+      "title": "Order Dispatched",
+      "message": "Kisan Bandhu! Order #AGM-2026-1063 is dispatched via VRL Express Rural. AWB: VRL-DWD-8910472.",
+      "status": "SENT",
+      "attempts": 1,
+      "maxRetries": 3,
+      "scheduledAt": "2026-11-04T11:57:55.809Z",
+      "sentAt": "2026-11-04T11:57:55.809Z"
+    },
+    {
+      "id": "qnotif-1793793475807-ykhl",
+      "idempotencyKey": "packed-ord-1793793475771",
+      "event": "ORDER_PACKED",
+      "channel": "SMS",
+      "recipient": "9886099991",
+      "recipientRole": "CUSTOMER",
+      "title": "Order Packed",
+      "message": "Kisan Bandhu, Order #AGM-2026-1063 is packed at Dharwad Rural Fulfillment Hub. Slip: PKG-DHA-1063.",
+      "status": "SENT",
+      "attempts": 1,
+      "maxRetries": 3,
+      "scheduledAt": "2026-11-04T11:57:55.807Z",
+      "sentAt": "2026-11-04T11:57:55.807Z"
+    },
+    {
+      "id": "qnotif-1793793475805-n1y0",
+      "idempotencyKey": "ord-assign-wh-ord-1793793475771",
+      "event": "WAREHOUSE_ASSIGNED",
+      "channel": "EMAIL",
+      "recipient": "+91 94481 55667",
+      "recipientRole": "WAREHOUSE_MANAGER",
+      "title": "New Order Allocated",
+      "message": "Order #AGM-2026-1063 assigned to Dharwad Rural Fulfillment Hub (1 items). Please inspect and pack.",
+      "status": "SENT",
+      "attempts": 1,
+      "maxRetries": 3,
+      "scheduledAt": "2026-11-04T11:57:55.805Z",
+      "sentAt": "2026-11-04T11:57:55.805Z"
+    },
+    {
+      "id": "qnotif-1793793475805-00ai",
+      "idempotencyKey": "ord-confirm-sms-ord-1793793475771",
+      "event": "ORDER_CONFIRMED",
+      "channel": "SMS",
+      "recipient": "9886099991",
+      "recipientRole": "CUSTOMER",
+      "title": "Order Confirmed",
+      "message": "Namaskara! Order #AGM-2026-1063 for ₹2,035 confirmed. Routing via Dharwad Rural Fulfillment Hub.",
+      "status": "SENT",
+      "attempts": 1,
+      "maxRetries": 3,
+      "scheduledAt": "2026-11-04T11:57:55.805Z",
+      "sentAt": "2026-11-04T11:57:55.805Z"
+    },
     {
       "id": "qnotif-1789710681913-bdr5",
       "idempotencyKey": "recovery-ord-1789710681883-wh-dharwad",
@@ -9711,6 +10611,28 @@
   ],
   "customerEquipments": [
     {
+      "id": "eq-1793793475825",
+      "serialNumber": "TST-EQ-5824",
+      "modelName": "AgriPro 7HP Power Weeder",
+      "category": "Power Weeder",
+      "brand": "AgriPro",
+      "engineMotorNumber": "ENG-2025-4412",
+      "powerType": "4-Stroke Petrol",
+      "purchaseDate": "2026-11-04",
+      "purchaseDealerId": "dlr-01",
+      "purchaseDealerName": "Patil Kisan Seva Kendra",
+      "warrantyStartDate": "2026-11-04",
+      "warrantyEndDate": "2027-11-04",
+      "warrantyStatus": "IN_WARRANTY",
+      "usageHours": 45,
+      "customerId": "cust-1793793475825",
+      "customerName": "Shivanand Patil",
+      "customerMobile": "9886099991",
+      "customerVillage": "Kelageri, Dharwad",
+      "serviceHistoryCount": 0,
+      "createdAt": "2026-11-04T11:57:55.825Z"
+    },
+    {
       "id": "eq-1789710681776",
       "serialNumber": "TST-EQ-1775",
       "modelName": "AgriPro 7HP Power Weeder",
@@ -10025,6 +10947,154 @@
     }
   ],
   "jobCards": [
+    {
+      "id": "jc-1793793475825",
+      "jobCardNumber": "JC-2026-0919",
+      "equipmentId": "eq-1793793475825",
+      "serialNumber": "TST-EQ-5824",
+      "equipmentModel": "AgriPro 7HP Power Weeder",
+      "category": "Power Weeder",
+      "brand": "AGRI MART MEGA",
+      "engineMotorNumber": "ENG-TBD",
+      "powerType": "4-Stroke Petrol",
+      "usageHours": 45,
+      "warrantyStatus": "IN_WARRANTY",
+      "customerId": "cust-1793793475825",
+      "customerName": "Shivanand Patil",
+      "customerMobile": "9886099991",
+      "customerVillage": "Kelageri, Dharwad",
+      "dealerId": "dlr-01",
+      "dealerName": "Patil Kisan Seva Kendra",
+      "serviceCentreName": "Hubballi Central Agri Workshop",
+      "assignedTechnicianId": "tech-01",
+      "assignedTechnicianName": "Mallikarjun (Senior Tech)",
+      "serviceBayNumber": "Bay 1 - Tillers",
+      "workTiming": {
+        "estimatedHours": 2,
+        "actualStartTime": "2026-11-04T11:57:55.827Z"
+      },
+      "status": "DELIVERED",
+      "stageTimestamps": {
+        "PRODUCT_RECEIVED": "2026-11-04T11:57:55.825Z",
+        "INSPECTION": "2026-11-04T11:57:55.826Z",
+        "ESTIMATE": "2026-11-04T11:57:55.826Z",
+        "CUSTOMER_APPROVAL": "2026-11-04T11:57:55.826Z",
+        "REPAIR": "2026-11-04T11:57:55.827Z",
+        "QUALITY_CHECK": "2026-11-04T11:57:55.827Z",
+        "CLEANING": "2026-11-04T11:57:55.827Z",
+        "BILLING": "2026-11-04T11:57:55.827Z",
+        "DELIVERED": "2026-11-04T11:57:55.828Z"
+      },
+      "complaints": [
+        "Recoil starter cord broken",
+        "Carburettor fuel overflow"
+      ],
+      "intakePhotos": [],
+      "accessoriesReceived": [
+        "Extra Rotary Blades",
+        "Spark Plug Spanner"
+      ],
+      "fuelOrBatteryLevel": "65% Petrol",
+      "expectedDeliveryDate": "2026-10-25",
+      "customerSignatureAtIntake": "SIG-INTAKE-SP-9991",
+      "inspectionChecklist": [
+        {
+          "item": "Engine / Motor Health",
+          "category": "Powertrain",
+          "status": "Good"
+        },
+        {
+          "item": "Drive Transmission & Belts",
+          "category": "Drive",
+          "status": "Good"
+        },
+        {
+          "item": "Cutting Assembly / Blades",
+          "category": "Cutting",
+          "status": "Repair"
+        },
+        {
+          "item": "Safety Guards & Fasteners",
+          "category": "Safety",
+          "status": "Good"
+        }
+      ],
+      "diagnosisNotes": "Recoil spring snapped; carburettor jet gummed with stale ethanol fuel.",
+      "rootCauseCategory": "Normal wear and tear + contaminated local fuel",
+      "partsRequired": [
+        {
+          "partId": "sp-001",
+          "partNumber": "SP-PLUG-NGK",
+          "name": "NGK Nickel Spark Plug BM6A",
+          "qty": 1,
+          "unitPrice": 180,
+          "gstRate": 18,
+          "total": 180,
+          "approvalStatus": "APPROVED"
+        }
+      ],
+      "labourRequired": [
+        {
+          "labourId": "lbr-001",
+          "operationCode": "LBR-GEN-01",
+          "description": "General Machine Inspection & Fuel System Flush",
+          "standardHours": 1,
+          "hourlyRate": 350,
+          "total": 350,
+          "approvalStatus": "APPROVED"
+        }
+      ],
+      "estimate": {
+        "partsSubtotal": 180,
+        "labourSubtotal": 350,
+        "estimatedTax": 95,
+        "estimatedTotal": 595,
+        "status": "APPROVED",
+        "approvalDate": "2026-11-04T11:57:55.826Z",
+        "customerSignature": "SIG-DIGITAL-SP-9991"
+      },
+      "qualityCheck": {
+        "testRunPassed": true,
+        "fuelBatteryChecked": true,
+        "bladeAlignmentChecked": true,
+        "sprayPressureChecked": true,
+        "leakageCheckPassed": true,
+        "cleaningVerified": true,
+        "inspectorNotes": "Engine tested at full throttle. RPM and compression certified.",
+        "inspectorName": "Inspector Chetan",
+        "isPassed": true,
+        "inspectorApprovalDate": "2026-11-04T11:57:55.827Z"
+      },
+      "createdAt": "2026-11-04T11:57:55.825Z",
+      "updatedAt": "2026-11-04T11:57:55.828Z",
+      "invoice": {
+        "invoiceNumber": "INV-WS-2026-523",
+        "invoiceDate": "2026-11-04T11:57:55.827Z",
+        "partsTaxable": 180,
+        "labourTaxable": 350,
+        "cgstAmount": 48,
+        "sgstAmount": 48,
+        "totalTax": 96,
+        "discountAmount": 25,
+        "finalPayable": 601,
+        "paymentMode": "UPI",
+        "paymentStatus": "PAID",
+        "transactionRef": "UPI-SBI-2026-991823"
+      },
+      "delivery": {
+        "deliveredAt": "2026-11-04T11:57:55.828Z",
+        "deliveredTo": "Shivanand Patil (In Person)",
+        "customerAckSignature": "SIG-DELIV-SP-ACK",
+        "warrantyTermsGiven": true,
+        "nextServiceDueDate": "2027-02-02",
+        "nextServiceHours": 145
+      },
+      "nextServiceReminder": {
+        "dueDate": "2027-02-02",
+        "reminderSent": false,
+        "reminderChannel": "SMS"
+      }
+    },
     {
       "id": "jc-1789710681780",
       "jobCardNumber": "JC-2026-0918",
@@ -12385,11 +13455,11 @@
       ],
       "purchasePrice": 110,
       "sellingPrice": 180,
-      "stockQuantity": 36,
+      "stockQuantity": 35,
       "reorderLevel": 15,
       "supplierName": "NGK Spark Plugs India Pvt Ltd",
       "storeRackLocation": "Rack A - Bin 02",
-      "updatedAt": "2026-09-18T05:51:21.809Z"
+      "updatedAt": "2026-11-04T11:57:55.827Z"
     },
     {
       "id": "sp-002",
@@ -12527,6 +13597,20 @@
     }
   ],
   "sparePartTransactions": [
+    {
+      "id": "sptx-1793793475827-84",
+      "partId": "sp-001",
+      "partNumber": "SP-PLUG-NGK",
+      "partName": "NGK Nickel Spark Plug BM6A",
+      "transactionType": "STOCK_OUT",
+      "quantity": 1,
+      "sourceLocation": "Rack A - Bin 02",
+      "destinationLocation": "Bay 1 - Tillers",
+      "reason": "Consumed in Job Card JC-2026-0919",
+      "referenceJobCardId": "jc-1793793475825",
+      "loggedBy": "Mallikarjun (Senior Tech)",
+      "timestamp": "2026-11-04T11:57:55.827Z"
+    },
     {
       "id": "sptx-1789710681809-138",
       "partId": "sp-001",
@@ -13235,6 +14319,20 @@
       "channel": "SMS",
       "status": "PENDING",
       "messageContent": "Namaskara Shivanand Patil, your AgriPro 7HP Power Weeder (TST-EQ-1775) is due for scheduled 100-hr maintenance on 2026-12-17. Visit Hubballi Central Agri Workshop for authorized servicing."
+    },
+    {
+      "id": "srem-1793793475828",
+      "jobCardId": "jc-1793793475825",
+      "customerId": "cust-1793793475825",
+      "customerName": "Shivanand Patil",
+      "customerMobile": "9886099991",
+      "equipmentModel": "AgriPro 7HP Power Weeder",
+      "equipmentSerial": "TST-EQ-5824",
+      "reminderType": "NEXT_SERVICE",
+      "scheduledDate": "2027-02-02",
+      "channel": "SMS",
+      "status": "PENDING",
+      "messageContent": "Namaskara Shivanand Patil, your AgriPro 7HP Power Weeder (TST-EQ-5824) is due for scheduled 100-hr maintenance on 2027-02-02. Visit Hubballi Central Agri Workshop for authorized servicing."
     }
   ],
   "dealerProfiles": [
@@ -13267,12 +14365,12 @@
       "totalEarnedCommission": 160200,
       "clawbackDeductions": 4500,
       "pendingPayoutBalance": 140700,
-      "disbursedLifetime": 605000,
+      "disbursedLifetime": 620000,
       "serviceCentreName": "Hubballi Central Agri Workshop",
       "serviceRating": 4.8,
       "activeJobCardsCount": 4,
       "createdAt": "2025-01-15T10:00:00Z",
-      "updatedAt": "2026-09-18T05:51:21.842Z"
+      "updatedAt": "2026-11-04T11:57:55.828Z"
     },
     {
       "id": "dlr-02",
@@ -13308,7 +14406,7 @@
       "serviceRating": 4.6,
       "activeJobCardsCount": 3,
       "createdAt": "2025-01-20T10:00:00Z",
-      "updatedAt": "2026-09-18T05:51:21.837Z"
+      "updatedAt": "2026-11-04T11:57:55.828Z"
     },
     {
       "id": "dlr-03",
@@ -13344,7 +14442,7 @@
       "serviceRating": 4.7,
       "activeJobCardsCount": 2,
       "createdAt": "2025-02-01T10:00:00Z",
-      "updatedAt": "2026-09-18T05:51:21.837Z"
+      "updatedAt": "2026-11-04T11:57:55.828Z"
     },
     {
       "id": "dlr-04",
@@ -13380,7 +14478,7 @@
       "serviceRating": 4.5,
       "activeJobCardsCount": 1,
       "createdAt": "2025-02-15T10:00:00Z",
-      "updatedAt": "2026-09-18T05:51:21.837Z"
+      "updatedAt": "2026-11-04T11:57:55.828Z"
     },
     {
       "id": "dlr-05",
@@ -13416,7 +14514,7 @@
       "serviceRating": 4.4,
       "activeJobCardsCount": 0,
       "createdAt": "2025-03-01T10:00:00Z",
-      "updatedAt": "2026-09-18T05:51:21.837Z"
+      "updatedAt": "2026-11-04T11:57:55.828Z"
     }
   ],
   "commissionTargets": [
@@ -13439,7 +14537,7 @@
       "refundClawback": 4500,
       "netPayableCommission": 155700,
       "status": "OPEN",
-      "updatedAt": "2026-09-18T05:51:21.837Z"
+      "updatedAt": "2026-11-04T11:57:55.828Z"
     },
     {
       "id": "ct-002",
@@ -13460,7 +14558,7 @@
       "refundClawback": 2400,
       "netPayableCommission": 122640,
       "status": "OPEN",
-      "updatedAt": "2026-09-18T05:51:21.837Z"
+      "updatedAt": "2026-11-04T11:57:55.828Z"
     },
     {
       "id": "ct-dlr-03-2026-03",
@@ -13481,7 +14579,7 @@
       "refundClawback": 2000,
       "netPayableCommission": 81200,
       "status": "OPEN",
-      "updatedAt": "2026-09-18T05:51:21.837Z"
+      "updatedAt": "2026-11-04T11:57:55.828Z"
     },
     {
       "id": "ct-dlr-04-2026-03",
@@ -13502,7 +14600,7 @@
       "refundClawback": 900,
       "netPayableCommission": 36300,
       "status": "OPEN",
-      "updatedAt": "2026-09-18T05:51:21.837Z"
+      "updatedAt": "2026-11-04T11:57:55.828Z"
     },
     {
       "id": "ct-dlr-05-2026-03",
@@ -13523,10 +14621,35 @@
       "refundClawback": 320,
       "netPayableCommission": 12080,
       "status": "OPEN",
-      "updatedAt": "2026-09-18T05:51:21.837Z"
+      "updatedAt": "2026-11-04T11:57:55.828Z"
     }
   ],
   "payoutRecords": [
+    {
+      "id": "payout-1793793475829",
+      "voucherNumber": "VCH-PAY-2026-0051",
+      "dealerId": "dlr-01",
+      "dealerCode": "DLR-HUB-01",
+      "businessName": "Patil Kisan Seva Kendra",
+      "period": "2026-03 Mid-Month Cycle",
+      "amount": 15000,
+      "breakdown": {
+        "netSales": 1780000,
+        "baseCommission": 160200,
+        "bonusCommission": 0,
+        "clawbackDeductions": 4500,
+        "tdsDeduction": 750,
+        "netPayable": 14250
+      },
+      "status": "EXTERNALLY_SETTLED",
+      "disbursementNotice": "Voucher recorded for Treasury release. Does NOT imply bank transfer has completed. Bank transfer requires external banking authorization / NEFT-RTGS batch processing.",
+      "recordedBy": "Accounts Executive R. Vernekar",
+      "recordedAt": "2026-11-04T11:57:55.828Z",
+      "financeApprover": "Finance Controller S. Hegde",
+      "approvedAt": "2026-11-04T11:57:55.829Z",
+      "bankBatchReference": "SBI-CMS-BATCH-2026-9901",
+      "settledAt": "2026-11-04T11:57:55.829Z"
+    },
     {
       "id": "payout-1789710681842",
       "voucherNumber": "VCH-PAY-2026-0050",
@@ -13776,6 +14899,39 @@
     }
   ],
   "financeAuditLogs": [
+    {
+      "id": "faudit-1793793475829-828",
+      "entityType": "PAYOUT_VOUCHER",
+      "entityId": "payout-1793793475829",
+      "action": "SETTLE_EXTERNAL_BANK_TRANSFER",
+      "previousValue": "Status: FINANCE_APPROVED",
+      "newValue": "Status: EXTERNALLY_SETTLED (Bank Batch: SBI-CMS-BATCH-2026-9901)",
+      "performedBy": "Banking Integration Engine",
+      "reason": "Confirmed NEFT/RTGS settlement batch acknowledgment from bank portal",
+      "timestamp": "2026-11-04T11:57:55.829Z"
+    },
+    {
+      "id": "faudit-1793793475829-383",
+      "entityType": "PAYOUT_VOUCHER",
+      "entityId": "payout-1793793475829",
+      "action": "APPROVE_PAYOUT_VOUCHER",
+      "previousValue": "Status: RECORDED_FOR_DISBURSEMENT",
+      "newValue": "Status: FINANCE_APPROVED (Batch: SBI-CMS-BATCH-2026-9901)",
+      "performedBy": "Finance Controller S. Hegde",
+      "reason": "Finance Controller verification and sign-off for banking run",
+      "timestamp": "2026-11-04T11:57:55.829Z"
+    },
+    {
+      "id": "faudit-1793793475829-565",
+      "entityType": "PAYOUT_VOUCHER",
+      "entityId": "payout-1793793475829",
+      "action": "RECORD_DISBURSEMENT_VOUCHER",
+      "previousValue": "Pending Balance: ₹1,55,700",
+      "newValue": "Voucher: VCH-PAY-2026-0051, Amount: ₹15,000, Remaining Pending: ₹1,40,700",
+      "performedBy": "Accounts Executive R. Vernekar",
+      "reason": "Monthly commission voucher authorization mandate",
+      "timestamp": "2026-11-04T11:57:55.829Z"
+    },
     {
       "id": "faudit-1789710681862-343",
       "entityType": "PAYOUT_VOUCHER",
@@ -14493,7 +15649,9 @@
           "q": "How does the operator locate my farm bund?",
           "a": "Our smart GPS service locks onto your submitted GPS latitude/longitude. The tractor unit navigates directly using the driver mobile app."
         }
-      ]
+      ],
+      "image": "/images/gallery/03-tractor-soil.jpg",
+      "imageUrl": "/images/gallery/03-tractor-soil.jpg"
     },
     {
       "id": "srv-rotavator",
@@ -14535,7 +15693,9 @@
           "q": "Can rotavators chop through green manure crops (sunhemp/dhaincha)?",
           "a": "Yes, our rotavators incorporate standing green manure into the soil within 1–2 passes, speeding up microbial decomposition."
         }
-      ]
+      ],
+      "image": "/images/gallery/04-seed-sowing.jpg",
+      "imageUrl": "/images/gallery/04-seed-sowing.jpg"
     },
     {
       "id": "srv-harvesting",
@@ -14577,7 +15737,9 @@
           "q": "What is the grain loss percentage with your combine harvesters?",
           "a": "Grain loss is certified under 1.2%, significantly lower than manual handling and transport losses."
         }
-      ]
+      ],
+      "image": "/images/gallery/07-harvesting.jpg",
+      "imageUrl": "/images/gallery/07-harvesting.jpg"
     },
     {
       "id": "srv-spraying",
@@ -14619,7 +15781,9 @@
           "q": "Do you provide the chemicals or does the farmer?",
           "a": "You can provide your own inputs or order certified bio-inputs directly via Agri Mart Mega with a bundled service discount."
         }
-      ]
+      ],
+      "image": "/images/banners/hero_service_drone.jpg",
+      "imageUrl": "/images/banners/hero_service_drone.jpg"
     },
     {
       "id": "srv-cultivation",
@@ -14661,7 +15825,9 @@
           "q": "What is the minimum row spacing required?",
           "a": "Our adjustable rotary weeders can operate in row spacings as tight as 18 inches up to 5 feet."
         }
-      ]
+      ],
+      "image": "/images/gallery/08-farm-equipment.jpg",
+      "imageUrl": "/images/gallery/08-farm-equipment.jpg"
     },
     {
       "id": "srv-labour",
@@ -14703,7 +15869,9 @@
           "q": "Are workers insured and verified?",
           "a": "All labour gangs registered under Agri Mart Mega undergo KYC verification and have standard rural accident cover."
         }
-      ]
+      ],
+      "image": "/images/gallery/02-farmer-working.jpg",
+      "imageUrl": "/images/gallery/02-farmer-working.jpg"
     },
     {
       "id": "srv-soil-testing",
@@ -14745,7 +15913,9 @@
           "q": "How does this save fertilizer costs?",
           "a": "Most farmers over-apply DAP and urea by 35%. The Soil Health Card tells you exactly what nutrients your field already holds."
         }
-      ]
+      ],
+      "image": "/images/gallery/05-irrigation.jpg",
+      "imageUrl": "/images/gallery/05-irrigation.jpg"
     },
     {
       "id": "srv-consultation",
@@ -14787,7 +15957,9 @@
           "q": "Which crops do your experts specialize in?",
           "a": "We specialize in Karnataka agro-climatic crops: Sugarcane, Byadgi Chilli, Cotton, Arecanut, Maize, Paddy, and Horticulture vegetables."
         }
-      ]
+      ],
+      "image": "/images/gallery/01-green-fields.jpg",
+      "imageUrl": "/images/gallery/01-green-fields.jpg"
     },
     {
       "id": "srv-operators",
@@ -14829,7 +16001,9 @@
           "q": "What if equipment gets damaged during operation?",
           "a": "Our operators are professionally certified and follow standardized RPM and gear parameters to prevent implement wear and tear."
         }
-      ]
+      ],
+      "image": "/images/gallery/09-vegetable-cultivation.jpg",
+      "imageUrl": "/images/gallery/09-vegetable-cultivation.jpg"
     },
     {
       "id": "srv-custom-agri",
@@ -14871,7 +16045,10 @@
           "q": "Is the solar electric fence safe for livestock and humans?",
           "a": "Yes, it delivers short 0.1-second pulsating non-lethal shocks complying with BIS standards that deter animals without harm."
         }
-      ]
+      ],
+      "image": "/images/banners/hero_rental.jpg",
+      "imageUrl": "/images/banners/hero_rental.jpg"
     }
-  ]
+  ],
+  "popForms": []
 }

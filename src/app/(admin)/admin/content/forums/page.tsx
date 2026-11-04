@@ -194,7 +194,7 @@ export default function ForumsPage() {
             </span>
             <button
               type="button"
-              onClick={() => {}}
+              onClick={() => setForumGroups([...initialForumGroups])}
               className="p-1 hover:bg-slate-100 rounded text-slate-500 hover:text-slate-800 transition"
               title="Refresh"
             >

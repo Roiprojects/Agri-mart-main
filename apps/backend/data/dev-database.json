@@ -4274,7 +4274,9 @@
           "q": "How does the operator locate my farm bund?",
           "a": "Our smart GPS service locks onto your submitted GPS latitude/longitude. The tractor unit navigates directly using the driver mobile app."
         }
-      ]
+      ],
+      "image": "/images/gallery/03-tractor-soil.jpg",
+      "imageUrl": "/images/gallery/03-tractor-soil.jpg"
     },
     {
       "id": "srv-rotavator",
@@ -4316,7 +4318,9 @@
           "q": "Can rotavators chop through green manure crops (sunhemp/dhaincha)?",
           "a": "Yes, our rotavators incorporate standing green manure into the soil within 1–2 passes, speeding up microbial decomposition."
         }
-      ]
+      ],
+      "image": "/images/gallery/04-seed-sowing.jpg",
+      "imageUrl": "/images/gallery/04-seed-sowing.jpg"
     },
     {
       "id": "srv-harvesting",
@@ -4358,7 +4362,9 @@
           "q": "What is the grain loss percentage with your combine harvesters?",
           "a": "Grain loss is certified under 1.2%, significantly lower than manual handling and transport losses."
         }
-      ]
+      ],
+      "image": "/images/gallery/07-harvesting.jpg",
+      "imageUrl": "/images/gallery/07-harvesting.jpg"
     },
     {
       "id": "srv-spraying",
@@ -4400,7 +4406,9 @@
           "q": "Do you provide the chemicals or does the farmer?",
           "a": "You can provide your own inputs or order certified bio-inputs directly via Agri Mart Mega with a bundled service discount."
         }
-      ]
+      ],
+      "image": "/images/banners/hero_service_drone.jpg",
+      "imageUrl": "/images/banners/hero_service_drone.jpg"
     },
     {
       "id": "srv-cultivation",
@@ -4442,7 +4450,9 @@
           "q": "What is the minimum row spacing required?",
           "a": "Our adjustable rotary weeders can operate in row spacings as tight as 18 inches up to 5 feet."
         }
-      ]
+      ],
+      "image": "/images/gallery/08-farm-equipment.jpg",
+      "imageUrl": "/images/gallery/08-farm-equipment.jpg"
     },
     {
       "id": "srv-labour",
@@ -4484,7 +4494,9 @@
           "q": "Are workers insured and verified?",
           "a": "All labour gangs registered under Agri Mart Mega undergo KYC verification and have standard rural accident cover."
         }
-      ]
+      ],
+      "image": "/images/gallery/02-farmer-working.jpg",
+      "imageUrl": "/images/gallery/02-farmer-working.jpg"
     },
     {
       "id": "srv-soil-testing",
@@ -4526,7 +4538,9 @@
           "q": "How does this save fertilizer costs?",
           "a": "Most farmers over-apply DAP and urea by 35%. The Soil Health Card tells you exactly what nutrients your field already holds."
         }
-      ]
+      ],
+      "image": "/images/gallery/05-irrigation.jpg",
+      "imageUrl": "/images/gallery/05-irrigation.jpg"
     },
     {
       "id": "srv-consultation",
@@ -4568,7 +4582,9 @@
           "q": "Which crops do your experts specialize in?",
           "a": "We specialize in Karnataka agro-climatic crops: Sugarcane, Byadgi Chilli, Cotton, Arecanut, Maize, Paddy, and Horticulture vegetables."
         }
-      ]
+      ],
+      "image": "/images/gallery/01-green-fields.jpg",
+      "imageUrl": "/images/gallery/01-green-fields.jpg"
     },
     {
       "id": "srv-operators",
@@ -4610,7 +4626,9 @@
           "q": "What if equipment gets damaged during operation?",
           "a": "Our operators are professionally certified and follow standardized RPM and gear parameters to prevent implement wear and tear."
         }
-      ]
+      ],
+      "image": "/images/gallery/09-vegetable-cultivation.jpg",
+      "imageUrl": "/images/gallery/09-vegetable-cultivation.jpg"
     },
     {
       "id": "srv-custom-agri",
@@ -4652,7 +4670,9 @@
           "q": "Is the solar electric fence safe for livestock and humans?",
           "a": "Yes, it delivers short 0.1-second pulsating non-lethal shocks complying with BIS standards that deter animals without harm."
         }
-      ]
+      ],
+      "image": "/images/banners/hero_rental.jpg",
+      "imageUrl": "/images/banners/hero_rental.jpg"
     }
   ]
 }
