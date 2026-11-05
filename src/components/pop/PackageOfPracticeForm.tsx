@@ -15,6 +15,7 @@ import {
   RotateCcw,
   Lock,
   ArrowRight,
+  ArrowLeft,
   ShieldCheck,
   Target,
   BarChart3,
@@ -2755,8 +2756,11 @@ export default function PackageOfPracticeForm() {
                 <Sprout className="w-6 h-6" />
               </div>
               <div>
-                <div className="text-sm sm:text-base font-black uppercase tracking-wider">
-                  2. Farmer Lifecycle
+                <div className="text-sm sm:text-base font-black uppercase tracking-wider flex items-center gap-2">
+                  <span>2. Farmer Lifecycle</span>
+                  <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-950 text-amber-300 border border-amber-400/30">
+                    View Only
+                  </span>
                 </div>
                 <div
                   className={`text-[11px] font-semibold ${
@@ -2774,7 +2778,7 @@ export default function PackageOfPracticeForm() {
                   : 'bg-white/10 text-amber-200'
               }`}
             >
-              {activeTab === 'lifecycle' ? 'Active Tab' : '6 Modules'}
+              View Only
             </span>
           </button>
         </div>
@@ -5082,15 +5086,18 @@ export default function PackageOfPracticeForm() {
             {/* Colorful Top Header Banner */}
             <div className="bg-gradient-to-r from-emerald-950 via-teal-900 to-indigo-950 text-white px-6 py-6 text-center border-b-2 border-emerald-700">
               <div className="inline-flex items-center gap-2 bg-amber-400 text-emerald-950 text-[11px] font-black px-3.5 py-1 rounded-full uppercase tracking-wider mb-2 shadow-xs">
-                <Sprout className="w-3.5 h-3.5" />
-                Complete Farmer Lifecycle & Advisory Suite
+                <Eye className="w-3.5 h-3.5" />
+                Farmer Lifecycle — View-Only Mode
               </div>
               <h2 className="text-xl sm:text-2xl font-black tracking-wider uppercase text-white">
-                2. Additional Features to Build into the Farmer Profile App
+                2. Additional Features to Build into the Farmer Profile App (View Only)
               </h2>
               <p className="text-xs text-emerald-100 font-medium mt-1">
-                FARMER LIFECYCLE — Visit & Advisory, Pest & Disease Tracking, Irrigation & Weather Alerts, Soil Health, Harvest & Market, and Farmer Communication
+                FARMER LIFECYCLE — Visit & Advisory, Farmer Experience, Pest & Disease Tracking, Irrigation & Weather Alerts, Soil Health, Harvest & Market, and Farmer Communication
               </p>
+              <div className="mt-3 inline-block bg-emerald-900/90 text-amber-300 text-xs font-semibold px-4 py-1.5 rounded-xl border border-amber-400/40">
+                🔒 <strong>View-Only Notice:</strong> Lifecycle records and agronomist advisories are view-only on the frontend and are managed / editable exclusively in the Backend Procurement & Agronomy Portal.
+              </div>
             </div>
 
             <div className="p-5 sm:p-8 space-y-8">
@@ -5102,30 +5109,27 @@ export default function PackageOfPracticeForm() {
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-12">
                   <div className="md:col-span-2 bg-emerald-100/80 text-emerald-950 p-3 font-bold text-xs flex items-center border-b md:border-b-0 md:border-r border-emerald-300">
-                    Farmer Name <span className="text-red-600 ml-1">*</span>
+                    Farmer Name
                   </div>
                   <div className="md:col-span-4 p-2 border-b md:border-b-0 md:border-r border-emerald-300 bg-white">
                     <input
                       type="text"
                       name="name"
-                      value={formData.name}
-                      onChange={handleInputChange}
-                      placeholder="Enter Farmer Full Name"
-                      className="w-full px-3 py-2 text-sm font-semibold text-black bg-white border border-emerald-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                      readOnly
+                      value={formData.name || '—'}
+                      className="w-full px-3 py-2 text-sm font-semibold text-slate-800 bg-slate-50 border border-slate-300 rounded-lg cursor-default select-none"
                     />
                   </div>
                   <div className="md:col-span-2 bg-emerald-100/80 text-emerald-950 p-3 font-bold text-xs flex items-center border-b md:border-b-0 md:border-r border-emerald-300">
-                    Mobile Number <span className="text-red-600 ml-1">*</span>
+                    Mobile Number
                   </div>
                   <div className="md:col-span-4 p-2 bg-white">
                     <input
                       type="tel"
                       name="mobileNumber"
-                      value={formData.mobileNumber}
-                      onChange={handleInputChange}
-                      placeholder="10-digit Mobile Number"
-                      maxLength={10}
-                      className="w-full px-3 py-2 text-sm font-semibold text-black bg-white border border-emerald-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                      readOnly
+                      value={formData.mobileNumber || '—'}
+                      className="w-full px-3 py-2 text-sm font-semibold text-slate-800 bg-slate-50 border border-slate-300 rounded-lg cursor-default select-none"
                     />
                   </div>
                 </div>
@@ -5179,7 +5183,7 @@ export default function PackageOfPracticeForm() {
                         </span>
                       </div>
                       <span className="text-[11px] font-black bg-white/20 px-3 py-1 rounded-full text-white">
-                        Click a crop button below to switch lifecycle records
+                        Click a crop button below to switch lifecycle records (View Only)
                       </span>
                     </div>
 
@@ -5315,7 +5319,7 @@ export default function PackageOfPracticeForm() {
                     </p>
                   </div>
                   <span className="text-[10px] font-black uppercase tracking-wider bg-white/15 px-3 py-1 rounded-full text-amber-300 shrink-0 self-start sm:self-center">
-                    Field Advisory
+                    Field Advisory (View Only)
                   </span>
                 </div>
 
@@ -5327,11 +5331,10 @@ export default function PackageOfPracticeForm() {
                     </div>
                     <div className="md:col-span-4 p-2 border-b md:border-b-0 md:border-r border-emerald-200 bg-white">
                       <input
-                        type="date"
-                        name="visitDate"
-                        value={formData.visitDate}
-                        onChange={handleInputChange}
-                        className="w-full px-3 py-2 text-sm font-semibold text-black bg-white border border-emerald-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                        type="text"
+                        readOnly
+                        value={formData.visitDate || '—'}
+                        className="w-full px-3 py-2 text-sm font-semibold text-slate-800 bg-slate-50 border border-emerald-300/80 rounded-lg cursor-default"
                       />
                     </div>
                     <div className="md:col-span-2 bg-emerald-50/90 text-emerald-950 p-3 font-bold text-xs flex items-center border-b md:border-b-0 md:border-r border-emerald-200">
@@ -5340,86 +5343,22 @@ export default function PackageOfPracticeForm() {
                     <div className="md:col-span-4 p-2 bg-white">
                       <input
                         type="text"
-                        name="advisorName"
-                        value={formData.advisorName}
-                        onChange={handleInputChange}
-                        placeholder="Enter Agronomist / Advisor Name"
-                        className="w-full px-3 py-2 text-sm font-semibold text-black bg-white border border-emerald-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                        readOnly
+                        value={formData.advisorName || '—'}
+                        className="w-full px-3 py-2 text-sm font-semibold text-slate-800 bg-slate-50 border border-emerald-300/80 rounded-lg cursor-default"
                       />
                     </div>
                   </div>
 
-                  {/* Row above Crop Observations: Crop Stage Dropdown */}
+                  {/* Row above Crop Observations: Crop Stage Dropdown (View Only) */}
                   <div className="grid grid-cols-1 md:grid-cols-12 border-b border-emerald-200">
                     <div className="md:col-span-2 bg-emerald-50/90 text-emerald-950 p-3 font-bold text-xs flex items-center border-b md:border-b-0 md:border-r border-emerald-200">
                       Crop Stage
                     </div>
-                    <div className="md:col-span-10 p-2 bg-white relative">
-                      <button
-                        type="button"
-                        onClick={() => setVisitCropStageDropdownOpen((prev) => !prev)}
-                        className="w-full bg-white px-3 py-2 text-sm font-semibold text-left text-black border border-emerald-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 rounded-lg flex items-center justify-between gap-2 cursor-pointer"
-                      >
-                        <span className={formData.visitCropStage ? 'text-black font-semibold' : 'text-neutral-400 font-normal'}>
-                          {formData.visitCropStage || '-- Select or Enter Crop Stage --'}
-                        </span>
-                        <span className="text-emerald-700 text-xs font-black">
-                          {visitCropStageDropdownOpen ? '▲' : '▼'}
-                        </span>
-                      </button>
-
-                      {visitCropStageDropdownOpen && (
-                        <div className="absolute left-2 right-2 top-full mt-1 z-50 bg-white border-2 border-emerald-600 rounded-xl shadow-2xl overflow-hidden">
-                          <div className="max-h-60 overflow-y-auto divide-y divide-emerald-100">
-                            {/* 1st Row at the Top of the Column: "Other Stage" + Text Box next to it */}
-                            <div className="w-full px-3.5 py-2 bg-white hover:bg-emerald-50/50 flex items-center gap-2.5">
-                              <span className="text-xs font-bold text-black shrink-0">
-                                Other Stage
-                              </span>
-                              <input
-                                type="text"
-                                value={newVisitCropStageInput}
-                                onChange={(e) => {
-                                  const val = e.target.value;
-                                  setNewVisitCropStageInput(val);
-                                  updateLifecycleFields({ visitCropStage: val });
-                                }}
-                                onKeyDown={(e) => {
-                                  if (e.key === 'Enter') {
-                                    e.preventDefault();
-                                    setVisitCropStageDropdownOpen(false);
-                                  }
-                                }}
-                                placeholder="Enter the crop stage"
-                                className="flex-1 bg-white px-2.5 py-1 text-xs font-semibold text-black placeholder:text-neutral-400 border border-emerald-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                              />
-                            </div>
-
-                            {/* All 23 Crop Stage Options List */}
-                            {BASE_CROP_STAGES.map((stageOption) => {
-                              const isSelected = formData.visitCropStage === stageOption;
-                              return (
-                                <button
-                                  key={stageOption}
-                                  type="button"
-                                  onClick={() => {
-                                    setNewVisitCropStageInput('');
-                                    updateLifecycleFields({ visitCropStage: stageOption });
-                                    setVisitCropStageDropdownOpen(false);
-                                  }}
-                                  className={`w-full px-3.5 py-2 text-left text-xs font-semibold flex items-center justify-between transition cursor-pointer ${
-                                    isSelected
-                                      ? 'bg-emerald-600 text-white font-bold'
-                                      : 'bg-white hover:bg-emerald-50 text-black'
-                                  }`}
-                                >
-                                  <span>{stageOption}</span>
-                                </button>
-                              );
-                            })}
-                          </div>
-                        </div>
-                      )}
+                    <div className="md:col-span-10 p-2 bg-white">
+                      <div className="w-full px-3 py-2 text-sm font-semibold text-slate-800 bg-slate-50 border border-emerald-300/80 rounded-lg cursor-default">
+                        {formData.visitCropStage || '—'}
+                      </div>
                     </div>
                   </div>
 
@@ -5430,12 +5369,10 @@ export default function PackageOfPracticeForm() {
                     </div>
                     <div className="md:col-span-4 p-2 border-b md:border-b-0 md:border-r border-emerald-200 bg-white">
                       <textarea
-                        name="cropObservations"
-                        value={formData.cropObservations}
-                        onChange={handleInputChange}
+                        readOnly
                         rows={2}
-                        placeholder="Record field and crop growth observations"
-                        className="w-full px-3 py-2 text-sm font-semibold text-black bg-white border border-emerald-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                        value={formData.cropObservations || '—'}
+                        className="w-full px-3 py-2 text-sm font-semibold text-slate-800 bg-slate-50 border border-emerald-300/80 rounded-lg cursor-default resize-none"
                       />
                     </div>
                     <div className="md:col-span-2 bg-emerald-50/90 text-emerald-950 p-3 font-bold text-xs flex items-center border-b md:border-b-0 md:border-r border-emerald-200">
@@ -5443,87 +5380,23 @@ export default function PackageOfPracticeForm() {
                     </div>
                     <div className="md:col-span-4 p-2 bg-white">
                       <textarea
-                        name="visitRecommendations"
-                        value={formData.visitRecommendations}
-                        onChange={handleInputChange}
+                        readOnly
                         rows={2}
-                        placeholder="Enter advisor agronomic recommendations"
-                        className="w-full px-3 py-2 text-sm font-semibold text-black bg-white border border-emerald-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                        value={formData.visitRecommendations || '—'}
+                        className="w-full px-3 py-2 text-sm font-semibold text-emerald-950 bg-slate-50 border border-emerald-300/80 rounded-lg cursor-default resize-none"
                       />
                     </div>
                   </div>
 
-                  {/* Row after Recommendations: Application Type Dropdown */}
+                  {/* Row after Recommendations: Application Type (View Only) */}
                   <div className="grid grid-cols-1 md:grid-cols-12 border-b border-emerald-200">
                     <div className="md:col-span-2 bg-emerald-50/90 text-emerald-950 p-3 font-bold text-xs flex items-center border-b md:border-b-0 md:border-r border-emerald-200">
                       Application Type
                     </div>
-                    <div className="md:col-span-10 p-2 bg-white relative">
-                      <button
-                        type="button"
-                        onClick={() => setVisitAppTypeDropdownOpen((prev) => !prev)}
-                        className="w-full bg-white px-3 py-2 text-sm font-semibold text-left text-black border border-emerald-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 rounded-lg flex items-center justify-between gap-2 cursor-pointer"
-                      >
-                        <span className={formData.visitApplicationType ? 'text-black font-semibold' : 'text-neutral-400 font-normal'}>
-                          {formData.visitApplicationType || '-- Select or Enter Application Type --'}
-                        </span>
-                        <span className="text-emerald-700 text-xs font-black">
-                          {visitAppTypeDropdownOpen ? '▲' : '▼'}
-                        </span>
-                      </button>
-
-                      {visitAppTypeDropdownOpen && (
-                        <div className="absolute left-2 right-2 top-full mt-1 z-50 bg-white border-2 border-emerald-600 rounded-xl shadow-2xl overflow-hidden">
-                          <div className="max-h-60 overflow-y-auto divide-y divide-emerald-100">
-                            {/* 1st Row at the Top of the Column: "Other Application Type" + Text Box next to it */}
-                            <div className="w-full px-3.5 py-2 bg-white hover:bg-emerald-50/50 flex items-center gap-2.5">
-                              <span className="text-xs font-bold text-black shrink-0">
-                                Other Application Type
-                              </span>
-                              <input
-                                type="text"
-                                value={newVisitAppTypeInput}
-                                onChange={(e) => {
-                                  const val = e.target.value;
-                                  setNewVisitAppTypeInput(val);
-                                  updateLifecycleFields({ visitApplicationType: val });
-                                }}
-                                onKeyDown={(e) => {
-                                  if (e.key === 'Enter') {
-                                    e.preventDefault();
-                                    setVisitAppTypeDropdownOpen(false);
-                                  }
-                                }}
-                                placeholder="Enter the application type"
-                                className="flex-1 bg-white px-2.5 py-1 text-xs font-semibold text-black placeholder:text-neutral-400 border border-emerald-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                              />
-                            </div>
-
-                            {/* Application Type Options List */}
-                            {BASE_APPLICATION_TYPES.map((appOption) => {
-                              const isSelected = formData.visitApplicationType === appOption;
-                              return (
-                                <button
-                                  key={appOption}
-                                  type="button"
-                                  onClick={() => {
-                                    setNewVisitAppTypeInput('');
-                                    updateLifecycleFields({ visitApplicationType: appOption });
-                                    setVisitAppTypeDropdownOpen(false);
-                                  }}
-                                  className={`w-full px-3.5 py-2 text-left text-xs font-semibold flex items-center justify-between transition cursor-pointer ${
-                                    isSelected
-                                      ? 'bg-emerald-600 text-white font-bold'
-                                      : 'bg-white hover:bg-emerald-50 text-black'
-                                  }`}
-                                >
-                                  <span>{appOption}</span>
-                                </button>
-                              );
-                            })}
-                          </div>
-                        </div>
-                      )}
+                    <div className="md:col-span-10 p-2 bg-white">
+                      <div className="w-full px-3 py-2 text-sm font-semibold text-slate-800 bg-slate-50 border border-emerald-300/80 rounded-lg cursor-default">
+                        {formData.visitApplicationType || '—'}
+                      </div>
                     </div>
                   </div>
 
@@ -5535,11 +5408,9 @@ export default function PackageOfPracticeForm() {
                     <div className="md:col-span-3 p-2 border-b md:border-b-0 md:border-r border-emerald-200 bg-white">
                       <input
                         type="text"
-                        name="farmerFeedback"
-                        value={formData.farmerFeedback}
-                        onChange={handleInputChange}
-                        placeholder="Farmer's response / feedback"
-                        className="w-full px-3 py-2 text-sm font-semibold text-black bg-white border border-emerald-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                        readOnly
+                        value={formData.farmerFeedback || '—'}
+                        className="w-full px-3 py-2 text-sm font-semibold text-slate-800 bg-slate-50 border border-emerald-300/80 rounded-lg cursor-default"
                       />
                     </div>
                     <div className="md:col-span-2 bg-emerald-50/90 text-emerald-950 p-3 font-bold text-xs flex items-center border-b md:border-b-0 md:border-r border-emerald-200">
@@ -5554,57 +5425,27 @@ export default function PackageOfPracticeForm() {
                         const count = photoList.length;
 
                         return (
-                          <div className="relative flex items-center w-full">
-                            <button
-                              type="button"
-                              onClick={() =>
-                                handleOpenCameraModal(
-                                  'farmer-visit-photographs',
-                                  'Farmer Visit Photographs',
-                                  'visitPhotographs'
-                                )
-                              }
-                              className="absolute left-2.5 z-10 p-1 text-emerald-700 hover:text-emerald-950 hover:bg-emerald-100 rounded-md transition-all cursor-pointer flex items-center justify-center group"
-                              title="Open Field Camera to capture photograph (Up to 5 images per crop)"
-                            >
-                              <Camera className="w-4 h-4 transition-transform group-hover:scale-110" />
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() =>
-                                handleOpenCameraModal(
-                                  'farmer-visit-photographs',
-                                  'Farmer Visit Photographs',
-                                  'visitPhotographs'
-                                )
-                              }
-                              className="w-full text-left pl-9 pr-20 py-2 text-sm font-bold bg-white border border-emerald-300 rounded-lg hover:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all flex items-center justify-between cursor-pointer shadow-sm"
-                              title="Click to view or capture photos"
-                            >
-                              <span className={count > 0 ? "text-emerald-950" : "text-slate-400 font-medium"}>
-                                {count === 0 ? "0 / 5 Photos" : `${count} / 5 Photos Captured`}
-                              </span>
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() =>
-                                handleOpenCameraModal(
-                                  'farmer-visit-photographs',
-                                  'Farmer Visit Photographs',
-                                  'visitPhotographs'
-                                )
-                              }
-                              className="absolute right-2 z-10 px-2 py-0.5 rounded-md text-xs font-black bg-emerald-100 hover:bg-emerald-200 text-emerald-800 flex items-center gap-1 cursor-pointer transition-colors"
-                              title="View captured photos"
-                            >
-                              <Eye className="w-3.5 h-3.5" />
-                              <span>{count}/5</span>
-                            </button>
-                            <input
-                              type="hidden"
-                              name="visitPhotographs"
-                              value={formData.visitPhotographs || ''}
-                            />
+                          <div className="w-full px-3 py-2 text-sm font-semibold text-slate-800 bg-slate-50 border border-emerald-300/80 rounded-lg flex items-center justify-between">
+                            <span className={count > 0 ? "text-emerald-950 font-bold text-xs" : "text-slate-400 font-medium text-xs"}>
+                              {count === 0 ? "0 Photos" : `${count} Photo(s)`}
+                            </span>
+                            {count > 0 && (
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  handleOpenCameraModal(
+                                    'farmer-visit-photographs',
+                                    'Farmer Visit Photographs',
+                                    'visitPhotographs'
+                                  )
+                                }
+                                className="px-2 py-0.5 rounded-md text-[11px] font-black bg-emerald-100 hover:bg-emerald-200 text-emerald-800 flex items-center gap-1 cursor-pointer transition-colors"
+                                title="View captured photos"
+                              >
+                                <Eye className="w-3 h-3" />
+                                <span>View</span>
+                              </button>
+                            )}
                           </div>
                         );
                       })()}
@@ -5614,18 +5455,16 @@ export default function PackageOfPracticeForm() {
                     </div>
                     <div className="md:col-span-2 p-2 bg-white">
                       <input
-                        type="date"
-                        name="nextFollowUpDate"
-                        value={formData.nextFollowUpDate}
-                        onChange={handleInputChange}
-                        className="w-full px-3 py-2 text-sm font-semibold text-black bg-white border border-emerald-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                        type="text"
+                        readOnly
+                        value={formData.nextFollowUpDate || '—'}
+                        className="w-full px-3 py-2 text-sm font-semibold text-slate-800 bg-slate-50 border border-emerald-300/80 rounded-lg cursor-default"
                       />
                     </div>
                   </div>
                 </div>
               </div>
 
-              {/* ===================================================== */}
               {/* 2. Practice by Farmers by His Experience (Amber Theme)*/}
               {/* ===================================================== */}
               <div className="rounded-2xl border-2 border-amber-500 shadow-sm overflow-hidden">
@@ -5642,7 +5481,7 @@ export default function PackageOfPracticeForm() {
                     </p>
                   </div>
                   <span className="text-[10px] font-black uppercase tracking-wider bg-white/15 px-3 py-1 rounded-full text-white shrink-0 self-start sm:self-center">
-                    Farmer Experience &amp; Indigenous Practices
+                    Farmer Experience (View Only)
                   </span>
                 </div>
 
@@ -5652,75 +5491,16 @@ export default function PackageOfPracticeForm() {
                     <div className="md:col-span-3 bg-amber-50/90 text-amber-950 p-3 font-bold text-xs flex items-center border-b md:border-b-0 md:border-r border-amber-200">
                       Farmer Practice / Activity
                     </div>
-                    <div className="md:col-span-6 p-2 border-b md:border-b-0 md:border-r border-amber-200 bg-white relative">
-                      {/* Custom Dropdown Trigger Button */}
-                      <button
-                        type="button"
-                        onClick={() => setFarmerPracticeDropdownOpen((prev) => !prev)}
-                        className="w-full bg-white px-3 py-2 text-sm font-semibold text-left text-black border border-amber-300 focus:outline-none focus:ring-2 focus:ring-amber-500 rounded-lg flex items-center justify-between gap-2 cursor-pointer"
-                      >
-                        <span className={formData.farmerPracticeActivity ? 'text-black font-semibold' : 'text-neutral-400 font-normal'}>
-                          {formData.farmerPracticeActivity || '-- Select or Enter Farmer Independent Practice --'}
-                        </span>
-                        <span className="text-amber-700 text-xs font-black">
-                          {farmerPracticeDropdownOpen ? '▲' : '▼'}
-                        </span>
-                      </button>
-
-                      {/* Dropdown Menu */}
-                      {farmerPracticeDropdownOpen && (
-                        <div className="absolute left-2 right-2 top-full mt-1 z-50 bg-white border-2 border-amber-500 rounded-xl shadow-2xl overflow-hidden">
-                          <div className="max-h-60 overflow-y-auto divide-y divide-amber-100">
-                            {/* 1st Row: Other / Custom Option */}
-                            <div className="w-full px-3.5 py-2 bg-white hover:bg-amber-50/50 flex items-center gap-2.5">
-                              <span className="text-xs font-bold text-black shrink-0">
-                                Other Practice
-                              </span>
-                              <input
-                                type="text"
-                                value={newFarmerPracticeInput}
-                                onChange={(e) => {
-                                  const val = e.target.value;
-                                  setNewFarmerPracticeInput(val);
-                                  updateLifecycleFields({ farmerPracticeActivity: val });
-                                }}
-                                onKeyDown={(e) => {
-                                  if (e.key === 'Enter') {
-                                    e.preventDefault();
-                                    setFarmerPracticeDropdownOpen(false);
-                                  }
-                                }}
-                                placeholder="Type custom practice or traditional action..."
-                                className="flex-1 bg-white px-2.5 py-1 text-xs font-semibold text-black placeholder:text-neutral-400 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
-                              />
-                            </div>
-
-                            {/* Options List */}
-                            {BASE_FARMER_EXPERIENCE_PRACTICES.map((practiceOption) => {
-                              const isSelected = formData.farmerPracticeActivity === practiceOption;
-                              return (
-                                <button
-                                  key={practiceOption}
-                                  type="button"
-                                  onClick={() => {
-                                    setNewFarmerPracticeInput('');
-                                    updateLifecycleFields({ farmerPracticeActivity: practiceOption });
-                                    setFarmerPracticeDropdownOpen(false);
-                                  }}
-                                  className={`w-full px-3.5 py-2 text-left text-xs font-semibold flex items-center justify-between transition cursor-pointer ${
-                                    isSelected
-                                      ? 'bg-amber-600 text-white font-bold'
-                                      : 'bg-white hover:bg-amber-50 text-black'
-                                  }`}
-                                >
-                                  <span>{practiceOption}</span>
-                                  {isSelected && <Check className="w-3.5 h-3.5 text-white" />}
-                                </button>
-                              );
-                            })}
-                          </div>
-                        </div>
-                      )}
+                    <div className="md:col-span-6 p-2 border-b md:border-b-0 md:border-r border-amber-200 bg-white">
+                      <div className="w-full px-3 py-2 text-sm font-semibold text-slate-800 bg-slate-50 border border-amber-300 rounded-lg cursor-default">
+                        {formData.farmerPracticeActivity ? (
+                          <span className="font-bold text-amber-950 bg-amber-100 px-2.5 py-0.5 rounded border border-amber-300 text-xs inline-block">
+                            {formData.farmerPracticeActivity}
+                          </span>
+                        ) : (
+                          <span className="text-slate-400 italic text-xs">No practice recorded</span>
+                        )}
+                      </div>
                     </div>
 
                     <div className="md:col-span-1 bg-amber-50/90 text-amber-950 p-3 font-bold text-xs flex items-center border-b md:border-b-0 md:border-r border-amber-200">
@@ -5728,11 +5508,10 @@ export default function PackageOfPracticeForm() {
                     </div>
                     <div className="md:col-span-2 p-2 bg-white">
                       <input
-                        type="date"
-                        name="farmerPracticeDate"
-                        value={formData.farmerPracticeDate || ''}
-                        onChange={handleInputChange}
-                        className="w-full px-3 py-2 text-sm font-semibold text-black bg-white border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
+                        type="text"
+                        readOnly
+                        value={formData.farmerPracticeDate || '—'}
+                        className="w-full px-3 py-2 text-sm font-semibold text-slate-800 bg-slate-50 border border-amber-300 rounded-lg cursor-default"
                       />
                     </div>
                   </div>
@@ -5744,19 +5523,17 @@ export default function PackageOfPracticeForm() {
                     </div>
                     <div className="md:col-span-9 p-2 bg-white">
                       <textarea
-                        name="farmerPracticeNotes"
-                        value={formData.farmerPracticeNotes || ''}
-                        onChange={handleInputChange}
+                        readOnly
                         rows={3}
-                        placeholder="Describe activities or actions independently carried out by the farmer based on their own experience, dosage, application method, observations, or rationale (without agronomist recommendation)..."
-                        className="w-full px-3 py-2 text-sm font-semibold text-black bg-white border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
+                        value={formData.farmerPracticeNotes || ''}
+                        placeholder="No independent farmer practice notes recorded yet (Editable in Backend Portal)"
+                        className="w-full px-3 py-2 text-sm font-semibold text-slate-800 bg-slate-50 border border-amber-300 rounded-lg cursor-default resize-none"
                       />
                     </div>
                   </div>
                 </div>
               </div>
 
-              {/* ===================================================== */}
               {/* 3. Pest, Disease and Crop Problem Tracking (Rose)     */}
               {/* ===================================================== */}
               <div className="rounded-2xl border-2 border-rose-600 overflow-hidden shadow-sm">
@@ -5773,7 +5550,7 @@ export default function PackageOfPracticeForm() {
                     </p>
                   </div>
                   <span className="text-[10px] font-black uppercase tracking-wider bg-white/15 px-3 py-1 rounded-full text-amber-200 shrink-0 self-start sm:self-center">
-                    Plant Protection
+                    Plant Protection (View Only)
                   </span>
                 </div>
 
@@ -5781,7 +5558,7 @@ export default function PackageOfPracticeForm() {
                   {/* Row 1: Field Photos, Symptoms & Severity */}
                   <div className="grid grid-cols-1 md:grid-cols-12 border-b border-rose-200">
                     <div className="md:col-span-2 bg-rose-50/90 text-rose-950 p-3 font-bold text-xs flex items-center border-b md:border-b-0 md:border-r border-rose-200">
-                      Upload Field Photos
+                      Field Photos
                     </div>
                     <div className="md:col-span-3 p-2 border-b md:border-b-0 md:border-r border-rose-200 bg-white">
                       {(() => {
@@ -5792,61 +5569,27 @@ export default function PackageOfPracticeForm() {
                         const count = photoList.length;
 
                         return (
-                          <div className="relative flex items-center w-full">
-                            <button
-                              type="button"
-                              onClick={() =>
-                                handleOpenCameraModal(
-                                  'pest-disease-tracking',
-                                  'Pest & Disease Field Photos',
-                                  'problemFieldPhotos'
-                                )
-                              }
-                              className="absolute left-2.5 z-10 p-1 text-rose-700 hover:text-rose-950 hover:bg-rose-100 rounded-md transition-all cursor-pointer flex items-center justify-center group"
-                              title="Open Field Camera to capture problem photo (Up to 5 images per crop)"
-                            >
-                              <Camera className="w-4 h-4 transition-transform group-hover:scale-110" />
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() =>
-                                handleOpenCameraModal(
-                                  'pest-disease-tracking',
-                                  'Pest & Disease Field Photos',
-                                  'problemFieldPhotos'
-                                )
-                              }
-                              className="w-full text-left pl-9 pr-20 py-2 text-sm font-bold bg-white border border-rose-300 rounded-lg hover:border-rose-500 focus:outline-none focus:ring-2 focus:ring-rose-500 transition-all flex items-center justify-between cursor-pointer shadow-sm"
-                              title="Click to view or capture problem photos"
-                            >
-                              <span className={count > 0 ? "text-rose-950" : "text-slate-400 font-medium"}>
-                                {count === 0
-                                  ? "0 / 5 Problem Photos"
-                                  : count === 1
-                                  ? "1 / 5 Problem Photo Captured"
-                                  : `${count} / 5 Problem Photos Captured`}
-                              </span>
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() =>
-                                handleOpenCameraModal(
-                                  'pest-disease-tracking',
-                                  'Pest & Disease Field Photos',
-                                  'problemFieldPhotos'
-                                )
-                              }
-                              className="absolute right-2 z-10 px-2 py-0.5 rounded-md text-xs font-black bg-rose-100 hover:bg-rose-200 text-rose-800 flex items-center gap-1 cursor-pointer transition-colors"
-                              title="View problem photos"
-                            >
-                              <Eye className="w-3.5 h-3.5" />
-                              <span>{count}/5</span>
-                            </button>
-                            <input
-                              type="hidden"
-                              name="problemFieldPhotos"
-                              value={formData.problemFieldPhotos || ''}
-                            />
+                          <div className="w-full px-3 py-2 text-sm font-semibold text-slate-800 bg-slate-50 border border-rose-300 rounded-lg flex items-center justify-between">
+                            <span className={count > 0 ? "text-rose-950 font-bold text-xs" : "text-slate-400 font-medium text-xs"}>
+                              {count === 0 ? "0 Photos" : `${count} Problem Photo(s)`}
+                            </span>
+                            {count > 0 && (
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  handleOpenCameraModal(
+                                    'pest-disease-tracking',
+                                    'Pest & Disease Field Photos',
+                                    'problemFieldPhotos'
+                                  )
+                                }
+                                className="px-2 py-0.5 rounded-md text-[11px] font-black bg-rose-100 hover:bg-rose-200 text-rose-800 flex items-center gap-1 cursor-pointer transition-colors"
+                                title="View problem photos"
+                              >
+                                <Eye className="w-3 h-3" />
+                                <span>View</span>
+                              </button>
+                            )}
                           </div>
                         );
                       })()}
@@ -5857,29 +5600,21 @@ export default function PackageOfPracticeForm() {
                     <div className="md:col-span-2 p-2 border-b md:border-b-0 md:border-r border-rose-200 bg-white">
                       <input
                         type="text"
-                        name="problemSymptoms"
-                        value={formData.problemSymptoms}
-                        onChange={handleInputChange}
-                        placeholder="Observed symptoms"
-                        className="w-full px-3 py-2 text-sm font-semibold text-black bg-white border border-rose-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500"
+                        readOnly
+                        value={formData.problemSymptoms || '—'}
+                        className="w-full px-3 py-2 text-sm font-semibold text-slate-800 bg-slate-50 border border-rose-300 rounded-lg cursor-default"
                       />
                     </div>
                     <div className="md:col-span-1 bg-rose-50/90 text-rose-950 p-3 font-bold text-xs flex items-center border-b md:border-b-0 md:border-r border-rose-200">
                       Severity
                     </div>
                     <div className="md:col-span-2 p-2 bg-white">
-                      <select
-                        name="problemSeverity"
-                        value={formData.problemSeverity}
-                        onChange={handleInputChange}
-                        className="w-full px-3 py-2 text-sm font-semibold text-black bg-white border border-rose-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500"
-                      >
-                        <option value="">-- Select --</option>
-                        <option value="Low">Low</option>
-                        <option value="Moderate">Moderate</option>
-                        <option value="High">High</option>
-                        <option value="Critical">Critical</option>
-                      </select>
+                      <input
+                        type="text"
+                        readOnly
+                        value={formData.problemSeverity || '—'}
+                        className="w-full px-3 py-2 text-sm font-semibold text-slate-800 bg-slate-50 border border-rose-300 rounded-lg cursor-default"
+                      />
                     </div>
                   </div>
 
@@ -5890,36 +5625,27 @@ export default function PackageOfPracticeForm() {
                     </div>
                     <div className="md:col-span-5 p-2 border-b md:border-b-0 md:border-r border-rose-200 bg-white">
                       <textarea
-                        name="problemActionsTaken"
-                        value={formData.problemActionsTaken}
-                        onChange={handleInputChange}
+                        readOnly
                         rows={2}
-                        placeholder="Document treatment, spray, or corrective actions taken"
-                        className="w-full px-3 py-2 text-sm font-semibold text-black bg-white border border-rose-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500"
+                        value={formData.problemActionsTaken || '—'}
+                        className="w-full px-3 py-2 text-sm font-semibold text-slate-800 bg-slate-50 border border-rose-300 rounded-lg cursor-default resize-none"
                       />
                     </div>
                     <div className="md:col-span-2 bg-rose-50/90 text-rose-950 p-3 font-bold text-xs flex items-center border-b md:border-b-0 md:border-r border-rose-200">
                       Problem Resolved?
                     </div>
                     <div className="md:col-span-3 p-2 bg-white flex items-center">
-                      <select
-                        name="problemResolved"
-                        value={formData.problemResolved}
-                        onChange={handleInputChange}
-                        className="w-full px-3 py-2 text-sm font-semibold text-black bg-white border border-rose-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500"
-                      >
-                        <option value="">-- Select Status --</option>
-                        <option value="Resolved">Yes - Resolved</option>
-                        <option value="In Progress">In Progress</option>
-                        <option value="Pending Follow-up">Pending Follow-up</option>
-                        <option value="Unresolved">No - Unresolved</option>
-                      </select>
+                      <input
+                        type="text"
+                        readOnly
+                        value={formData.problemResolved || '—'}
+                        className="w-full px-3 py-2 text-sm font-semibold text-slate-800 bg-slate-50 border border-rose-300 rounded-lg cursor-default"
+                      />
                     </div>
                   </div>
                 </div>
               </div>
 
-              {/* ===================================================== */}
               {/* 4. Irrigation and Weather Alerts (Sky / Blue Theme)   */}
               {/* ===================================================== */}
               <div className="rounded-2xl border-2 border-sky-600 overflow-hidden shadow-sm">
@@ -5936,7 +5662,7 @@ export default function PackageOfPracticeForm() {
                     </p>
                   </div>
                   <span className="text-[10px] font-black uppercase tracking-wider bg-white/15 px-3 py-1 rounded-full text-sky-100 shrink-0 self-start sm:self-center">
-                    Water & Climate
+                    Water & Climate (View Only)
                   </span>
                 </div>
 
@@ -5947,18 +5673,12 @@ export default function PackageOfPracticeForm() {
                       Water Availability
                     </div>
                     <div className="md:col-span-4 p-2 border-b md:border-b-0 md:border-r border-sky-200 bg-white">
-                      <select
-                        name="waterAvailability"
-                        value={formData.waterAvailability}
-                        onChange={handleInputChange}
-                        className="w-full px-3 py-2 text-sm font-semibold text-black bg-white border border-sky-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500"
-                      >
-                        <option value="">-- Select Water Availability --</option>
-                        <option value="Adequate / Sufficient">Adequate / Sufficient</option>
-                        <option value="Moderate">Moderate</option>
-                        <option value="Low / Scarcity">Low / Scarcity</option>
-                        <option value="Critical Shortage">Critical Shortage</option>
-                      </select>
+                      <input
+                        type="text"
+                        readOnly
+                        value={formData.waterAvailability || '—'}
+                        className="w-full px-3 py-2 text-sm font-semibold text-slate-800 bg-slate-50 border border-sky-300 rounded-lg cursor-default"
+                      />
                     </div>
                     <div className="md:col-span-2 bg-sky-50/90 text-sky-950 p-3 font-bold text-xs flex items-center border-b md:border-b-0 md:border-r border-sky-200">
                       Irrigation Schedules
@@ -5966,11 +5686,9 @@ export default function PackageOfPracticeForm() {
                     <div className="md:col-span-4 p-2 bg-white">
                       <input
                         type="text"
-                        name="irrigationSchedules"
-                        value={formData.irrigationSchedules}
-                        onChange={handleInputChange}
-                        placeholder="e.g., Every 4 days / Drip 2 hrs daily"
-                        className="w-full px-3 py-2 text-sm font-semibold text-black bg-white border border-sky-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500"
+                        readOnly
+                        value={formData.irrigationSchedules || '—'}
+                        className="w-full px-3 py-2 text-sm font-semibold text-slate-800 bg-slate-50 border border-sky-300 rounded-lg cursor-default"
                       />
                     </div>
                   </div>
@@ -5983,11 +5701,9 @@ export default function PackageOfPracticeForm() {
                     <div className="md:col-span-2 p-2 border-b md:border-b-0 md:border-r border-sky-200 bg-white">
                       <input
                         type="text"
-                        name="rainfallAlert"
-                        value={formData.rainfallAlert}
-                        onChange={handleInputChange}
-                        placeholder="Rainfall forecast / alert"
-                        className="w-full px-3 py-2 text-sm font-semibold text-black bg-white border border-sky-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500"
+                        readOnly
+                        value={formData.rainfallAlert || '—'}
+                        className="w-full px-3 py-2 text-sm font-semibold text-slate-800 bg-slate-50 border border-sky-300 rounded-lg cursor-default"
                       />
                     </div>
                     <div className="md:col-span-2 bg-sky-50/90 text-sky-950 p-3 font-bold text-xs flex items-center border-b md:border-b-0 md:border-r border-sky-200">
@@ -5996,11 +5712,9 @@ export default function PackageOfPracticeForm() {
                     <div className="md:col-span-2 p-2 border-b md:border-b-0 md:border-r border-sky-200 bg-white">
                       <input
                         type="text"
-                        name="heatAlert"
-                        value={formData.heatAlert}
-                        onChange={handleInputChange}
-                        placeholder="Temperature / heat alert"
-                        className="w-full px-3 py-2 text-sm font-semibold text-black bg-white border border-sky-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500"
+                        readOnly
+                        value={formData.heatAlert || '—'}
+                        className="w-full px-3 py-2 text-sm font-semibold text-slate-800 bg-slate-50 border border-sky-300 rounded-lg cursor-default"
                       />
                     </div>
                     <div className="md:col-span-2 bg-sky-50/90 text-sky-950 p-3 font-bold text-xs flex items-center border-b md:border-b-0 md:border-r border-sky-200">
@@ -6009,18 +5723,15 @@ export default function PackageOfPracticeForm() {
                     <div className="md:col-span-2 p-2 bg-white">
                       <input
                         type="text"
-                        name="weatherAlerts"
-                        value={formData.weatherAlerts}
-                        onChange={handleInputChange}
-                        placeholder="Location weather advisory"
-                        className="w-full px-3 py-2 text-sm font-semibold text-black bg-white border border-sky-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500"
+                        readOnly
+                        value={formData.weatherAlerts || '—'}
+                        className="w-full px-3 py-2 text-sm font-semibold text-slate-800 bg-slate-50 border border-sky-300 rounded-lg cursor-default"
                       />
                     </div>
                   </div>
                 </div>
               </div>
 
-              {/* ===================================================== */}
               {/* 5. Soil Health and Fertilizer Recommendations (Amber) */}
               {/* ===================================================== */}
               <div className="rounded-2xl border-2 border-amber-600 overflow-hidden shadow-sm">
@@ -6037,7 +5748,7 @@ export default function PackageOfPracticeForm() {
                     </p>
                   </div>
                   <span className="text-[10px] font-black uppercase tracking-wider bg-black/20 px-3 py-1 rounded-full text-amber-50 shrink-0 self-start sm:self-center">
-                    Soil & Nutrition
+                    Soil & Nutrition (View Only)
                   </span>
                 </div>
 
@@ -6050,11 +5761,9 @@ export default function PackageOfPracticeForm() {
                     <div className="md:col-span-4 p-2 border-b md:border-b-0 md:border-r border-amber-200 bg-white">
                       <input
                         type="text"
-                        name="soilTestReport"
-                        value={formData.soilTestReport}
-                        onChange={handleInputChange}
-                        placeholder="pH, EC, Organic Carbon, NPK status / Report ID"
-                        className="w-full px-3 py-2 text-sm font-semibold text-black bg-white border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
+                        readOnly
+                        value={formData.soilTestReport || '—'}
+                        className="w-full px-3 py-2 text-sm font-semibold text-slate-800 bg-slate-50 border border-amber-300 rounded-lg cursor-default"
                       />
                     </div>
                     <div className="md:col-span-2 bg-amber-50/90 text-amber-950 p-3 font-bold text-xs flex items-center border-b md:border-b-0 md:border-r border-amber-200">
@@ -6062,11 +5771,10 @@ export default function PackageOfPracticeForm() {
                     </div>
                     <div className="md:col-span-4 p-2 bg-white">
                       <input
-                        type="date"
-                        name="nextSoilTestDate"
-                        value={formData.nextSoilTestDate}
-                        onChange={handleInputChange}
-                        className="w-full px-3 py-2 text-sm font-semibold text-black bg-white border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
+                        type="text"
+                        readOnly
+                        value={formData.nextSoilTestDate || '—'}
+                        className="w-full px-3 py-2 text-sm font-semibold text-slate-800 bg-slate-50 border border-amber-300 rounded-lg cursor-default"
                       />
                     </div>
                   </div>
@@ -6078,12 +5786,10 @@ export default function PackageOfPracticeForm() {
                     </div>
                     <div className="md:col-span-4 p-2 border-b md:border-b-0 md:border-r border-amber-200 bg-white">
                       <textarea
-                        name="nutrientRecommendations"
-                        value={formData.nutrientRecommendations}
-                        onChange={handleInputChange}
+                        readOnly
                         rows={2}
-                        placeholder="Recommended basal & top-dressing NPK / micronutrients"
-                        className="w-full px-3 py-2 text-sm font-semibold text-black bg-white border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
+                        value={formData.nutrientRecommendations || '—'}
+                        className="w-full px-3 py-2 text-sm font-semibold text-slate-800 bg-slate-50 border border-amber-300 rounded-lg cursor-default resize-none"
                       />
                     </div>
                     <div className="md:col-span-2 bg-amber-50/90 text-amber-950 p-3 font-bold text-xs flex items-center border-b md:border-b-0 md:border-r border-amber-200">
@@ -6091,12 +5797,10 @@ export default function PackageOfPracticeForm() {
                     </div>
                     <div className="md:col-span-4 p-2 bg-white">
                       <textarea
-                        name="fertilizerHistory"
-                        value={formData.fertilizerHistory}
-                        onChange={handleInputChange}
+                        readOnly
                         rows={2}
-                        placeholder="Record dates, fertilizers applied, and quantities"
-                        className="w-full px-3 py-2 text-sm font-semibold text-black bg-white border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
+                        value={formData.fertilizerHistory || '—'}
+                        className="w-full px-3 py-2 text-sm font-semibold text-slate-800 bg-slate-50 border border-amber-300 rounded-lg cursor-default resize-none"
                       />
                     </div>
                   </div>
@@ -6199,7 +5903,7 @@ export default function PackageOfPracticeForm() {
                     </p>
                   </div>
                   <span className="text-[10px] font-black uppercase tracking-wider bg-white/15 px-3 py-1 rounded-full text-amber-200 shrink-0 self-start sm:self-center">
-                    Yield & Market Returns
+                    Yield & Market Returns (View Only)
                   </span>
                 </div>
 
@@ -6211,106 +5915,34 @@ export default function PackageOfPracticeForm() {
                     </div>
                     <div className="md:col-span-10 p-2 bg-white">
                       <input
-                        type="date"
-                        name="harvestingDate"
-                        value={formData.harvestingDate}
-                        onChange={handleInputChange}
-                        className="w-full sm:max-w-xs px-3 py-2 text-sm font-semibold text-black bg-white border border-purple-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        type="text"
+                        readOnly
+                        value={formData.harvestingDate || '—'}
+                        className="w-full sm:max-w-xs px-3 py-2 text-sm font-semibold text-slate-800 bg-slate-50 border border-purple-300 rounded-lg cursor-default"
                       />
                     </div>
                   </div>
 
-                  {/* Row 2: Harvested Quantity (with Dropdown), Selling Price (per kg) & Harvest Picking */}
+                  {/* Row 2: Harvested Quantity, Selling Price (per kg) & Harvest Picking */}
                   <div className="grid grid-cols-1 md:grid-cols-12 border-b border-purple-200">
                     <div className="md:col-span-2 bg-purple-50/90 text-purple-950 p-3 font-bold text-xs flex items-center border-b md:border-b-0 md:border-r border-purple-200">
                       Harvested Quantity
                     </div>
-                    <div className="md:col-span-2 p-2 border-b md:border-b-0 md:border-r border-purple-200 bg-white relative">
-                      {/* Custom Dropdown Trigger Button for Harvested Quantity */}
-                      <button
-                        type="button"
-                        onClick={() => setHarvestQuantityDropdownOpen((prev) => !prev)}
-                        className="w-full bg-white px-3 py-2 text-sm font-semibold text-left text-black border border-purple-300 focus:outline-none focus:ring-2 focus:ring-purple-500 rounded-lg flex items-center justify-between gap-2 cursor-pointer"
-                      >
-                        <span className={`truncate ${formData.harvestedQuantity ? 'text-black font-semibold' : 'text-neutral-400 font-normal'}`}>
-                          {formData.harvestedQuantity || '-- Select Quality / Qty --'}
-                        </span>
-                        <span className="text-purple-700 text-xs font-black shrink-0">
-                          {harvestQuantityDropdownOpen ? '▲' : '▼'}
-                        </span>
-                      </button>
-
-                      {/* Dropdown Menu with "Other" + Text Box on 1st Row & Quality Options */}
-                      {harvestQuantityDropdownOpen && (
-                        <div className="absolute left-2 right-2 top-full mt-1 z-50 bg-white border-2 border-purple-600 rounded-xl shadow-2xl overflow-hidden min-w-[260px]">
-                          <div className="max-h-60 overflow-y-auto divide-y divide-purple-100">
-                            {/* 1st Row at the Top of the Column: "Other" + Text Box next to it */}
-                            <div className="w-full px-3.5 py-2 bg-white hover:bg-purple-50/50 flex items-center gap-2.5">
-                              <span className="text-xs font-bold text-black shrink-0">
-                                Other
-                              </span>
-                              <input
-                                type="text"
-                                value={newHarvestQuantityInput}
-                                onChange={(e) => {
-                                  const val = e.target.value;
-                                  setNewHarvestQuantityInput(val);
-                                  updateLifecycleFields({ harvestedQuantity: val });
-                                }}
-                                onKeyDown={(e) => {
-                                  if (e.key === 'Enter') {
-                                    e.preventDefault();
-                                    setHarvestQuantityDropdownOpen(false);
-                                  }
-                                }}
-                                placeholder="Enter quality / quantity"
-                                className="flex-1 bg-white px-2.5 py-1 text-xs font-semibold text-black placeholder:text-neutral-400 border border-purple-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                              />
-                            </div>
-
-                            {/* Quality Options List */}
-                            {BASE_HARVEST_QUALITY_OPTIONS.map((qualityOption) => {
-                              const isSelected = formData.harvestedQuantity === qualityOption;
-                              return (
-                                <button
-                                  key={qualityOption}
-                                  type="button"
-                                  onClick={() => {
-                                    setNewHarvestQuantityInput('');
-                                    updateLifecycleFields({ harvestedQuantity: qualityOption });
-                                    setHarvestQuantityDropdownOpen(false);
-                                  }}
-                                  className={`w-full px-3.5 py-2 text-left text-xs font-semibold flex items-center justify-between transition cursor-pointer ${
-                                    isSelected
-                                      ? 'bg-purple-600 text-white font-bold'
-                                      : 'bg-white hover:bg-purple-50 text-black'
-                                  }`}
-                                >
-                                  <span>{qualityOption}</span>
-                                </button>
-                              );
-                            })}
-                          </div>
-                        </div>
-                      )}
+                    <div className="md:col-span-2 p-2 border-b md:border-b-0 md:border-r border-purple-200 bg-white">
+                      <div className="w-full px-3 py-2 text-sm font-semibold text-slate-800 bg-slate-50 border border-purple-300 rounded-lg cursor-default">
+                        {formData.harvestedQuantity || '—'}
+                      </div>
                     </div>
                     <div className="md:col-span-2 bg-purple-50/90 text-purple-950 p-3 font-bold text-xs flex items-center border-b md:border-b-0 md:border-r border-purple-200">
                       Selling Price (per kg)
                     </div>
                     <div className="md:col-span-2 p-2 border-b md:border-b-0 md:border-r border-purple-200 bg-white">
-                      <div className="relative flex items-center">
-                        <input
-                          type="text"
-                          name="sellingPrice"
-                          value={formData.sellingPrice}
-                          onChange={handleInputChange}
-                          placeholder="e.g., ₹25 / kg"
-                          className="w-full pl-3 pr-16 py-2 text-sm font-semibold text-black bg-white border border-purple-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                        />
-                        <span className="absolute right-2.5 text-[11px] font-bold text-purple-800 bg-purple-100 px-2 py-0.5 rounded-md pointer-events-none">
-                          per kg
-                        </span>
-                      </div>
+                      <input
+                        type="text"
+                        readOnly
+                        value={formData.sellingPrice || '—'}
+                        className="w-full px-3 py-2 text-sm font-semibold text-slate-800 bg-slate-50 border border-purple-300 rounded-lg cursor-default"
+                      />
                     </div>
                     <div className="md:col-span-2 bg-purple-50/90 text-purple-950 p-3 font-bold text-xs flex items-center border-b md:border-b-0 md:border-r border-purple-200">
                       Harvest Picking
@@ -6318,16 +5950,14 @@ export default function PackageOfPracticeForm() {
                     <div className="md:col-span-2 p-2 bg-white">
                       <input
                         type="text"
-                        name="harvestPicking"
-                        value={formData.harvestPicking}
-                        onChange={handleInputChange}
-                        placeholder="e.g., 1st Picking / Multiple Pickings"
-                        className="w-full px-3 py-2 text-sm font-semibold text-black bg-white border border-purple-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        readOnly
+                        value={formData.harvestPicking || '—'}
+                        className="w-full px-3 py-2 text-sm font-semibold text-slate-800 bg-slate-50 border border-purple-300 rounded-lg cursor-default"
                       />
                     </div>
                   </div>
 
-                  {/* Row 2: Market Expenses, Crop-Wise Returns & Local Market Price Information */}
+                  {/* Row 3: Market Expenses, Crop-Wise Returns & Local Market Price Information */}
                   <div className="grid grid-cols-1 md:grid-cols-12">
                     <div className="md:col-span-2 bg-purple-50/90 text-purple-950 p-3 font-bold text-xs flex items-center border-b md:border-b-0 md:border-r border-purple-200">
                       Market Expenses
@@ -6335,11 +5965,9 @@ export default function PackageOfPracticeForm() {
                     <div className="md:col-span-2 p-2 border-b md:border-b-0 md:border-r border-purple-200 bg-white">
                       <input
                         type="text"
-                        name="marketExpenses"
-                        value={formData.marketExpenses}
-                        onChange={handleInputChange}
-                        placeholder="Transport, loading, etc."
-                        className="w-full px-3 py-2 text-sm font-semibold text-black bg-white border border-purple-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        readOnly
+                        value={formData.marketExpenses || '—'}
+                        className="w-full px-3 py-2 text-sm font-semibold text-slate-800 bg-slate-50 border border-purple-300 rounded-lg cursor-default"
                       />
                     </div>
                     <div className="md:col-span-2 bg-purple-50/90 text-purple-950 p-3 font-bold text-xs flex items-center border-b md:border-b-0 md:border-r border-purple-200">
@@ -6348,11 +5976,9 @@ export default function PackageOfPracticeForm() {
                     <div className="md:col-span-2 p-2 border-b md:border-b-0 md:border-r border-purple-200 bg-white">
                       <input
                         type="text"
-                        name="cropWiseReturns"
-                        value={formData.cropWiseReturns}
-                        onChange={handleInputChange}
-                        placeholder="Net / Gross returns (₹)"
-                        className="w-full px-3 py-2 text-sm font-semibold text-black bg-white border border-purple-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        readOnly
+                        value={formData.cropWiseReturns || '—'}
+                        className="w-full px-3 py-2 text-sm font-semibold text-slate-800 bg-slate-50 border border-purple-300 rounded-lg cursor-default"
                       />
                     </div>
                     <div className="md:col-span-2 bg-purple-50/90 text-purple-950 p-3 font-bold text-xs flex items-center border-b md:border-b-0 md:border-r border-purple-200">
@@ -6361,18 +5987,15 @@ export default function PackageOfPracticeForm() {
                     <div className="md:col-span-2 p-2 bg-white">
                       <input
                         type="text"
-                        name="localMarketPriceInfo"
-                        value={formData.localMarketPriceInfo}
-                        onChange={handleInputChange}
-                        placeholder="APMC / Local Mandi rate"
-                        className="w-full px-3 py-2 text-sm font-semibold text-black bg-white border border-purple-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        readOnly
+                        value={formData.localMarketPriceInfo || '—'}
+                        className="w-full px-3 py-2 text-sm font-semibold text-slate-800 bg-slate-50 border border-purple-300 rounded-lg cursor-default"
                       />
                     </div>
                   </div>
                 </div>
               </div>
 
-              {/* ===================================================== */}
               {/* 7. Farmer Communication and Follow-ups (Teal / Cyan)  */}
               {/* ===================================================== */}
               <div className="rounded-2xl border-2 border-teal-600 overflow-hidden shadow-sm">
@@ -6389,7 +6012,7 @@ export default function PackageOfPracticeForm() {
                     </p>
                   </div>
                   <span className="text-[10px] font-black uppercase tracking-wider bg-white/15 px-3 py-1 rounded-full text-amber-200 shrink-0 self-start sm:self-center">
-                    WhatsApp & Follow-Ups
+                    WhatsApp & Follow-Ups (View Only)
                   </span>
                 </div>
 
@@ -6400,17 +6023,12 @@ export default function PackageOfPracticeForm() {
                       WhatsApp Consent
                     </div>
                     <div className="md:col-span-2 p-2 border-b md:border-b-0 md:border-r border-teal-200 bg-white">
-                      <select
-                        name="whatsappConsent"
-                        value={formData.whatsappConsent}
-                        onChange={handleInputChange}
-                        className="w-full px-3 py-2 text-sm font-semibold text-black bg-white border border-teal-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
-                      >
-                        <option value="">-- Select --</option>
-                        <option value="Yes - Opted In">Yes - Opted In</option>
-                        <option value="No - Opted Out">No - Opted Out</option>
-                        <option value="Pending">Pending</option>
-                      </select>
+                      <input
+                        type="text"
+                        readOnly
+                        value={formData.whatsappConsent || '—'}
+                        className="w-full px-3 py-2 text-sm font-semibold text-slate-800 bg-slate-50 border border-teal-300 rounded-lg cursor-default"
+                      />
                     </div>
                     <div className="md:col-span-2 bg-teal-50/90 text-teal-950 p-3 font-bold text-xs flex items-center border-b md:border-b-0 md:border-r border-teal-200">
                       Advisory Messages
@@ -6418,11 +6036,9 @@ export default function PackageOfPracticeForm() {
                     <div className="md:col-span-2 p-2 border-b md:border-b-0 md:border-r border-teal-200 bg-white">
                       <input
                         type="text"
-                        name="advisoryMessages"
-                        value={formData.advisoryMessages}
-                        onChange={handleInputChange}
-                        placeholder="SMS / WhatsApp advisories"
-                        className="w-full px-3 py-2 text-sm font-semibold text-black bg-white border border-teal-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+                        readOnly
+                        value={formData.advisoryMessages || '—'}
+                        className="w-full px-3 py-2 text-sm font-semibold text-slate-800 bg-slate-50 border border-teal-300 rounded-lg cursor-default"
                       />
                     </div>
                     <div className="md:col-span-2 bg-teal-50/90 text-teal-950 p-3 font-bold text-xs flex items-center border-b md:border-b-0 md:border-r border-teal-200">
@@ -6431,11 +6047,9 @@ export default function PackageOfPracticeForm() {
                     <div className="md:col-span-2 p-2 bg-white">
                       <input
                         type="text"
-                        name="trainingAttendance"
-                        value={formData.trainingAttendance}
-                        onChange={handleInputChange}
-                        placeholder="Workshops / Demos attended"
-                        className="w-full px-3 py-2 text-sm font-semibold text-black bg-white border border-teal-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+                        readOnly
+                        value={formData.trainingAttendance || '—'}
+                        className="w-full px-3 py-2 text-sm font-semibold text-slate-800 bg-slate-50 border border-teal-300 rounded-lg cursor-default"
                       />
                     </div>
                   </div>
@@ -6448,11 +6062,9 @@ export default function PackageOfPracticeForm() {
                     <div className="md:col-span-4 p-2 border-b md:border-b-0 md:border-r border-teal-200 bg-white">
                       <input
                         type="text"
-                        name="communicationReminders"
-                        value={formData.communicationReminders}
-                        onChange={handleInputChange}
-                        placeholder="Scheduled reminders"
-                        className="w-full px-3 py-2 text-sm font-semibold text-black bg-white border border-teal-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+                        readOnly
+                        value={formData.communicationReminders || '—'}
+                        className="w-full px-3 py-2 text-sm font-semibold text-slate-800 bg-slate-50 border border-teal-300 rounded-lg cursor-default"
                       />
                     </div>
                     <div className="md:col-span-2 bg-teal-50/90 text-teal-950 p-3 font-bold text-xs flex items-center border-b md:border-b-0 md:border-r border-teal-200">
@@ -6461,29 +6073,27 @@ export default function PackageOfPracticeForm() {
                     <div className="md:col-span-4 p-2 bg-white">
                       <input
                         type="text"
-                        name="pendingActions"
-                        value={formData.pendingActions}
-                        onChange={handleInputChange}
-                        placeholder="Next pending follow-up"
-                        className="w-full px-3 py-2 text-sm font-semibold text-black bg-white border border-teal-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+                        readOnly
+                        value={formData.pendingActions || '—'}
+                        className="w-full px-3 py-2 text-sm font-semibold text-slate-800 bg-slate-50 border border-teal-300 rounded-lg cursor-default"
                       />
                     </div>
                   </div>
                 </div>
               </div>
 
-              {/* Colorful Submit Bar inside Farmer Lifecycle Tab */}
-              <div className="bg-gradient-to-r from-emerald-950 via-teal-900 to-emerald-950 rounded-2xl border-2 border-emerald-500/40 p-6 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-lg">
+              {/* Bottom Action Bar inside Farmer Lifecycle Tab: View-Only Navigation */}
+              <div className="bg-gradient-to-r from-emerald-950 via-teal-900 to-emerald-950 rounded-2xl border-2 border-emerald-500/40 p-5 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-lg text-white">
                 <div className="flex items-center gap-3.5">
-                  <div className="w-12 h-12 rounded-2xl bg-amber-400 text-emerald-950 flex items-center justify-center shrink-0 shadow-md">
-                    <Sprout className="w-6 h-6" />
+                  <div className="w-11 h-11 rounded-2xl bg-amber-400 text-emerald-950 flex items-center justify-center shrink-0 shadow-md">
+                    <Eye className="w-5 h-5" />
                   </div>
                   <div>
                     <h4 className="text-sm sm:text-base font-black text-white">
-                      Ready to save Farmer Lifecycle & Advisory Records?
+                      Farmer Lifecycle — View-Only Mode
                     </h4>
                     <p className="text-xs text-emerald-200">
-                      Saves all 6 Farmer Lifecycle sections together with your Farmer Data Form & POP record.
+                      Farmer registrations are submitted from Tab 1. Field visits, expert advisory, and lifecycle updates are managed in the Backend Portal.
                     </p>
                   </div>
                 </div>
@@ -6491,27 +6101,20 @@ export default function PackageOfPracticeForm() {
                 <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto justify-end">
                   <Button
                     type="button"
-                    variant="outline"
-                    onClick={handleSaveDraft}
-                    leftIcon={<Save className="w-4 h-4" />}
-                    className="bg-white/10 text-white border-white/25 hover:bg-white/20"
-                  >
-                    Save as Draft
-                  </Button>
-                  <Button
-                    type="submit"
                     variant="golden"
                     size="lg"
-                    isLoading={isSubmitting}
-                    leftIcon={<Send className="w-4 h-4" />}
-                    className="font-black shadow-md"
+                    onClick={() => {
+                      setActiveTab('form');
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }}
+                    leftIcon={<ArrowLeft className="w-4 h-4" />}
+                    className="font-black shadow-md cursor-pointer"
                   >
-                    Submit Digital Form
+                    Back to Main Form (Tab 1)
                   </Button>
                 </div>
               </div>
 
-              {/* ===================================================== */}
               {/* 8. Problem and Solution Summary Section (Below Submit)*/}
               {/* Read-Only on Frontend — Edited in Backend Only        */}
               {/* ===================================================== */}
