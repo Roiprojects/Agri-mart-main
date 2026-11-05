@@ -1057,29 +1057,47 @@ export default function ProcurementPopFormsPage() {
 
   const handlePhotoSavedFromModal = ({
     fileName,
-    url,
+    url: _url,
   }: {
     fileName: string;
     url: string;
   }) => {
+    const targetField = cameraModalConfig.targetFieldName;
+
     setFormData((prev: any) => {
-      const currentVal = String(prev[cameraModalConfig.targetFieldName] || '');
+      const currentVal = String(prev[targetField] || '');
       const existing = currentVal
         .split(',')
         .map((s: string) => s.trim())
         .filter(Boolean);
       const updatedList = existing.includes(fileName) ? existing : [...existing, fileName];
       const clamped = updatedList.slice(0, 5);
+      const clampedStr = clamped.join(', ');
+
+      const nextAdditional = (prev.additionalCrops || []).map((item: any) => {
+        if (item.id === selectedLifecycleCropId) {
+          return {
+            ...item,
+            lifecycleData: {
+              ...(item.lifecycleData || {}),
+              [targetField]: clampedStr,
+            },
+          };
+        }
+        return item;
+      });
+
       return {
         ...prev,
-        [cameraModalConfig.targetFieldName]: clamped.join(', '),
+        [targetField]: clampedStr,
+        additionalCrops: nextAdditional,
       };
     });
 
     setCropLifecycleMap((prev) => {
       const currentMapLc =
         prev[selectedLifecycleCropId] || extractLifecycleFromFormData(formData);
-      const currentVal = String((currentMapLc as any)[cameraModalConfig.targetFieldName] || '');
+      const currentVal = String((currentMapLc as any)[targetField] || '');
       const existing = currentVal
         .split(',')
         .map((s: string) => s.trim())
@@ -1090,7 +1108,7 @@ export default function ProcurementPopFormsPage() {
         ...prev,
         [selectedLifecycleCropId]: {
           ...currentMapLc,
-          [cameraModalConfig.targetFieldName]: clamped.join(', '),
+          [targetField]: clamped.join(', '),
         },
       };
     });
@@ -1103,9 +1121,25 @@ export default function ProcurementPopFormsPage() {
         .split(',')
         .map((s: string) => s.trim())
         .filter((s: string) => s && s !== photoFileName);
+      const remainingStr = remaining.join(', ');
+
+      const nextAdditional = (prev.additionalCrops || []).map((item: any) => {
+        if (item.id === selectedLifecycleCropId) {
+          return {
+            ...item,
+            lifecycleData: {
+              ...(item.lifecycleData || {}),
+              [fieldName]: remainingStr,
+            },
+          };
+        }
+        return item;
+      });
+
       return {
         ...prev,
-        [fieldName]: remaining.join(', '),
+        [fieldName]: remainingStr,
+        additionalCrops: nextAdditional,
       };
     });
 
@@ -7378,7 +7412,24 @@ export default function ProcurementPopFormsPage() {
             cropType: c.cropType || '',
           })),
         ]}
+        currentFieldPhotos={
+          selectedLifecycleCropId === 'primary'
+            ? String((formData as any)[cameraModalConfig.targetFieldName] || '')
+            : String(
+                cropLifecycleMap[selectedLifecycleCropId]?.[
+                  cameraModalConfig.targetFieldName as keyof CropLifecycleData
+                ] ||
+                  (formData.additionalCrops || []).find((c: any) => c.id === selectedLifecycleCropId)?.lifecycleData?.[
+                    cameraModalConfig.targetFieldName as keyof CropLifecycleData
+                  ] ||
+                  (formData as any)[cameraModalConfig.targetFieldName] ||
+                  ''
+              )
+        }
         onPhotoSaved={handlePhotoSavedFromModal}
+        onPhotoDeleted={(photoFileName) =>
+          handleRemovePhotoFromField(cameraModalConfig.targetFieldName, photoFileName)
+        }
       />
     </div>
   );

@@ -43,8 +43,10 @@ export interface FieldCameraCaptureModalProps {
   sectionId: string;
   sectionName: string;
   targetFieldName: string;
+  currentFieldPhotos?: string;
   allCropsSummary?: CropSummaryItem[];
   onPhotoSaved: (photoData: { fileName: string; url: string; photoId: string }) => void;
+  onPhotoDeleted?: (fileName: string) => void;
 }
 
 export function FieldCameraCaptureModal({
@@ -62,8 +64,10 @@ export function FieldCameraCaptureModal({
   sectionId,
   sectionName,
   targetFieldName,
+  currentFieldPhotos = '',
   allCropsSummary = [],
   onPhotoSaved,
+  onPhotoDeleted,
 }: FieldCameraCaptureModalProps) {
   // Tabs: 'camera' (take photo) | 'review' (preview before save)
   const [activeTab, setActiveTab] = useState<'camera' | 'review'>('camera');
@@ -335,15 +339,18 @@ export function FieldCameraCaptureModal({
   };
 
   // Select an existing photo from gallery into form
-  // Delete a photo from database
-  const handleDeletePhoto = async (cropId: string, pSectionId: string, photoId: string) => {
-    if (!confirm('Are you sure you want to delete this photograph from the database?')) return;
+  // Delete a photo from database & form
+  const handleDeletePhoto = async (photoId: string, photoFileName?: string) => {
+    if (!confirm('Are you sure you want to delete this photograph?')) return;
     try {
+      if (photoFileName && onPhotoDeleted) {
+        onPhotoDeleted(photoFileName);
+      }
       const res = await fetch(
         `/api/farmer-crop-gallery?farmerName=${encodeURIComponent(
           effectiveFarmerName
-        )}&cropId=${encodeURIComponent(cropId)}&sectionId=${encodeURIComponent(
-          pSectionId
+        )}&cropId=${encodeURIComponent(effectiveCropName)}&sectionId=${encodeURIComponent(
+          sectionId || 'farmer-visit-photographs'
         )}&photoId=${encodeURIComponent(photoId)}`,
         { method: 'DELETE' }
       );
@@ -356,15 +363,45 @@ export function FieldCameraCaptureModal({
     }
   };
 
-  // Active Crop photos in database for this specific single crop
-  const activeCropFromDb = dbGallery?.crops?.find(
-    (c: any) =>
-      (activeCropId && c.cropId === activeCropId) ||
-      c.cropName?.toLowerCase() === effectiveCropName.toLowerCase()
-  );
+  // Active Crop photos in database strictly for this specific crop and section
+  const activeCropFromDb = dbGallery?.crops?.find((c: any) => {
+    const cName = String(c.cropName || '').trim().toLowerCase();
+    const effName = String(effectiveCropName || '').trim().toLowerCase();
+    if (cName && effName && cName === effName) return true;
+    if (activeCropId && activeCropId !== 'primary' && c.cropId === activeCropId) return true;
+    return false;
+  });
 
-  const existingCropPhotos: any[] =
-    activeCropFromDb?.sections?.flatMap((s: any) => s.photos || []) || [];
+  const targetSection = activeCropFromDb?.sections?.find((s: any) => s.sectionId === sectionId);
+  const dbSectionPhotos: any[] = targetSection?.photos || [];
+
+  // Current photos from the form field for this crop
+  const formPhotoNames = (currentFieldPhotos || '')
+    .split(',')
+    .map((s: string) => s.trim())
+    .filter(Boolean);
+
+  // Build the unified list of up to 5 photos strictly belonging to this crop and section
+  const existingCropPhotos: any[] = [];
+  const seenNames = new Set<string>();
+
+  for (const p of dbSectionPhotos) {
+    if (p.fileName && !seenNames.has(p.fileName)) {
+      seenNames.add(p.fileName);
+      existingCropPhotos.push(p);
+    }
+  }
+
+  for (const fName of formPhotoNames) {
+    if (!seenNames.has(fName)) {
+      seenNames.add(fName);
+      existingCropPhotos.push({
+        id: `form-${fName}`,
+        fileName: fName,
+        url: '',
+      });
+    }
+  }
 
   const activeCropPhotosCount = existingCropPhotos.length;
   const isCropPhotoLimitReached = activeCropPhotosCount >= 5;
@@ -484,29 +521,32 @@ export function FieldCameraCaptureModal({
                           key={photo.id || slotIdx}
                           className="group relative aspect-square bg-slate-900 rounded-xl overflow-hidden border-2 border-emerald-600 shadow-xs"
                         >
-                          <img
-                            src={photo.url}
-                            alt={photo.fileName}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                          />
+                          {photo.url ? (
+                            <img
+                              src={photo.url}
+                              alt={photo.fileName}
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                            />
+                          ) : (
+                            <div className="w-full h-full bg-emerald-950 flex flex-col items-center justify-center p-1.5 text-center text-emerald-200">
+                              <Camera className="w-5 h-5 mb-1 text-emerald-400" />
+                              <span className="text-[9px] font-bold truncate max-w-full px-1">{photo.fileName}</span>
+                            </div>
+                          )}
                           <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1 p-1">
+                            {photo.url && (
+                              <button
+                                type="button"
+                                onClick={() => setEnlargedPhoto(photo)}
+                                className="p-1 rounded-md bg-white/20 hover:bg-white/40 text-white cursor-pointer"
+                                title="View full photo"
+                              >
+                                <Eye className="w-3.5 h-3.5" />
+                              </button>
+                            )}
                             <button
                               type="button"
-                              onClick={() => setEnlargedPhoto(photo)}
-                              className="p-1 rounded-md bg-white/20 hover:bg-white/40 text-white cursor-pointer"
-                              title="View full photo"
-                            >
-                              <Eye className="w-3.5 h-3.5" />
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() =>
-                                handleDeletePhoto(
-                                  activeCropFromDb?.cropId || activeCropId || 'primary',
-                                  sectionId || 'farmer-visit-photographs',
-                                  photo.id
-                                )
-                              }
+                              onClick={() => handleDeletePhoto(photo.id, photo.fileName)}
                               className="p-1 rounded-md bg-rose-600/90 hover:bg-rose-700 text-white cursor-pointer"
                               title="Delete photo to free up slot"
                             >

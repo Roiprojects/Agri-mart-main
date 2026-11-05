@@ -6248,11 +6248,11 @@ class PersistentDevDatabase {
     if (Array.isArray(params.allCropsSummary) && params.allCropsSummary.length > 0) {
       params.allCropsSummary.forEach((summaryCrop) => {
         if (!summaryCrop.cropName) return;
-        const exists = gallery!.crops.find(
-          (c) =>
-            (summaryCrop.cropId && c.cropId === summaryCrop.cropId) ||
-            c.cropName.toLowerCase() === summaryCrop.cropName.toLowerCase()
-        );
+        const exists = gallery!.crops.find((c) => {
+          if (c.cropName.trim().toLowerCase() === summaryCrop.cropName.trim().toLowerCase()) return true;
+          if (summaryCrop.cropId && summaryCrop.cropId !== 'primary' && c.cropId === summaryCrop.cropId) return true;
+          return false;
+        });
         if (!exists) {
           gallery!.crops.push({
             cropId: summaryCrop.cropId || `crop-${Date.now()}-${Math.floor(Math.random() * 100)}`,
@@ -6270,13 +6270,13 @@ class PersistentDevDatabase {
       });
     }
 
-    // Find or create target crop
+    // Find or create target crop strictly matching the crop name
     const targetCropName = (params.cropName || 'General Crop').trim();
-    let crop = gallery.crops.find(
-      (c) =>
-        (params.cropId && c.cropId === params.cropId) ||
-        c.cropName.toLowerCase() === targetCropName.toLowerCase()
-    );
+    let crop = gallery.crops.find((c) => {
+      if (c.cropName.trim().toLowerCase() === targetCropName.toLowerCase()) return true;
+      if (params.cropId && params.cropId !== 'primary' && c.cropId === params.cropId) return true;
+      return false;
+    });
 
     if (!crop) {
       crop = {
