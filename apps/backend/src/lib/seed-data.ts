@@ -18,6 +18,10 @@ export interface ProductType {
   cropStages: number[];
   isBestSeller: boolean;
   isFeatured: boolean;
+  disableBuyButton?: boolean;
+  disableWishlistButton?: boolean;
+  callForPrice?: boolean;
+  availableForPreOrder?: boolean;
   dosage?: string;
   warranty?: string;
 }
@@ -229,6 +233,7 @@ export const SEED_PRODUCTS: ProductType[] = [
     cropStages: [1, 2, 3],
     isBestSeller: true,
     isFeatured: true,
+    disableBuyButton: true,
     warranty: '1 Year Manufacturer Warranty + 2 Free Dealer Services',
   },
   {

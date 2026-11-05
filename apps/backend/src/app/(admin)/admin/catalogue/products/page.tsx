@@ -57,6 +57,10 @@ interface Product {
   isDraft?: boolean;
   isFeatured?: boolean;
   isBestSeller?: boolean;
+  disableBuyButton?: boolean;
+  disableWishlistButton?: boolean;
+  callForPrice?: boolean;
+  availableForPreOrder?: boolean;
   images?: string[];
   category?: { id?: string; name: string; parentId?: string | null };
   parentCategory?: { id: string; name: string };
@@ -1884,12 +1888,24 @@ export default function AdminProductsPage() {
 
                       {/* Product Name & Summary Details */}
                       <td className="py-2.5 px-3 font-medium text-slate-800">
-                        <Link
-                          href={`/admin/catalogue/products/${p.id}/edit`}
-                          className="hover:text-[#3c8dbc] transition font-semibold block"
-                        >
-                          {p.name}
-                        </Link>
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          <Link
+                            href={`/admin/catalogue/products/${p.id}/edit`}
+                            className="hover:text-[#3c8dbc] transition font-semibold"
+                          >
+                            {p.name}
+                          </Link>
+                          {p.disableBuyButton && (
+                            <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-300">
+                              Buy Disabled
+                            </span>
+                          )}
+                          {p.callForPrice && (
+                            <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
+                              Call for Price
+                            </span>
+                          )}
+                        </div>
                         <div className="flex flex-wrap items-center gap-2 mt-1 text-[11px] text-slate-500 font-normal">
                           <span>Brand: <strong className="text-slate-700">{brandName}</strong></span>
                           {p.targetCrops && (

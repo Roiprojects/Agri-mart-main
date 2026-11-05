@@ -901,6 +901,7 @@ function getInitialData(): DevDatabaseData {
         isDraft: false,
         isFeatured: true,
         isBestSeller: true,
+        disableBuyButton: true,
         targetCrops: 'Cotton, Sugarcane, Maize, Chili, Soybean',
         cropStages: '1, 2, 4',
         metaTitle: 'Buy AgriPro 7HP Heavy-Duty Power Weeder | Agri Mart Mega',

@@ -27,6 +27,10 @@ export async function GET(request: Request) {
 
     return {
       ...p,
+      disableBuyButton: Boolean(p.disableBuyButton),
+      disableWishlistButton: Boolean(p.disableWishlistButton),
+      callForPrice: Boolean(p.callForPrice),
+      availableForPreOrder: Boolean(p.availableForPreOrder),
       category: categoryObj?.name || 'General Agri Input',
       categoryKn: categoryObj?.nameKn,
       image,

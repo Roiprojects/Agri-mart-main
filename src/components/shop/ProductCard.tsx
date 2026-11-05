@@ -177,38 +177,64 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
         {/* Price & Action */}
         <div className="pt-3 border-t border-agri-border/60 flex items-center justify-between gap-2">
           <div>
-            <div className="text-base font-extrabold text-agri-dark tracking-tight">
-              ₹{product.price.toLocaleString('en-IN')}
-            </div>
-            {product.comparePrice > product.price && (
-              <div className="text-xs text-slate-400 line-through">
-                ₹{product.comparePrice.toLocaleString('en-IN')}
+            {product.callForPrice ? (
+              <div className="text-sm font-extrabold text-emerald-800">
+                Call for Price
               </div>
+            ) : (
+              <>
+                <div className="text-base font-extrabold text-agri-dark tracking-tight">
+                  ₹{product.price.toLocaleString('en-IN')}
+                </div>
+                {product.comparePrice > product.price && (
+                  <div className="text-xs text-slate-400 line-through">
+                    ₹{product.comparePrice.toLocaleString('en-IN')}
+                  </div>
+                )}
+              </>
             )}
           </div>
 
-          <button
-            type="button"
-            onClick={handleAdd}
-            aria-label={`Add ${product.name} to cart`}
-            className={`text-xs font-bold px-3.5 py-2 rounded-xl transition-all duration-200 flex items-center gap-1.5 active:scale-95 shadow-xs ${
-              isAdded
-                ? 'bg-emerald-600 text-white shadow-sm'
-                : 'bg-agri-green hover:bg-agri-green-dark text-white'
-            }`}
-          >
-            {isAdded ? (
-              <>
-                <CheckCircle2 className="w-3.5 h-3.5 text-white animate-scaleIn" />
-                <span>Added!</span>
-              </>
+          {product.disableBuyButton ? (
+            product.callForPrice ? (
+              <a
+                href="tel:+918001234567"
+                className="text-[11px] font-bold px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-800 hover:bg-emerald-100 border border-emerald-300 transition"
+              >
+                Call
+              </a>
             ) : (
-              <>
-                <ShoppingCart className="w-3.5 h-3.5" />
-                <span>Add</span>
-              </>
-            )}
-          </button>
+              <Link
+                href={`/products/${product.slug}`}
+                className="text-[11px] font-bold px-3 py-1.5 rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200 transition"
+              >
+                Details
+              </Link>
+            )
+          ) : (
+            <button
+              type="button"
+              onClick={handleAdd}
+              aria-label={`Add ${product.name} to cart`}
+              className={`text-xs font-bold px-3.5 py-2 rounded-xl transition-all duration-200 flex items-center gap-1.5 active:scale-95 shadow-xs ${
+                isAdded
+                  ? 'bg-emerald-600 text-white shadow-sm'
+                  : 'bg-agri-green hover:bg-agri-green-dark text-white'
+              }`}
+            >
+              {isAdded ? (
+                <>
+                  <CheckCircle2 className="w-3.5 h-3.5 text-white animate-scaleIn" />
+                  <span>Added!</span>
+                </>
+              ) : (
+                <>
+                  <ShoppingCart className="w-3.5 h-3.5" />
+                  <span>Add</span>
+                </>
+              )}
+            </button>
+          )}
         </div>
       </div>
     </div>

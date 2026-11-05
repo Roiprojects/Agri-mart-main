@@ -22,6 +22,9 @@ import {
   Tractor,
   X,
   ArrowRight,
+  PhoneCall,
+  Ban,
+  Clock,
 } from 'lucide-react';
 import { useAuth, setClientAuthUser } from '@/lib/auth-client';
 import { useShoppingCartSettings } from '@/lib/shopping-cart-settings';
@@ -167,10 +170,12 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
   };
 
   const handleAddToCart = () => {
+    if (product.disableBuyButton && !product.availableForPreOrder) return;
     executeAddToCart();
   };
 
   const handleBuyNow = () => {
+    if (product.disableBuyButton) return;
     executeBuyNow();
   };
 
@@ -211,17 +216,19 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
             </span>
           </div>
 
-          <button
-            onClick={handleToggleWishlist}
-            className={`p-2 rounded-xl border transition flex items-center gap-1 text-xs font-bold ${
-              isWishlisted
-                ? 'bg-rose-50 border-rose-200 text-rose-600'
-                : 'border-slate-200 text-slate-600 hover:bg-slate-50'
-            }`}
-          >
-            <Heart className={`w-4 h-4 ${isWishlisted ? 'fill-current' : ''}`} />
-            <span>{isWishlisted ? 'Wishlisted' : 'Add to Wishlist'}</span>
-          </button>
+          {!product.disableWishlistButton && (
+            <button
+              onClick={handleToggleWishlist}
+              className={`p-2 rounded-xl border transition flex items-center gap-1 text-xs font-bold ${
+                isWishlisted
+                  ? 'bg-rose-50 border-rose-200 text-rose-600'
+                  : 'border-slate-200 text-slate-600 hover:bg-slate-50'
+              }`}
+            >
+              <Heart className={`w-4 h-4 ${isWishlisted ? 'fill-current' : ''}`} />
+              <span>{isWishlisted ? 'Wishlisted' : 'Add to Wishlist'}</span>
+            </button>
+          )}
         </div>
 
         <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 leading-tight mt-2">
@@ -250,22 +257,35 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
 
       {/* Pricing with GST notice */}
       <div className="p-5 bg-agri-pale/60 rounded-2xl border border-emerald-200/80 flex items-baseline gap-3">
-        <div className="text-3xl font-black text-slate-950">
-          ₹{currentPrice.toLocaleString('en-IN')}
-        </div>
-        {currentComparePrice && (
-          <div className="text-base text-slate-400 line-through">
-            ₹{currentComparePrice.toLocaleString('en-IN')}
+        {product.callForPrice ? (
+          <div>
+            <div className="text-2xl font-black text-emerald-800">
+              Call For Price
+            </div>
+            <div className="text-[11px] text-emerald-700 font-semibold mt-0.5">
+              Customized agricultural quotas &amp; institutional pricing available
+            </div>
           </div>
+        ) : (
+          <>
+            <div className="text-3xl font-black text-slate-950">
+              ₹{currentPrice.toLocaleString('en-IN')}
+            </div>
+            {currentComparePrice && (
+              <div className="text-base text-slate-400 line-through">
+                ₹{currentComparePrice.toLocaleString('en-IN')}
+              </div>
+            )}
+            {discountPercent > 0 && (
+              <span className="bg-agri-yellow text-slate-950 font-black text-xs px-2.5 py-0.5 rounded-full">
+                {discountPercent}% SAVINGS
+              </span>
+            )}
+            <span className="text-xs text-emerald-800 font-semibold ml-auto">
+              (Inclusive of 5% Agri GST &amp; Transit Insurance)
+            </span>
+          </>
         )}
-        {discountPercent > 0 && (
-          <span className="bg-agri-yellow text-slate-950 font-black text-xs px-2.5 py-0.5 rounded-full">
-            {discountPercent}% SAVINGS
-          </span>
-        )}
-        <span className="text-xs text-emerald-800 font-semibold ml-auto">
-          (Inclusive of 5% Agri GST &amp; Transit Insurance)
-        </span>
       </div>
 
       {/* Variant Selector (if available) */}
@@ -298,24 +318,26 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
       )}
 
       {/* Quantity Selector */}
-      <div className="flex items-center gap-4 pt-2">
-        <label className="text-xs font-bold text-slate-800">Quantity:</label>
-        <div className="flex items-center border border-slate-200 rounded-xl overflow-hidden bg-slate-50">
-          <button
-            onClick={() => setQuantity(Math.max(1, quantity - 1))}
-            className="p-2 hover:bg-slate-200 text-slate-600 transition"
-          >
-            <Minus className="w-3.5 h-3.5" />
-          </button>
-          <span className="px-4 font-bold text-slate-900 text-xs">{quantity}</span>
-          <button
-            onClick={() => setQuantity(quantity + 1)}
-            className="p-2 hover:bg-slate-200 text-slate-600 transition"
-          >
-            <Plus className="w-3.5 h-3.5" />
-          </button>
+      {!product.disableBuyButton && (
+        <div className="flex items-center gap-4 pt-2">
+          <label className="text-xs font-bold text-slate-800">Quantity:</label>
+          <div className="flex items-center border border-slate-200 rounded-xl overflow-hidden bg-slate-50">
+            <button
+              onClick={() => setQuantity(Math.max(1, quantity - 1))}
+              className="p-2 hover:bg-slate-200 text-slate-600 transition"
+            >
+              <Minus className="w-3.5 h-3.5" />
+            </button>
+            <span className="px-4 font-bold text-slate-900 text-xs">{quantity}</span>
+            <button
+              onClick={() => setQuantity(quantity + 1)}
+              className="p-2 hover:bg-slate-200 text-slate-600 transition"
+            >
+              <Plus className="w-3.5 h-3.5" />
+            </button>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* User Login Status Indicator */}
       {isLoggedIn ? (
@@ -341,33 +363,88 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
       )}
 
       {/* Action Buttons */}
-      <div className="flex flex-col sm:flex-row gap-3 pt-2">
-        <button
-          onClick={handleBuyNow}
-          className="flex-1 text-center bg-agri-yellow hover:bg-amber-400 text-slate-950 font-extrabold text-xs py-3.5 px-6 rounded-2xl shadow-xs transition flex items-center justify-center gap-2"
-        >
-          <Zap className="w-4 h-4" /> Buy Now &bull; Reserve Stock
-        </button>
-
-        <button
-          onClick={handleAddToCart}
-          className={`flex-1 text-center font-bold text-xs py-3.5 px-6 rounded-2xl shadow-xs transition flex items-center justify-center gap-2 ${
-            addedNotice
-              ? 'bg-emerald-600 text-white'
-              : 'bg-agri-green hover:bg-agri-green-dark text-white'
-          }`}
-        >
-          {addedNotice ? (
-            <>
-              <CheckCircle2 className="w-4 h-4" /> Added to Cart!
-            </>
+      {product.disableBuyButton ? (
+        <div className="space-y-3 pt-2">
+          {product.callForPrice ? (
+            <div className="flex flex-col sm:flex-row gap-3">
+              <a
+                href="tel:+918001234567"
+                className="flex-1 text-center bg-agri-green hover:bg-agri-green-dark text-white font-extrabold text-xs py-3.5 px-6 rounded-2xl shadow-xs transition flex items-center justify-center gap-2"
+              >
+                <PhoneCall className="w-4 h-4" /> Call for Price &amp; Custom Quote
+              </a>
+              <a
+                href={`https://wa.me/918001234567?text=${encodeURIComponent(`Hello Agri-Mart, I want to inquire about ${product.name} (SKU: ${product.sku || product.id})`)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex-1 text-center bg-[#25D366] hover:bg-[#20ba5a] text-white font-extrabold text-xs py-3.5 px-6 rounded-2xl shadow-xs transition flex items-center justify-center gap-2"
+              >
+                <MessageSquare className="w-4 h-4" /> WhatsApp Agri Expert
+              </a>
+            </div>
+          ) : product.availableForPreOrder ? (
+            <div className="flex flex-col sm:flex-row gap-3">
+              <button
+                onClick={handleAddToCart}
+                className="flex-1 text-center bg-amber-500 hover:bg-amber-600 text-white font-extrabold text-xs py-3.5 px-6 rounded-2xl shadow-xs transition flex items-center justify-center gap-2"
+              >
+                <Clock className="w-4 h-4" /> Pre-Order Now (Dispatch on Stock Arrival)
+              </button>
+            </div>
           ) : (
-            <>
-              <ShoppingCart className="w-4 h-4" /> Add to Cart
-            </>
+            <div className="space-y-2.5">
+              <div className="w-full py-3.5 px-6 rounded-2xl bg-slate-100 text-slate-700 font-bold text-xs flex items-center justify-center gap-2 border border-slate-200 shadow-2xs select-none">
+                <Ban className="w-4 h-4 text-rose-500 shrink-0" />
+                <span>Direct Online Purchase Currently Disabled for this Product</span>
+              </div>
+              <div className="flex flex-col sm:flex-row gap-3">
+                <a
+                  href={`https://wa.me/918001234567?text=${encodeURIComponent(`Hello Agri-Mart, I would like to inquire about availability and offline purchase of ${product.name} (SKU: ${product.sku || product.id})`)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex-1 text-center bg-[#25D366] hover:bg-[#20ba5a] text-white font-extrabold text-xs py-3.5 px-6 rounded-2xl shadow-xs transition flex items-center justify-center gap-2"
+                >
+                  <MessageSquare className="w-4 h-4" /> Inquire via WhatsApp
+                </a>
+                <a
+                  href="tel:+918001234567"
+                  className="flex-1 text-center bg-slate-800 hover:bg-slate-900 text-white font-extrabold text-xs py-3.5 px-6 rounded-2xl shadow-xs transition flex items-center justify-center gap-2"
+                >
+                  <PhoneCall className="w-4 h-4" /> Call Mandya/Hubballi Hub
+                </a>
+              </div>
+            </div>
           )}
-        </button>
-      </div>
+        </div>
+      ) : (
+        <div className="flex flex-col sm:flex-row gap-3 pt-2">
+          <button
+            onClick={handleBuyNow}
+            className="flex-1 text-center bg-agri-yellow hover:bg-amber-400 text-slate-950 font-extrabold text-xs py-3.5 px-6 rounded-2xl shadow-xs transition flex items-center justify-center gap-2"
+          >
+            <Zap className="w-4 h-4" /> Buy Now &bull; Reserve Stock
+          </button>
+
+          <button
+            onClick={handleAddToCart}
+            className={`flex-1 text-center font-bold text-xs py-3.5 px-6 rounded-2xl shadow-xs transition flex items-center justify-center gap-2 ${
+              addedNotice
+                ? 'bg-emerald-600 text-white'
+                : 'bg-agri-green hover:bg-agri-green-dark text-white'
+            }`}
+          >
+            {addedNotice ? (
+              <>
+                <CheckCircle2 className="w-4 h-4" /> Added to Cart!
+              </>
+            ) : (
+              <>
+                <ShoppingCart className="w-4 h-4" /> Add to Cart
+              </>
+            )}
+          </button>
+        </div>
+      )}
 
       {/* Dark Warehouse Live Availability Breakdown */}
       <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-2 text-[11px]">

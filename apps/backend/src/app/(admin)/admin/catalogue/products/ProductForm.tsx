@@ -195,10 +195,10 @@ export function ProductForm({
     description: initialValues?.description || '',
     targetCrops: initialValues?.targetCrops || 'Paddy, Cotton, Sugarcane',
     cropStages: initialValues?.cropStages || '1, 2, 3',
-    isPublished: false,
-    isDraft: false,
-    isFeatured: false,
-    isBestSeller: false,
+    isPublished: initialValues?.isPublished !== undefined ? Boolean(initialValues.isPublished) : true,
+    isDraft: Boolean(initialValues?.isDraft),
+    isFeatured: Boolean(initialValues?.isFeatured),
+    isBestSeller: Boolean(initialValues?.isBestSeller),
     seName: initialValues?.seName || (initialValues as any)?.slug || '',
     metaTitle: initialValues?.metaTitle || '',
     metaKeywords: initialValues?.metaKeywords || '',
@@ -214,27 +214,27 @@ export function ProductForm({
         ? (initialValues as any).variants[0].stockQuantity
         : 25,
     cost: initialValues?.cost ?? Math.round((initialValues?.price || 0) * 0.78),
-    disableBuyButton: false,
-    disableWishlistButton: false,
-    availableForPreOrder: false,
-    callForPrice: false,
-    customerEntersPrice: false,
-    pangvBasePriceEnabled: false,
-    taxExempt: false,
+    disableBuyButton: Boolean(initialValues?.disableBuyButton),
+    disableWishlistButton: Boolean(initialValues?.disableWishlistButton),
+    availableForPreOrder: Boolean(initialValues?.availableForPreOrder),
+    callForPrice: Boolean(initialValues?.callForPrice),
+    customerEntersPrice: Boolean(initialValues?.customerEntersPrice),
+    pangvBasePriceEnabled: Boolean(initialValues?.pangvBasePriceEnabled),
+    taxExempt: Boolean(initialValues?.taxExempt),
     taxCategory: initialValues?.taxCategory || 'Agricultural Essentials (5% GST)',
-    isShippingEnabled: false,
+    isShippingEnabled: initialValues?.isShippingEnabled !== undefined ? Boolean(initialValues.isShippingEnabled) : true,
     weight: initialValues?.weight ?? 5,
     length: initialValues?.length ?? 35,
     width: initialValues?.width ?? 25,
     height: initialValues?.height ?? 20,
-    freeShipping: false,
-    shipSeparately: false,
+    freeShipping: Boolean(initialValues?.freeShipping),
+    shipSeparately: Boolean(initialValues?.shipSeparately),
     additionalShippingCharge: initialValues?.additionalShippingCharge || 0,
     deliveryDate: initialValues?.deliveryDate || '1-2 days',
-    isGiftCard: false,
+    isGiftCard: Boolean(initialValues?.isGiftCard),
     giftCardType: initialValues?.giftCardType || 'Virtual',
     overriddenGiftCardAmount: initialValues?.overriddenGiftCardAmount || '',
-    isRental: false,
+    isRental: Boolean(initialValues?.isRental),
     rentalPeriodLength: initialValues?.rentalPeriodLength || '',
     rentalPeriod: (initialValues?.rentalPeriod as any) || 'Days',
     minCartQty: initialValues?.minCartQty || 1,
@@ -242,19 +242,19 @@ export function ProductForm({
     productTags: initialValues?.productTags || 'agriculture, certified, farming',
     gtin: initialValues?.gtin || '8901234560011',
     manufacturerPartNumber: initialValues?.manufacturerPartNumber || `${initialValues?.sku || 'AGP'}-IND`,
-    showOnHomePage: false,
+    showOnHomePage: Boolean(initialValues?.showOnHomePage),
     productType: initialValues?.productType || 'Simple',
     productTemplate: initialValues?.productTemplate || 'Simple product',
-    visibleIndividually: false,
-    ageVerification: false,
+    visibleIndividually: initialValues?.visibleIndividually !== undefined ? Boolean(initialValues.visibleIndividually) : true,
+    ageVerification: Boolean(initialValues?.ageVerification),
     customerRoles: initialValues?.customerRoles || '',
     limitedToStores: initialValues?.limitedToStores || '',
     vendor: initialValues?.vendor || 'Agri-Mart Direct',
-    requireOtherProducts: false,
-    allowCustomerReviews: false,
+    requireOtherProducts: Boolean(initialValues?.requireOtherProducts),
+    allowCustomerReviews: initialValues?.allowCustomerReviews !== undefined ? Boolean(initialValues.allowCustomerReviews) : true,
     availableStartDate: initialValues?.availableStartDate || '',
     availableEndDate: initialValues?.availableEndDate || '',
-    markAsNew: false,
+    markAsNew: Boolean(initialValues?.markAsNew),
     adminComment: initialValues?.adminComment || '',
   });
 
@@ -344,13 +344,129 @@ export function ProductForm({
       manufacturerPartNumber:
         initialValues.manufacturerPartNumber || `${initialValues.sku || prev.sku}-IND`,
       vendor: initialValues.vendor || prev.vendor || 'Agri-Mart Direct',
+      disableBuyButton:
+        initialValues.disableBuyButton !== undefined
+          ? Boolean(initialValues.disableBuyButton)
+          : prev.disableBuyButton,
+      disableWishlistButton:
+        initialValues.disableWishlistButton !== undefined
+          ? Boolean(initialValues.disableWishlistButton)
+          : prev.disableWishlistButton,
+      availableForPreOrder:
+        initialValues.availableForPreOrder !== undefined
+          ? Boolean(initialValues.availableForPreOrder)
+          : prev.availableForPreOrder,
+      callForPrice:
+        initialValues.callForPrice !== undefined
+          ? Boolean(initialValues.callForPrice)
+          : prev.callForPrice,
+      customerEntersPrice:
+        initialValues.customerEntersPrice !== undefined
+          ? Boolean(initialValues.customerEntersPrice)
+          : prev.customerEntersPrice,
+      pangvBasePriceEnabled:
+        initialValues.pangvBasePriceEnabled !== undefined
+          ? Boolean(initialValues.pangvBasePriceEnabled)
+          : prev.pangvBasePriceEnabled,
+      taxExempt:
+        initialValues.taxExempt !== undefined
+          ? Boolean(initialValues.taxExempt)
+          : prev.taxExempt,
+      isShippingEnabled:
+        initialValues.isShippingEnabled !== undefined
+          ? Boolean(initialValues.isShippingEnabled)
+          : prev.isShippingEnabled,
+      freeShipping:
+        initialValues.freeShipping !== undefined
+          ? Boolean(initialValues.freeShipping)
+          : prev.freeShipping,
+      shipSeparately:
+        initialValues.shipSeparately !== undefined
+          ? Boolean(initialValues.shipSeparately)
+          : prev.shipSeparately,
+      additionalShippingCharge:
+        initialValues.additionalShippingCharge !== undefined
+          ? initialValues.additionalShippingCharge
+          : prev.additionalShippingCharge,
+      isGiftCard:
+        initialValues.isGiftCard !== undefined
+          ? Boolean(initialValues.isGiftCard)
+          : prev.isGiftCard,
+      giftCardType: initialValues.giftCardType || prev.giftCardType,
+      overriddenGiftCardAmount: initialValues.overriddenGiftCardAmount || prev.overriddenGiftCardAmount,
+      isRental:
+        initialValues.isRental !== undefined
+          ? Boolean(initialValues.isRental)
+          : prev.isRental,
+      rentalPeriodLength: initialValues.rentalPeriodLength || prev.rentalPeriodLength,
+      rentalPeriod: (initialValues.rentalPeriod as any) || prev.rentalPeriod,
+      minCartQty: initialValues.minCartQty || prev.minCartQty,
+      maxCartQty: initialValues.maxCartQty || prev.maxCartQty,
+      productTags: initialValues.productTags || prev.productTags,
+      showOnHomePage:
+        initialValues.showOnHomePage !== undefined
+          ? Boolean(initialValues.showOnHomePage)
+          : prev.showOnHomePage,
+      productType: initialValues.productType || prev.productType,
+      productTemplate: initialValues.productTemplate || prev.productTemplate,
+      visibleIndividually:
+        initialValues.visibleIndividually !== undefined
+          ? Boolean(initialValues.visibleIndividually)
+          : prev.visibleIndividually,
+      ageVerification:
+        initialValues.ageVerification !== undefined
+          ? Boolean(initialValues.ageVerification)
+          : prev.ageVerification,
+      customerRoles: initialValues.customerRoles || prev.customerRoles,
+      limitedToStores: initialValues.limitedToStores || prev.limitedToStores,
+      requireOtherProducts:
+        initialValues.requireOtherProducts !== undefined
+          ? Boolean(initialValues.requireOtherProducts)
+          : prev.requireOtherProducts,
+      allowCustomerReviews:
+        initialValues.allowCustomerReviews !== undefined
+          ? Boolean(initialValues.allowCustomerReviews)
+          : prev.allowCustomerReviews,
+      availableStartDate: initialValues.availableStartDate || prev.availableStartDate,
+      availableEndDate: initialValues.availableEndDate || prev.availableEndDate,
+      markAsNew:
+        initialValues.markAsNew !== undefined
+          ? Boolean(initialValues.markAsNew)
+          : prev.markAsNew,
+      adminComment: initialValues.adminComment || prev.adminComment,
+      isPublished:
+        initialValues.isPublished !== undefined
+          ? Boolean(initialValues.isPublished)
+          : prev.isPublished,
+      isDraft:
+        initialValues.isDraft !== undefined
+          ? Boolean(initialValues.isDraft)
+          : prev.isDraft,
+      isFeatured:
+        initialValues.isFeatured !== undefined
+          ? Boolean(initialValues.isFeatured)
+          : prev.isFeatured,
+      isBestSeller:
+        initialValues.isBestSeller !== undefined
+          ? Boolean(initialValues.isBestSeller)
+          : prev.isBestSeller,
     }));
 
     setRichTextHtml(desc);
     if (richTextRef.current) {
       richTextRef.current.innerHTML = desc;
     }
-  }, [initialValues?.id, initialValues?.sku, initialValues?.name, categories.length, brands.length]);
+  }, [
+    initialValues?.id,
+    initialValues?.sku,
+    initialValues?.name,
+    initialValues?.disableBuyButton,
+    initialValues?.disableWishlistButton,
+    initialValues?.callForPrice,
+    initialValues?.isPublished,
+    categories.length,
+    brands.length,
+  ]);
 
   // Validation
   const [errors, setErrors] = useState<{ [key: string]: string }>({});

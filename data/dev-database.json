@@ -320,7 +320,8 @@
       "vendor": "Agri-Mart Direct",
       "taxCategory": "Reduced Rate (12% GST)",
       "deliveryDate": "3-5 days",
-      "metaKeywords": "power weeder, 7hp rotary tiller, agripro, farm machinery"
+      "metaKeywords": "power weeder, 7hp rotary tiller, agripro, farm machinery",
+      "disableBuyButton": true
     },
     {
       "id": "prod-002",

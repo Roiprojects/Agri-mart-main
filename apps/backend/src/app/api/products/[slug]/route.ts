@@ -44,6 +44,15 @@ export async function GET(
       specifications: detailed?.specifications || [],
       reviews: detailed?.reviews || [],
       warehouseStocks: detailed?.warehouseStocks || [],
+      disableBuyButton: Boolean(product.disableBuyButton),
+      disableWishlistButton: Boolean(product.disableWishlistButton),
+      availableForPreOrder: Boolean(product.availableForPreOrder),
+      callForPrice: Boolean(product.callForPrice),
+      customerEntersPrice: Boolean(product.customerEntersPrice),
+      isPublished: product.isPublished !== undefined ? Boolean(product.isPublished) : true,
+      isFeatured: Boolean(product.isFeatured),
+      isBestSeller: Boolean(product.isBestSeller),
+      stockQuantity: (detailed?.variants?.[0]?.stockQuantity ?? product.stockQuantity ?? 25),
     },
   });
 }

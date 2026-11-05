@@ -338,7 +338,8 @@
       "metaKeywords": "power weeder, 7hp rotary tiller, agripro, farm machinery",
       "metaDescription": "Shop AgriPro 7HP Power Weeder with free ridger & reverse gear. Delivered from Hubballi & Belagavi Dark Warehouses with 1-Year comprehensive AMC.",
       "createdAt": "2026-11-02T11:50:34.605Z",
-      "updatedAt": "2026-11-02T11:50:34.605Z"
+      "updatedAt": "2026-11-02T11:50:34.605Z",
+      "disableBuyButton": true
     },
     {
       "id": "prod-002",
