@@ -328,9 +328,11 @@ export function FieldCameraCaptureModal({
       });
 
       setTimeout(() => {
-        setActiveTab('gallery');
+        setCapturedDataUrl(null);
+        setActiveTab('camera');
+        startCamera(facingMode);
         setIsSaving(false);
-      }, 1000);
+      }, 800);
     } catch (err: any) {
       console.error('Error saving field photo:', err);
       setErrorMsg(err.message || 'Could not save photograph to database');
@@ -431,42 +433,8 @@ export function FieldCameraCaptureModal({
             </div>
           </div>
 
-          {/* Action Tabs & Close */}
+          {/* Close Action */}
           <div className="flex items-center gap-2">
-            <div className="bg-emerald-950/70 p-1 rounded-xl flex items-center gap-1 border border-emerald-600/40">
-              <button
-                type="button"
-                onClick={() => {
-                  setActiveTab('camera');
-                  startCamera(facingMode);
-                }}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
-                  activeTab === 'camera' || activeTab === 'review'
-                    ? 'bg-emerald-600 text-white shadow-xs'
-                    : 'text-emerald-200 hover:text-white hover:bg-white/10'
-                }`}
-              >
-                <Camera className="w-3.5 h-3.5" />
-                <span>Camera</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  stopCamera();
-                  setActiveTab('gallery');
-                  fetchDatabaseGallery();
-                }}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
-                  activeTab === 'gallery'
-                    ? 'bg-emerald-600 text-white shadow-xs'
-                    : 'text-emerald-200 hover:text-white hover:bg-white/10'
-                }`}
-              >
-                <ImageIcon className="w-3.5 h-3.5 text-amber-300" />
-                <span>DB Gallery ({totalGalleryPhotos})</span>
-              </button>
-            </div>
-
             <button
               type="button"
               onClick={onClose}
