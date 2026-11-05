@@ -643,6 +643,9 @@ export interface DbFarmerCropEntry {
   cropType?: string; // e.g. "Vegetables", "Field Crops"
   variety?: string; // e.g. "Arka Rakshak"
   cropAcreage: string | number; // e.g. "4", "4 Acres"
+  gpsLocation?: string;
+  gpsLatitude?: number | string;
+  gpsLongitude?: number | string;
   plantingDate?: string;
   cropAge?: string;
   sections: DbFarmerCropSection[]; // separate named crop sections with their own images!

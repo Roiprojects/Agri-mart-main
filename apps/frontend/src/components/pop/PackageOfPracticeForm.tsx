@@ -30,6 +30,10 @@ import {
   Eye,
   Image as ImageIcon,
   X,
+  MapPin,
+  Navigation,
+  RefreshCw,
+  AlertCircle,
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import CropConfirmationModal from '@/components/crop/CropConfirmationModal';
@@ -109,6 +113,10 @@ export interface CropSelectionItem {
   plantingDate: string;
   cropAge: string;
   cropAcreage: string;
+  gpsLocation?: string;
+  gpsLatitude?: string | number;
+  gpsLongitude?: string | number;
+  gpsAccuracy?: string | number;
   plantCount: string;
   spacing: string;
   currentCropStage?: string;
@@ -971,6 +979,10 @@ const EMPTY_FORM_DATA = {
   plantingDate: '',
   cropAge: '',
   cropAcreage: '',
+  gpsLocation: '',
+  gpsLatitude: '',
+  gpsLongitude: '',
+  gpsAccuracy: '',
   plantCount: '',
   spacing: '',
   currentCropStage: '',
@@ -1142,6 +1154,82 @@ export default function PackageOfPracticeForm() {
   const [cropExtraLifecycleStagesMap, setCropExtraLifecycleStagesMap] = useState<
     Record<string, CropLifecycleData[]>
   >({});
+
+  // Exact GPS Location Capture State for Crop Selection
+  const [isCapturingGps, setIsCapturingGps] = useState<Record<string, boolean>>({});
+  const [gpsError, setGpsError] = useState<Record<string, string | null>>({});
+
+  const handleCaptureExactGps = (cropBlockId: string = 'primary') => {
+    if (typeof window === 'undefined') return;
+
+    if (!navigator.geolocation) {
+      setGpsError((prev) => ({
+        ...prev,
+        [cropBlockId]: 'Geolocation is not supported by your browser.',
+      }));
+      return;
+    }
+
+    setIsCapturingGps((prev) => ({ ...prev, [cropBlockId]: true }));
+    setGpsError((prev) => ({ ...prev, [cropBlockId]: null }));
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const lat = Number(position.coords.latitude.toFixed(6));
+        const lng = Number(position.coords.longitude.toFixed(6));
+        const accuracy = Math.round(position.coords.accuracy);
+        const coordString = `${lat}, ${lng}`;
+
+        if (cropBlockId === 'primary') {
+          setFormData((prev) => ({
+            ...prev,
+            gpsLocation: coordString,
+            gpsLatitude: lat,
+            gpsLongitude: lng,
+            gpsAccuracy: accuracy,
+          }));
+        } else {
+          setFormData((prev) => ({
+            ...prev,
+            additionalCrops: (prev.additionalCrops || []).map((item) =>
+              item.id === cropBlockId
+                ? {
+                    ...item,
+                    gpsLocation: coordString,
+                    gpsLatitude: lat,
+                    gpsLongitude: lng,
+                    gpsAccuracy: accuracy,
+                  }
+                : item
+            ),
+          }));
+        }
+
+        setIsCapturingGps((prev) => ({ ...prev, [cropBlockId]: false }));
+      },
+      (error) => {
+        setIsCapturingGps((prev) => ({ ...prev, [cropBlockId]: false }));
+        let message = 'Unable to acquire exact GPS location.';
+        switch (error.code) {
+          case error.PERMISSION_DENIED:
+            message = 'Location permission denied. Please allow GPS access in your browser or enter coordinates manually.';
+            break;
+          case error.POSITION_UNAVAILABLE:
+            message = 'GPS position unavailable. Please check device location settings.';
+            break;
+          case error.TIMEOUT:
+            message = 'GPS acquisition request timed out. Please try again.';
+            break;
+        }
+        setGpsError((prev) => ({ ...prev, [cropBlockId]: message }));
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 15000,
+        maximumAge: 0,
+      }
+    );
+  };
 
   // Field Camera Modal State for photographing crops and saving to DB
   const [cameraModalConfig, setCameraModalConfig] = useState<{
@@ -1539,6 +1627,10 @@ export default function PackageOfPracticeForm() {
       plantingDate: '',
       cropAge: '',
       cropAcreage: '',
+      gpsLocation: '',
+      gpsLatitude: '',
+      gpsLongitude: '',
+      gpsAccuracy: '',
       plantCount: '',
       spacing: '',
       currentCropStage: '',
@@ -1558,7 +1650,7 @@ export default function PackageOfPracticeForm() {
   const handleUpdateAdditionalCrop = (
     blockId: string,
     field: keyof CropSelectionItem,
-    value: string
+    value: any
   ) => {
     setFormData((prev) => ({
       ...prev,
@@ -3536,7 +3628,7 @@ export default function PackageOfPracticeForm() {
                 </div>
               </div>
 
-              {/* Row 4: Plant Count | Spacing */}
+              {/* Row 4: Plant Count | GPS Location (Directly below Crop Acreage) */}
               <div className="grid grid-cols-1 md:grid-cols-12 border-b border-amber-200">
                 <label className="md:col-span-2 bg-amber-50/90 px-4 py-3 text-xs font-bold text-amber-950 flex items-center border-b md:border-b-0 md:border-r border-amber-200">
                   Plant Count
@@ -3553,9 +3645,77 @@ export default function PackageOfPracticeForm() {
                 </div>
 
                 <label className="md:col-span-2 bg-amber-50/90 px-4 py-3 text-xs font-bold text-amber-950 flex items-center border-b md:border-b-0 md:border-r border-amber-200">
-                  Spacing
+                  <MapPin className="w-3.5 h-3.5 text-emerald-700 mr-1.5 shrink-0" />
+                  GPS Location
                 </label>
                 <div className="md:col-span-4 bg-white p-2">
+                  <div className="flex flex-col gap-1.5">
+                    <div className="flex items-center gap-1.5">
+                      <input
+                        type="text"
+                        name="gpsLocation"
+                        value={formData.gpsLocation || ''}
+                        onChange={handleInputChange}
+                        placeholder="e.g. 12.971598, 77.594562"
+                        className="flex-1 min-w-0 bg-white px-2.5 py-1.5 text-xs sm:text-sm font-mono font-semibold text-black placeholder:text-neutral-400 border border-amber-300 focus:outline-none focus:ring-2 focus:ring-amber-500 rounded-lg"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => handleCaptureExactGps('primary')}
+                        disabled={isCapturingGps['primary']}
+                        className="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center gap-1.5 shrink-0 shadow-xs transition active:scale-95 cursor-pointer disabled:opacity-60"
+                        title="Click to take exact GPS coordinates of this crop location"
+                      >
+                        {isCapturingGps['primary'] ? (
+                          <>
+                            <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                            <span className="hidden sm:inline">Detecting...</span>
+                          </>
+                        ) : (
+                          <>
+                            <Navigation className="w-3.5 h-3.5 text-amber-300" />
+                            <span>Capture GPS</span>
+                          </>
+                        )}
+                      </button>
+                    </div>
+
+                    <div className="flex flex-wrap items-center justify-between gap-1 text-[11px]">
+                      {formData.gpsLocation ? (
+                        <div className="flex items-center gap-2">
+                          <span className="text-emerald-700 font-bold flex items-center gap-1">
+                            <CheckCircle2 className="w-3 h-3 text-emerald-600 shrink-0" />
+                            {formData.gpsAccuracy ? `Exact GPS Locked (±${formData.gpsAccuracy}m)` : 'GPS Coordinates Captured'}
+                          </span>
+                          <a
+                            href={`https://www.google.com/maps?q=${encodeURIComponent(formData.gpsLocation)}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-600 hover:underline font-semibold"
+                          >
+                            View on Map ↗
+                          </a>
+                        </div>
+                      ) : (
+                        <span className="text-slate-400 italic">Click "Capture GPS" to detect exact plot coordinates</span>
+                      )}
+                    </div>
+                    {gpsError['primary'] && (
+                      <div className="text-[11px] text-rose-600 font-semibold flex items-center gap-1">
+                        <AlertCircle className="w-3 h-3 shrink-0" />
+                        <span>{gpsError['primary']}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Row 5: Spacing | Current Crop Stage */}
+              <div className="grid grid-cols-1 md:grid-cols-12 border-b border-amber-200">
+                <label className="md:col-span-2 bg-amber-50/90 px-4 py-3 text-xs font-bold text-amber-950 flex items-center border-b md:border-b-0 md:border-r border-amber-200">
+                  Spacing
+                </label>
+                <div className="md:col-span-4 bg-white p-2 border-b md:border-b-0 md:border-r border-amber-200">
                   <input
                     type="text"
                     name="spacing"
@@ -3565,14 +3725,11 @@ export default function PackageOfPracticeForm() {
                     className="w-full bg-white px-2.5 py-1.5 text-sm font-semibold text-black placeholder:text-neutral-400 border border-amber-300 focus:outline-none focus:ring-2 focus:ring-amber-500 rounded-lg"
                   />
                 </div>
-              </div>
 
-              {/* Row 5: Current Crop Stage | Survey Number */}
-              <div className="grid grid-cols-1 md:grid-cols-12 rounded-b-[14px]">
-                <label className="md:col-span-2 bg-amber-50/90 px-4 py-3 text-xs font-bold text-amber-950 flex items-center border-b md:border-b-0 md:border-r border-amber-200 rounded-bl-[14px]">
+                <label className="md:col-span-2 bg-amber-50/90 px-4 py-3 text-xs font-bold text-amber-950 flex items-center border-b md:border-b-0 md:border-r border-amber-200">
                   Current Crop Stage
                 </label>
-                <div className="md:col-span-4 bg-white p-2 border-b md:border-b-0 md:border-r border-amber-200">
+                <div className="md:col-span-4 bg-white p-2">
                   <input
                     type="text"
                     name="currentCropStage"
@@ -3582,11 +3739,14 @@ export default function PackageOfPracticeForm() {
                     className="w-full bg-white px-2.5 py-1.5 text-sm font-semibold text-black placeholder:text-neutral-400 border border-amber-300 focus:outline-none focus:ring-2 focus:ring-amber-500 rounded-lg"
                   />
                 </div>
+              </div>
 
-                <label className="md:col-span-2 bg-amber-50/90 px-4 py-3 text-xs font-bold text-amber-950 flex items-center border-b md:border-b-0 md:border-r border-amber-200">
+              {/* Row 6: Survey Number */}
+              <div className="grid grid-cols-1 md:grid-cols-12 rounded-b-[14px]">
+                <label className="md:col-span-2 bg-amber-50/90 px-4 py-3 text-xs font-bold text-amber-950 flex items-center border-b md:border-b-0 md:border-r border-amber-200 rounded-bl-[14px]">
                   Survey Number
                 </label>
-                <div className="md:col-span-4 bg-white p-2 rounded-br-[14px]">
+                <div className="md:col-span-10 bg-white p-2 rounded-br-[14px]">
                   <input
                     type="text"
                     name="surveyNumber"
@@ -3926,7 +4086,7 @@ export default function PackageOfPracticeForm() {
                     </div>
                   </div>
 
-                  {/* Row 4: Plant Count | Spacing */}
+                  {/* Row 4: Plant Count | GPS Location (Directly below Crop Acreage) */}
                   <div className="grid grid-cols-1 md:grid-cols-12 border-b border-amber-200">
                     <label className="md:col-span-2 bg-amber-50/90 px-4 py-3 text-xs font-bold text-amber-950 flex items-center border-b md:border-b-0 md:border-r border-amber-200">
                       Plant Count
@@ -3944,9 +4104,78 @@ export default function PackageOfPracticeForm() {
                     </div>
 
                     <label className="md:col-span-2 bg-amber-50/90 px-4 py-3 text-xs font-bold text-amber-950 flex items-center border-b md:border-b-0 md:border-r border-amber-200">
-                      Spacing
+                      <MapPin className="w-3.5 h-3.5 text-emerald-700 mr-1.5 shrink-0" />
+                      GPS Location
                     </label>
                     <div className="md:col-span-4 bg-white p-2">
+                      <div className="flex flex-col gap-1.5">
+                        <div className="flex items-center gap-1.5">
+                          <input
+                            type="text"
+                            value={cropBlock.gpsLocation || ''}
+                            onChange={(e) =>
+                              handleUpdateAdditionalCrop(cropBlock.id, 'gpsLocation', e.target.value)
+                            }
+                            placeholder="e.g. 12.971598, 77.594562"
+                            className="flex-1 min-w-0 bg-white px-2.5 py-1.5 text-xs sm:text-sm font-mono font-semibold text-black placeholder:text-neutral-400 border border-amber-300 focus:outline-none focus:ring-2 focus:ring-amber-500 rounded-lg"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => handleCaptureExactGps(cropBlock.id)}
+                            disabled={isCapturingGps[cropBlock.id]}
+                            className="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center gap-1.5 shrink-0 shadow-xs transition active:scale-95 cursor-pointer disabled:opacity-60"
+                            title="Click to take exact GPS coordinates of this crop location"
+                          >
+                            {isCapturingGps[cropBlock.id] ? (
+                              <>
+                                <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                                <span className="hidden sm:inline">Detecting...</span>
+                              </>
+                            ) : (
+                              <>
+                                <Navigation className="w-3.5 h-3.5 text-amber-300" />
+                                <span>Capture GPS</span>
+                              </>
+                            )}
+                          </button>
+                        </div>
+
+                        <div className="flex flex-wrap items-center justify-between gap-1 text-[11px]">
+                          {cropBlock.gpsLocation ? (
+                            <div className="flex items-center gap-2">
+                              <span className="text-emerald-700 font-bold flex items-center gap-1">
+                                <CheckCircle2 className="w-3 h-3 text-emerald-600 shrink-0" />
+                                {cropBlock.gpsAccuracy ? `Exact GPS Locked (±${cropBlock.gpsAccuracy}m)` : 'GPS Coordinates Captured'}
+                              </span>
+                              <a
+                                href={`https://www.google.com/maps?q=${encodeURIComponent(cropBlock.gpsLocation)}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-blue-600 hover:underline font-semibold"
+                              >
+                                View on Map ↗
+                              </a>
+                            </div>
+                          ) : (
+                            <span className="text-slate-400 italic">Click "Capture GPS" to detect exact plot coordinates</span>
+                          )}
+                        </div>
+                        {gpsError[cropBlock.id] && (
+                          <div className="text-[11px] text-rose-600 font-semibold flex items-center gap-1">
+                            <AlertCircle className="w-3 h-3 shrink-0" />
+                            <span>{gpsError[cropBlock.id]}</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Row 5: Spacing | Current Crop Stage */}
+                  <div className="grid grid-cols-1 md:grid-cols-12 border-b border-amber-200">
+                    <label className="md:col-span-2 bg-amber-50/90 px-4 py-3 text-xs font-bold text-amber-950 flex items-center border-b md:border-b-0 md:border-r border-amber-200">
+                      Spacing
+                    </label>
+                    <div className="md:col-span-4 bg-white p-2 border-b md:border-b-0 md:border-r border-amber-200">
                       <input
                         type="text"
                         value={cropBlock.spacing || ''}
@@ -3957,14 +4186,11 @@ export default function PackageOfPracticeForm() {
                         className="w-full bg-white px-2.5 py-1.5 text-sm font-semibold text-black placeholder:text-neutral-400 border border-amber-300 focus:outline-none focus:ring-2 focus:ring-amber-500 rounded-lg"
                       />
                     </div>
-                  </div>
 
-                  {/* Row 5: Current Crop Stage | Survey Number */}
-                  <div className="grid grid-cols-1 md:grid-cols-12 rounded-b-[14px]">
-                    <label className="md:col-span-2 bg-amber-50/90 px-4 py-3 text-xs font-bold text-amber-950 flex items-center border-b md:border-b-0 md:border-r border-amber-200 rounded-bl-[14px]">
+                    <label className="md:col-span-2 bg-amber-50/90 px-4 py-3 text-xs font-bold text-amber-950 flex items-center border-b md:border-b-0 md:border-r border-amber-200">
                       Current Crop Stage
                     </label>
-                    <div className="md:col-span-4 bg-white p-2 border-b md:border-b-0 md:border-r border-amber-200">
+                    <div className="md:col-span-4 bg-white p-2">
                       <input
                         type="text"
                         value={cropBlock.currentCropStage || ''}
@@ -3979,11 +4205,14 @@ export default function PackageOfPracticeForm() {
                         className="w-full bg-white px-2.5 py-1.5 text-sm font-semibold text-black placeholder:text-neutral-400 border border-amber-300 focus:outline-none focus:ring-2 focus:ring-amber-500 rounded-lg"
                       />
                     </div>
+                  </div>
 
-                    <label className="md:col-span-2 bg-amber-50/90 px-4 py-3 text-xs font-bold text-amber-950 flex items-center border-b md:border-b-0 md:border-r border-amber-200">
+                  {/* Row 6: Survey Number */}
+                  <div className="grid grid-cols-1 md:grid-cols-12 rounded-b-[14px]">
+                    <label className="md:col-span-2 bg-amber-50/90 px-4 py-3 text-xs font-bold text-amber-950 flex items-center border-b md:border-b-0 md:border-r border-amber-200 rounded-bl-[14px]">
                       Survey Number
                     </label>
-                    <div className="md:col-span-4 bg-white p-2 rounded-br-[14px]">
+                    <div className="md:col-span-10 bg-white p-2 rounded-br-[14px]">
                       <input
                         type="text"
                         value={cropBlock.surveyNumber || ''}
@@ -6561,8 +6790,14 @@ export default function PackageOfPracticeForm() {
             <tr>
               <td className="border border-black p-1.5 font-bold">Crop Acreage:</td>
               <td className="border border-black p-1.5">{formData.cropAcreage}</td>
+              <td className="border border-black p-1.5 font-bold">GPS Location:</td>
+              <td className="border border-black p-1.5">{formData.gpsLocation || '—'}</td>
+            </tr>
+            <tr>
               <td className="border border-black p-1.5 font-bold">Plant Count:</td>
               <td className="border border-black p-1.5">{formData.plantCount}</td>
+              <td className="border border-black p-1.5 font-bold">Spacing:</td>
+              <td className="border border-black p-1.5">{formData.spacing || '—'}</td>
             </tr>
           </tbody>
         </table>

@@ -46,6 +46,10 @@ export interface PopSubmissionRecord {
   plantingDate: string;
   cropAge: string;
   cropAcreage: string;
+  gpsLocation?: string;
+  gpsLatitude?: number | string;
+  gpsLongitude?: number | string;
+  gpsAccuracy?: number | string;
   plantCount: string;
   spacing?: string;
   currentCropStage?: string;
@@ -1501,6 +1505,10 @@ export async function POST(request: NextRequest) {
       plantingDate: String(data.plantingDate || '').trim(),
       cropAge: String(data.cropAge || '').trim(),
       cropAcreage: String(data.cropAcreage || '').trim(),
+      gpsLocation: String(data.gpsLocation || '').trim(),
+      gpsLatitude: data.gpsLatitude !== undefined && data.gpsLatitude !== '' ? Number(data.gpsLatitude) : undefined,
+      gpsLongitude: data.gpsLongitude !== undefined && data.gpsLongitude !== '' ? Number(data.gpsLongitude) : undefined,
+      gpsAccuracy: data.gpsAccuracy !== undefined && data.gpsAccuracy !== '' ? Number(data.gpsAccuracy) : undefined,
       plantCount: String(data.plantCount || '').trim(),
       spacing: String(data.spacing || '').trim(),
       currentCropStage: String(data.currentCropStage || data.cropStage || '').trim(),
