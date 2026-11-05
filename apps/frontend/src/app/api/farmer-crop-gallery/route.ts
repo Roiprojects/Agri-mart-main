@@ -113,11 +113,15 @@ export async function POST(req: NextRequest) {
               cropId === 'primary';
 
             if (isTargetCrop) {
-              if (sectionId === 'pest-disease-tracking') {
-                pop.problemFieldPhotos = savedPhoto.fileName;
-              } else {
-                pop.visitPhotographs = savedPhoto.fileName;
+              const targetKey = sectionId === 'pest-disease-tracking' ? 'problemFieldPhotos' : 'visitPhotographs';
+              const existingList = String(pop[targetKey] || '')
+                .split(',')
+                .map((s: string) => s.trim())
+                .filter(Boolean);
+              if (!existingList.includes(savedPhoto.fileName)) {
+                existingList.unshift(savedPhoto.fileName);
               }
+              pop[targetKey] = existingList.slice(0, 5).join(', ');
             }
 
             // Sync into cropLifecycleMap if present
@@ -125,11 +129,15 @@ export async function POST(req: NextRequest) {
               if (!pop.cropLifecycleMap[cropId]) {
                 pop.cropLifecycleMap[cropId] = {};
               }
-              if (sectionId === 'pest-disease-tracking') {
-                pop.cropLifecycleMap[cropId].problemFieldPhotos = savedPhoto.fileName;
-              } else {
-                pop.cropLifecycleMap[cropId].visitPhotographs = savedPhoto.fileName;
+              const targetKey = sectionId === 'pest-disease-tracking' ? 'problemFieldPhotos' : 'visitPhotographs';
+              const existingLcP = String(pop.cropLifecycleMap[cropId][targetKey] || '')
+                .split(',')
+                .map((s: string) => s.trim())
+                .filter(Boolean);
+              if (!existingLcP.includes(savedPhoto.fileName)) {
+                existingLcP.unshift(savedPhoto.fileName);
               }
+              pop.cropLifecycleMap[cropId][targetKey] = existingLcP.slice(0, 5).join(', ');
             }
           }
         });
@@ -149,7 +157,7 @@ export async function POST(req: NextRequest) {
     console.error('[API_FARMER_CROP_GALLERY_POST] Error:', err);
     return NextResponse.json(
       { success: false, error: err.message || 'Failed to save photograph' },
-      { status: 500 }
+      { status: 400 }
     );
   }
 }

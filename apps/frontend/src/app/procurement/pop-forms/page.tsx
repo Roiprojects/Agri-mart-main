@@ -1062,18 +1062,69 @@ export default function ProcurementPopFormsPage() {
     fileName: string;
     url: string;
   }) => {
-    setFormData((prev: any) => ({
-      ...prev,
-      [cameraModalConfig.targetFieldName]: fileName,
-    }));
+    setFormData((prev: any) => {
+      const currentVal = String(prev[cameraModalConfig.targetFieldName] || '');
+      const existing = currentVal
+        .split(',')
+        .map((s: string) => s.trim())
+        .filter(Boolean);
+      const updatedList = existing.includes(fileName) ? existing : [...existing, fileName];
+      const clamped = updatedList.slice(0, 5);
+      return {
+        ...prev,
+        [cameraModalConfig.targetFieldName]: clamped.join(', '),
+      };
+    });
 
-    setCropLifecycleMap((prev) => ({
-      ...prev,
-      [selectedLifecycleCropId]: {
-        ...(prev[selectedLifecycleCropId] || extractLifecycleFromFormData(formData)),
-        [cameraModalConfig.targetFieldName]: fileName,
-      },
-    }));
+    setCropLifecycleMap((prev) => {
+      const currentMapLc =
+        prev[selectedLifecycleCropId] || extractLifecycleFromFormData(formData);
+      const currentVal = String((currentMapLc as any)[cameraModalConfig.targetFieldName] || '');
+      const existing = currentVal
+        .split(',')
+        .map((s: string) => s.trim())
+        .filter(Boolean);
+      const updatedList = existing.includes(fileName) ? existing : [...existing, fileName];
+      const clamped = updatedList.slice(0, 5);
+      return {
+        ...prev,
+        [selectedLifecycleCropId]: {
+          ...currentMapLc,
+          [cameraModalConfig.targetFieldName]: clamped.join(', '),
+        },
+      };
+    });
+  };
+
+  const handleRemovePhotoFromField = (fieldName: string, photoFileName: string) => {
+    setFormData((prev: any) => {
+      const currentVal = String(prev[fieldName] || '');
+      const remaining = currentVal
+        .split(',')
+        .map((s: string) => s.trim())
+        .filter((s: string) => s && s !== photoFileName);
+      return {
+        ...prev,
+        [fieldName]: remaining.join(', '),
+      };
+    });
+
+    setCropLifecycleMap((prev) => {
+      const currentMapLc =
+        prev[selectedLifecycleCropId] || extractLifecycleFromFormData(formData);
+      const currentVal = String((currentMapLc as any)[fieldName] || '');
+      const remaining = currentVal
+        .split(',')
+        .map((s: string) => s.trim())
+        .filter((s: string) => s && s !== photoFileName);
+      return {
+        ...prev,
+        [selectedLifecycleCropId]: {
+          ...currentMapLc,
+          [fieldName]: remaining.join(', '),
+        },
+      };
+    });
   };
 
   const availableStateDistricts =
@@ -5569,7 +5620,7 @@ export default function ProcurementPopFormsPage() {
                                 )
                               }
                               className="absolute left-2 z-10 p-1 text-emerald-700 hover:text-emerald-950 hover:bg-emerald-50 rounded cursor-pointer flex items-center justify-center group"
-                              title="Open Field Camera to capture photograph"
+                              title="Open Field Camera to capture photograph (Up to 5 images per crop)"
                             >
                               <Camera className="w-4 h-4 transition-transform group-hover:scale-110" />
                             </button>
@@ -5599,6 +5650,59 @@ export default function ProcurementPopFormsPage() {
                               </button>
                             ) : null}
                           </div>
+
+                          {/* Multiple Photos Strip (Max 5 photos per single crop) */}
+                          {(() => {
+                            const photoList = (formData.visitPhotographs || '')
+                              .split(',')
+                              .map((s) => s.trim())
+                              .filter(Boolean);
+                            if (photoList.length === 0) return null;
+                            return (
+                              <div className="mt-1 space-y-1">
+                                <div className="flex items-center justify-between text-[10px] font-bold text-emerald-800">
+                                  <span>Photos ({photoList.length}/5)</span>
+                                  {photoList.length < 5 ? (
+                                    <button
+                                      type="button"
+                                      onClick={() =>
+                                        handleOpenCameraModal(
+                                          'farmer-visit-photographs',
+                                          'Farmer Visit Photographs',
+                                          'visitPhotographs'
+                                        )
+                                      }
+                                      className="text-emerald-700 hover:underline cursor-pointer"
+                                    >
+                                      + Add ({5 - photoList.length} left)
+                                    </button>
+                                  ) : (
+                                    <span className="text-amber-800 font-extrabold">Max 5</span>
+                                  )}
+                                </div>
+                                <div className="flex flex-wrap gap-1">
+                                  {photoList.map((pName, idx) => (
+                                    <span
+                                      key={idx}
+                                      className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-emerald-50 border border-emerald-300 text-[9px] text-emerald-950 font-semibold"
+                                    >
+                                      <span className="truncate max-w-[90px]" title={pName}>
+                                        {pName}
+                                      </span>
+                                      <button
+                                        type="button"
+                                        onClick={() => handleRemovePhotoFromField('visitPhotographs', pName)}
+                                        className="text-slate-400 hover:text-rose-600 ml-0.5 cursor-pointer"
+                                        title="Remove photo"
+                                      >
+                                        <X className="w-2.5 h-2.5" />
+                                      </button>
+                                    </span>
+                                  ))}
+                                </div>
+                              </div>
+                            );
+                          })()}
                         </div>
                         <div className="md:col-span-1 p-2.5 font-bold bg-white text-black border-b md:border-b-0 md:border-r border-black flex items-center">
                           Next Follow-up
@@ -5639,7 +5743,7 @@ export default function ProcurementPopFormsPage() {
                                 )
                               }
                               className="absolute left-2 z-10 p-1 text-rose-700 hover:text-rose-950 hover:bg-rose-50 rounded cursor-pointer flex items-center justify-center group"
-                              title="Open Field Camera to capture problem photo"
+                              title="Open Field Camera to capture problem photo (Up to 5 images per crop)"
                             >
                               <Camera className="w-4 h-4 transition-transform group-hover:scale-110" />
                             </button>
@@ -5669,6 +5773,59 @@ export default function ProcurementPopFormsPage() {
                               </button>
                             ) : null}
                           </div>
+
+                          {/* Multiple Problem Photos Strip (Max 5 photos per single crop) */}
+                          {(() => {
+                            const photoList = (formData.problemFieldPhotos || '')
+                              .split(',')
+                              .map((s) => s.trim())
+                              .filter(Boolean);
+                            if (photoList.length === 0) return null;
+                            return (
+                              <div className="mt-1 space-y-1">
+                                <div className="flex items-center justify-between text-[10px] font-bold text-rose-900">
+                                  <span>Problem Photos ({photoList.length}/5)</span>
+                                  {photoList.length < 5 ? (
+                                    <button
+                                      type="button"
+                                      onClick={() =>
+                                        handleOpenCameraModal(
+                                          'pest-disease-tracking',
+                                          'Pest & Disease Field Photos',
+                                          'problemFieldPhotos'
+                                        )
+                                      }
+                                      className="text-rose-700 hover:underline cursor-pointer"
+                                    >
+                                      + Add ({5 - photoList.length} left)
+                                    </button>
+                                  ) : (
+                                    <span className="text-amber-800 font-extrabold">Max 5</span>
+                                  )}
+                                </div>
+                                <div className="flex flex-wrap gap-1">
+                                  {photoList.map((pName, idx) => (
+                                    <span
+                                      key={idx}
+                                      className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-rose-50 border border-rose-300 text-[9px] text-rose-950 font-semibold"
+                                    >
+                                      <span className="truncate max-w-[90px]" title={pName}>
+                                        {pName}
+                                      </span>
+                                      <button
+                                        type="button"
+                                        onClick={() => handleRemovePhotoFromField('problemFieldPhotos', pName)}
+                                        className="text-slate-400 hover:text-rose-600 ml-0.5 cursor-pointer"
+                                        title="Remove photo"
+                                      >
+                                        <X className="w-2.5 h-2.5" />
+                                      </button>
+                                    </span>
+                                  ))}
+                                </div>
+                              </div>
+                            );
+                          })()}
                         </div>
                         <div className="md:col-span-2 p-2.5 font-bold bg-white text-black border-b md:border-b-0 md:border-r border-black flex items-center">
                           Symptoms

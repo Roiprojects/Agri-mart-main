@@ -254,6 +254,13 @@ export function FieldCameraCaptureModal({
   const handleSaveToDatabase = async () => {
     if (!capturedDataUrl) return;
 
+    if (isCropPhotoLimitReached) {
+      setErrorMsg(
+        `Maximum 5 images allowed for a single crop. "${effectiveCropName}" already has 5 photos saved in the database. Please delete one photo to free up a slot.`
+      );
+      return;
+    }
+
     try {
       setIsSaving(true);
       setErrorMsg(null);
@@ -364,6 +371,19 @@ export function FieldCameraCaptureModal({
       console.error('Error deleting photo:', err);
     }
   };
+
+  // Active Crop photos in database for this specific single crop
+  const activeCropFromDb = dbGallery?.crops?.find(
+    (c: any) =>
+      (activeCropId && c.cropId === activeCropId) ||
+      c.cropName?.toLowerCase() === effectiveCropName.toLowerCase()
+  );
+
+  const existingCropPhotos: any[] =
+    activeCropFromDb?.sections?.flatMap((s: any) => s.photos || []) || [];
+
+  const activeCropPhotosCount = existingCropPhotos.length;
+  const isCropPhotoLimitReached = activeCropPhotosCount >= 5;
 
   if (!isOpen) return null;
 
@@ -495,6 +515,111 @@ export function FieldCameraCaptureModal({
           {/* TAB 1: LIVE CAMERA VIEW */}
           {activeTab === 'camera' && (
             <div className="space-y-4">
+              {/* 5-Slot Photo Album Strip for the Active Single Crop */}
+              <div className="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs space-y-2.5">
+                <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
+                  <div className="flex items-center gap-1.5 font-black text-slate-900">
+                    <ImageIcon className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <span>{effectiveCropName} Crop Photographic Album</span>
+                    <span
+                      className={`text-[10px] px-2 py-0.5 rounded-full font-black ${
+                        isCropPhotoLimitReached
+                          ? 'bg-amber-100 text-amber-900 border border-amber-300'
+                          : 'bg-emerald-100 text-emerald-900 border border-emerald-300'
+                      }`}
+                    >
+                      {activeCropPhotosCount}/5 Photos Added
+                    </span>
+                  </div>
+                  <div className="text-[11px] font-semibold text-slate-500">
+                    {isCropPhotoLimitReached ? (
+                      <span className="text-amber-700 font-bold bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
+                        Max 5/5 Photos Reached
+                      </span>
+                    ) : (
+                      <span className="text-emerald-700 font-bold">
+                        {5 - activeCropPhotosCount} {5 - activeCropPhotosCount === 1 ? 'slot' : 'slots'} available (Maximum 5 images per crop)
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                {/* 5 Slots Grid */}
+                <div className="grid grid-cols-5 gap-2">
+                  {[0, 1, 2, 3, 4].map((slotIdx) => {
+                    const photo = existingCropPhotos[slotIdx];
+                    if (photo) {
+                      return (
+                        <div
+                          key={photo.id || slotIdx}
+                          className="group relative aspect-square bg-slate-900 rounded-xl overflow-hidden border-2 border-emerald-600 shadow-xs"
+                        >
+                          <img
+                            src={photo.url}
+                            alt={photo.fileName}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                          />
+                          <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1 p-1">
+                            <button
+                              type="button"
+                              onClick={() => setEnlargedPhoto(photo)}
+                              className="p-1 rounded-md bg-white/20 hover:bg-white/40 text-white cursor-pointer"
+                              title="View full photo"
+                            >
+                              <Eye className="w-3.5 h-3.5" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() =>
+                                handleDeletePhoto(
+                                  activeCropFromDb?.cropId || activeCropId || 'primary',
+                                  sectionId || 'farmer-visit-photographs',
+                                  photo.id
+                                )
+                              }
+                              className="p-1 rounded-md bg-rose-600/90 hover:bg-rose-700 text-white cursor-pointer"
+                              title="Delete photo to free up slot"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                          <div className="absolute bottom-0 inset-x-0 bg-black/75 px-1 py-0.5 text-[9px] text-white truncate text-center font-bold">
+                            Photo #{slotIdx + 1}
+                          </div>
+                        </div>
+                      );
+                    }
+
+                    const isNextAvailable = slotIdx === activeCropPhotosCount;
+                    return (
+                      <div
+                        key={slotIdx}
+                        className={`aspect-square rounded-xl border-2 flex flex-col items-center justify-center p-1 text-center transition-colors ${
+                          isNextAvailable
+                            ? 'border-dashed border-emerald-500 bg-emerald-50/70 text-emerald-800 ring-2 ring-emerald-200'
+                            : 'border-dashed border-slate-300 bg-slate-50 text-slate-400'
+                        }`}
+                      >
+                        <Camera className={`w-4 h-4 mb-0.5 ${isNextAvailable ? 'text-emerald-600 animate-pulse' : 'text-slate-300'}`} />
+                        <span className="text-[9px] font-bold">
+                          {isNextAvailable ? `Slot #${slotIdx + 1} (Next)` : `Slot #${slotIdx + 1}`}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* Limit notice when 5/5 reached */}
+                {isCropPhotoLimitReached && (
+                  <div className="p-2.5 bg-amber-50 border border-amber-300 rounded-xl text-amber-900 text-xs font-bold flex items-center gap-2">
+                    <AlertCircle className="w-4 h-4 text-amber-600 shrink-0" />
+                    <span>
+                      Maximum limit reached: A single crop can hold at most 5 images. To add a new photo, click the trash icon on any photo above to delete it and free up a slot.
+                    </span>
+                  </div>
+                )}
+              </div>
+
               <div className="relative bg-black rounded-2xl overflow-hidden shadow-inner aspect-[4/3] max-h-[440px] flex items-center justify-center border-2 border-emerald-500/40">
                 {/* Live Video Viewfinder */}
                 <video
@@ -579,13 +704,17 @@ export function FieldCameraCaptureModal({
                 <button
                   type="button"
                   onClick={handleCapturePhoto}
-                  disabled={!cameraActive}
+                  disabled={!cameraActive || isCropPhotoLimitReached}
                   className={`w-16 h-16 rounded-full flex items-center justify-center shadow-lg transition-all cursor-pointer ${
-                    cameraActive
+                    cameraActive && !isCropPhotoLimitReached
                       ? 'bg-gradient-to-tr from-emerald-600 via-emerald-500 to-teal-400 text-white hover:scale-105 active:scale-95 ring-4 ring-emerald-200'
                       : 'bg-slate-300 text-slate-500 cursor-not-allowed opacity-50'
                   }`}
-                  title="Capture photograph"
+                  title={
+                    isCropPhotoLimitReached
+                      ? `Maximum 5 photographs reached for ${effectiveCropName}`
+                      : 'Capture photograph'
+                  }
                 >
                   <Camera className="w-7 h-7" />
                 </button>
@@ -597,13 +726,27 @@ export function FieldCameraCaptureModal({
                     type="file"
                     accept="image/*"
                     capture="environment"
+                    disabled={isCropPhotoLimitReached}
                     onChange={handleNativeFileUpload}
                     className="hidden"
                   />
                   <button
                     type="button"
-                    onClick={() => fileInputRef.current?.click()}
-                    className="px-3.5 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 font-bold text-xs flex items-center gap-1.5 transition-colors cursor-pointer"
+                    disabled={isCropPhotoLimitReached}
+                    onClick={() => {
+                      if (isCropPhotoLimitReached) {
+                        alert(
+                          `Maximum 5 photos reached for ${effectiveCropName}. Please delete an existing photo to upload a new one.`
+                        );
+                        return;
+                      }
+                      fileInputRef.current?.click();
+                    }}
+                    className={`px-3.5 py-2 rounded-xl font-bold text-xs flex items-center gap-1.5 transition-colors cursor-pointer ${
+                      isCropPhotoLimitReached
+                        ? 'bg-slate-100 text-slate-400 border border-slate-200 cursor-not-allowed opacity-60'
+                        : 'bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300'
+                    }`}
                   >
                     <Upload className="w-3.5 h-3.5" />
                     <span>Device Camera / File</span>

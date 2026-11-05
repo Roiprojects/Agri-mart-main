@@ -6309,6 +6309,18 @@ class PersistentDevDatabase {
       crop.sections.push(section);
     }
 
+    // Enforce strict limit: Maximum 5 images per single crop
+    const totalPhotosInCrop = crop.sections.reduce(
+      (acc, s) => acc + (Array.isArray(s.photos) ? s.photos.length : 0),
+      0
+    );
+
+    if (totalPhotosInCrop >= 5) {
+      throw new Error(
+        `Maximum 5 images allowed for a single crop. Crop "${targetCropName}" already has 5 images stored. Please delete an existing photo to upload a new one.`
+      );
+    }
+
     // Build the photo record
     const safeCropSlug = targetCropName.toLowerCase().replace(/[^a-z0-9]/g, '-');
     const safeFarmerSlug = (params.farmerName || 'farmer').toLowerCase().replace(/[^a-z0-9]/g, '-');
