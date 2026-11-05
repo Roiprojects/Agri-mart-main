@@ -9,8 +9,11 @@ export async function GET(req: NextRequest) {
     const mobile = searchParams.get('mobile');
 
     if (farmerName || farmerId || mobile) {
-      const query = farmerId || farmerName || mobile || '';
-      const gallery = devDb.getFarmerCropGallery(query);
+      const gallery = devDb.getFarmerCropGallery({
+        farmerId: farmerId || '',
+        farmerName: farmerName || '',
+        mobile: mobile || '',
+      });
       if (gallery) {
         return NextResponse.json({ success: true, gallery });
       }

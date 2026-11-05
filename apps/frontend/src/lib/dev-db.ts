@@ -890,7 +890,7 @@ export function getInitialFarmerCropGalleries(): DbFarmerCropGallery[] {
       farmerName: 'Ramesh Kumar Gowda',
       mobileNumber: '9845012345',
       totalAcreage: 10,
-      totalCropsCount: 3,
+      totalCropsCount: 4,
       crops: [
         {
           cropId: 'crop-ramesh-tomato',
@@ -942,6 +942,27 @@ export function getInitialFarmerCropGalleries(): DbFarmerCropGallery[] {
           cropAcreage: 2,
           plantingDate: '2026-09-01',
           cropAge: '60 Days',
+          sections: [
+            {
+              sectionId: 'farmer-visit-photographs',
+              sectionName: 'Farmer Visit Photographs',
+              photos: [],
+            },
+            {
+              sectionId: 'pest-disease-tracking',
+              sectionName: 'Pest & Disease Field Photos',
+              photos: [],
+            },
+          ],
+        },
+        {
+          cropId: 'crop-ramesh-turmeric',
+          cropName: 'Turmeric',
+          cropType: 'Spices and condiments',
+          variety: 'Prathibha / Salem Variety',
+          cropAcreage: 0.5,
+          plantingDate: '2026-08-15',
+          cropAge: '73 Days',
           sections: [
             {
               sectionId: 'farmer-visit-photographs',
@@ -6127,17 +6148,38 @@ class PersistentDevDatabase {
     return this.data.farmerCropGalleries;
   }
 
-  getFarmerCropGallery(farmerNameOrId: string): DbFarmerCropGallery | null {
+  getFarmerCropGallery(
+    queryOrParams: string | { farmerId?: string; farmerName?: string; mobile?: string }
+  ): DbFarmerCropGallery | null {
     const list = this.getFarmerCropGalleries();
-    const query = (farmerNameOrId || '').trim().toLowerCase();
-    if (!query) return null;
+    let qId = '';
+    let qName = '';
+    let qPhone = '';
+
+    if (typeof queryOrParams === 'string') {
+      const q = (queryOrParams || '').trim().toLowerCase();
+      qId = q;
+      qName = q;
+      qPhone = q.replace(/\D/g, '').slice(-10);
+    } else if (queryOrParams) {
+      qId = (queryOrParams.farmerId || '').trim().toLowerCase();
+      qName = (queryOrParams.farmerName || '').trim().toLowerCase();
+      qPhone = (queryOrParams.mobile || '').replace(/\D/g, '').slice(-10);
+    }
+
+    if (!qId && !qName && !qPhone) return null;
+
     return (
-      list.find(
-        (g) =>
-          g.farmerId?.toLowerCase() === query ||
-          g.farmerName?.trim().toLowerCase() === query ||
-          (g.mobileNumber && g.mobileNumber.replace(/\D/g, '').endsWith(query.replace(/\D/g, '')))
-      ) || null
+      list.find((g) => {
+        const gId = (g.farmerId || '').toLowerCase();
+        const gName = (g.farmerName || '').trim().toLowerCase();
+        const gPhone = (g.mobileNumber || '').replace(/\D/g, '').slice(-10);
+
+        if (qId && gId && (gId === qId || gId.includes(qId) || qId.includes(gId))) return true;
+        if (qName && gName && (gName === qName || gName.includes(qName) || qName.includes(gName))) return true;
+        if (qPhone && gPhone && gPhone.endsWith(qPhone)) return true;
+        return false;
+      }) || null
     );
   }
 

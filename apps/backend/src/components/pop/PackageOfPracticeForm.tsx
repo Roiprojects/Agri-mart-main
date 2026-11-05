@@ -33,7 +33,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import CropConfirmationModal from '@/components/crop/CropConfirmationModal';
-import { FieldCameraCaptureModal, CropSummaryItem, sanitizeFieldPhotos } from '@/components/pop/FieldCameraCaptureModal';
+import { FieldCameraCaptureModal, CropSummaryItem, CapturedPhotoItem, sanitizeFieldPhotos } from '@/components/pop/FieldCameraCaptureModal';
 import { CROP_VARIETIES_BY_CATEGORY, ALL_CROP_VARIETIES } from '@/lib/crop-varieties';
 import { useAuth } from '@/lib/auth-client';
 import { validatePhoneNumber, validateEmailOptional, validatePinCode } from '@/lib/validation';
@@ -1156,6 +1156,22 @@ export default function PackageOfPracticeForm() {
     targetFieldName: 'visitPhotographs',
   });
 
+  const [capturedPhotosList, setCapturedPhotosList] = useState<CapturedPhotoItem[]>([]);
+
+  // Load cached photos from localStorage
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    try {
+      const raw = localStorage.getItem('agrimart_live_field_photos');
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) {
+          setCapturedPhotosList(parsed);
+        }
+      }
+    } catch {}
+  }, []);
+
   const handleOpenCameraModal = (
     sectionId: string,
     sectionName: string,
@@ -1171,15 +1187,59 @@ export default function PackageOfPracticeForm() {
 
   const handlePhotoSavedFromModal = ({
     fileName,
-    url: _url,
+    url,
+    photoId,
   }: {
     fileName: string;
     url: string;
+    photoId?: string;
   }) => {
     const targetField = cameraModalConfig.targetFieldName;
+    const currentCropName =
+      (selectedLifecycleCropId === 'primary'
+        ? formData.crop
+        : (formData.additionalCrops || []).find((c) => c.id === selectedLifecycleCropId)?.crop) ||
+      formData.crop ||
+      'General Crop';
+
+    const newPhotoItem: CapturedPhotoItem = {
+      id: photoId || fileName,
+      fileName,
+      url,
+      cropId: selectedLifecycleCropId,
+      cropName: currentCropName,
+      sectionId: cameraModalConfig.sectionId,
+      capturedAt: new Date().toISOString(),
+    };
+
+    setCapturedPhotosList((prev) => [
+      newPhotoItem,
+      ...prev.filter((p) => p.fileName !== fileName),
+    ]);
+
+    try {
+      if (typeof window !== 'undefined') {
+        const raw = localStorage.getItem('agrimart_live_field_photos');
+        const existing = raw ? JSON.parse(raw) : [];
+        const updated = [
+          newPhotoItem,
+          ...existing.filter((p: any) => p.fileName !== fileName),
+        ].slice(0, 50);
+        localStorage.setItem('agrimart_live_field_photos', JSON.stringify(updated));
+      }
+    } catch {}
 
     setFormData((prev: any) => {
-      const currentVal = String(prev[targetField] || '');
+      let currentVal = '';
+      if (selectedLifecycleCropId === 'primary') {
+        currentVal = String(prev[targetField] || '');
+      } else {
+        const item = (prev.additionalCrops || []).find(
+          (c: any) => c.id === selectedLifecycleCropId
+        );
+        currentVal = String(item?.lifecycleData?.[targetField] || '');
+      }
+
       const existing = currentVal
         .split(',')
         .map((s: string) => s.trim())
@@ -1229,6 +1289,21 @@ export default function PackageOfPracticeForm() {
   };
 
   const handleRemovePhotoFromField = (fieldName: string, photoFileName: string) => {
+    setCapturedPhotosList((prev) =>
+      prev.filter((p) => p.fileName !== photoFileName && p.id !== photoFileName)
+    );
+    try {
+      if (typeof window !== 'undefined') {
+        const raw = localStorage.getItem('agrimart_live_field_photos');
+        if (raw) {
+          const arr = JSON.parse(raw).filter(
+            (p: any) => p.fileName !== photoFileName && p.id !== photoFileName
+          );
+          localStorage.setItem('agrimart_live_field_photos', JSON.stringify(arr));
+        }
+      }
+    } catch {}
+
     setFormData((prev: any) => {
       const currentVal = String(prev[fieldName] || '');
       const remaining = currentVal
@@ -6665,6 +6740,7 @@ export default function PackageOfPracticeForm() {
                   ''
               )
         }
+        capturedPhotos={capturedPhotosList}
         onPhotoSaved={handlePhotoSavedFromModal}
         onPhotoDeleted={(photoFileName) =>
           handleRemovePhotoFromField(cameraModalConfig.targetFieldName, photoFileName)

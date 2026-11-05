@@ -56,6 +56,16 @@ export function sanitizeFieldPhotos(raw: string | undefined | null): string {
     .join(', ');
 }
 
+export interface CapturedPhotoItem {
+  id?: string;
+  fileName: string;
+  url: string;
+  cropId?: string;
+  cropName?: string;
+  sectionId?: string;
+  capturedAt?: string;
+}
+
 export interface FieldCameraCaptureModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -72,6 +82,7 @@ export interface FieldCameraCaptureModalProps {
   sectionName: string;
   targetFieldName: string;
   currentFieldPhotos?: string;
+  capturedPhotos?: CapturedPhotoItem[];
   allCropsSummary?: CropSummaryItem[];
   onPhotoSaved: (photoData: { fileName: string; url: string; photoId: string }) => void;
   onPhotoDeleted?: (fileName: string) => void;
@@ -93,6 +104,7 @@ export function FieldCameraCaptureModal({
   sectionName,
   targetFieldName,
   currentFieldPhotos = '',
+  capturedPhotos = [],
   allCropsSummary = [],
   onPhotoSaved,
   onPhotoDeleted,
@@ -105,6 +117,7 @@ export function FieldCameraCaptureModal({
   const [isSaving, setIsSaving] = useState<boolean>(false);
   const [saveSuccessMsg, setSaveSuccessMsg] = useState<string | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [modalSessionPhotos, setModalSessionPhotos] = useState<CapturedPhotoItem[]>([]);
 
   // Camera video stream
   const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -126,6 +139,27 @@ export function FieldCameraCaptureModal({
   const effectiveCropName = activeCropName?.trim() || 'General Crop';
   const effectiveCropAcreage = activeCropAcreage || '4';
 
+  // Load cached live photos from localStorage on mount/open
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    try {
+      const raw = localStorage.getItem('agrimart_live_field_photos');
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) {
+          const clean = parsed.filter(
+            (p: any) =>
+              p &&
+              p.fileName &&
+              !MOCK_PHOTO_FILENAMES.has(String(p.fileName).toLowerCase()) &&
+              Boolean(p.url || p.dataUrl)
+          );
+          setModalSessionPhotos(clean);
+        }
+      }
+    } catch {}
+  }, [isOpen]);
+
   // Initialize camera stream when modal opens
   useEffect(() => {
     if (!isOpen) {
@@ -146,7 +180,7 @@ export function FieldCameraCaptureModal({
     return () => {
       stopCamera();
     };
-  }, [isOpen, facingMode]);
+  }, [isOpen, facingMode, effectiveCropName]);
 
   // Fetch Database Gallery for this farmer
   const fetchDatabaseGallery = async () => {
@@ -343,8 +377,37 @@ export function FieldCameraCaptureModal({
         throw new Error(data.error || 'Failed to save photo to database');
       }
 
+      const savedPhotoObj: CapturedPhotoItem = {
+        id: data.savedPhoto?.id || generatedFileName,
+        fileName: generatedFileName,
+        url: capturedDataUrl,
+        cropId: activeCropId || 'primary',
+        cropName: effectiveCropName,
+        sectionId: sectionId || 'farmer-visit-photographs',
+        capturedAt: new Date().toISOString(),
+      };
+
+      setModalSessionPhotos((prev) => [
+        savedPhotoObj,
+        ...prev.filter((p) => p.fileName !== generatedFileName),
+      ]);
+
+      try {
+        if (typeof window !== 'undefined') {
+          const raw = localStorage.getItem('agrimart_live_field_photos');
+          const existing = raw ? JSON.parse(raw) : [];
+          const updated = [
+            savedPhotoObj,
+            ...existing.filter((p: any) => p.fileName !== generatedFileName),
+          ].slice(0, 50);
+          localStorage.setItem('agrimart_live_field_photos', JSON.stringify(updated));
+        }
+      } catch {}
+
       setSaveSuccessMsg(`Photo saved in database for ${effectiveCropName}!`);
-      setDbGallery(data.gallery);
+      if (data.gallery) {
+        setDbGallery(data.gallery);
+      }
 
       // Update parent form input field
       onPhotoSaved({
@@ -374,6 +437,21 @@ export function FieldCameraCaptureModal({
       if (photoFileName && onPhotoDeleted) {
         onPhotoDeleted(photoFileName);
       }
+      setModalSessionPhotos((prev) =>
+        prev.filter((p) => p.id !== photoId && p.fileName !== photoFileName)
+      );
+      try {
+        if (typeof window !== 'undefined') {
+          const raw = localStorage.getItem('agrimart_live_field_photos');
+          if (raw) {
+            const arr = JSON.parse(raw).filter(
+              (p: any) => p.id !== photoId && p.fileName !== photoFileName
+            );
+            localStorage.setItem('agrimart_live_field_photos', JSON.stringify(arr));
+          }
+        }
+      } catch {}
+
       const res = await fetch(
         `/api/farmer-crop-gallery?farmerName=${encodeURIComponent(
           effectiveFarmerName
@@ -413,23 +491,93 @@ export function FieldCameraCaptureModal({
   const existingCropPhotos: any[] = [];
   const seenNames = new Set<string>();
 
+  const matchesCurrentCrop = (p: any) => {
+    const pCrop = String(p.cropName || '').trim().toLowerCase();
+    const curCrop = String(effectiveCropName || '').trim().toLowerCase();
+    if (pCrop && curCrop) {
+      if (pCrop === curCrop) return true;
+      const safeCurCrop = curCrop.replace(/[^a-z0-9]/g, '');
+      const safePCrop = pCrop.replace(/[^a-z0-9]/g, '');
+      if (safeCurCrop && safePCrop && (safeCurCrop === safePCrop || safePCrop.includes(safeCurCrop) || safeCurCrop.includes(safePCrop))) {
+        return true;
+      }
+      return false;
+    }
+    if (p.cropId && activeCropId && p.cropId !== 'primary' && p.cropId === activeCropId) return true;
+    const safeCurCrop = curCrop.replace(/[^a-z0-9]/g, '');
+    const safeFile = String(p.fileName || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+    if (safeCurCrop && safeFile.includes(safeCurCrop)) return true;
+    return false;
+  };
+
+  const matchesCurrentSection = (p: any) => {
+    if (!p.sectionId) return true;
+    return p.sectionId === sectionId;
+  };
+
+  // 1. First add from modalSessionPhotos (newly captured in this modal session)
+  for (const p of modalSessionPhotos) {
+    if (matchesCurrentCrop(p) && matchesCurrentSection(p)) {
+      const fName = String(p.fileName || '').trim();
+      const hasImage = Boolean(p.url || (p as any).dataUrl);
+      if (fName && hasImage && !seenNames.has(fName)) {
+        seenNames.add(fName);
+        existingCropPhotos.push(p);
+      }
+    }
+  }
+
+  // 2. Add from props.capturedPhotos (passed down from parent form state)
+  for (const p of (capturedPhotos || [])) {
+    if (matchesCurrentCrop(p) && matchesCurrentSection(p)) {
+      const fName = String(p.fileName || '').trim();
+      const hasImage = Boolean(p.url || (p as any).dataUrl);
+      if (fName && hasImage && !seenNames.has(fName)) {
+        seenNames.add(fName);
+        existingCropPhotos.push(p);
+      }
+    }
+  }
+
+  // 3. Add from dbSectionPhotos (synced with database)
   for (const p of dbSectionPhotos) {
     const fName = String(p.fileName || '').trim();
-    const hasImage = Boolean(p.url || p.dataUrl);
+    const hasImage = Boolean(p.url || (p as any).dataUrl);
     if (fName && hasImage && !seenNames.has(fName) && !MOCK_PHOTO_FILENAMES.has(fName.toLowerCase())) {
       seenNames.add(fName);
       existingCropPhotos.push(p);
     }
   }
 
+  // 4. For any filenames registered in formPhotoNames, resolve url from localStorage or props
   for (const fName of formPhotoNames) {
     if (!seenNames.has(fName) && !MOCK_PHOTO_FILENAMES.has(fName.toLowerCase())) {
-      const matchingDbPhoto = dbSectionPhotos.find(
-        (p: any) => String(p.fileName || '').trim() === fName && (p.url || p.dataUrl)
-      );
-      if (matchingDbPhoto) {
+      let resolvedUrl = '';
+      const inProps = (capturedPhotos || []).find((p) => p.fileName === fName);
+      if (inProps?.url) resolvedUrl = inProps.url;
+
+      if (!resolvedUrl) {
+        try {
+          if (typeof window !== 'undefined') {
+            const raw = localStorage.getItem('agrimart_live_field_photos');
+            if (raw) {
+              const arr = JSON.parse(raw);
+              const found = arr.find((p: any) => p.fileName === fName);
+              if (found?.url) resolvedUrl = found.url;
+            }
+          }
+        } catch {}
+      }
+
+      if (resolvedUrl) {
         seenNames.add(fName);
-        existingCropPhotos.push(matchingDbPhoto);
+        existingCropPhotos.push({
+          id: `local-${fName}`,
+          fileName: fName,
+          url: resolvedUrl,
+          cropName: effectiveCropName,
+          sectionId,
+        });
       }
     }
   }
