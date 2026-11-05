@@ -283,7 +283,7 @@ function BookServiceContent() {
           </span>
           <span className="text-emerald-300 font-medium text-[11px]">Direct Super Admin Forwarding</span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-extrabold">GPS-Based Smart Service Request System</h1>
+        <h1 className="text-2xl sm:text-3xl font-extrabold text-white">GPS-Based Smart Service Request System</h1>
         <p className="text-xs sm:text-sm text-emerald-100 max-w-2xl leading-relaxed">
           Submit your farm parcel GPS location and implement needs. Requests are auto-routed to dispatch the nearest verified provider and operator within 2 hours.
         </p>

@@ -307,7 +307,7 @@ export function AdminPortalShell({
             <div className="px-5 py-4 bg-slate-900 text-white flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Settings className="w-4 h-4 text-emerald-400" />
-                <h3 className="text-sm font-bold">
+                <h3 className="text-sm font-bold text-white">
                   Edit Portal Control Settings ({portalId.toUpperCase()})
                 </h3>
               </div>

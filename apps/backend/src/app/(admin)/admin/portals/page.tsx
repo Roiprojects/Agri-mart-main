@@ -1584,7 +1584,7 @@ function PortalsControlContent() {
             <div className="px-5 py-4 bg-slate-900 text-white flex items-center justify-between shrink-0">
               <div className="flex items-center gap-2">
                 <Edit3 className="w-4 h-4 text-emerald-400" />
-                <h3 className="text-sm font-bold">{modalTitle}</h3>
+                <h3 className="text-sm font-bold text-white">{modalTitle}</h3>
               </div>
               <button
                 type="button"

@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { SEED_DEALERS } from '@/lib/seed-data';
 import { MapPin, Phone, Mail, Award, Wrench, ShieldCheck } from 'lucide-react';
 
@@ -7,7 +7,7 @@ export default function DealersPage() {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
       <div className="bg-gradient-to-r from-emerald-900 to-slate-900 text-white rounded-2xl p-6 sm:p-10 shadow-lg space-y-2">
         <span className="text-amber-400 text-xs font-bold uppercase tracking-wider">Authorized Retail & Service Centers</span>
-        <h1 className="text-2xl sm:text-4xl font-extrabold">1,500+ Agri Mart Dealer Network</h1>
+        <h1 className="text-2xl sm:text-4xl font-extrabold text-white">1,500+ Agri Mart Dealer Network</h1>
         <p className="text-xs sm:text-sm text-emerald-100 max-w-2xl">
           Authorized sales points and service workshops across every taluk in Karnataka. Purchase genuine GreenShield equipment, spare parts, and avail warranty service.
         </p>

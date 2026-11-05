@@ -51,7 +51,7 @@ export default async function ServicesPage() {
           <div className="inline-flex items-center gap-2 bg-amber-400 text-slate-950 font-black text-[10px] px-3 py-0.5 rounded-full uppercase tracking-wider">
             <span>Pillar 3 &bull; Section 8 &amp; 9 Compliant</span>
           </div>
-          <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight">
+          <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-white">
             On-Field Agricultural Services (GPS Dispatched)
           </h1>
           <p className="text-xs sm:text-sm text-emerald-100 leading-relaxed">

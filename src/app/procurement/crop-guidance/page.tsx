@@ -1539,7 +1539,7 @@ export default function ProcurementCropGuidancePage() {
             <div className="flex items-center justify-between px-6 py-4 bg-slate-900 text-white">
               <div className="flex items-center gap-2">
                 <Sprout className="w-5 h-5 text-amber-300" />
-                <h3 className="text-sm font-extrabold">
+                <h3 className="text-sm font-extrabold text-white">
                   {editingStage
                     ? `Edit Stage #${editingStage.stageNumber}: ${editingStage.title}`
                     : 'Add New Crop Guidance Stage'}
@@ -1759,7 +1759,7 @@ export default function ProcurementCropGuidancePage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden">
             <div className="flex items-center justify-between px-6 py-4 bg-slate-900 text-white">
-              <h3 className="text-sm font-extrabold">
+              <h3 className="text-sm font-extrabold text-white">
                 {editingCropGuide
                   ? `Edit Crop Master Guide: ${editingCropGuide.name}`
                   : 'Create New Crop Master Guide'}
@@ -1831,7 +1831,7 @@ export default function ProcurementCropGuidancePage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-5xl max-h-[90vh] flex flex-col overflow-hidden">
             <div className="flex items-center justify-between px-6 py-4 bg-slate-900 text-white">
-              <h3 className="text-sm font-extrabold">
+              <h3 className="text-sm font-extrabold text-white">
                 {editingSectionIndex !== null
                   ? 'Edit Full Section Table (Headers & All Rows)'
                   : 'Add Complete New Section Table'}
@@ -2039,7 +2039,7 @@ export default function ProcurementCropGuidancePage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-xl overflow-hidden">
             <div className="flex items-center justify-between px-6 py-4 bg-slate-900 text-white">
-              <h3 className="text-sm font-extrabold">
+              <h3 className="text-sm font-extrabold text-white">
                 {editingRowIndex !== null ? 'Edit Table Row' : 'Add New Table Row'} —{' '}
                 {activeMasterCrop.sections[activeRowSectionIdx]?.title}
               </h3>

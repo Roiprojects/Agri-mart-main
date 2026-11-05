@@ -51,7 +51,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
 
       <div className="bg-emerald-900 text-white rounded-2xl p-6 sm:p-8">
         <span className="text-amber-400 text-xs font-bold uppercase tracking-wider">Category</span>
-        <h1 className="text-2xl sm:text-4xl font-extrabold mt-1">{currentCategory.name}</h1>
+        <h1 className="text-2xl sm:text-4xl font-extrabold mt-1 text-white">{currentCategory.name}</h1>
         <p className="text-xs sm:text-sm text-emerald-100 mt-2 max-w-2xl">{currentCategory.description}</p>
       </div>
 

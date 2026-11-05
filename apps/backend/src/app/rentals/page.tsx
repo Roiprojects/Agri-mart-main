@@ -24,7 +24,7 @@ export default async function RentalsPage() {
       <div className="bg-gradient-to-r from-emerald-900 to-slate-900 text-white rounded-2xl p-6 sm:p-10 shadow-lg flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
         <div>
           <span className="text-amber-400 text-xs font-bold uppercase tracking-wider">Rent a Product Module</span>
-          <h1 className="text-2xl sm:text-4xl font-extrabold mt-1">Agricultural Equipment Rental Marketplace</h1>
+          <h1 className="text-2xl sm:text-4xl font-extrabold mt-1 text-white">Agricultural Equipment Rental Marketplace</h1>
           <p className="text-xs sm:text-sm text-emerald-100 mt-2 max-w-2xl">
             Mechanize your farm operations without heavy capital investment. Rent power weeders, brush cutters, sprayers, and reapers by Hour, Day, Week, or Month.
           </p>

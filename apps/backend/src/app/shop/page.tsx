@@ -87,7 +87,7 @@ export default function ShopPage() {
           <div className="inline-flex items-center gap-1.5 bg-agri-yellow text-slate-950 font-black text-[10px] px-2.5 py-0.5 rounded-full uppercase tracking-wider mb-2">
             Database-Backed Live Catalogue
           </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold">Agri Mart Storefront</h1>
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-white">Agri Mart Storefront</h1>
           <p className="text-xs text-emerald-100 mt-1">
             Genuine power weeders, battery sprayers, certified foundation seeds, bio-fertilizers &amp; drip systems.
           </p>

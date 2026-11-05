@@ -579,7 +579,7 @@ export default function AdminDashboardPage() {
             <div className="px-5 py-4 bg-slate-900 text-white flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <ShieldCheck className="w-4 h-4 text-emerald-400" />
-                <h3 className="text-sm font-bold">Edit Portal: {editingPortal.title}</h3>
+                <h3 className="text-sm font-bold text-white">Edit Portal: {editingPortal.title}</h3>
               </div>
               <button
                 type="button"

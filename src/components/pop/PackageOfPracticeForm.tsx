@@ -6152,8 +6152,8 @@ export default function PackageOfPracticeForm() {
       {/* PRINT STYLESHEET VIEW (Visible ONLY during window.print()) */}
       <div className="hidden print:block font-serif text-black p-4 space-y-4">
         <div className="text-center pb-3 border-b-2 border-black">
-          <h1 className="text-xl font-bold uppercase tracking-wider">
-            FARMER DATA FORMS & PACKAGE OF PRACTICE (POP)
+          <h1 className="text-xl font-bold uppercase tracking-wider text-black">
+            FARMER DATA FORMS &amp; PACKAGE OF PRACTICE (POP)
           </h1>
           <p className="text-xs">AGRI MART MEGA - GREENSHIELD INDUSTRIES PVT LTD</p>
         </div>

@@ -57,7 +57,7 @@ export default async function AccountPage() {
           </div>
           <div>
             <div className="text-[10px] font-bold text-amber-300 uppercase tracking-wider">Registered Farmer</div>
-            <h1 className="text-xl sm:text-2xl font-extrabold">{profile.name}</h1>
+            <h1 className="text-xl sm:text-2xl font-extrabold text-white">{profile.name}</h1>
             <div className="text-xs text-emerald-200 mt-0.5">
               {profile.mobile} &bull; {profile.villagePanchayat}, {profile.taluk}, {profile.district}
             </div>

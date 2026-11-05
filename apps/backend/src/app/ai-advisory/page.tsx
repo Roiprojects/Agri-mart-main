@@ -52,8 +52,8 @@ export default function AIAdvisoryPage() {
         <div className="inline-flex items-center gap-1.5 bg-agri-yellow text-slate-950 font-black text-xs px-3 py-1 rounded-full uppercase tracking-wider shadow-xs">
           <Sparkles className="w-3.5 h-3.5" /> Google Gemini AI Recommendation Engine
         </div>
-        <h1 className="text-2xl sm:text-4xl font-black tracking-tight">
-          Intelligent AI Crop & Machinery Advisory
+        <h1 className="text-2xl sm:text-4xl font-black tracking-tight text-white">
+          Intelligent AI Crop &amp; Machinery Advisory
         </h1>
         <p className="text-xs sm:text-sm text-emerald-100 max-w-2xl leading-relaxed">
           Answer 9 questions about your field, soil, and crop stage. Our agronomy algorithm generates

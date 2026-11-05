@@ -452,7 +452,7 @@ export default function RepairsPortalPage() {
             </span>
             <span className="text-emerald-400 font-bold text-[11px]">AgriMart Mega Service Center Network</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold mt-1">Repair & Workshop Management System</h1>
+          <h1 className="text-2xl sm:text-3xl font-extrabold mt-1 text-white">Repair &amp; Workshop Management System</h1>
           <p className="text-slate-300 text-xs mt-1 max-w-2xl">
             9-stage machinery workflow from product intake, multi-complaint diagnostics, and estimate approvals to GST billing, warranty claims, and authorized delivery.
           </p>

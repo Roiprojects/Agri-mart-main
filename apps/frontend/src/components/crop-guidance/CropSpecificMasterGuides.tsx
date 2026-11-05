@@ -1072,7 +1072,7 @@ export default function CropSpecificMasterGuides({
                       >
                         <div className="flex items-center gap-2.5">
                           {theme.icon}
-                          <h4 className="text-sm sm:text-base font-extrabold tracking-wide">
+                          <h4 className="text-sm sm:text-base font-extrabold tracking-wide text-white">
                             {section.title}
                           </h4>
                         </div>

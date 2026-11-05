@@ -38,7 +38,7 @@ export default function BlogPage() {
         <Badge variant="warning" size="sm">
           Agri Mart Editorial
         </Badge>
-        <h1 className="text-2xl sm:text-4xl font-extrabold mt-2 tracking-tight">
+        <h1 className="text-2xl sm:text-4xl font-extrabold mt-2 tracking-tight text-white">
           Practical Farming &amp; Equipment Guides
         </h1>
         <p className="text-xs sm:text-sm text-emerald-100 mt-2 max-w-2xl leading-relaxed">

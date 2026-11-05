@@ -202,7 +202,7 @@ export default function FinancePortalPage() {
             </span>
             <span className="text-emerald-400 font-bold text-[11px]">Finance Incentive Commission Engine</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold mt-1">Dealer Commissions & Incentive Portal</h1>
+          <h1 className="text-2xl sm:text-3xl font-extrabold mt-1 text-white">Dealer Commissions &amp; Incentive Portal</h1>
           <p className="text-slate-300 text-xs mt-1 max-w-2xl">
             Contract tier rates, sales target monitoring, refund clawback reconciliations, payout voucher authorizations, and dealer leaderboard.
           </p>
