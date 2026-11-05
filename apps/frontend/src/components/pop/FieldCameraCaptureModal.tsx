@@ -16,8 +16,6 @@ import {
   Calendar,
   AlertCircle,
   CheckCircle2,
-  Maximize2,
-  FolderTree,
   Sprout,
   User,
 } from 'lucide-react';
@@ -67,8 +65,8 @@ export function FieldCameraCaptureModal({
   allCropsSummary = [],
   onPhotoSaved,
 }: FieldCameraCaptureModalProps) {
-  // Tabs: 'camera' (take photo) | 'review' (preview before save) | 'gallery' (view DB photos)
-  const [activeTab, setActiveTab] = useState<'camera' | 'review' | 'gallery'>('camera');
+  // Tabs: 'camera' (take photo) | 'review' (preview before save)
+  const [activeTab, setActiveTab] = useState<'camera' | 'review'>('camera');
   const [capturedDataUrl, setCapturedDataUrl] = useState<string | null>(null);
   const [notes, setNotes] = useState<string>('');
   const [stageName, setStageName] = useState<string>('Vegetative Stage');
@@ -87,9 +85,8 @@ export function FieldCameraCaptureModal({
 
   // Database Gallery State
   const [dbGallery, setDbGallery] = useState<any | null>(null);
-  const [loadingGallery, setLoadingGallery] = useState<boolean>(false);
+  const [_loadingGallery, setLoadingGallery] = useState<boolean>(false);
   const [enlargedPhoto, setEnlargedPhoto] = useState<any | null>(null);
-  const [activeGalleryCrop, setActiveGalleryCrop] = useState<string>('');
 
   // Effective names
   const effectiveFarmerName = farmerName?.trim() || 'Farmer';
@@ -132,9 +129,6 @@ export function FieldCameraCaptureModal({
       const data = await res.json();
       if (data.success && data.gallery) {
         setDbGallery(data.gallery);
-        if (data.gallery.crops && data.gallery.crops.length > 0) {
-          setActiveGalleryCrop(data.gallery.crops[0].cropId);
-        }
       }
     } catch (err) {
       console.warn('Error loading farmer gallery from DB:', err);
@@ -341,18 +335,6 @@ export function FieldCameraCaptureModal({
   };
 
   // Select an existing photo from gallery into form
-  const handleSelectPhotoFromGallery = (photo: any, cropItem: any) => {
-    onPhotoSaved({
-      fileName: photo.fileName,
-      url: photo.url,
-      photoId: photo.id,
-    });
-    setSaveSuccessMsg(`Selected ${photo.fileName} from ${cropItem.cropName}!`);
-    setTimeout(() => {
-      onClose();
-    }, 800);
-  };
-
   // Delete a photo from database
   const handleDeletePhoto = async (cropId: string, pSectionId: string, photoId: string) => {
     if (!confirm('Are you sure you want to delete this photograph from the database?')) return;
@@ -388,12 +370,6 @@ export function FieldCameraCaptureModal({
   const isCropPhotoLimitReached = activeCropPhotosCount >= 5;
 
   if (!isOpen) return null;
-
-  // Calculate total photos in gallery
-  const totalGalleryPhotos =
-    dbGallery?.crops?.reduce((acc: number, c: any) => {
-      return acc + (c.sections?.reduce((sAcc: number, s: any) => sAcc + (s.photos?.length || 0), 0) || 0);
-    }, 0) || 0;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/85 backdrop-blur-md animate-in fade-in duration-200">
@@ -446,20 +422,6 @@ export function FieldCameraCaptureModal({
           </div>
         </div>
 
-        {/* Section Context Ribbon */}
-        <div className="bg-amber-50/90 border-b border-amber-200 px-5 py-2 flex flex-wrap items-center justify-between text-xs text-amber-950">
-          <div className="flex items-center gap-2 font-semibold">
-            <FolderTree className="w-3.5 h-3.5 text-amber-700" />
-            <span>Target Section:</span>
-            <span className="font-extrabold bg-amber-200/80 text-amber-900 px-2 py-0.5 rounded-md">
-              {sectionName}
-            </span>
-            <span className="text-amber-800/80">({effectiveCropName} Plot)</span>
-          </div>
-          <div className="text-[11px] text-amber-800">
-            Photos will be stored in database under: <strong>{effectiveFarmerName} &gt; {effectiveCropName} &gt; {sectionName}</strong>
-          </div>
-        </div>
 
         {/* ========================================================= */}
         {/* MODAL BODY */}
@@ -826,219 +788,7 @@ export function FieldCameraCaptureModal({
             </div>
           )}
 
-          {/* TAB 3: VIEW STORED DATABASE GALLERY (Structured exactly as requested) */}
-          {activeTab === 'gallery' && (
-            <div className="space-y-5">
-              {/* Database Structure Banner */}
-              <div className="bg-gradient-to-r from-emerald-950 to-teal-900 text-white p-4 rounded-2xl shadow-sm border border-emerald-600/40">
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                  <div>
-                    <div className="text-xs uppercase font-extrabold text-emerald-400 tracking-wider">
-                      Database Photographic Storage Hierarchy
-                    </div>
-                    <h4 className="text-base sm:text-lg font-black text-white mt-0.5 flex items-center gap-2">
-                      <User className="w-4 h-4 text-amber-300" />
-                      1st: {dbGallery?.farmerName || effectiveFarmerName}
-                      <span className="text-xs font-bold bg-amber-400 text-emerald-950 px-2 py-0.5 rounded-md">
-                        {dbGallery?.totalAcreage || effectiveTotalAcreage} Acres Total
-                      </span>
-                    </h4>
-                    <p className="text-xs text-emerald-200 mt-1">
-                      Contains {dbGallery?.crops?.length || 0} Crops &bull; Each crop has its own separate named sections and photographs.
-                    </p>
-                  </div>
 
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setActiveTab('camera');
-                      startCamera(facingMode);
-                    }}
-                    className="px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-400 text-emerald-950 font-black text-xs shadow-md hover:scale-105 active:scale-95 transition-all flex items-center gap-1.5 cursor-pointer"
-                  >
-                    <Camera className="w-4 h-4 text-emerald-950" />
-                    <span>Capture New Photo</span>
-                  </button>
-                </div>
-              </div>
-
-              {/* Crop Selector Tabs (e.g. Tomato, Chilli, Maize) */}
-              <div className="bg-white p-3 rounded-2xl border border-slate-200 shadow-xs">
-                <div className="text-[11px] font-black uppercase text-slate-500 mb-2 px-1 flex items-center gap-1.5">
-                  <Sprout className="w-3.5 h-3.5 text-emerald-600" />
-                  <span>Select Crop to View Separate Photographs ({dbGallery?.crops?.length || 0} Crops):</span>
-                </div>
-
-                <div className="flex flex-wrap items-center gap-2">
-                  {dbGallery?.crops?.map((cropItem: any) => {
-                    const isSelected =
-                      activeGalleryCrop === cropItem.cropId ||
-                      (!activeGalleryCrop && cropItem.cropId === dbGallery?.crops?.[0]?.cropId);
-
-                    const cropPhotoCount =
-                      cropItem.sections?.reduce(
-                        (acc: number, s: any) => acc + (s.photos?.length || 0),
-                        0
-                      ) || 0;
-
-                    return (
-                      <button
-                        key={cropItem.cropId}
-                        type="button"
-                        onClick={() => setActiveGalleryCrop(cropItem.cropId)}
-                        className={`px-4 py-2 rounded-xl text-xs font-extrabold flex items-center gap-2 transition-all cursor-pointer border-2 ${
-                          isSelected
-                            ? 'bg-gradient-to-r from-emerald-700 to-teal-700 text-white border-emerald-800 shadow-md scale-[1.02]'
-                            : 'bg-slate-50 hover:bg-emerald-50 text-slate-800 border-slate-200'
-                        }`}
-                      >
-                        <span>{cropItem.cropName}</span>
-                        <span
-                          className={`text-[10px] px-2 py-0.5 rounded-full font-black ${
-                            isSelected ? 'bg-white/20 text-white' : 'bg-slate-200 text-slate-700'
-                          }`}
-                        >
-                          {cropItem.cropAcreage || '0'} Ac ({cropPhotoCount} Photos)
-                        </span>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* Display Sections & Photos for the Selected Crop */}
-              {(() => {
-                const selectedCrop =
-                  dbGallery?.crops?.find(
-                    (c: any) =>
-                      c.cropId === activeGalleryCrop ||
-                      (!activeGalleryCrop && c.cropId === dbGallery?.crops?.[0]?.cropId)
-                  ) || dbGallery?.crops?.[0];
-
-                if (!selectedCrop) {
-                  return (
-                    <div className="p-8 text-center bg-white rounded-2xl border border-slate-200 text-slate-500 text-xs">
-                      No crop sections stored yet. Capture a photo to populate the database.
-                    </div>
-                  );
-                }
-
-                return (
-                  <div className="space-y-4">
-                    <div className="bg-emerald-50/80 border border-emerald-200 p-3 rounded-xl flex items-center justify-between text-xs">
-                      <div className="flex items-center gap-2">
-                        <span className="font-black text-emerald-900 text-sm">
-                          {selectedCrop.cropName} Crop Plot
-                        </span>
-                        <span className="text-emerald-700 font-bold">
-                          ({selectedCrop.cropAcreage || '0'} Acres &bull; Variety: {selectedCrop.variety || 'Standard'})
-                        </span>
-                      </div>
-                      <span className="text-[11px] font-extrabold bg-emerald-200/80 text-emerald-900 px-2.5 py-0.5 rounded-md">
-                        {selectedCrop.sections?.length || 0} Named Sections
-                      </span>
-                    </div>
-
-                    {/* Loop through each named section for this crop */}
-                    {selectedCrop.sections?.map((sectionItem: any) => (
-                      <div
-                        key={sectionItem.sectionId}
-                        className="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden"
-                      >
-                        <div className="bg-slate-100/90 px-4 py-2.5 border-b border-slate-200 flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            <FolderTree className="w-4 h-4 text-emerald-700" />
-                            <h5 className="font-extrabold text-xs text-slate-900">
-                              {sectionItem.sectionName}
-                            </h5>
-                          </div>
-                          <span className="text-[11px] font-bold text-slate-600">
-                            {sectionItem.photos?.length || 0}{' '}
-                            {sectionItem.photos?.length === 1 ? 'Photograph' : 'Photographs'}
-                          </span>
-                        </div>
-
-                        {/* Photo Grid */}
-                        <div className="p-4">
-                          {(!sectionItem.photos || sectionItem.photos.length === 0) && (
-                            <div className="p-6 text-center text-slate-400 text-xs italic">
-                              No photographs captured for this section yet.
-                            </div>
-                          )}
-
-                          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-                            {sectionItem.photos?.map((photo: any) => (
-                              <div
-                                key={photo.id}
-                                className="group relative bg-slate-50 rounded-xl border border-slate-200 overflow-hidden shadow-2xs hover:shadow-md transition-all flex flex-col"
-                              >
-                                <div className="relative aspect-[4/3] bg-black overflow-hidden">
-                                  <img
-                                    src={photo.url}
-                                    alt={photo.fileName}
-                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                                  />
-                                  <button
-                                    type="button"
-                                    onClick={() => setEnlargedPhoto(photo)}
-                                    className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white"
-                                    title="Click to view full photo"
-                                  >
-                                    <Maximize2 className="w-5 h-5" />
-                                  </button>
-                                </div>
-
-                                <div className="p-2.5 flex-1 flex flex-col justify-between space-y-1.5 text-[11px]">
-                                  <div>
-                                    <div className="font-bold text-slate-900 truncate" title={photo.fileName}>
-                                      {photo.fileName}
-                                    </div>
-                                    {photo.stageName && (
-                                      <div className="text-[10px] text-emerald-700 font-semibold truncate">
-                                        {photo.stageName}
-                                      </div>
-                                    )}
-                                    {photo.notes && (
-                                      <p className="text-[10px] text-slate-500 line-clamp-2 mt-0.5">
-                                        {photo.notes}
-                                      </p>
-                                    )}
-                                  </div>
-
-                                  <div className="pt-1.5 border-t border-slate-100 flex items-center justify-between gap-1">
-                                    <button
-                                      type="button"
-                                      onClick={() => handleSelectPhotoFromGallery(photo, selectedCrop)}
-                                      className="px-2 py-1 rounded-md bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-[10px] flex items-center gap-1 transition-colors cursor-pointer"
-                                      title="Set this photo in the POP Photographs input"
-                                    >
-                                      <Check className="w-3 h-3" />
-                                      <span>Use</span>
-                                    </button>
-
-                                    <button
-                                      type="button"
-                                      onClick={() =>
-                                        handleDeletePhoto(selectedCrop.cropId, sectionItem.sectionId, photo.id)
-                                      }
-                                      className="p-1 rounded-md text-rose-600 hover:bg-rose-50 hover:text-rose-800 transition-colors cursor-pointer"
-                                      title="Delete photograph from database"
-                                    >
-                                      <Trash2 className="w-3.5 h-3.5" />
-                                    </button>
-                                  </div>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                );
-              })()}
-            </div>
-          )}
         </div>
 
         {/* Modal Footer */}
