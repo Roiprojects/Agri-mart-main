@@ -65,6 +65,9 @@ export interface CropLifecycleData {
   farmerFeedback: string;
   visitPhotographs: string;
   nextFollowUpDate: string;
+  farmerPracticeActivity: string;
+  farmerPracticeNotes: string;
+  farmerPracticeDate: string;
   problemFieldPhotos: string;
   problemSymptoms: string;
   problemSeverity: string;
@@ -180,6 +183,9 @@ export interface PopSubmissionRecord {
   farmerFeedback?: string;
   visitPhotographs?: string;
   nextFollowUpDate?: string;
+  farmerPracticeActivity?: string;
+  farmerPracticeNotes?: string;
+  farmerPracticeDate?: string;
   problemFieldPhotos?: string;
   problemSymptoms?: string;
   problemSeverity?: string;
@@ -652,6 +658,22 @@ const BASE_SERVICE_AVAILABILITIES = [
   'Irrigation',
 ];
 
+export const BASE_FARMER_EXPERIENCE_PRACTICES = [
+  'Traditional Seed Treatment (Beejamrutha / Ash / Salt Water)',
+  'Indigenous Pest & Disease Repellent (Neemashtra / Agniastra / Dashaparni)',
+  'Farm-Made Organic Manure / FYM / Compost Application',
+  'Indigenous Growth Tonic (Panchagavya / Jeevamrutha)',
+  'Manual Weeding & Traditional Hand Hoeing',
+  'Traditional Furrow / Flood Irrigation Scheduling',
+  'Custom Plant Spacing & Intercropping Adjustment',
+  'Traditional Mulching (Crop Residue / Dried Leaves / Straw)',
+  'Indigenous Sticky / Light / Pheromone Traps',
+  'Local Weather & Traditional Calendar Sowing / Harvesting',
+  'Herbal Extract / Fermented Buttermilk Spray',
+  'Traditional Pruning / Nipping / De-suckering',
+  'Other Independent / Indigenous Practice',
+];
+
 const BASE_SOLUTION_TYPES = [
   'Crop advisory',
   'Insect pest management',
@@ -762,6 +784,9 @@ const LIFECYCLE_FIELD_KEYS: (keyof CropLifecycleData)[] = [
   'farmerFeedback',
   'visitPhotographs',
   'nextFollowUpDate',
+  'farmerPracticeActivity',
+  'farmerPracticeNotes',
+  'farmerPracticeDate',
   'problemFieldPhotos',
   'problemSymptoms',
   'problemSeverity',
@@ -806,6 +831,9 @@ const EMPTY_LIFECYCLE_DATA: CropLifecycleData = {
   farmerFeedback: '',
   visitPhotographs: '',
   nextFollowUpDate: '',
+  farmerPracticeActivity: '',
+  farmerPracticeNotes: '',
+  farmerPracticeDate: '',
   problemFieldPhotos: '',
   problemSymptoms: '',
   problemSeverity: '',
@@ -901,6 +929,9 @@ const EMPTY_RECORD: Omit<PopSubmissionRecord, 'id' | 'submittedAt' | 'updatedAt'
   farmerFeedback: '',
   visitPhotographs: '',
   nextFollowUpDate: '',
+  farmerPracticeActivity: '',
+  farmerPracticeNotes: '',
+  farmerPracticeDate: '',
   problemFieldPhotos: '',
   problemSymptoms: '',
   problemSeverity: '',
@@ -1050,6 +1081,10 @@ export default function ProcurementPopFormsPage() {
   const [isHarvestQtyDropdownOpen, setIsHarvestQtyDropdownOpen] = useState(false);
   const [customHarvestQtyText, setCustomHarvestQtyText] = useState('');
   const harvestQtyDropdownRef = useRef<HTMLDivElement>(null);
+
+  const [isFarmerPracticeDropdownOpen, setIsFarmerPracticeDropdownOpen] = useState(false);
+  const [customFarmerPracticeText, setCustomFarmerPracticeText] = useState('');
+  const farmerPracticeDropdownRef = useRef<HTMLDivElement>(null);
 
   // Per-Crop Lifecycle Switcher
   const [selectedLifecycleCropId, setSelectedLifecycleCropId] = useState<string>('primary');
@@ -1477,6 +1512,7 @@ export default function ProcurementPopFormsPage() {
     setSelectedLifecycleCropId(targetCropId);
     setIsVisitCropStageDropdownOpen(false);
     setIsVisitAppTypeDropdownOpen(false);
+    setIsFarmerPracticeDropdownOpen(false);
     setIsHarvestQtyDropdownOpen(false);
 
     setFormData((prev) => ({
@@ -2003,6 +2039,7 @@ export default function ProcurementPopFormsPage() {
     setIsEquipmentDropdownOpen(false);
     setIsVisitCropStageDropdownOpen(false);
     setIsVisitAppTypeDropdownOpen(false);
+    setIsFarmerPracticeDropdownOpen(false);
     setIsHarvestQtyDropdownOpen(false);
   };
 
@@ -2027,6 +2064,7 @@ export default function ProcurementPopFormsPage() {
         equipmentDropdownRef,
         visitCropStageDropdownRef,
         visitAppTypeDropdownRef,
+        farmerPracticeDropdownRef,
         harvestQtyDropdownRef,
       ];
       const clickedInsideAny = refs.some((r) => r.current && r.current.contains(target));
@@ -2055,6 +2093,9 @@ export default function ProcurementPopFormsPage() {
       farmerFeedback: rec.farmerFeedback || '',
       visitPhotographs: sanitizeFieldPhotos(rec.visitPhotographs || ''),
       nextFollowUpDate: rec.nextFollowUpDate || '',
+      farmerPracticeActivity: rec.farmerPracticeActivity || '',
+      farmerPracticeNotes: rec.farmerPracticeNotes || '',
+      farmerPracticeDate: rec.farmerPracticeDate || '',
       problemFieldPhotos: sanitizeFieldPhotos(rec.problemFieldPhotos || ''),
       problemSymptoms: rec.problemSymptoms || '',
       problemSeverity: rec.problemSeverity || '',
@@ -6140,10 +6181,141 @@ export default function ProcurementPopFormsPage() {
                     </div>
                   </div>
 
-                  {/* 2. Pest, Disease and Crop Problem Tracking */}
+                  {/* 2. Practice by Farmers by His Experience */}
+                  <div className="space-y-2">
+                    <h3 className="text-sm font-bold text-black flex items-center justify-between">
+                      <span>2. Practice by Farmers by His Experience</span>
+                      <span className="text-[10px] font-bold text-amber-900 bg-amber-100 px-2.5 py-0.5 rounded-full border border-amber-300">
+                        Independent Experience Without Agronomist Rec
+                      </span>
+                    </h3>
+                    <div className="border border-black rounded-lg overflow-hidden bg-white text-black divide-y divide-black">
+                      {/* Row 1: Farmer Practice Activity (Dropdown) + Date */}
+                      <div className="grid grid-cols-1 md:grid-cols-12">
+                        <div className="md:col-span-3 p-2.5 font-bold bg-white text-black border-b md:border-b-0 md:border-r border-black flex items-center">
+                          Farmer Practice / Activity
+                        </div>
+                        <div className="md:col-span-6 p-1.5 border-b md:border-b-0 md:border-r border-black bg-white">
+                          {isReadOnly ? (
+                            <input
+                              type="text"
+                              readOnly
+                              value={formData.farmerPracticeActivity || '-'}
+                              className="w-full bg-white px-2.5 py-1.5 font-semibold text-black cursor-default text-xs"
+                            />
+                          ) : (
+                            <div className="relative" ref={farmerPracticeDropdownRef}>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const next = !isFarmerPracticeDropdownOpen;
+                                  resetAllDropdowns();
+                                  setIsFarmerPracticeDropdownOpen(next);
+                                }}
+                                className="w-full bg-white px-2.5 py-1.5 text-xs font-semibold text-black flex items-center justify-between border border-black rounded focus:outline-none cursor-pointer"
+                              >
+                                <span className={formData.farmerPracticeActivity ? 'text-black font-semibold' : 'text-neutral-500'}>
+                                  {formData.farmerPracticeActivity || '-- Select or Enter Farmer Practice --'}
+                                </span>
+                                <ChevronDown className="w-4 h-4 text-black shrink-0" />
+                              </button>
+
+                              {isFarmerPracticeDropdownOpen && (
+                                <div className="absolute left-0 right-0 top-full mt-1 z-[999] bg-white border-2 border-black rounded-lg shadow-2xl max-h-64 overflow-y-auto">
+                                  <div className="p-2 border-b border-black bg-neutral-50 sticky top-0 z-10">
+                                    <div className="text-[10px] font-bold text-black uppercase mb-1">
+                                      Row 1: Other Practice (Type below)
+                                    </div>
+                                    <div className="flex items-center gap-1.5">
+                                      <input
+                                        type="text"
+                                        value={customFarmerPracticeText}
+                                        onChange={(e) => {
+                                          const val = e.target.value;
+                                          setCustomFarmerPracticeText(val);
+                                          setFormData((prev) => ({ ...prev, farmerPracticeActivity: val }));
+                                          updateCropRowLifecycleField(selectedLifecycleCropId, 'farmerPracticeActivity', val, 0);
+                                        }}
+                                        placeholder="Type custom practice or traditional action..."
+                                        className="w-full bg-white px-2 py-1 text-xs text-black border border-black rounded focus:outline-none"
+                                      />
+                                      <button
+                                        type="button"
+                                        onClick={() => setIsFarmerPracticeDropdownOpen(false)}
+                                        className="px-2.5 py-1 bg-black text-white text-xs font-bold rounded cursor-pointer shrink-0"
+                                      >
+                                        Done
+                                      </button>
+                                    </div>
+                                  </div>
+                                  {BASE_FARMER_EXPERIENCE_PRACTICES.map((act) => (
+                                    <button
+                                      key={act}
+                                      type="button"
+                                      onClick={() => {
+                                        setFormData((prev) => ({ ...prev, farmerPracticeActivity: act }));
+                                        updateCropRowLifecycleField(selectedLifecycleCropId, 'farmerPracticeActivity', act, 0);
+                                        setCustomFarmerPracticeText('');
+                                        setIsFarmerPracticeDropdownOpen(false);
+                                      }}
+                                      className={`w-full text-left px-3 py-2 text-xs font-semibold hover:bg-emerald-50 border-b border-neutral-200 last:border-b-0 flex items-center justify-between cursor-pointer ${
+                                        formData.farmerPracticeActivity === act ? 'bg-emerald-100 text-black font-bold' : 'text-black'
+                                      }`}
+                                    >
+                                      <span>{act}</span>
+                                      {formData.farmerPracticeActivity === act && <Check className="w-3.5 h-3.5 text-emerald-700" />}
+                                    </button>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                        <div className="md:col-span-1 p-2.5 font-bold bg-white text-black border-b md:border-b-0 md:border-r border-black flex items-center">
+                          Date
+                        </div>
+                        <div className="md:col-span-2 p-1.5 bg-white">
+                          <input
+                            type="date"
+                            name="farmerPracticeDate"
+                            disabled={isReadOnly}
+                            value={formData.farmerPracticeDate || ''}
+                            onChange={(e) => {
+                              handleFieldChange(e);
+                              updateCropRowLifecycleField(selectedLifecycleCropId, 'farmerPracticeDate', e.target.value, 0);
+                            }}
+                            className="w-full px-2.5 py-1.5 font-semibold text-black bg-white border border-black rounded-md text-xs"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Row 2: Message Box to write detailed actions & notes */}
+                      <div className="grid grid-cols-1 md:grid-cols-12">
+                        <div className="md:col-span-3 p-2.5 font-bold bg-white text-black border-b md:border-b-0 md:border-r border-black flex items-center">
+                          Farmer Experience Notes &amp; Actions
+                        </div>
+                        <div className="md:col-span-9 p-1.5 bg-white">
+                          <textarea
+                            rows={3}
+                            name="farmerPracticeNotes"
+                            readOnly={isReadOnly}
+                            value={formData.farmerPracticeNotes || ''}
+                            onChange={(e) => {
+                              handleFieldChange(e);
+                              updateCropRowLifecycleField(selectedLifecycleCropId, 'farmerPracticeNotes', e.target.value, 0);
+                            }}
+                            placeholder={isReadOnly ? '-' : 'Describe activities or actions independently carried out by the farmer based on their own experience, dosage, application method, observations, or rationale (without agronomist recommendation)...'}
+                            className="w-full px-2.5 py-1.5 text-xs font-semibold text-black bg-white border border-black rounded-md focus:outline-none"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 3. Pest, Disease and Crop Problem Tracking */}
                   <div className="space-y-2">
                     <h3 className="text-sm font-bold text-black">
-                      2. Pest, Disease and Crop Problem Tracking
+                      3. Pest, Disease and Crop Problem Tracking
                     </h3>
                     <div className="border border-black rounded-lg overflow-hidden bg-white text-black">
                       <div className="grid grid-cols-1 md:grid-cols-12 border-b border-black">
@@ -6307,10 +6479,10 @@ export default function ProcurementPopFormsPage() {
                     </div>
                   </div>
 
-                  {/* 3. Irrigation and Weather Alerts */}
+                  {/* 4. Irrigation and Weather Alerts */}
                   <div className="space-y-2">
                     <h3 className="text-sm font-bold text-black">
-                      3. Irrigation and Weather Alerts
+                      4. Irrigation and Weather Alerts
                     </h3>
                     <div className="border border-black rounded-lg overflow-hidden bg-white text-black">
                       <div className="grid grid-cols-1 md:grid-cols-12 border-b border-black">
@@ -6403,10 +6575,10 @@ export default function ProcurementPopFormsPage() {
                     </div>
                   </div>
 
-                  {/* 4. Soil Health and Fertilizer Recommendations */}
+                  {/* 5. Soil Health and Fertilizer Recommendations */}
                   <div className="space-y-2">
                     <h3 className="text-sm font-bold text-black">
-                      4. Soil Health and Fertilizer Recommendations
+                      5. Soil Health and Fertilizer Recommendations
                     </h3>
                     <div className="border border-black rounded-lg overflow-hidden bg-white text-black">
                       <div className="grid grid-cols-1 md:grid-cols-12 border-b border-black">
@@ -6538,10 +6710,10 @@ export default function ProcurementPopFormsPage() {
                     </div>
                   </div>
 
-                  {/* 5. Harvest, Yield and Market Information */}
+                  {/* 6. Harvest, Yield and Market Information */}
                   <div className="space-y-2">
                     <h3 className="text-sm font-bold text-black">
-                      5. Harvest, Yield and Market Information
+                      6. Harvest, Yield and Market Information
                     </h3>
                     <div className="border border-black rounded-lg bg-white text-black">
                       {/* Row 1 (Starting): Harvesting Date (Separate Field) */}
@@ -6718,10 +6890,10 @@ export default function ProcurementPopFormsPage() {
                     </div>
                   </div>
 
-                  {/* 6. Farmer Communication and Follow-ups */}
+                  {/* 7. Farmer Communication and Follow-ups */}
                   <div className="space-y-2">
                     <h3 className="text-sm font-bold text-black">
-                      6. Farmer Communication and Follow-ups
+                      7. Farmer Communication and Follow-ups
                     </h3>
                     <div className="border border-black rounded-lg overflow-hidden bg-white text-black">
                       <div className="grid grid-cols-1 md:grid-cols-12 border-b border-black">
@@ -6812,10 +6984,10 @@ export default function ProcurementPopFormsPage() {
                     </div>
                   </div>
 
-                  {/* 7. Problem and Solution Summary (Backend Editable) */}
+                  {/* 8. Problem and Solution Summary (Backend Editable) */}
                   <div className="space-y-2">
                     <h3 className="text-sm font-bold text-black">
-                      7. Problem and Solution Summary (Backend Managed)
+                      8. Problem and Solution Summary (Backend Managed)
                     </h3>
                     <div className="border border-black rounded-lg overflow-hidden bg-white text-black">
                       <div className="grid grid-cols-1 md:grid-cols-12">
@@ -6935,6 +7107,9 @@ export default function ProcurementPopFormsPage() {
                                   </th>
                                   <th className="p-3 border-r border-white/10 w-40">
                                     Visit &amp; Advisory
+                                  </th>
+                                  <th className="p-3 border-r border-white/10 w-48 bg-amber-950/60 text-amber-300">
+                                    Practice by Farmer&apos;s Experience
                                   </th>
                                   <th className="p-3 border-r border-white/10 w-40">
                                     Pest &amp; Disease Tracking
@@ -7185,6 +7360,77 @@ export default function ProcurementPopFormsPage() {
                                             }
                                             placeholder="Recommendations..."
                                             className="w-full bg-white text-[11px] text-emerald-800 font-medium px-2 py-1 rounded-md border border-emerald-500/40 resize-none overflow-y-auto pop-thin-scroll leading-relaxed focus:border-emerald-600 focus:outline-none"
+                                          />
+                                        </div>
+                                      )}
+                                    </td>
+
+                                    {/* Practice by Farmers by His Experience */}
+                                    <td className="p-2 border-r border-slate-200 text-[11px] text-slate-700 leading-relaxed space-y-1.5 bg-amber-50/20">
+                                      {isReadOnly ? (
+                                        <>
+                                          {lc.farmerPracticeActivity ? (
+                                            <div className="font-bold text-amber-950 bg-amber-100/90 px-2 py-0.5 rounded border border-amber-300 text-[10px] inline-block">
+                                              {lc.farmerPracticeActivity}
+                                            </div>
+                                          ) : (
+                                            <div className="text-slate-400 italic text-[10px]">No practice recorded</div>
+                                          )}
+                                          {lc.farmerPracticeDate && (
+                                            <div className="text-[10px] font-mono text-slate-500">
+                                              Date: {lc.farmerPracticeDate}
+                                            </div>
+                                          )}
+                                          {lc.farmerPracticeNotes ? (
+                                            <div className="text-slate-800 bg-white p-2 rounded-lg border border-amber-200 text-[11px] whitespace-pre-wrap leading-snug shadow-xs">
+                                              {lc.farmerPracticeNotes}
+                                            </div>
+                                          ) : (
+                                            <div className="text-slate-400 text-[10px]">—</div>
+                                          )}
+                                        </>
+                                      ) : (
+                                        <div className="space-y-1">
+                                          <input
+                                            type="text"
+                                            value={lc.farmerPracticeActivity || ''}
+                                            onChange={(e) =>
+                                              updateCropRowLifecycleField(
+                                                cropRow.id,
+                                                'farmerPracticeActivity',
+                                                e.target.value,
+                                                stageRowIdx
+                                              )
+                                            }
+                                            placeholder="Practice / Activity name..."
+                                            className="w-full bg-white text-[11px] font-bold text-amber-950 px-2 py-1 rounded-md border border-amber-400 focus:border-amber-600 focus:outline-none"
+                                          />
+                                          <input
+                                            type="date"
+                                            value={lc.farmerPracticeDate || ''}
+                                            onChange={(e) =>
+                                              updateCropRowLifecycleField(
+                                                cropRow.id,
+                                                'farmerPracticeDate',
+                                                e.target.value,
+                                                stageRowIdx
+                                              )
+                                            }
+                                            className="w-full bg-white text-[10px] font-mono text-slate-700 px-1.5 py-0.5 rounded-md border border-amber-300 focus:border-amber-600 focus:outline-none"
+                                          />
+                                          <textarea
+                                            rows={2}
+                                            value={lc.farmerPracticeNotes || ''}
+                                            onChange={(e) =>
+                                              updateCropRowLifecycleField(
+                                                cropRow.id,
+                                                'farmerPracticeNotes',
+                                                e.target.value,
+                                                stageRowIdx
+                                              )
+                                            }
+                                            placeholder="Farmer experience notes / independent actions..."
+                                            className="w-full bg-white text-[11px] text-slate-800 px-2 py-1 rounded-md border border-amber-300 resize-none overflow-y-auto pop-thin-scroll leading-relaxed focus:border-amber-600 focus:outline-none"
                                           />
                                         </div>
                                       )}

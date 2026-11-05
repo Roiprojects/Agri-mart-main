@@ -71,6 +71,9 @@ export interface CropLifecycleData {
   farmerFeedback: string;
   visitPhotographs: string;
   nextFollowUpDate: string;
+  farmerPracticeActivity: string;
+  farmerPracticeNotes: string;
+  farmerPracticeDate: string;
   problemFieldPhotos: string;
   problemSymptoms: string;
   problemSeverity: string;
@@ -747,6 +750,22 @@ const BASE_SERVICE_AVAILABILITIES = [
   'Irrigation',
 ];
 
+export const BASE_FARMER_EXPERIENCE_PRACTICES = [
+  'Traditional Seed Treatment (Beejamrutha / Ash / Salt Water)',
+  'Indigenous Pest & Disease Repellent (Neemashtra / Agniastra / Dashaparni)',
+  'Farm-Made Organic Manure / FYM / Compost Application',
+  'Indigenous Growth Tonic (Panchagavya / Jeevamrutha)',
+  'Manual Weeding & Traditional Hand Hoeing',
+  'Traditional Furrow / Flood Irrigation Scheduling',
+  'Custom Plant Spacing & Intercropping Adjustment',
+  'Traditional Mulching (Crop Residue / Dried Leaves / Straw)',
+  'Indigenous Sticky / Light / Pheromone Traps',
+  'Local Weather & Traditional Calendar Sowing / Harvesting',
+  'Herbal Extract / Fermented Buttermilk Spray',
+  'Traditional Pruning / Nipping / De-suckering',
+  'Other Independent / Indigenous Practice',
+];
+
 const BASE_SOLUTION_TYPES = [
   'Crop advisory',
   'Insect pest management',
@@ -855,6 +874,9 @@ const LIFECYCLE_FIELD_KEYS: (keyof CropLifecycleData)[] = [
   'farmerFeedback',
   'visitPhotographs',
   'nextFollowUpDate',
+  'farmerPracticeActivity',
+  'farmerPracticeNotes',
+  'farmerPracticeDate',
   'problemFieldPhotos',
   'problemSymptoms',
   'problemSeverity',
@@ -899,6 +921,9 @@ const EMPTY_LIFECYCLE_DATA: CropLifecycleData = {
   farmerFeedback: '',
   visitPhotographs: '',
   nextFollowUpDate: '',
+  farmerPracticeActivity: '',
+  farmerPracticeNotes: '',
+  farmerPracticeDate: '',
   problemFieldPhotos: '',
   problemSymptoms: '',
   problemSeverity: '',
@@ -1033,7 +1058,12 @@ const EMPTY_FORM_DATA = {
   visitPhotographs: '',
   nextFollowUpDate: '',
 
-  // 2. Pest, Disease and Crop Problem Tracking
+  // 2. Practice by Farmers by His Experience
+  farmerPracticeActivity: '',
+  farmerPracticeNotes: '',
+  farmerPracticeDate: '',
+
+  // 3. Pest, Disease and Crop Problem Tracking
   problemFieldPhotos: '',
   problemSymptoms: '',
   problemSeverity: '',
@@ -1139,6 +1169,10 @@ export default function PackageOfPracticeForm() {
   const [newVisitCropStageInput, setNewVisitCropStageInput] = useState('');
   const [visitAppTypeDropdownOpen, setVisitAppTypeDropdownOpen] = useState(false);
   const [newVisitAppTypeInput, setNewVisitAppTypeInput] = useState('');
+
+  // Dropdown states inside 2. Practice by Farmers by His Experience
+  const [farmerPracticeDropdownOpen, setFarmerPracticeDropdownOpen] = useState(false);
+  const [newFarmerPracticeInput, setNewFarmerPracticeInput] = useState('');
 
   // Harvested Quantity dropdown state inside 5. Harvest, Yield and Market Information
   const [harvestQuantityDropdownOpen, setHarvestQuantityDropdownOpen] = useState(false);
@@ -1795,6 +1829,9 @@ export default function PackageOfPracticeForm() {
             farmerFeedback: primarySavedLc.farmerFeedback || rec.farmerFeedback || '',
             visitPhotographs: sanitizeFieldPhotos(primarySavedLc.visitPhotographs || rec.visitPhotographs || ''),
             nextFollowUpDate: primarySavedLc.nextFollowUpDate || rec.nextFollowUpDate || '',
+            farmerPracticeActivity: primarySavedLc.farmerPracticeActivity || rec.farmerPracticeActivity || '',
+            farmerPracticeNotes: primarySavedLc.farmerPracticeNotes || rec.farmerPracticeNotes || '',
+            farmerPracticeDate: primarySavedLc.farmerPracticeDate || rec.farmerPracticeDate || '',
             problemFieldPhotos: sanitizeFieldPhotos(primarySavedLc.problemFieldPhotos || rec.problemFieldPhotos || ''),
             problemSymptoms: primarySavedLc.problemSymptoms || rec.problemSymptoms || '',
             problemSeverity: primarySavedLc.problemSeverity || rec.problemSeverity || '',
@@ -5589,14 +5626,145 @@ export default function PackageOfPracticeForm() {
               </div>
 
               {/* ===================================================== */}
-              {/* 2. Pest, Disease and Crop Problem Tracking (Rose)     */}
+              {/* 2. Practice by Farmers by His Experience (Amber Theme)*/}
+              {/* ===================================================== */}
+              <div className="rounded-2xl border-2 border-amber-500 shadow-sm overflow-hidden">
+                <div className="bg-gradient-to-r from-amber-700 via-amber-600 to-yellow-700 text-white px-5 py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div>
+                    <h3 className="text-base sm:text-lg font-extrabold text-white flex items-center gap-2.5">
+                      <span className="w-7 h-7 rounded-lg bg-white text-amber-950 font-black text-sm flex items-center justify-center shrink-0">
+                        2
+                      </span>
+                      <span>Practice by Farmers by His Experience</span>
+                    </h3>
+                    <p className="text-xs text-amber-100 mt-0.5">
+                      Record activities or actions independently carried out by farmers based on their own experience, without any recommendation from the agronomist.
+                    </p>
+                  </div>
+                  <span className="text-[10px] font-black uppercase tracking-wider bg-white/15 px-3 py-1 rounded-full text-white shrink-0 self-start sm:self-center">
+                    Farmer Experience &amp; Indigenous Practices
+                  </span>
+                </div>
+
+                <div className="bg-white text-black divide-y divide-amber-200">
+                  {/* Row 1: Data to Select (Dropdown) + Date */}
+                  <div className="grid grid-cols-1 md:grid-cols-12">
+                    <div className="md:col-span-3 bg-amber-50/90 text-amber-950 p-3 font-bold text-xs flex items-center border-b md:border-b-0 md:border-r border-amber-200">
+                      Farmer Practice / Activity
+                    </div>
+                    <div className="md:col-span-6 p-2 border-b md:border-b-0 md:border-r border-amber-200 bg-white relative">
+                      {/* Custom Dropdown Trigger Button */}
+                      <button
+                        type="button"
+                        onClick={() => setFarmerPracticeDropdownOpen((prev) => !prev)}
+                        className="w-full bg-white px-3 py-2 text-sm font-semibold text-left text-black border border-amber-300 focus:outline-none focus:ring-2 focus:ring-amber-500 rounded-lg flex items-center justify-between gap-2 cursor-pointer"
+                      >
+                        <span className={formData.farmerPracticeActivity ? 'text-black font-semibold' : 'text-neutral-400 font-normal'}>
+                          {formData.farmerPracticeActivity || '-- Select or Enter Farmer Independent Practice --'}
+                        </span>
+                        <span className="text-amber-700 text-xs font-black">
+                          {farmerPracticeDropdownOpen ? '▲' : '▼'}
+                        </span>
+                      </button>
+
+                      {/* Dropdown Menu */}
+                      {farmerPracticeDropdownOpen && (
+                        <div className="absolute left-2 right-2 top-full mt-1 z-50 bg-white border-2 border-amber-500 rounded-xl shadow-2xl overflow-hidden">
+                          <div className="max-h-60 overflow-y-auto divide-y divide-amber-100">
+                            {/* 1st Row: Other / Custom Option */}
+                            <div className="w-full px-3.5 py-2 bg-white hover:bg-amber-50/50 flex items-center gap-2.5">
+                              <span className="text-xs font-bold text-black shrink-0">
+                                Other Practice
+                              </span>
+                              <input
+                                type="text"
+                                value={newFarmerPracticeInput}
+                                onChange={(e) => {
+                                  const val = e.target.value;
+                                  setNewFarmerPracticeInput(val);
+                                  updateLifecycleFields({ farmerPracticeActivity: val });
+                                }}
+                                onKeyDown={(e) => {
+                                  if (e.key === 'Enter') {
+                                    e.preventDefault();
+                                    setFarmerPracticeDropdownOpen(false);
+                                  }
+                                }}
+                                placeholder="Type custom practice or traditional action..."
+                                className="flex-1 bg-white px-2.5 py-1 text-xs font-semibold text-black placeholder:text-neutral-400 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
+                              />
+                            </div>
+
+                            {/* Options List */}
+                            {BASE_FARMER_EXPERIENCE_PRACTICES.map((practiceOption) => {
+                              const isSelected = formData.farmerPracticeActivity === practiceOption;
+                              return (
+                                <button
+                                  key={practiceOption}
+                                  type="button"
+                                  onClick={() => {
+                                    setNewFarmerPracticeInput('');
+                                    updateLifecycleFields({ farmerPracticeActivity: practiceOption });
+                                    setFarmerPracticeDropdownOpen(false);
+                                  }}
+                                  className={`w-full px-3.5 py-2 text-left text-xs font-semibold flex items-center justify-between transition cursor-pointer ${
+                                    isSelected
+                                      ? 'bg-amber-600 text-white font-bold'
+                                      : 'bg-white hover:bg-amber-50 text-black'
+                                  }`}
+                                >
+                                  <span>{practiceOption}</span>
+                                  {isSelected && <Check className="w-3.5 h-3.5 text-white" />}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="md:col-span-1 bg-amber-50/90 text-amber-950 p-3 font-bold text-xs flex items-center border-b md:border-b-0 md:border-r border-amber-200">
+                      Date
+                    </div>
+                    <div className="md:col-span-2 p-2 bg-white">
+                      <input
+                        type="date"
+                        name="farmerPracticeDate"
+                        value={formData.farmerPracticeDate || ''}
+                        onChange={handleInputChange}
+                        className="w-full px-3 py-2 text-sm font-semibold text-black bg-white border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Row 2: Message Box to write detailed actions & notes */}
+                  <div className="grid grid-cols-1 md:grid-cols-12">
+                    <div className="md:col-span-3 bg-amber-50/90 text-amber-950 p-3 font-bold text-xs flex items-center border-b md:border-b-0 md:border-r border-amber-200">
+                      Farmer Experience Notes &amp; Actions
+                    </div>
+                    <div className="md:col-span-9 p-2 bg-white">
+                      <textarea
+                        name="farmerPracticeNotes"
+                        value={formData.farmerPracticeNotes || ''}
+                        onChange={handleInputChange}
+                        rows={3}
+                        placeholder="Describe activities or actions independently carried out by the farmer based on their own experience, dosage, application method, observations, or rationale (without agronomist recommendation)..."
+                        className="w-full px-3 py-2 text-sm font-semibold text-black bg-white border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* ===================================================== */}
+              {/* 3. Pest, Disease and Crop Problem Tracking (Rose)     */}
               {/* ===================================================== */}
               <div className="rounded-2xl border-2 border-rose-600 overflow-hidden shadow-sm">
                 <div className="bg-gradient-to-r from-rose-700 via-red-600 to-orange-700 text-white px-5 py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                   <div>
                     <h3 className="text-base sm:text-lg font-extrabold text-white flex items-center gap-2.5">
                       <span className="w-7 h-7 rounded-lg bg-white text-rose-900 font-black text-sm flex items-center justify-center shrink-0">
-                        2
+                        3
                       </span>
                       <span>Pest, Disease and Crop Problem Tracking</span>
                     </h3>
@@ -5752,14 +5920,14 @@ export default function PackageOfPracticeForm() {
               </div>
 
               {/* ===================================================== */}
-              {/* 3. Irrigation and Weather Alerts (Sky / Blue Theme)   */}
+              {/* 4. Irrigation and Weather Alerts (Sky / Blue Theme)   */}
               {/* ===================================================== */}
               <div className="rounded-2xl border-2 border-sky-600 overflow-hidden shadow-sm">
                 <div className="bg-gradient-to-r from-sky-700 via-blue-600 to-indigo-700 text-white px-5 py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                   <div>
                     <h3 className="text-base sm:text-lg font-extrabold text-white flex items-center gap-2.5">
                       <span className="w-7 h-7 rounded-lg bg-amber-300 text-sky-950 font-black text-sm flex items-center justify-center shrink-0">
-                        3
+                        4
                       </span>
                       <span>Irrigation and Weather Alerts</span>
                     </h3>
@@ -5853,14 +6021,14 @@ export default function PackageOfPracticeForm() {
               </div>
 
               {/* ===================================================== */}
-              {/* 4. Soil Health and Fertilizer Recommendations (Amber) */}
+              {/* 5. Soil Health and Fertilizer Recommendations (Amber) */}
               {/* ===================================================== */}
               <div className="rounded-2xl border-2 border-amber-600 overflow-hidden shadow-sm">
                 <div className="bg-gradient-to-r from-amber-600 via-amber-500 to-orange-600 text-white px-5 py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                   <div>
                     <h3 className="text-base sm:text-lg font-extrabold text-white flex items-center gap-2.5">
                       <span className="w-7 h-7 rounded-lg bg-white text-amber-900 font-black text-sm flex items-center justify-center shrink-0">
-                        4
+                        5
                       </span>
                       <span>Soil Health and Fertilizer Recommendations</span>
                     </h3>
@@ -6015,14 +6183,14 @@ export default function PackageOfPracticeForm() {
               </div>
 
               {/* ===================================================== */}
-              {/* 5. Harvest, Yield and Market Information (Purple)     */}
+              {/* 6. Harvest, Yield and Market Information (Purple)     */}
               {/* ===================================================== */}
               <div className="rounded-2xl border-2 border-purple-600 shadow-sm">
                 <div className="bg-gradient-to-r from-purple-700 via-violet-700 to-indigo-800 text-white px-5 py-3.5 rounded-t-[14px] flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                   <div>
                     <h3 className="text-base sm:text-lg font-extrabold text-white flex items-center gap-2.5">
                       <span className="w-7 h-7 rounded-lg bg-amber-300 text-purple-950 font-black text-sm flex items-center justify-center shrink-0">
-                        5
+                        6
                       </span>
                       <span>Harvest, Yield and Market Information</span>
                     </h3>
@@ -6205,14 +6373,14 @@ export default function PackageOfPracticeForm() {
               </div>
 
               {/* ===================================================== */}
-              {/* 6. Farmer Communication and Follow-ups (Teal / Cyan)  */}
+              {/* 7. Farmer Communication and Follow-ups (Teal / Cyan)  */}
               {/* ===================================================== */}
               <div className="rounded-2xl border-2 border-teal-600 overflow-hidden shadow-sm">
                 <div className="bg-gradient-to-r from-teal-700 via-cyan-700 to-emerald-800 text-white px-5 py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                   <div>
                     <h3 className="text-base sm:text-lg font-extrabold text-white flex items-center gap-2.5">
                       <span className="w-7 h-7 rounded-lg bg-amber-300 text-teal-950 font-black text-sm flex items-center justify-center shrink-0">
-                        6
+                        7
                       </span>
                       <span>Farmer Communication and Follow-ups</span>
                     </h3>
@@ -6344,7 +6512,7 @@ export default function PackageOfPracticeForm() {
               </div>
 
               {/* ===================================================== */}
-              {/* 7. Problem and Solution Summary Section (Below Submit)*/}
+              {/* 8. Problem and Solution Summary Section (Below Submit)*/}
               {/* Read-Only on Frontend — Edited in Backend Only        */}
               {/* ===================================================== */}
               <div className="rounded-2xl border-2 border-indigo-600 overflow-hidden shadow-sm">
@@ -6352,7 +6520,7 @@ export default function PackageOfPracticeForm() {
                   <div>
                     <h3 className="text-base sm:text-lg font-extrabold text-white flex items-center gap-2.5">
                       <span className="w-7 h-7 rounded-lg bg-amber-300 text-indigo-950 font-black text-sm flex items-center justify-center shrink-0">
-                        7
+                        8
                       </span>
                       <span>Problem and Solution Summary</span>
                     </h3>
@@ -6473,6 +6641,9 @@ export default function PackageOfPracticeForm() {
                               <th className="p-3 border-r border-white/10 w-44">
                                 Visit &amp; Advisory
                               </th>
+                              <th className="p-3 border-r border-white/10 w-48 bg-amber-950/60 text-amber-300">
+                                Practice by Farmer&apos;s Experience
+                              </th>
                               <th className="p-3 border-r border-white/10 w-44">
                                 Pest &amp; Disease Tracking
                               </th>
@@ -6578,6 +6749,29 @@ export default function PackageOfPracticeForm() {
                                       <div className="text-[10px] text-slate-500">
                                         Method: {lc.visitApplicationType}
                                       </div>
+                                    )}
+                                  </td>
+
+                                  {/* Practice by Farmers by His Experience */}
+                                  <td className="p-3 border-r border-agri-border/60 text-[11px] text-slate-700 leading-relaxed space-y-1.5 bg-amber-50/20">
+                                    {lc.farmerPracticeActivity ? (
+                                      <div className="font-bold text-amber-950 bg-amber-100/90 px-2 py-0.5 rounded border border-amber-300 text-[10px] inline-block">
+                                        {lc.farmerPracticeActivity}
+                                      </div>
+                                    ) : (
+                                      <div className="text-slate-400 italic text-[10px]">No practice recorded</div>
+                                    )}
+                                    {lc.farmerPracticeDate && (
+                                      <div className="text-[10px] font-mono text-slate-500">
+                                        Date: {lc.farmerPracticeDate}
+                                      </div>
+                                    )}
+                                    {lc.farmerPracticeNotes ? (
+                                      <div className="text-slate-800 bg-white p-2 rounded-lg border border-amber-200 text-[11px] whitespace-pre-wrap leading-snug shadow-xs">
+                                        {lc.farmerPracticeNotes}
+                                      </div>
+                                    ) : (
+                                      <div className="text-slate-400 text-[10px]">—</div>
                                     )}
                                   </td>
 

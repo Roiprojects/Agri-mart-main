@@ -77,7 +77,11 @@ export interface PopSubmissionRecord {
   farmerFeedback?: string;
   visitPhotographs?: string;
   nextFollowUpDate?: string;
-  // 2. Pest, Disease and Crop Problem Tracking
+  // 2. Practice by Farmers by His Experience
+  farmerPracticeActivity?: string;
+  farmerPracticeNotes?: string;
+  farmerPracticeDate?: string;
+  // 3. Pest, Disease and Crop Problem Tracking
   problemFieldPhotos?: string;
   problemSymptoms?: string;
   problemSeverity?: string;
@@ -1536,6 +1540,9 @@ export async function POST(request: NextRequest) {
       farmerFeedback: String(data.farmerFeedback || '').trim(),
       visitPhotographs: String(data.visitPhotographs || '').trim(),
       nextFollowUpDate: String(data.nextFollowUpDate || '').trim(),
+      farmerPracticeActivity: String(data.farmerPracticeActivity || '').trim(),
+      farmerPracticeNotes: String(data.farmerPracticeNotes || '').trim(),
+      farmerPracticeDate: String(data.farmerPracticeDate || '').trim(),
       problemFieldPhotos: String(data.problemFieldPhotos || '').trim(),
       problemSymptoms: String(data.problemSymptoms || '').trim(),
       problemSeverity: String(data.problemSeverity || '').trim(),
