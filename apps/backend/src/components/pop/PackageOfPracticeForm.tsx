@@ -26,9 +26,13 @@ import {
   Activity,
   Check,
   Clock,
+  Camera,
+  Eye,
+  Image as ImageIcon,
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import CropConfirmationModal from '@/components/crop/CropConfirmationModal';
+import { FieldCameraCaptureModal, CropSummaryItem } from '@/components/pop/FieldCameraCaptureModal';
 import { CROP_VARIETIES_BY_CATEGORY, ALL_CROP_VARIETIES } from '@/lib/crop-varieties';
 import { useAuth } from '@/lib/auth-client';
 import { validatePhoneNumber, validateEmailOptional, validatePinCode } from '@/lib/validation';
@@ -1137,6 +1141,54 @@ export default function PackageOfPracticeForm() {
   const [cropExtraLifecycleStagesMap, setCropExtraLifecycleStagesMap] = useState<
     Record<string, CropLifecycleData[]>
   >({});
+
+  // Field Camera Modal State for photographing crops and saving to DB
+  const [cameraModalConfig, setCameraModalConfig] = useState<{
+    isOpen: boolean;
+    sectionId: string;
+    sectionName: string;
+    targetFieldName: string;
+  }>({
+    isOpen: false,
+    sectionId: 'farmer-visit-photographs',
+    sectionName: 'Farmer Visit Photographs',
+    targetFieldName: 'visitPhotographs',
+  });
+
+  const handleOpenCameraModal = (
+    sectionId: string,
+    sectionName: string,
+    targetFieldName: string
+  ) => {
+    setCameraModalConfig({
+      isOpen: true,
+      sectionId,
+      sectionName,
+      targetFieldName,
+    });
+  };
+
+  const handlePhotoSavedFromModal = ({
+    fileName,
+    url,
+  }: {
+    fileName: string;
+    url: string;
+  }) => {
+    setFormData((prev) => ({
+      ...prev,
+      [cameraModalConfig.targetFieldName]: fileName,
+    }));
+
+    // Update active crop lifecycle map
+    setCropLifecycleMap((prev) => ({
+      ...prev,
+      [selectedLifecycleCropId]: {
+        ...(prev[selectedLifecycleCropId] || EMPTY_LIFECYCLE_DATA),
+        [cameraModalConfig.targetFieldName]: fileName,
+      },
+    }));
+  };
 
   // Inline Login / Sign In state (Phone Number or Username + Password)
   const [authMode, setAuthMode] = useState<'login' | 'signin'>('login');
@@ -4978,14 +5030,46 @@ export default function PackageOfPracticeForm() {
                       Photographs
                     </div>
                     <div className="md:col-span-2 p-2 border-b md:border-b-0 md:border-r border-emerald-200 bg-white">
-                      <input
-                        type="text"
-                        name="visitPhotographs"
-                        value={formData.visitPhotographs}
-                        onChange={handleInputChange}
-                        placeholder="Photo link / file ref"
-                        className="w-full px-3 py-2 text-sm font-semibold text-black bg-white border border-emerald-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                      />
+                      <div className="relative flex items-center">
+                        <button
+                          type="button"
+                          onClick={() =>
+                            handleOpenCameraModal(
+                              'farmer-visit-photographs',
+                              'Farmer Visit Photographs',
+                              'visitPhotographs'
+                            )
+                          }
+                          className="absolute left-2.5 z-10 p-1 text-emerald-700 hover:text-emerald-950 hover:bg-emerald-100 rounded-md transition-all cursor-pointer flex items-center justify-center group"
+                          title="Open Field Camera to capture photograph"
+                        >
+                          <Camera className="w-4 h-4 transition-transform group-hover:scale-110" />
+                        </button>
+                        <input
+                          type="text"
+                          name="visitPhotographs"
+                          value={formData.visitPhotographs}
+                          onChange={handleInputChange}
+                          placeholder="Photo link / file ref"
+                          className="w-full pl-9 pr-9 py-2 text-sm font-semibold text-black bg-white border border-emerald-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                        />
+                        {formData.visitPhotographs ? (
+                          <button
+                            type="button"
+                            onClick={() =>
+                              handleOpenCameraModal(
+                                'farmer-visit-photographs',
+                                'Farmer Visit Photographs',
+                                'visitPhotographs'
+                              )
+                            }
+                            className="absolute right-2.5 z-10 p-1 text-emerald-700 hover:text-emerald-950 rounded hover:bg-emerald-50 cursor-pointer"
+                            title="View captured photograph / Open Gallery"
+                          >
+                            <Eye className="w-4 h-4" />
+                          </button>
+                        ) : null}
+                      </div>
                     </div>
                     <div className="md:col-span-1 bg-emerald-50/90 text-emerald-950 p-3 font-bold text-xs flex items-center border-b md:border-b-0 md:border-r border-emerald-200">
                       Next Follow-up
@@ -5031,14 +5115,46 @@ export default function PackageOfPracticeForm() {
                       Upload Field Photos
                     </div>
                     <div className="md:col-span-3 p-2 border-b md:border-b-0 md:border-r border-rose-200 bg-white">
-                      <input
-                        type="text"
-                        name="problemFieldPhotos"
-                        value={formData.problemFieldPhotos}
-                        onChange={handleInputChange}
-                        placeholder="Photo URL or file reference"
-                        className="w-full px-3 py-2 text-sm font-semibold text-black bg-white border border-rose-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500"
-                      />
+                      <div className="relative flex items-center">
+                        <button
+                          type="button"
+                          onClick={() =>
+                            handleOpenCameraModal(
+                              'pest-disease-tracking',
+                              'Pest & Disease Field Photos',
+                              'problemFieldPhotos'
+                            )
+                          }
+                          className="absolute left-2.5 z-10 p-1 text-rose-700 hover:text-rose-950 hover:bg-rose-100 rounded-md transition-all cursor-pointer flex items-center justify-center group"
+                          title="Open Field Camera to capture problem photo"
+                        >
+                          <Camera className="w-4 h-4 transition-transform group-hover:scale-110" />
+                        </button>
+                        <input
+                          type="text"
+                          name="problemFieldPhotos"
+                          value={formData.problemFieldPhotos}
+                          onChange={handleInputChange}
+                          placeholder="Photo URL or file reference"
+                          className="w-full pl-9 pr-9 py-2 text-sm font-semibold text-black bg-white border border-rose-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500"
+                        />
+                        {formData.problemFieldPhotos ? (
+                          <button
+                            type="button"
+                            onClick={() =>
+                              handleOpenCameraModal(
+                                'pest-disease-tracking',
+                                'Pest & Disease Field Photos',
+                                'problemFieldPhotos'
+                              )
+                            }
+                            className="absolute right-2.5 z-10 p-1 text-rose-700 hover:text-rose-950 rounded hover:bg-rose-50 cursor-pointer"
+                            title="View captured photograph / Open Gallery"
+                          >
+                            <Eye className="w-4 h-4" />
+                          </button>
+                        ) : null}
+                      </div>
                     </div>
                     <div className="md:col-span-2 bg-rose-50/90 text-rose-950 p-3 font-bold text-xs flex items-center border-b md:border-b-0 md:border-r border-rose-200">
                       Symptoms
@@ -6345,6 +6461,65 @@ export default function PackageOfPracticeForm() {
         cropName={cropConfirmModal.cropName}
         onConfirm={handleConfirmCropModal}
         onCancel={() => setCropConfirmModal({ isOpen: false, type: 'add' })}
+      />
+
+      {/* Field Camera Capture & Crop Photographic Gallery Modal */}
+      <FieldCameraCaptureModal
+        isOpen={cameraModalConfig.isOpen}
+        onClose={() => setCameraModalConfig((prev) => ({ ...prev, isOpen: false }))}
+        farmerName={formData.name || user?.name || 'Farmer'}
+        farmerId={formData.farmerId || user?.id || ''}
+        mobileNumber={formData.mobileNumber || user?.mobile || ''}
+        totalAcreage={formData.acres || '10'}
+        activeCropId={selectedLifecycleCropId}
+        activeCropName={
+          (selectedLifecycleCropId === 'primary'
+            ? formData.crop
+            : (formData.additionalCrops || []).find((c) => c.id === selectedLifecycleCropId)?.crop) ||
+          formData.crop ||
+          'General Crop'
+        }
+        activeCropAcreage={
+          (selectedLifecycleCropId === 'primary'
+            ? formData.cropAcreage
+            : (formData.additionalCrops || []).find((c) => c.id === selectedLifecycleCropId)?.cropAcreage) ||
+          formData.cropAcreage ||
+          ''
+        }
+        activeVariety={
+          (selectedLifecycleCropId === 'primary'
+            ? formData.variety
+            : (formData.additionalCrops || []).find((c) => c.id === selectedLifecycleCropId)?.variety) ||
+          formData.variety ||
+          ''
+        }
+        activeCropType={
+          (selectedLifecycleCropId === 'primary'
+            ? formData.cropType
+            : (formData.additionalCrops || []).find((c) => c.id === selectedLifecycleCropId)?.cropType) ||
+          formData.cropType ||
+          ''
+        }
+        sectionId={cameraModalConfig.sectionId}
+        sectionName={cameraModalConfig.sectionName}
+        targetFieldName={cameraModalConfig.targetFieldName}
+        allCropsSummary={[
+          {
+            cropId: 'primary',
+            cropName: formData.crop || 'Crop 1',
+            cropAcreage: formData.cropAcreage || formData.acres || '',
+            variety: formData.variety || '',
+            cropType: formData.cropType || '',
+          },
+          ...(formData.additionalCrops || []).map((c, i) => ({
+            cropId: c.id,
+            cropName: c.crop || `Crop #${i + 2}`,
+            cropAcreage: c.cropAcreage || '',
+            variety: c.variety || '',
+            cropType: c.cropType || '',
+          })),
+        ]}
+        onPhotoSaved={handlePhotoSavedFromModal}
       />
     </div>
   );

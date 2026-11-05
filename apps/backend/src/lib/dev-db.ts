@@ -620,6 +620,46 @@ export interface DbProductUsageLog {
   createdAt: string;
 }
 
+export interface DbCropSectionPhoto {
+  id: string;
+  url: string; // Base64 data URL or uploaded URL
+  fileName: string; // e.g. "ramesh-tomato-oct20.jpg"
+  capturedAt: string; // ISO 8601 string
+  stageName?: string;
+  notes?: string;
+  takenBy?: string;
+  fileSizeBytes?: number;
+}
+
+export interface DbFarmerCropSection {
+  sectionId: string; // e.g. "farmer-visit-photographs", "pest-disease-tracking"
+  sectionName: string; // e.g. "Farmer Visit Photographs", "Pest & Disease Field Photos"
+  photos: DbCropSectionPhoto[];
+}
+
+export interface DbFarmerCropEntry {
+  cropId: string; // e.g. "primary", "crop-2", or uuid
+  cropName: string; // e.g. "Tomato", "Chilli", "Maize"
+  cropType?: string; // e.g. "Vegetables", "Field Crops"
+  variety?: string; // e.g. "Arka Rakshak"
+  cropAcreage: string | number; // e.g. "4", "4 Acres"
+  plantingDate?: string;
+  cropAge?: string;
+  sections: DbFarmerCropSection[]; // separate named crop sections with their own images!
+}
+
+export interface DbFarmerCropGallery {
+  id: string;
+  farmerId: string; // Unique identifier or phone number
+  farmerName: string; // 1st: Farmer Name (e.g. "XYZ", "Ramesh Kumar Gowda")
+  mobileNumber?: string;
+  totalAcreage: string | number; // Total farm acreage (e.g. "10", "10 Acres")
+  totalCropsCount: number; // e.g. 3
+  crops: DbFarmerCropEntry[]; // in that: total crop list, and inside each crop part: separate named crop sections with their own images!
+  createdAt: string;
+  updatedAt: string;
+}
+
 export type SalesLeadStage =
   | 'NEW'
   | 'ASSIGNED'
@@ -819,6 +859,7 @@ export interface DevDatabaseData {
   cropGuidancePageContent?: any;
   cropGuidanceSettings?: any;
   gallerySettings?: any;
+  farmerCropGalleries?: DbFarmerCropGallery[];
 }
 
 function resolveDataFilePath(): string {
@@ -839,6 +880,231 @@ function ensureDataDirectory() {
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir, { recursive: true });
   }
+}
+
+export function getInitialFarmerCropGalleries(): DbFarmerCropGallery[] {
+  return [
+    {
+      id: 'gallery-ramesh-001',
+      farmerId: 'farmer-ramesh-gowda',
+      farmerName: 'Ramesh Kumar Gowda',
+      mobileNumber: '9845012345',
+      totalAcreage: 10,
+      totalCropsCount: 3,
+      crops: [
+        {
+          cropId: 'crop-ramesh-tomato',
+          cropName: 'Tomato',
+          cropType: 'Vegetables',
+          variety: 'Arka Rakshak F1',
+          cropAcreage: 4,
+          plantingDate: '2026-09-15',
+          cropAge: '45 Days',
+          sections: [
+            {
+              sectionId: 'farmer-visit-photographs',
+              sectionName: 'Farmer Visit Photographs',
+              photos: [
+                {
+                  id: 'photo-t-1',
+                  fileName: 'ramesh-tomato-oct20.jpg',
+                  url: 'https://images.unsplash.com/photo-1592841200221-a6898f307baa?auto=format&fit=crop&w=800&q=80',
+                  capturedAt: '2026-10-20T10:15:00Z',
+                  stageName: 'Flowering Stage',
+                  notes: 'First cluster flowering confirmed across 4 acres.',
+                  takenBy: 'Dr. Anand Patil (Agronomist)',
+                },
+              ],
+            },
+            {
+              sectionId: 'pest-disease-tracking',
+              sectionName: 'Pest & Disease Field Photos',
+              photos: [
+                {
+                  id: 'photo-t-2',
+                  fileName: 'tomato-blight-check.jpg',
+                  url: 'https://images.unsplash.com/photo-1560493676-04071c5f467b?auto=format&fit=crop&w=800&q=80',
+                  capturedAt: '2026-10-22T14:30:00Z',
+                  stageName: 'Vegetative Stage',
+                  notes: 'Slight early blight symptoms arrested with bio-spray.',
+                  takenBy: 'Dr. Anand Patil (Agronomist)',
+                },
+              ],
+            },
+          ],
+        },
+        {
+          cropId: 'crop-ramesh-chilli',
+          cropName: 'Chilli',
+          cropType: 'Commercial Spices',
+          variety: 'Byadgi Dabbi',
+          cropAcreage: 4,
+          plantingDate: '2026-09-20',
+          cropAge: '40 Days',
+          sections: [
+            {
+              sectionId: 'farmer-visit-photographs',
+              sectionName: 'Farmer Visit Photographs',
+              photos: [
+                {
+                  id: 'photo-c-1',
+                  fileName: 'chilli-vegetative-oct27.jpg',
+                  url: 'https://images.unsplash.com/photo-1588252303782-cb80119abd6d?auto=format&fit=crop&w=800&q=80',
+                  capturedAt: '2026-10-27T11:20:00Z',
+                  stageName: 'Knee-High Vegetative',
+                  notes: 'Uniform shoot expansion and canopy formation.',
+                  takenBy: 'Dr. Anand Patil (Agronomist)',
+                },
+              ],
+            },
+            {
+              sectionId: 'pest-disease-tracking',
+              sectionName: 'Pest & Disease Field Photos',
+              photos: [],
+            },
+          ],
+        },
+        {
+          cropId: 'crop-ramesh-maize',
+          cropName: 'Maize',
+          cropType: 'Cereal Crops',
+          variety: 'CP 818 High-Yield',
+          cropAcreage: 2,
+          plantingDate: '2026-09-01',
+          cropAge: '60 Days',
+          sections: [
+            {
+              sectionId: 'farmer-visit-photographs',
+              sectionName: 'Farmer Visit Photographs',
+              photos: [
+                {
+                  id: 'photo-m-1',
+                  fileName: 'maize-visit-oct18.jpg',
+                  url: 'https://images.unsplash.com/photo-1551754655-cd27e38d2076?auto=format&fit=crop&w=800&q=80',
+                  capturedAt: '2026-10-18T09:40:00Z',
+                  stageName: 'Tasseling & Silking Stage',
+                  notes: 'Tassel emergence uniform, ear formation progressing normally.',
+                  takenBy: 'Dr. Anand Patil (Agronomist)',
+                },
+              ],
+            },
+            {
+              sectionId: 'pest-disease-tracking',
+              sectionName: 'Pest & Disease Field Photos',
+              photos: [],
+            },
+          ],
+        },
+      ],
+      createdAt: '2026-10-18T09:00:00Z',
+      updatedAt: '2026-10-27T11:30:00Z',
+    },
+    {
+      id: 'gallery-xyz-001',
+      farmerId: 'farmer-xyz',
+      farmerName: 'XYZ',
+      mobileNumber: '9988776655',
+      totalAcreage: 10,
+      totalCropsCount: 3,
+      crops: [
+        {
+          cropId: 'crop-xyz-tomato',
+          cropName: 'Tomato',
+          cropType: 'Vegetables',
+          variety: 'Hybrid 105',
+          cropAcreage: 4,
+          plantingDate: '2026-09-10',
+          cropAge: '50 Days',
+          sections: [
+            {
+              sectionId: 'farmer-visit-photographs',
+              sectionName: 'Farmer Visit Photographs',
+              photos: [
+                {
+                  id: 'photo-xyz-t-1',
+                  fileName: 'xyz-tomato-flowering-oct25.jpg',
+                  url: 'https://images.unsplash.com/photo-1592841200221-a6898f307baa?auto=format&fit=crop&w=800&q=80',
+                  capturedAt: '2026-10-25T11:00:00Z',
+                  stageName: 'Flowering & Early Fruit Set',
+                  notes: 'Abundant flower clusters on 4 acres parcel.',
+                  takenBy: 'Field Agronomist',
+                },
+              ],
+            },
+            {
+              sectionId: 'pest-disease-tracking',
+              sectionName: 'Pest & Disease Field Photos',
+              photos: [],
+            },
+          ],
+        },
+        {
+          cropId: 'crop-xyz-chilli',
+          cropName: 'Chilli',
+          cropType: 'Commercial Spices',
+          variety: 'Guntur Sannam',
+          cropAcreage: 4,
+          plantingDate: '2026-09-12',
+          cropAge: '48 Days',
+          sections: [
+            {
+              sectionId: 'farmer-visit-photographs',
+              sectionName: 'Farmer Visit Photographs',
+              photos: [
+                {
+                  id: 'photo-xyz-c-1',
+                  fileName: 'xyz-chilli-visit-oct26.jpg',
+                  url: 'https://images.unsplash.com/photo-1588252303782-cb80119abd6d?auto=format&fit=crop&w=800&q=80',
+                  capturedAt: '2026-10-26T15:30:00Z',
+                  stageName: 'Vegetative Branching',
+                  notes: 'Healthy bush formation across 4 acres chilli section.',
+                  takenBy: 'Field Agronomist',
+                },
+              ],
+            },
+            {
+              sectionId: 'pest-disease-tracking',
+              sectionName: 'Pest & Disease Field Photos',
+              photos: [],
+            },
+          ],
+        },
+        {
+          cropId: 'crop-xyz-other',
+          cropName: 'Groundnut',
+          cropType: 'Oilseeds',
+          variety: 'TMV-2',
+          cropAcreage: 2,
+          plantingDate: '2026-09-18',
+          cropAge: '42 Days',
+          sections: [
+            {
+              sectionId: 'farmer-visit-photographs',
+              sectionName: 'Farmer Visit Photographs',
+              photos: [
+                {
+                  id: 'photo-xyz-g-1',
+                  fileName: 'xyz-groundnut-peg-oct28.jpg',
+                  url: 'https://images.unsplash.com/photo-1500937386664-56d1dfef3854?auto=format&fit=crop&w=800&q=80',
+                  capturedAt: '2026-10-28T16:00:00Z',
+                  stageName: 'Pegging Stage',
+                  notes: 'Good peg penetration in 2 acres sandy loam block.',
+                  takenBy: 'Field Agronomist',
+                },
+              ],
+            },
+            {
+              sectionId: 'pest-disease-tracking',
+              sectionName: 'Pest & Disease Field Photos',
+              photos: [],
+            },
+          ],
+        },
+      ],
+      createdAt: '2026-10-25T11:00:00Z',
+      updatedAt: '2026-10-28T16:00:00Z',
+    },
+  ];
 }
 
 function getInitialData(): DevDatabaseData {
@@ -901,6 +1167,7 @@ function getInitialData(): DevDatabaseData {
         isDraft: false,
         isFeatured: true,
         isBestSeller: true,
+        disableBuyButton: true,
         targetCrops: 'Cotton, Sugarcane, Maize, Chili, Soybean',
         cropStages: '1, 2, 4',
         metaTitle: 'Buy AgriPro 7HP Heavy-Duty Power Weeder | Agri Mart Mega',
@@ -2033,6 +2300,7 @@ function getInitialData(): DevDatabaseData {
     ],
     ...getInitialRepairFinanceData(),
     ...getInitialGalleryAndBlogData(),
+    farmerCropGalleries: getInitialFarmerCropGalleries(),
   };
 }
 
@@ -2143,6 +2411,9 @@ class PersistentDevDatabase {
               this.data.gallerySettings = parsed.gallerySettings;
             }
           } catch {}
+        }
+        if (!this.data.farmerCropGalleries || this.data.farmerCropGalleries.length === 0) {
+          this.data.farmerCropGalleries = defaults.farmerCropGalleries || getInitialFarmerCropGalleries();
         }
         this.ensureCategoriesAndProductsEnriched(defaults);
       } catch (err) {
@@ -5884,6 +6155,208 @@ class PersistentDevDatabase {
     this.data.checkoutAttributes = this.data.checkoutAttributes.filter((a) => !ids.includes(a.id));
     this.save();
     return this.data.checkoutAttributes.length < initialLen;
+  }
+
+  // ==========================================
+  // Farmer Crop Photographic Gallery Methods
+  // ==========================================
+  getFarmerCropGalleries(): DbFarmerCropGallery[] {
+    if (!this.data.farmerCropGalleries || !Array.isArray(this.data.farmerCropGalleries)) {
+      this.data.farmerCropGalleries = getInitialFarmerCropGalleries();
+    }
+    return this.data.farmerCropGalleries;
+  }
+
+  getFarmerCropGallery(farmerNameOrId: string): DbFarmerCropGallery | null {
+    const list = this.getFarmerCropGalleries();
+    const query = (farmerNameOrId || '').trim().toLowerCase();
+    if (!query) return null;
+    return (
+      list.find(
+        (g) =>
+          g.farmerId?.toLowerCase() === query ||
+          g.farmerName?.trim().toLowerCase() === query ||
+          (g.mobileNumber && g.mobileNumber.replace(/\D/g, '').endsWith(query.replace(/\D/g, '')))
+      ) || null
+    );
+  }
+
+  saveFarmerCropPhoto(params: {
+    farmerName: string;
+    farmerId?: string;
+    mobileNumber?: string;
+    totalAcreage?: string | number;
+    cropId?: string;
+    cropName: string;
+    cropAcreage?: string | number;
+    variety?: string;
+    cropType?: string;
+    sectionId: string;
+    sectionName: string;
+    photo: {
+      id?: string;
+      url: string;
+      fileName?: string;
+      capturedAt?: string;
+      stageName?: string;
+      notes?: string;
+      takenBy?: string;
+    };
+    allCropsSummary?: {
+      cropId: string;
+      cropName: string;
+      cropAcreage: string | number;
+      variety?: string;
+      cropType?: string;
+    }[];
+  }): { gallery: DbFarmerCropGallery; savedPhoto: DbCropSectionPhoto } {
+    const list = this.getFarmerCropGalleries();
+    const queryName = (params.farmerName || '').trim().toLowerCase();
+    const queryId = (params.farmerId || '').trim().toLowerCase();
+    const cleanPhone = (params.mobileNumber || '').replace(/\D/g, '').slice(-10);
+
+    let gallery = list.find((g) => {
+      if (queryId && g.farmerId?.toLowerCase() === queryId) return true;
+      if (queryName && g.farmerName?.trim().toLowerCase() === queryName) return true;
+      if (cleanPhone && g.mobileNumber?.replace(/\D/g, '').slice(-10) === cleanPhone) return true;
+      return false;
+    });
+
+    const now = new Date().toISOString();
+
+    if (!gallery) {
+      gallery = {
+        id: `gallery-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+        farmerId: params.farmerId || `farmer-${Date.now()}`,
+        farmerName: params.farmerName || 'Farmer',
+        mobileNumber: params.mobileNumber || '',
+        totalAcreage: params.totalAcreage || '0',
+        totalCropsCount: 0,
+        crops: [],
+        createdAt: now,
+        updatedAt: now,
+      };
+      list.unshift(gallery);
+    } else {
+      gallery.updatedAt = now;
+      if (params.farmerName) gallery.farmerName = params.farmerName;
+      if (params.totalAcreage) gallery.totalAcreage = params.totalAcreage;
+      if (params.mobileNumber) gallery.mobileNumber = params.mobileNumber;
+    }
+
+    // Ensure all crops from allCropsSummary are represented in the farmer's crops list
+    if (Array.isArray(params.allCropsSummary) && params.allCropsSummary.length > 0) {
+      params.allCropsSummary.forEach((summaryCrop) => {
+        if (!summaryCrop.cropName) return;
+        const exists = gallery!.crops.find(
+          (c) =>
+            (summaryCrop.cropId && c.cropId === summaryCrop.cropId) ||
+            c.cropName.toLowerCase() === summaryCrop.cropName.toLowerCase()
+        );
+        if (!exists) {
+          gallery!.crops.push({
+            cropId: summaryCrop.cropId || `crop-${Date.now()}-${Math.floor(Math.random() * 100)}`,
+            cropName: summaryCrop.cropName,
+            variety: summaryCrop.variety || '',
+            cropType: summaryCrop.cropType || '',
+            cropAcreage: summaryCrop.cropAcreage || '',
+            sections: [],
+          });
+        } else {
+          if (summaryCrop.cropAcreage) exists.cropAcreage = summaryCrop.cropAcreage;
+          if (summaryCrop.variety) exists.variety = summaryCrop.variety;
+          if (summaryCrop.cropType) exists.cropType = summaryCrop.cropType;
+        }
+      });
+    }
+
+    // Find or create target crop
+    const targetCropName = (params.cropName || 'General Crop').trim();
+    let crop = gallery.crops.find(
+      (c) =>
+        (params.cropId && c.cropId === params.cropId) ||
+        c.cropName.toLowerCase() === targetCropName.toLowerCase()
+    );
+
+    if (!crop) {
+      crop = {
+        cropId: params.cropId || `crop-${Date.now()}`,
+        cropName: targetCropName,
+        variety: params.variety || '',
+        cropType: params.cropType || '',
+        cropAcreage: params.cropAcreage || '',
+        sections: [],
+      };
+      gallery.crops.push(crop);
+    } else {
+      if (params.cropAcreage) crop.cropAcreage = params.cropAcreage;
+      if (params.variety) crop.variety = params.variety;
+      if (params.cropType) crop.cropType = params.cropType;
+    }
+
+    gallery.totalCropsCount = gallery.crops.length;
+
+    // Find or create section inside this crop
+    const targetSectionId = params.sectionId || 'farmer-visit-photographs';
+    const targetSectionName = params.sectionName || 'Farmer Visit Photographs';
+    let section = crop.sections.find((s) => s.sectionId === targetSectionId);
+    if (!section) {
+      section = {
+        sectionId: targetSectionId,
+        sectionName: targetSectionName,
+        photos: [],
+      };
+      crop.sections.push(section);
+    }
+
+    // Build the photo record
+    const safeCropSlug = targetCropName.toLowerCase().replace(/[^a-z0-9]/g, '-');
+    const safeFarmerSlug = (params.farmerName || 'farmer').toLowerCase().replace(/[^a-z0-9]/g, '-');
+    const timeStampStr = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+    const generatedFileName = `${safeFarmerSlug}-${safeCropSlug}-${targetSectionId === 'pest-disease-tracking' ? 'pest' : 'visit'}-${timeStampStr}-${Math.floor(100 + Math.random() * 900)}.jpg`;
+
+    const savedPhoto: DbCropSectionPhoto = {
+      id: params.photo.id || `photo-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+      url: params.photo.url,
+      fileName: params.photo.fileName?.trim() || generatedFileName,
+      capturedAt: params.photo.capturedAt || now,
+      stageName: params.photo.stageName || '',
+      notes: params.photo.notes || '',
+      takenBy: params.photo.takenBy || params.farmerName || 'Field Capture',
+      fileSizeBytes: params.photo.url ? Math.round((params.photo.url.length * 3) / 4) : 0,
+    };
+
+    // Prepend new photo to this section
+    section.photos.unshift(savedPhoto);
+
+    this.save();
+    return { gallery, savedPhoto };
+  }
+
+  deleteFarmerCropPhoto(farmerIdOrName: string, cropId: string, sectionId: string, photoId: string): boolean {
+    const list = this.getFarmerCropGalleries();
+    const query = (farmerIdOrName || '').trim().toLowerCase();
+    const gallery = list.find(
+      (g) =>
+        g.farmerId?.toLowerCase() === query ||
+        g.farmerName?.trim().toLowerCase() === query
+    );
+    if (!gallery) return false;
+
+    const crop = gallery.crops.find((c) => c.cropId === cropId || c.cropName.toLowerCase() === cropId.toLowerCase());
+    if (!crop) return false;
+
+    const section = crop.sections.find((s) => s.sectionId === sectionId);
+    if (!section) return false;
+
+    const initialLen = section.photos.length;
+    section.photos = section.photos.filter((p) => p.id !== photoId);
+    if (section.photos.length !== initialLen) {
+      gallery.updatedAt = new Date().toISOString();
+      this.save();
+      return true;
+    }
+    return false;
   }
 }
 
