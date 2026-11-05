@@ -33,7 +33,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import CropConfirmationModal from '@/components/crop/CropConfirmationModal';
-import { FieldCameraCaptureModal, CropSummaryItem } from '@/components/pop/FieldCameraCaptureModal';
+import { FieldCameraCaptureModal, CropSummaryItem, sanitizeFieldPhotos } from '@/components/pop/FieldCameraCaptureModal';
 import { CROP_VARIETIES_BY_CATEGORY, ALL_CROP_VARIETIES } from '@/lib/crop-varieties';
 import { useAuth } from '@/lib/auth-client';
 import { validatePhoneNumber, validateEmailOptional, validatePinCode } from '@/lib/validation';
@@ -1612,9 +1612,9 @@ export default function PackageOfPracticeForm() {
             visitApplicationType:
               primarySavedLc.visitApplicationType || rec.visitApplicationType || '',
             farmerFeedback: primarySavedLc.farmerFeedback || rec.farmerFeedback || '',
-            visitPhotographs: primarySavedLc.visitPhotographs || rec.visitPhotographs || '',
+            visitPhotographs: sanitizeFieldPhotos(primarySavedLc.visitPhotographs || rec.visitPhotographs || ''),
             nextFollowUpDate: primarySavedLc.nextFollowUpDate || rec.nextFollowUpDate || '',
-            problemFieldPhotos: primarySavedLc.problemFieldPhotos || rec.problemFieldPhotos || '',
+            problemFieldPhotos: sanitizeFieldPhotos(primarySavedLc.problemFieldPhotos || rec.problemFieldPhotos || ''),
             problemSymptoms: primarySavedLc.problemSymptoms || rec.problemSymptoms || '',
             problemSeverity: primarySavedLc.problemSeverity || rec.problemSeverity || '',
             problemActionsTaken:
@@ -5115,7 +5115,7 @@ export default function PackageOfPracticeForm() {
                     </div>
                     <div className="md:col-span-2 p-2 border-b md:border-b-0 md:border-r border-emerald-200 bg-white">
                       {(() => {
-                        const photoList = (formData.visitPhotographs || '')
+                        const photoList = sanitizeFieldPhotos(formData.visitPhotographs)
                           .split(',')
                           .map((s: string) => s.trim())
                           .filter(Boolean);
@@ -5222,7 +5222,7 @@ export default function PackageOfPracticeForm() {
                     </div>
                     <div className="md:col-span-3 p-2 border-b md:border-b-0 md:border-r border-rose-200 bg-white">
                       {(() => {
-                        const photoList = (formData.problemFieldPhotos || '')
+                        const photoList = sanitizeFieldPhotos(formData.problemFieldPhotos)
                           .split(',')
                           .map((s: string) => s.trim())
                           .filter(Boolean);

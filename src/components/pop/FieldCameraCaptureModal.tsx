@@ -28,6 +28,34 @@ export interface CropSummaryItem {
   cropType?: string;
 }
 
+export const MOCK_PHOTO_FILENAMES = new Set([
+  'maize-visit-oct18.jpg',
+  'faw-whorl-oct18.jpg',
+  'chilli-vegetative-oct27.jpg',
+  'chilli-thrips-curl-oct27.jpg',
+  'ramesh-tomato-oct20.jpg',
+  'tomato-blight-check.jpg',
+  'tomato-leafminer-oct20.jpg',
+  'ramesh-turmeric-oct20.jpg',
+  'turmeric-leafblotch-oct20.jpg',
+  'paddy-tillering-oct19.jpg',
+  'ysb-deadheart-oct19.jpg',
+  'tomato-flowering-test-oct27.jpg',
+  'tuta-pinworm-blotch-oct27.jpg',
+  'xyz-tomato-flowering-oct25.jpg',
+  'xyz-chilli-visit-oct26.jpg',
+  'xyz-groundnut-peg-oct28.jpg',
+]);
+
+export function sanitizeFieldPhotos(raw: string | undefined | null): string {
+  if (!raw) return '';
+  return raw
+    .split(',')
+    .map((s) => s.trim())
+    .filter((s) => s && !MOCK_PHOTO_FILENAMES.has(s.toLowerCase()))
+    .join(', ');
+}
+
 export interface FieldCameraCaptureModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -375,8 +403,8 @@ export function FieldCameraCaptureModal({
   const targetSection = activeCropFromDb?.sections?.find((s: any) => s.sectionId === sectionId);
   const dbSectionPhotos: any[] = targetSection?.photos || [];
 
-  // Current photos from the form field for this crop
-  const formPhotoNames = (currentFieldPhotos || '')
+  // Current photos from the form field for this crop (filtering out any mock strings)
+  const formPhotoNames = sanitizeFieldPhotos(currentFieldPhotos)
     .split(',')
     .map((s: string) => s.trim())
     .filter(Boolean);
@@ -386,20 +414,23 @@ export function FieldCameraCaptureModal({
   const seenNames = new Set<string>();
 
   for (const p of dbSectionPhotos) {
-    if (p.fileName && !seenNames.has(p.fileName)) {
-      seenNames.add(p.fileName);
+    const fName = String(p.fileName || '').trim();
+    const hasImage = Boolean(p.url || p.dataUrl);
+    if (fName && hasImage && !seenNames.has(fName) && !MOCK_PHOTO_FILENAMES.has(fName.toLowerCase())) {
+      seenNames.add(fName);
       existingCropPhotos.push(p);
     }
   }
 
   for (const fName of formPhotoNames) {
-    if (!seenNames.has(fName)) {
-      seenNames.add(fName);
-      existingCropPhotos.push({
-        id: `form-${fName}`,
-        fileName: fName,
-        url: '',
-      });
+    if (!seenNames.has(fName) && !MOCK_PHOTO_FILENAMES.has(fName.toLowerCase())) {
+      const matchingDbPhoto = dbSectionPhotos.find(
+        (p: any) => String(p.fileName || '').trim() === fName && (p.url || p.dataUrl)
+      );
+      if (matchingDbPhoto) {
+        seenNames.add(fName);
+        existingCropPhotos.push(matchingDbPhoto);
+      }
     }
   }
 
@@ -515,35 +546,26 @@ export function FieldCameraCaptureModal({
                 <div className="grid grid-cols-5 gap-2">
                   {[0, 1, 2, 3, 4].map((slotIdx) => {
                     const photo = existingCropPhotos[slotIdx];
-                    if (photo) {
+                    if (photo && (photo.url || photo.dataUrl)) {
                       return (
                         <div
                           key={photo.id || slotIdx}
                           className="group relative aspect-square bg-slate-900 rounded-xl overflow-hidden border-2 border-emerald-600 shadow-xs"
                         >
-                          {photo.url ? (
-                            <img
-                              src={photo.url}
-                              alt={photo.fileName}
-                              className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                            />
-                          ) : (
-                            <div className="w-full h-full bg-emerald-950 flex flex-col items-center justify-center p-1.5 text-center text-emerald-200">
-                              <Camera className="w-5 h-5 mb-1 text-emerald-400" />
-                              <span className="text-[9px] font-bold truncate max-w-full px-1">{photo.fileName}</span>
-                            </div>
-                          )}
+                          <img
+                            src={photo.url || photo.dataUrl}
+                            alt={photo.fileName}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                          />
                           <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1 p-1">
-                            {photo.url && (
-                              <button
-                                type="button"
-                                onClick={() => setEnlargedPhoto(photo)}
-                                className="p-1 rounded-md bg-white/20 hover:bg-white/40 text-white cursor-pointer"
-                                title="View full photo"
-                              >
-                                <Eye className="w-3.5 h-3.5" />
-                              </button>
-                            )}
+                            <button
+                              type="button"
+                              onClick={() => setEnlargedPhoto(photo)}
+                              className="p-1 rounded-md bg-white/20 hover:bg-white/40 text-white cursor-pointer"
+                              title="View full photo"
+                            >
+                              <Eye className="w-3.5 h-3.5" />
+                            </button>
                             <button
                               type="button"
                               onClick={() => handleDeletePhoto(photo.id, photo.fileName)}

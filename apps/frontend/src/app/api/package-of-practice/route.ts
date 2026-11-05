@@ -116,6 +116,7 @@ export interface PopSubmissionRecord {
   vleFpoNo?: string;
   distanceFromVle?: string;
   schedule: any[];
+  isPopTableEnabled?: boolean;
   status: 'SUBMITTED' | 'VERIFIED' | 'IN_PROGRESS' | 'COMPLETED';
   submittedAt: string;
   updatedAt: string;
@@ -176,9 +177,9 @@ const DEFAULT_POP_FORMS: PopSubmissionRecord[] = [
           visitRecommendations: 'Install 12 yellow sticky traps/acre; apply Calcium Nitrate 4kg/acre via drip.',
           visitApplicationType: 'Drip / fertigation',
           farmerFeedback: 'Good vegetative vigor after staking.',
-          visitPhotographs: 'ramesh-tomato-oct20.jpg',
+          visitPhotographs: '',
           nextFollowUpDate: '2026-11-04',
-          problemFieldPhotos: 'tomato-leafminer-oct20.jpg',
+          problemFieldPhotos: '',
           problemSymptoms: 'Minor serpentine leaf miner trails on lower leaves',
           problemSeverity: 'Low',
           problemActionsTaken: 'Pruned affected basal leaves & sprayed Neem Oil 10000 ppm @ 2ml/L',
@@ -231,9 +232,9 @@ const DEFAULT_POP_FORMS: PopSubmissionRecord[] = [
           visitRecommendations: 'Drench Trichoderma viride + Pseudomonas @ 2.5kg/acre in FYM to prevent rhizome rot.',
           visitApplicationType: 'Soil drenching',
           farmerFeedback: 'Zero rhizome rot seen so far after raised bed planting.',
-          visitPhotographs: 'ramesh-turmeric-oct20.jpg',
+          visitPhotographs: '',
           nextFollowUpDate: '2026-11-15',
-          problemFieldPhotos: 'turmeric-leafblotch-oct20.jpg',
+          problemFieldPhotos: '',
           problemSymptoms: 'Occasional small oval brown spots on older leaves (Leaf Blotch)',
           problemSeverity: 'Low',
           problemActionsTaken: 'Sprayed Mancozeb 75% WP @ 2.5g/L and improved furrow drainage',
@@ -285,9 +286,9 @@ const DEFAULT_POP_FORMS: PopSubmissionRecord[] = [
     visitRecommendations: 'Spray Spinetoram 11.7 SC @ 0.5ml/L directly into whorl and top-dress 35kg Urea/acre.',
     visitApplicationType: 'Foliar spray',
     farmerFeedback: 'Satisfied with germination and early vigor.',
-    visitPhotographs: 'maize-visit-oct18.jpg',
+    visitPhotographs: '',
     nextFollowUpDate: '2026-11-02',
-    problemFieldPhotos: 'faw-whorl-oct18.jpg',
+    problemFieldPhotos: '',
     problemSymptoms: 'Pinholes and window-pane feeding on young whorl leaves',
     problemSeverity: 'Moderate',
     problemActionsTaken: 'Installed 8 pheromone traps/acre and applied Spinetoram 11.7 SC whorl spray',
@@ -410,9 +411,9 @@ const DEFAULT_POP_FORMS: PopSubmissionRecord[] = [
     visitRecommendations: 'Maintain AWD 3-5cm water level; apply Chlorantraniliprole 18.5 SC @ 0.3ml/L + Hexaconazole 5% EC @ 2ml/L.',
     visitApplicationType: 'Foliar spray',
     farmerFeedback: 'Cono-weeding reduced weed pressure significantly.',
-    visitPhotographs: 'paddy-tillering-oct19.jpg',
+    visitPhotographs: '',
     nextFollowUpDate: '2026-11-05',
-    problemFieldPhotos: 'ysb-deadheart-oct19.jpg',
+    problemFieldPhotos: '',
     problemSymptoms: 'Dead-heart in central shoot and lower sheath water-soaked lesions',
     problemSeverity: 'Low',
     problemActionsTaken: 'Installed pheromone traps and applied Chlorantraniliprole + Hexaconazole spray',
@@ -537,9 +538,9 @@ const DEFAULT_POP_FORMS: PopSubmissionRecord[] = [
           visitRecommendations: 'Install blue & yellow sticky traps (20/acre); spray Diafenthiuron 50% WP @ 1g/L for thrips & mites.',
           visitApplicationType: 'Foliar spray',
           farmerFeedback: 'Blue sticky traps are catching thrips effectively.',
-          visitPhotographs: 'chilli-vegetative-oct27.jpg',
+          visitPhotographs: '',
           nextFollowUpDate: '2026-11-12',
-          problemFieldPhotos: 'chilli-thrips-curl-oct27.jpg',
+          problemFieldPhotos: '',
           problemSymptoms: 'Upward boat-shaped curling of young leaves caused by Thrips',
           problemSeverity: 'Low',
           problemActionsTaken: 'Installed 20 blue sticky traps/acre & sprayed Neem Oil 10000 ppm + Diafenthiuron',
@@ -591,9 +592,9 @@ const DEFAULT_POP_FORMS: PopSubmissionRecord[] = [
     visitRecommendations: 'Install 15 Tuta pheromone traps/acre; spray Chlorantraniliprole 18.5 SC @ 0.3ml/L + Azoxystrobin 23% SC @ 1ml/L; fertigate 0:52:34 @ 4kg/acre.',
     visitApplicationType: 'Foliar spray',
     farmerFeedback: 'Drip fertigation schedule improved flower retention significantly.',
-    visitPhotographs: 'tomato-flowering-test-oct27.jpg',
+    visitPhotographs: '',
     nextFollowUpDate: '2026-11-10',
-    problemFieldPhotos: 'tuta-pinworm-blotch-oct27.jpg',
+    problemFieldPhotos: '',
     problemSymptoms: 'Irregular blotch mines on leaves and pinholes on young green calyx',
     problemSeverity: 'Medium',
     problemActionsTaken: 'Installed delta sticky traps with Tuta lures & applied targeted evening spray',
@@ -633,9 +634,9 @@ const DEFAULT_POP_FORMS: PopSubmissionRecord[] = [
         visitRecommendations: 'Install 15 Tuta pheromone traps/acre; spray Chlorantraniliprole 18.5 SC @ 0.3ml/L + Azoxystrobin 23% SC @ 1ml/L; fertigate 0:52:34 @ 4kg/acre.',
         visitApplicationType: 'Foliar spray',
         farmerFeedback: 'Drip fertigation schedule improved flower retention significantly.',
-        visitPhotographs: 'tomato-flowering-test-oct27.jpg',
+        visitPhotographs: '',
         nextFollowUpDate: '2026-11-10',
-        problemFieldPhotos: 'tuta-pinworm-blotch-oct27.jpg',
+        problemFieldPhotos: '',
         problemSymptoms: 'Irregular blotch mines on leaves and pinholes on young green calyx',
         problemSeverity: 'Medium',
         problemActionsTaken: 'Installed delta sticky traps with Tuta lures & applied targeted evening spray',
@@ -675,9 +676,9 @@ const DEFAULT_POP_FORMS: PopSubmissionRecord[] = [
         visitRecommendations: 'Install blue & yellow sticky traps (20/acre); spray Diafenthiuron 50% WP @ 1g/L for thrips & mites.',
         visitApplicationType: 'Foliar spray',
         farmerFeedback: 'Blue sticky traps are catching thrips effectively.',
-        visitPhotographs: 'chilli-vegetative-oct27.jpg',
+        visitPhotographs: '',
         nextFollowUpDate: '2026-11-12',
-        problemFieldPhotos: 'chilli-thrips-curl-oct27.jpg',
+        problemFieldPhotos: '',
         problemSymptoms: 'Upward boat-shaped curling of young leaves caused by Thrips',
         problemSeverity: 'Low',
         problemActionsTaken: 'Installed 20 blue sticky traps/acre & sprayed Neem Oil 10000 ppm + Diafenthiuron',
@@ -1216,9 +1217,21 @@ export async function GET(request: NextRequest) {
         return false;
       });
 
-      const effectiveRecord = found || null;
+      const globalPopTableEnabled =
+        raw.globalPopTableEnabled !== undefined ? Boolean(raw.globalPopTableEnabled) : true;
+      const effectiveRecord = found
+        ? {
+            ...found,
+            isPopTableEnabled:
+              found.isPopTableEnabled !== undefined
+                ? Boolean(found.isPopTableEnabled)
+                : globalPopTableEnabled,
+          }
+        : null;
+
       return NextResponse.json({
         success: true,
+        globalPopTableEnabled,
         record: effectiveRecord,
         matchedUserRecord: found || null,
         lastBackendUpdatedId: found ? found.id : null,
@@ -1257,9 +1270,13 @@ export async function GET(request: NextRequest) {
       records = records.filter((r) => (r.crop || '').toLowerCase() === crop.toLowerCase());
     }
 
+    const globalPopTableEnabled =
+      raw.globalPopTableEnabled !== undefined ? Boolean(raw.globalPopTableEnabled) : true;
+
     return NextResponse.json({
       success: true,
       total: records.length,
+      globalPopTableEnabled,
       records,
       farmerAccounts,
       customSoilTypes: getCustomSoilTypes(),
@@ -1280,6 +1297,24 @@ export async function POST(request: NextRequest) {
         success: true,
         message: `Saved custom soil type "${data.soilType}" successfully.`,
         customSoilTypes: updatedSoilTypes,
+      });
+    }
+
+    // Quick endpoint to toggle POP Activity Schedule Table enabled/disabled status
+    if (data.action === 'TOGGLE_POP_TABLE') {
+      const raw = devDb.getRawData() as any;
+      const records = getPopFormsList();
+      raw.globalPopTableEnabled = Boolean(data.isPopTableEnabled);
+      if (data.recordId) {
+        const rIdx = records.findIndex((r) => r.id === data.recordId);
+        if (rIdx >= 0) {
+          records[rIdx].isPopTableEnabled = Boolean(data.isPopTableEnabled);
+        }
+      }
+      saveToSharedDisk();
+      return NextResponse.json({
+        success: true,
+        globalPopTableEnabled: raw.globalPopTableEnabled,
       });
     }
 
@@ -1558,10 +1593,15 @@ export async function POST(request: NextRequest) {
       vleFpoNo: String(data.vleFpoNo || '').trim(),
       distanceFromVle: String(data.distanceFromVle || '').trim(),
       schedule: Array.isArray(data.schedule) ? data.schedule : [],
+      isPopTableEnabled: data.isPopTableEnabled !== undefined ? Boolean(data.isPopTableEnabled) : true,
       status: data.status || 'SUBMITTED',
       submittedAt: data.submittedAt || now,
       updatedAt: now,
     };
+
+    if (data.isPopTableEnabled !== undefined) {
+      raw.globalPopTableEnabled = Boolean(data.isPopTableEnabled);
+    }
 
     if (existingIdx >= 0) {
       records[existingIdx] = {
@@ -1718,11 +1758,21 @@ export async function PUT(request: NextRequest) {
     records[idx] = {
       ...records[idx],
       ...body,
+      isPopTableEnabled:
+        body.isPopTableEnabled !== undefined
+          ? Boolean(body.isPopTableEnabled)
+          : records[idx].isPopTableEnabled !== undefined
+          ? records[idx].isPopTableEnabled
+          : true,
       loginUsername: updatedFarmerAccount.username,
       loginPassword: updatedFarmerAccount.password,
       isUserSubmitted: true,
       updatedAt: now,
     };
+
+    if (body.isPopTableEnabled !== undefined) {
+      raw.globalPopTableEnabled = Boolean(body.isPopTableEnabled);
+    }
 
     raw.popForms = records;
     raw.lastBackendUpdatedPopId = records[idx].id;

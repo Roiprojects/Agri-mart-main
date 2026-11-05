@@ -904,32 +904,12 @@ export function getInitialFarmerCropGalleries(): DbFarmerCropGallery[] {
             {
               sectionId: 'farmer-visit-photographs',
               sectionName: 'Farmer Visit Photographs',
-              photos: [
-                {
-                  id: 'photo-t-1',
-                  fileName: 'ramesh-tomato-oct20.jpg',
-                  url: 'https://images.unsplash.com/photo-1592841200221-a6898f307baa?auto=format&fit=crop&w=800&q=80',
-                  capturedAt: '2026-10-20T10:15:00Z',
-                  stageName: 'Flowering Stage',
-                  notes: 'First cluster flowering confirmed across 4 acres.',
-                  takenBy: 'Dr. Anand Patil (Agronomist)',
-                },
-              ],
+              photos: [],
             },
             {
               sectionId: 'pest-disease-tracking',
               sectionName: 'Pest & Disease Field Photos',
-              photos: [
-                {
-                  id: 'photo-t-2',
-                  fileName: 'tomato-blight-check.jpg',
-                  url: 'https://images.unsplash.com/photo-1560493676-04071c5f467b?auto=format&fit=crop&w=800&q=80',
-                  capturedAt: '2026-10-22T14:30:00Z',
-                  stageName: 'Vegetative Stage',
-                  notes: 'Slight early blight symptoms arrested with bio-spray.',
-                  takenBy: 'Dr. Anand Patil (Agronomist)',
-                },
-              ],
+              photos: [],
             },
           ],
         },
@@ -945,17 +925,7 @@ export function getInitialFarmerCropGalleries(): DbFarmerCropGallery[] {
             {
               sectionId: 'farmer-visit-photographs',
               sectionName: 'Farmer Visit Photographs',
-              photos: [
-                {
-                  id: 'photo-c-1',
-                  fileName: 'chilli-vegetative-oct27.jpg',
-                  url: 'https://images.unsplash.com/photo-1588252303782-cb80119abd6d?auto=format&fit=crop&w=800&q=80',
-                  capturedAt: '2026-10-27T11:20:00Z',
-                  stageName: 'Knee-High Vegetative',
-                  notes: 'Uniform shoot expansion and canopy formation.',
-                  takenBy: 'Dr. Anand Patil (Agronomist)',
-                },
-              ],
+              photos: [],
             },
             {
               sectionId: 'pest-disease-tracking',
@@ -976,17 +946,7 @@ export function getInitialFarmerCropGalleries(): DbFarmerCropGallery[] {
             {
               sectionId: 'farmer-visit-photographs',
               sectionName: 'Farmer Visit Photographs',
-              photos: [
-                {
-                  id: 'photo-m-1',
-                  fileName: 'maize-visit-oct18.jpg',
-                  url: 'https://images.unsplash.com/photo-1551754655-cd27e38d2076?auto=format&fit=crop&w=800&q=80',
-                  capturedAt: '2026-10-18T09:40:00Z',
-                  stageName: 'Tasseling & Silking Stage',
-                  notes: 'Tassel emergence uniform, ear formation progressing normally.',
-                  takenBy: 'Dr. Anand Patil (Agronomist)',
-                },
-              ],
+              photos: [],
             },
             {
               sectionId: 'pest-disease-tracking',
@@ -1019,17 +979,7 @@ export function getInitialFarmerCropGalleries(): DbFarmerCropGallery[] {
             {
               sectionId: 'farmer-visit-photographs',
               sectionName: 'Farmer Visit Photographs',
-              photos: [
-                {
-                  id: 'photo-xyz-t-1',
-                  fileName: 'xyz-tomato-flowering-oct25.jpg',
-                  url: 'https://images.unsplash.com/photo-1592841200221-a6898f307baa?auto=format&fit=crop&w=800&q=80',
-                  capturedAt: '2026-10-25T11:00:00Z',
-                  stageName: 'Flowering & Early Fruit Set',
-                  notes: 'Abundant flower clusters on 4 acres parcel.',
-                  takenBy: 'Field Agronomist',
-                },
-              ],
+              photos: [],
             },
             {
               sectionId: 'pest-disease-tracking',
@@ -1050,17 +1000,7 @@ export function getInitialFarmerCropGalleries(): DbFarmerCropGallery[] {
             {
               sectionId: 'farmer-visit-photographs',
               sectionName: 'Farmer Visit Photographs',
-              photos: [
-                {
-                  id: 'photo-xyz-c-1',
-                  fileName: 'xyz-chilli-visit-oct26.jpg',
-                  url: 'https://images.unsplash.com/photo-1588252303782-cb80119abd6d?auto=format&fit=crop&w=800&q=80',
-                  capturedAt: '2026-10-26T15:30:00Z',
-                  stageName: 'Vegetative Branching',
-                  notes: 'Healthy bush formation across 4 acres chilli section.',
-                  takenBy: 'Field Agronomist',
-                },
-              ],
+              photos: [],
             },
             {
               sectionId: 'pest-disease-tracking',
@@ -1081,17 +1021,7 @@ export function getInitialFarmerCropGalleries(): DbFarmerCropGallery[] {
             {
               sectionId: 'farmer-visit-photographs',
               sectionName: 'Farmer Visit Photographs',
-              photos: [
-                {
-                  id: 'photo-xyz-g-1',
-                  fileName: 'xyz-groundnut-peg-oct28.jpg',
-                  url: 'https://images.unsplash.com/photo-1500937386664-56d1dfef3854?auto=format&fit=crop&w=800&q=80',
-                  capturedAt: '2026-10-28T16:00:00Z',
-                  stageName: 'Pegging Stage',
-                  notes: 'Good peg penetration in 2 acres sandy loam block.',
-                  takenBy: 'Field Agronomist',
-                },
-              ],
+              photos: [],
             },
             {
               sectionId: 'pest-disease-tracking',
@@ -6164,6 +6094,36 @@ class PersistentDevDatabase {
     if (!this.data.farmerCropGalleries || !Array.isArray(this.data.farmerCropGalleries)) {
       this.data.farmerCropGalleries = getInitialFarmerCropGalleries();
     }
+    // Purge any legacy mock placeholder photos
+    const mockFileNames = new Set([
+      'maize-visit-oct18.jpg',
+      'faw-whorl-oct18.jpg',
+      'chilli-vegetative-oct27.jpg',
+      'chilli-thrips-curl-oct27.jpg',
+      'ramesh-tomato-oct20.jpg',
+      'tomato-blight-check.jpg',
+      'tomato-leafminer-oct20.jpg',
+      'ramesh-turmeric-oct20.jpg',
+      'turmeric-leafblotch-oct20.jpg',
+      'paddy-tillering-oct19.jpg',
+      'ysb-deadheart-oct19.jpg',
+      'tomato-flowering-test-oct27.jpg',
+      'tuta-pinworm-blotch-oct27.jpg',
+      'xyz-tomato-flowering-oct25.jpg',
+      'xyz-chilli-visit-oct26.jpg',
+      'xyz-groundnut-peg-oct28.jpg',
+    ]);
+    this.data.farmerCropGalleries.forEach((gallery) => {
+      gallery.crops.forEach((crop) => {
+        crop.sections.forEach((section) => {
+          if (Array.isArray(section.photos)) {
+            section.photos = section.photos.filter(
+              (p) => !mockFileNames.has(String(p.fileName || '').toLowerCase()) && (p.url || p.dataUrl)
+            );
+          }
+        });
+      });
+    });
     return this.data.farmerCropGalleries;
   }
 
@@ -6362,7 +6322,7 @@ class PersistentDevDatabase {
     if (!section) return false;
 
     const initialLen = section.photos.length;
-    section.photos = section.photos.filter((p) => p.id !== photoId);
+    section.photos = section.photos.filter((p) => p.id !== photoId && p.fileName !== photoId);
     if (section.photos.length !== initialLen) {
       gallery.updatedAt = new Date().toISOString();
       this.save();

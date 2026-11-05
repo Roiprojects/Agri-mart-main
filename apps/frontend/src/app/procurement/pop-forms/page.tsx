@@ -30,7 +30,7 @@ import {
   Camera,
 } from 'lucide-react';
 import CropConfirmationModal from '@/components/crop/CropConfirmationModal';
-import { FieldCameraCaptureModal } from '@/components/pop/FieldCameraCaptureModal';
+import { FieldCameraCaptureModal, sanitizeFieldPhotos } from '@/components/pop/FieldCameraCaptureModal';
 import { CROP_VARIETIES_BY_CATEGORY, ALL_CROP_VARIETIES } from '@/lib/crop-varieties';
 
 export interface PopScheduleStage {
@@ -1867,9 +1867,9 @@ export default function ProcurementPopFormsPage() {
       visitRecommendations: rec.visitRecommendations || '',
       visitApplicationType: rec.visitApplicationType || '',
       farmerFeedback: rec.farmerFeedback || '',
-      visitPhotographs: rec.visitPhotographs || '',
+      visitPhotographs: sanitizeFieldPhotos(rec.visitPhotographs || ''),
       nextFollowUpDate: rec.nextFollowUpDate || '',
-      problemFieldPhotos: rec.problemFieldPhotos || '',
+      problemFieldPhotos: sanitizeFieldPhotos(rec.problemFieldPhotos || ''),
       problemSymptoms: rec.problemSymptoms || '',
       problemSeverity: rec.problemSeverity || '',
       problemActionsTaken: rec.problemActionsTaken || '',
@@ -5644,7 +5644,7 @@ export default function ProcurementPopFormsPage() {
                         </div>
                         <div className="md:col-span-2 p-1.5 border-b md:border-b-0 md:border-r border-black bg-white">
                           {(() => {
-                            const photoList = (formData.visitPhotographs || '')
+                            const photoList = sanitizeFieldPhotos(formData.visitPhotographs)
                               .split(',')
                               .map((s) => s.trim())
                               .filter(Boolean);
@@ -5737,7 +5737,7 @@ export default function ProcurementPopFormsPage() {
                         </div>
                         <div className="md:col-span-3 p-1.5 border-b md:border-b-0 md:border-r border-black bg-white">
                           {(() => {
-                            const photoList = (formData.problemFieldPhotos || '')
+                            const photoList = sanitizeFieldPhotos(formData.problemFieldPhotos)
                               .split(',')
                               .map((s) => s.trim())
                               .filter(Boolean);
