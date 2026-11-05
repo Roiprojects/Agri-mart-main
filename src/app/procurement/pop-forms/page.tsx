@@ -5609,97 +5609,67 @@ export default function ProcurementPopFormsPage() {
                           Photographs
                         </div>
                         <div className="md:col-span-2 p-1.5 border-b md:border-b-0 md:border-r border-black bg-white">
-                          <div className="relative flex items-center">
-                            <button
-                              type="button"
-                              onClick={() =>
-                                handleOpenCameraModal(
-                                  'farmer-visit-photographs',
-                                  'Farmer Visit Photographs',
-                                  'visitPhotographs'
-                                )
-                              }
-                              className="absolute left-2 z-10 p-1 text-emerald-700 hover:text-emerald-950 hover:bg-emerald-50 rounded cursor-pointer flex items-center justify-center group"
-                              title="Open Field Camera to capture photograph (Up to 5 images per crop)"
-                            >
-                              <Camera className="w-4 h-4 transition-transform group-hover:scale-110" />
-                            </button>
-                            <input
-                              type="text"
-                              name="visitPhotographs"
-                              disabled={isReadOnly}
-                              value={formData.visitPhotographs || ''}
-                              onChange={handleFieldChange}
-                              placeholder="Photo ref"
-                              className="w-full pl-8 pr-7 py-1.5 font-semibold text-black bg-white border border-black rounded-md"
-                            />
-                            {formData.visitPhotographs ? (
-                              <button
-                                type="button"
-                                onClick={() =>
-                                  handleOpenCameraModal(
-                                    'farmer-visit-photographs',
-                                    'Farmer Visit Photographs',
-                                    'visitPhotographs'
-                                  )
-                                }
-                                className="absolute right-1.5 z-10 p-1 text-emerald-700 hover:text-emerald-950 rounded hover:bg-emerald-50 cursor-pointer"
-                                title="View captured photograph / Open Gallery"
-                              >
-                                <Eye className="w-3.5 h-3.5" />
-                              </button>
-                            ) : null}
-                          </div>
-
-                          {/* Multiple Photos Strip (Max 5 photos per single crop) */}
                           {(() => {
                             const photoList = (formData.visitPhotographs || '')
                               .split(',')
                               .map((s) => s.trim())
                               .filter(Boolean);
-                            if (photoList.length === 0) return null;
+                            const count = photoList.length;
+
                             return (
-                              <div className="mt-1 space-y-1">
-                                <div className="flex items-center justify-between text-[10px] font-bold text-emerald-800">
-                                  <span>Photos ({photoList.length}/5)</span>
-                                  {photoList.length < 5 ? (
-                                    <button
-                                      type="button"
-                                      onClick={() =>
-                                        handleOpenCameraModal(
-                                          'farmer-visit-photographs',
-                                          'Farmer Visit Photographs',
-                                          'visitPhotographs'
-                                        )
-                                      }
-                                      className="text-emerald-700 hover:underline cursor-pointer"
-                                    >
-                                      + Add ({5 - photoList.length} left)
-                                    </button>
-                                  ) : (
-                                    <span className="text-amber-800 font-extrabold">Max 5</span>
-                                  )}
-                                </div>
-                                <div className="flex flex-wrap gap-1">
-                                  {photoList.map((pName, idx) => (
-                                    <span
-                                      key={idx}
-                                      className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-emerald-50 border border-emerald-300 text-[9px] text-emerald-950 font-semibold"
-                                    >
-                                      <span className="truncate max-w-[90px]" title={pName}>
-                                        {pName}
-                                      </span>
-                                      <button
-                                        type="button"
-                                        onClick={() => handleRemovePhotoFromField('visitPhotographs', pName)}
-                                        className="text-slate-400 hover:text-rose-600 ml-0.5 cursor-pointer"
-                                        title="Remove photo"
-                                      >
-                                        <X className="w-2.5 h-2.5" />
-                                      </button>
-                                    </span>
-                                  ))}
-                                </div>
+                              <div className="relative flex items-center w-full">
+                                <button
+                                  type="button"
+                                  disabled={isReadOnly}
+                                  onClick={() =>
+                                    handleOpenCameraModal(
+                                      'farmer-visit-photographs',
+                                      'Farmer Visit Photographs',
+                                      'visitPhotographs'
+                                    )
+                                  }
+                                  className="absolute left-2 z-10 p-1 text-emerald-700 hover:text-emerald-950 hover:bg-emerald-50 rounded cursor-pointer flex items-center justify-center group disabled:opacity-50"
+                                  title="Open Field Camera to capture photograph (Up to 5 images per crop)"
+                                >
+                                  <Camera className="w-4 h-4 transition-transform group-hover:scale-110" />
+                                </button>
+                                <button
+                                  type="button"
+                                  disabled={isReadOnly}
+                                  onClick={() =>
+                                    handleOpenCameraModal(
+                                      'farmer-visit-photographs',
+                                      'Farmer Visit Photographs',
+                                      'visitPhotographs'
+                                    )
+                                  }
+                                  className="w-full text-left pl-8 pr-16 py-1.5 font-bold text-sm bg-white border border-black rounded-md hover:border-emerald-600 focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-all flex items-center justify-between cursor-pointer disabled:bg-slate-100"
+                                  title="Click to view or capture photos"
+                                >
+                                  <span className={count > 0 ? "text-black" : "text-slate-400 font-medium"}>
+                                    {count === 0 ? "0 / 5 Photos" : `${count} / 5 Photos Captured`}
+                                  </span>
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    handleOpenCameraModal(
+                                      'farmer-visit-photographs',
+                                      'Farmer Visit Photographs',
+                                      'visitPhotographs'
+                                    )
+                                  }
+                                  className="absolute right-1.5 z-10 px-1.5 py-0.5 rounded text-[11px] font-black bg-emerald-100 hover:bg-emerald-200 text-emerald-800 flex items-center gap-1 cursor-pointer transition-colors"
+                                  title="View captured photos"
+                                >
+                                  <Eye className="w-3.5 h-3.5" />
+                                  <span>{count}/5</span>
+                                </button>
+                                <input
+                                  type="hidden"
+                                  name="visitPhotographs"
+                                  value={formData.visitPhotographs || ''}
+                                />
                               </div>
                             );
                           })()}
@@ -5732,97 +5702,71 @@ export default function ProcurementPopFormsPage() {
                           Field Photos
                         </div>
                         <div className="md:col-span-3 p-1.5 border-b md:border-b-0 md:border-r border-black bg-white">
-                          <div className="relative flex items-center">
-                            <button
-                              type="button"
-                              onClick={() =>
-                                handleOpenCameraModal(
-                                  'pest-disease-tracking',
-                                  'Pest & Disease Field Photos',
-                                  'problemFieldPhotos'
-                                )
-                              }
-                              className="absolute left-2 z-10 p-1 text-rose-700 hover:text-rose-950 hover:bg-rose-50 rounded cursor-pointer flex items-center justify-center group"
-                              title="Open Field Camera to capture problem photo (Up to 5 images per crop)"
-                            >
-                              <Camera className="w-4 h-4 transition-transform group-hover:scale-110" />
-                            </button>
-                            <input
-                              type="text"
-                              name="problemFieldPhotos"
-                              disabled={isReadOnly}
-                              value={formData.problemFieldPhotos || ''}
-                              onChange={handleFieldChange}
-                              placeholder="Field photo link/file"
-                              className="w-full pl-8 pr-7 py-1.5 font-semibold text-black bg-white border border-black rounded-md"
-                            />
-                            {formData.problemFieldPhotos ? (
-                              <button
-                                type="button"
-                                onClick={() =>
-                                  handleOpenCameraModal(
-                                    'pest-disease-tracking',
-                                    'Pest & Disease Field Photos',
-                                    'problemFieldPhotos'
-                                  )
-                                }
-                                className="absolute right-1.5 z-10 p-1 text-rose-700 hover:text-rose-950 rounded hover:bg-rose-50 cursor-pointer"
-                                title="View captured photograph / Open Gallery"
-                              >
-                                <Eye className="w-3.5 h-3.5" />
-                              </button>
-                            ) : null}
-                          </div>
-
-                          {/* Multiple Problem Photos Strip (Max 5 photos per single crop) */}
                           {(() => {
                             const photoList = (formData.problemFieldPhotos || '')
                               .split(',')
                               .map((s) => s.trim())
                               .filter(Boolean);
-                            if (photoList.length === 0) return null;
+                            const count = photoList.length;
+
                             return (
-                              <div className="mt-1 space-y-1">
-                                <div className="flex items-center justify-between text-[10px] font-bold text-rose-900">
-                                  <span>Problem Photos ({photoList.length}/5)</span>
-                                  {photoList.length < 5 ? (
-                                    <button
-                                      type="button"
-                                      onClick={() =>
-                                        handleOpenCameraModal(
-                                          'pest-disease-tracking',
-                                          'Pest & Disease Field Photos',
-                                          'problemFieldPhotos'
-                                        )
-                                      }
-                                      className="text-rose-700 hover:underline cursor-pointer"
-                                    >
-                                      + Add ({5 - photoList.length} left)
-                                    </button>
-                                  ) : (
-                                    <span className="text-amber-800 font-extrabold">Max 5</span>
-                                  )}
-                                </div>
-                                <div className="flex flex-wrap gap-1">
-                                  {photoList.map((pName, idx) => (
-                                    <span
-                                      key={idx}
-                                      className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-rose-50 border border-rose-300 text-[9px] text-rose-950 font-semibold"
-                                    >
-                                      <span className="truncate max-w-[90px]" title={pName}>
-                                        {pName}
-                                      </span>
-                                      <button
-                                        type="button"
-                                        onClick={() => handleRemovePhotoFromField('problemFieldPhotos', pName)}
-                                        className="text-slate-400 hover:text-rose-600 ml-0.5 cursor-pointer"
-                                        title="Remove photo"
-                                      >
-                                        <X className="w-2.5 h-2.5" />
-                                      </button>
-                                    </span>
-                                  ))}
-                                </div>
+                              <div className="relative flex items-center w-full">
+                                <button
+                                  type="button"
+                                  disabled={isReadOnly}
+                                  onClick={() =>
+                                    handleOpenCameraModal(
+                                      'pest-disease-tracking',
+                                      'Pest & Disease Field Photos',
+                                      'problemFieldPhotos'
+                                    )
+                                  }
+                                  className="absolute left-2 z-10 p-1 text-rose-700 hover:text-rose-950 hover:bg-rose-50 rounded cursor-pointer flex items-center justify-center group disabled:opacity-50"
+                                  title="Open Field Camera to capture problem photo (Up to 5 images per crop)"
+                                >
+                                  <Camera className="w-4 h-4 transition-transform group-hover:scale-110" />
+                                </button>
+                                <button
+                                  type="button"
+                                  disabled={isReadOnly}
+                                  onClick={() =>
+                                    handleOpenCameraModal(
+                                      'pest-disease-tracking',
+                                      'Pest & Disease Field Photos',
+                                      'problemFieldPhotos'
+                                    )
+                                  }
+                                  className="w-full text-left pl-8 pr-16 py-1.5 font-bold text-sm bg-white border border-black rounded-md hover:border-rose-600 focus:outline-none focus:ring-1 focus:ring-rose-500 transition-all flex items-center justify-between cursor-pointer disabled:bg-slate-100"
+                                  title="Click to view or capture problem photos"
+                                >
+                                  <span className={count > 0 ? "text-black" : "text-slate-400 font-medium"}>
+                                    {count === 0
+                                      ? "0 / 5 Problem Photos"
+                                      : count === 1
+                                      ? "1 / 5 Problem Photo Captured"
+                                      : `${count} / 5 Problem Photos Captured`}
+                                  </span>
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    handleOpenCameraModal(
+                                      'pest-disease-tracking',
+                                      'Pest & Disease Field Photos',
+                                      'problemFieldPhotos'
+                                    )
+                                  }
+                                  className="absolute right-1.5 z-10 px-1.5 py-0.5 rounded text-[11px] font-black bg-rose-100 hover:bg-rose-200 text-rose-800 flex items-center gap-1 cursor-pointer transition-colors"
+                                  title="View problem photos"
+                                >
+                                  <Eye className="w-3.5 h-3.5" />
+                                  <span>{count}/5</span>
+                                </button>
+                                <input
+                                  type="hidden"
+                                  name="problemFieldPhotos"
+                                  value={formData.problemFieldPhotos || ''}
+                                />
                               </div>
                             );
                           })()}
