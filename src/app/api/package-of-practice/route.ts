@@ -58,6 +58,7 @@ export interface PopSubmissionRecord {
   cropStage: string;
   mainRequirement: string;
   problemType: string;
+  serviceAvailability?: string;
   solutionType: string;
   applicationMethod: string;
   serviceType: string;
@@ -1517,6 +1518,7 @@ export async function POST(request: NextRequest) {
       cropStage: String(data.cropStage || '').trim(),
       mainRequirement: String(data.mainRequirement || '').trim(),
       problemType: String(data.problemType || '').trim(),
+      serviceAvailability: String(data.serviceAvailability || '').trim(),
       solutionType: String(data.solutionType || '').trim(),
       applicationMethod: String(data.applicationMethod || '').trim(),
       serviceType: String(data.serviceType || '').trim(),

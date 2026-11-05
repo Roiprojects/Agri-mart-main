@@ -737,6 +737,16 @@ const BASE_PROBLEM_TYPES = [
   'Quality problems',
 ];
 
+const BASE_SERVICE_AVAILABILITIES = [
+  'Planting',
+  'Mulching',
+  'Spraying',
+  'Hoeing',
+  'Harvesting',
+  'Weeding',
+  'Irrigation',
+];
+
 const BASE_SOLUTION_TYPES = [
   'Crop advisory',
   'Insect pest management',
@@ -993,6 +1003,7 @@ const EMPTY_FORM_DATA = {
   cropStage: '',
   mainRequirement: '',
   problemType: '',
+  serviceAvailability: '',
   solutionType: '',
   applicationMethod: '',
   serviceType: '',
@@ -1105,6 +1116,8 @@ export default function PackageOfPracticeForm() {
   const [newDistrictInput, setNewDistrictInput] = useState('');
   const [problemDropdownOpen, setProblemDropdownOpen] = useState(false);
   const [newProblemInput, setNewProblemInput] = useState('');
+  const [serviceAvailabilityDropdownOpen, setServiceAvailabilityDropdownOpen] = useState(false);
+  const [newServiceAvailabilityInput, setNewServiceAvailabilityInput] = useState('');
   const [solutionDropdownOpen, setSolutionDropdownOpen] = useState(false);
   const [newSolutionInput, setNewSolutionInput] = useState('');
   const [mainReqDropdownOpen, setMainReqDropdownOpen] = useState(false);
@@ -1758,6 +1771,7 @@ export default function PackageOfPracticeForm() {
             cropStage: rec.cropStage || '',
             mainRequirement: rec.mainRequirement || '',
             problemType: rec.problemType || '',
+            serviceAvailability: rec.serviceAvailability || '',
             solutionType: rec.solutionType || '',
             applicationMethod: rec.applicationMethod || '',
             serviceType: rec.serviceType || '',
@@ -4478,6 +4492,83 @@ export default function PackageOfPracticeForm() {
                 </div>
               </div>
 
+              {/* Service Availability */}
+              <div className="grid grid-cols-1 md:grid-cols-12">
+                <label className="md:col-span-3 bg-sky-50/90 px-4 py-3.5 text-xs font-bold text-sky-950 flex items-center border-b md:border-b-0 md:border-r border-sky-200">
+                  Service Availability
+                </label>
+                <div className="md:col-span-9 bg-white p-2 relative">
+                  {/* Custom Dropdown Trigger Button for Service Availability */}
+                  <button
+                    type="button"
+                    onClick={() => setServiceAvailabilityDropdownOpen((prev) => !prev)}
+                    className="w-full bg-white px-3 py-1.5 text-sm font-semibold text-left text-black border border-sky-300 focus:outline-none focus:ring-2 focus:ring-sky-500 rounded-lg flex items-center justify-between gap-2 cursor-pointer"
+                  >
+                    <span className={formData.serviceAvailability ? 'text-black font-semibold' : 'text-neutral-400 font-normal'}>
+                      {formData.serviceAvailability || '-- Select or Enter Service Availability --'}
+                    </span>
+                    <span className="text-sky-700 text-xs font-black">
+                      {serviceAvailabilityDropdownOpen ? '▲' : '▼'}
+                    </span>
+                  </button>
+
+                  {/* Dropdown Menu with "Other Service" + Text Box on the 1st Row at the Top of the Column */}
+                  {serviceAvailabilityDropdownOpen && (
+                    <div className="absolute left-2 right-2 top-full mt-1 z-50 bg-white border-2 border-sky-600 rounded-xl shadow-2xl overflow-hidden">
+                      <div className="max-h-60 overflow-y-auto divide-y divide-sky-100">
+                        {/* 1st Row: Other Service Activity */}
+                        <div className="w-full px-3.5 py-2 bg-white hover:bg-sky-50/50 flex items-center gap-2.5">
+                          <span className="text-xs font-bold text-black shrink-0">
+                            Other Service
+                          </span>
+                          <input
+                            type="text"
+                            value={newServiceAvailabilityInput}
+                            onChange={(e) => {
+                              const val = e.target.value;
+                              setNewServiceAvailabilityInput(val);
+                              setFormData((prev) => ({ ...prev, serviceAvailability: val }));
+                            }}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') {
+                                e.preventDefault();
+                                setServiceAvailabilityDropdownOpen(false);
+                              }
+                            }}
+                            placeholder="Enter service activity..."
+                            className="flex-1 bg-white px-2.5 py-1 text-xs font-semibold text-black placeholder:text-neutral-400 border border-sky-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500"
+                          />
+                        </div>
+
+                        {/* Service Availability Options List */}
+                        {BASE_SERVICE_AVAILABILITIES.map((servOption) => {
+                          const isSelected = formData.serviceAvailability === servOption;
+                          return (
+                            <button
+                              key={servOption}
+                              type="button"
+                              onClick={() => {
+                                setNewServiceAvailabilityInput('');
+                                setFormData((prev) => ({ ...prev, serviceAvailability: servOption }));
+                                setServiceAvailabilityDropdownOpen(false);
+                              }}
+                              className={`w-full px-3.5 py-2 text-left text-xs font-semibold flex items-center justify-between transition cursor-pointer ${
+                                isSelected
+                                  ? 'bg-sky-600 text-white font-bold'
+                                  : 'bg-white hover:bg-sky-50 text-black'
+                              }`}
+                            >
+                              <span>{servOption}</span>
+                              {isSelected && <Check className="w-3.5 h-3.5 text-white" />}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
               {/* Materials Required (Yes/No + Dropdown when Yes) */}
               <div className="grid grid-cols-1 md:grid-cols-12">
                 <label className="md:col-span-3 bg-sky-50/90 px-4 py-3.5 text-xs font-bold text-sky-950 flex items-center border-b md:border-b-0 md:border-r border-sky-200">
@@ -6816,6 +6907,10 @@ export default function PackageOfPracticeForm() {
             <tr>
               <td className="border border-black p-1.5 font-bold">Problem Type:</td>
               <td className="border border-black p-1.5">{formData.problemType}</td>
+            </tr>
+            <tr>
+              <td className="border border-black p-1.5 font-bold">Service Availability:</td>
+              <td className="border border-black p-1.5">{formData.serviceAvailability || '—'}</td>
             </tr>
             <tr>
               <td className="border border-black p-1.5 font-bold">Application Method:</td>

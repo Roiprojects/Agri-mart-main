@@ -161,6 +161,7 @@ export interface PopSubmissionRecord {
   cropStage: string;
   mainRequirement: string;
   problemType: string;
+  serviceAvailability: string;
   solutionType: string;
   applicationMethod: string;
   serviceType: string;
@@ -641,6 +642,16 @@ const BASE_PROBLEM_TYPES = [
   'Quality problems',
 ];
 
+const BASE_SERVICE_AVAILABILITIES = [
+  'Planting',
+  'Mulching',
+  'Spraying',
+  'Hoeing',
+  'Harvesting',
+  'Weeding',
+  'Irrigation',
+];
+
 const BASE_SOLUTION_TYPES = [
   'Crop advisory',
   'Insect pest management',
@@ -871,6 +882,7 @@ const EMPTY_RECORD: Omit<PopSubmissionRecord, 'id' | 'submittedAt' | 'updatedAt'
   cropStage: '',
   mainRequirement: '',
   problemType: '',
+  serviceAvailability: '',
   solutionType: '',
   applicationMethod: '',
   serviceType: '',
@@ -1006,6 +1018,10 @@ export default function ProcurementPopFormsPage() {
   const [isProblemTypeDropdownOpen, setIsProblemTypeDropdownOpen] = useState(false);
   const [customProblemTypeText, setCustomProblemTypeText] = useState('');
   const problemTypeDropdownRef = useRef<HTMLDivElement>(null);
+
+  const [isServiceAvailabilityDropdownOpen, setIsServiceAvailabilityDropdownOpen] = useState(false);
+  const [customServiceAvailabilityText, setCustomServiceAvailabilityText] = useState('');
+  const serviceAvailabilityDropdownRef = useRef<HTMLDivElement>(null);
 
   const [isSolutionTypeDropdownOpen, setIsSolutionTypeDropdownOpen] = useState(false);
   const [customSolutionTypeText, setCustomSolutionTypeText] = useState('');
@@ -1981,6 +1997,7 @@ export default function ProcurementPopFormsPage() {
     setIsCropStageDropdownOpen(false);
     setIsMainRequirementDropdownOpen(false);
     setIsProblemTypeDropdownOpen(false);
+    setIsServiceAvailabilityDropdownOpen(false);
     setIsSolutionTypeDropdownOpen(false);
     setIsMaterialDropdownOpen(false);
     setIsEquipmentDropdownOpen(false);
@@ -2004,6 +2021,7 @@ export default function ProcurementPopFormsPage() {
         cropStageDropdownRef,
         mainRequirementDropdownRef,
         problemTypeDropdownRef,
+        serviceAvailabilityDropdownRef,
         solutionTypeDropdownRef,
         materialDropdownRef,
         equipmentDropdownRef,
@@ -2150,6 +2168,7 @@ export default function ProcurementPopFormsPage() {
       cropStage: rec.cropStage || '',
       mainRequirement: rec.mainRequirement || '',
       problemType: rec.problemType || '',
+      serviceAvailability: rec.serviceAvailability || '',
       solutionType: rec.solutionType || '',
       applicationMethod: rec.applicationMethod || '',
       serviceType: rec.serviceType || '',
@@ -4626,6 +4645,87 @@ export default function ProcurementPopFormsPage() {
                                   >
                                     <span>{prob}</span>
                                     {formData.problemType === prob && <Check className="w-3.5 h-3.5 text-emerald-700" />}
+                                  </button>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* 5. Service Availability (Dropdown) */}
+                    <div className="grid grid-cols-1 md:grid-cols-12">
+                      <label className="md:col-span-3 bg-white px-4 py-3 text-xs font-bold text-black flex items-center border-b md:border-b-0 md:border-r border-black">
+                        Service Availability
+                      </label>
+                      <div className="md:col-span-9 bg-white p-2">
+                        {isReadOnly ? (
+                          <input
+                            type="text"
+                            readOnly
+                            value={formData.serviceAvailability || '-'}
+                            className="w-full bg-white px-2.5 py-1.5 text-sm text-black cursor-default"
+                          />
+                        ) : (
+                          <div className="relative" ref={serviceAvailabilityDropdownRef}>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const next = !isServiceAvailabilityDropdownOpen;
+                                resetAllDropdowns();
+                                setIsServiceAvailabilityDropdownOpen(next);
+                              }}
+                              className="w-full bg-white px-2.5 py-1.5 text-sm text-black flex items-center justify-between border border-black rounded focus:outline-none cursor-pointer"
+                            >
+                              <span className={formData.serviceAvailability ? 'text-black font-semibold' : 'text-neutral-500'}>
+                                {formData.serviceAvailability || '-- Select Service Availability --'}
+                              </span>
+                              <ChevronDown className="w-4 h-4 text-black shrink-0" />
+                            </button>
+
+                            {isServiceAvailabilityDropdownOpen && (
+                              <div className="absolute left-0 right-0 top-full mt-1 z-[999] bg-white border-2 border-black rounded-lg shadow-2xl max-h-64 overflow-y-auto">
+                                <div className="p-2 border-b border-black bg-neutral-50 sticky top-0 z-10">
+                                  <div className="text-[10px] font-bold text-black uppercase mb-1">
+                                    Row 1: Other Service Activity (Type below)
+                                  </div>
+                                  <div className="flex items-center gap-1.5">
+                                    <input
+                                      type="text"
+                                      value={customServiceAvailabilityText}
+                                      onChange={(e) => {
+                                        const val = e.target.value;
+                                        setCustomServiceAvailabilityText(val);
+                                        setFormData((prev) => ({ ...prev, serviceAvailability: val }));
+                                      }}
+                                      placeholder="Type custom service activity..."
+                                      className="w-full bg-white px-2 py-1 text-xs text-black border border-black rounded focus:outline-none"
+                                    />
+                                    <button
+                                      type="button"
+                                      onClick={() => setIsServiceAvailabilityDropdownOpen(false)}
+                                      className="px-2.5 py-1 bg-black text-white text-xs font-bold rounded cursor-pointer shrink-0"
+                                    >
+                                      Done
+                                    </button>
+                                  </div>
+                                </div>
+                                {BASE_SERVICE_AVAILABILITIES.map((act) => (
+                                  <button
+                                    key={act}
+                                    type="button"
+                                    onClick={() => {
+                                      setFormData((prev) => ({ ...prev, serviceAvailability: act }));
+                                      setCustomServiceAvailabilityText('');
+                                      setIsServiceAvailabilityDropdownOpen(false);
+                                    }}
+                                    className={`w-full text-left px-3 py-2 text-xs font-semibold hover:bg-emerald-50 border-b border-neutral-200 last:border-b-0 flex items-center justify-between cursor-pointer ${
+                                      formData.serviceAvailability === act ? 'bg-emerald-100 text-black font-bold' : 'text-black'
+                                    }`}
+                                  >
+                                    <span>{act}</span>
+                                    {formData.serviceAvailability === act && <Check className="w-3.5 h-3.5 text-emerald-700" />}
                                   </button>
                                 ))}
                               </div>
