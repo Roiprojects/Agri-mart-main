@@ -6557,124 +6557,118 @@ export default function PackageOfPracticeForm() {
                     {/* =========================================================
                         8. FARMER LIFE CYCLE VALUE (View-Only on Frontend, at the bottom of Filled Farmer Lifecycle Details Overview)
                     ========================================================= */}
-                    <div className="bg-white rounded-2xl border-2 border-indigo-500/40 shadow-md overflow-hidden mt-4">
-                      <div className="bg-gradient-to-r from-indigo-900 via-indigo-800 to-emerald-900 px-5 py-3.5 flex flex-wrap items-center justify-between gap-3">
-                        <div className="flex items-center gap-3">
-                          <span className="w-8 h-8 rounded-xl bg-amber-400 text-indigo-950 font-black text-sm flex items-center justify-center shadow-sm">
-                            8
+                    {formData.isPurchaseHistoryEnabled !== false && (
+                      <div className="bg-white rounded-2xl border-2 border-indigo-500/40 shadow-md overflow-hidden mt-4">
+                        <div className="bg-gradient-to-r from-indigo-900 via-indigo-800 to-emerald-900 px-5 py-3.5 flex flex-wrap items-center justify-between gap-3">
+                          <div className="flex items-center gap-3">
+                            <span className="w-8 h-8 rounded-xl bg-amber-400 text-indigo-950 font-black text-sm flex items-center justify-center shadow-sm">
+                              8
+                            </span>
+                            <div>
+                              <h3 className="text-sm sm:text-base font-black text-white tracking-tight flex flex-wrap items-center gap-2">
+                                Farmer Life Cycle Value
+                                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-amber-400/20 text-amber-200 border border-amber-300/30">
+                                  Purchase History & Lifetime Value
+                                </span>
+                              </h3>
+                              <p className="text-[11px] text-indigo-100/90">
+                                Tracks your purchase history, total products and services purchased from Agrimart, and overall lifetime engagement value.
+                              </p>
+                            </div>
+                          </div>
+                          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 text-amber-200 border border-white/20 text-[10px] font-black uppercase tracking-wider">
+                            View Only • Managed by Agrimart Backend
                           </span>
-                          <div>
-                            <h3 className="text-sm sm:text-base font-black text-white tracking-tight flex items-center gap-2">
-                              Farmer Life Cycle Value
-                              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-amber-400/20 text-amber-200 border border-amber-300/30">
-                                Purchase History & Lifetime Value
+                        </div>
+
+                        <div className="p-5 space-y-5 bg-gradient-to-b from-indigo-50/30 to-white">
+                          {/* Summary KPI Cards (View-Only) */}
+                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3.5">
+                            <div className="bg-white rounded-xl border border-indigo-200 p-3.5 shadow-xs">
+                              <span className="block text-[10px] font-black uppercase tracking-wider text-indigo-900 mb-1">
+                                Total Times Purchased
                               </span>
-                            </h3>
-                            <p className="text-[11px] text-indigo-100/90">
-                              Tracks your purchase history, total products and services purchased from Agrimart, and overall lifetime engagement value.
-                            </p>
-                          </div>
-                        </div>
-                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 text-amber-200 border border-white/20 text-[10px] font-black uppercase tracking-wider">
-                          View Only • Managed by Agrimart Backend
-                        </span>
-                      </div>
-
-                      <div className="p-5 space-y-5 bg-gradient-to-b from-indigo-50/30 to-white">
-                        {/* Summary KPI Cards (View-Only) */}
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3.5">
-                          <div className="bg-white rounded-xl border border-indigo-200 p-3.5 shadow-xs">
-                            <span className="block text-[10px] font-black uppercase tracking-wider text-indigo-900 mb-1">
-                              Total Times Purchased
-                            </span>
-                            <div className="text-xl font-black text-indigo-950">
-                              {formData.totalPurchaseCount ||
-                                (formData.purchaseHistoryRecords?.length
-                                  ? String(formData.purchaseHistoryRecords.length)
-                                  : '0')}{' '}
-                              <span className="text-xs font-bold text-indigo-600">Times</span>
-                            </div>
-                            <p className="text-[10px] text-slate-500 mt-1">
-                              Products & services from Agrimart
-                            </p>
-                          </div>
-
-                          <div className="bg-white rounded-xl border border-emerald-200 p-3.5 shadow-xs">
-                            <span className="block text-[10px] font-black uppercase tracking-wider text-emerald-800 mb-1">
-                              Products Purchased
-                            </span>
-                            <div className="text-xl font-black text-emerald-900">
-                              {formData.productsPurchaseCount || '0'}{' '}
-                              <span className="text-xs font-bold text-emerald-600">Orders</span>
-                            </div>
-                            <p className="text-[10px] text-slate-500 mt-1">
-                              Seeds, fertilizers & crop protection
-                            </p>
-                          </div>
-
-                          <div className="bg-white rounded-xl border border-amber-200 p-3.5 shadow-xs">
-                            <span className="block text-[10px] font-black uppercase tracking-wider text-amber-900 mb-1">
-                              Services / Rentals
-                            </span>
-                            <div className="text-xl font-black text-amber-900">
-                              {formData.servicesPurchaseCount || '0'}{' '}
-                              <span className="text-xs font-bold text-amber-700">Bookings</span>
-                            </div>
-                            <p className="text-[10px] text-slate-500 mt-1">
-                              Rent equipment & farm job work
-                            </p>
-                          </div>
-
-                          <div className="bg-white rounded-xl border border-emerald-300 p-3.5 shadow-xs">
-                            <span className="block text-[10px] font-black uppercase tracking-wider text-emerald-900 mb-1">
-                              Lifetime Value (LTV)
-                            </span>
-                            <div className="text-xl font-black text-emerald-700">
-                              {formData.lifetimePurchaseValue || '₹0'}
-                            </div>
-                            <p className="text-[10px] text-slate-500 mt-1">
-                              Cumulative Agrimart spend
-                            </p>
-                          </div>
-
-                          <div className="bg-white rounded-xl border border-purple-200 p-3.5 shadow-xs">
-                            <span className="block text-[10px] font-black uppercase tracking-wider text-purple-900 mb-1">
-                              Overall Engagement
-                            </span>
-                            <div className="inline-flex items-center px-2.5 py-1 rounded-lg bg-purple-100 text-purple-900 font-extrabold text-xs border border-purple-200 mt-0.5">
-                              {formData.farmerEngagementLevel || 'Not Recorded'}
-                            </div>
-                            <p className="text-[10px] text-slate-500 mt-1">
-                              Farmer retention & loyalty tier
-                            </p>
-                          </div>
-
-                          <div className="bg-white rounded-xl border border-slate-200 p-3.5 shadow-xs">
-                            <span className="block text-[10px] font-black uppercase tracking-wider text-slate-700 mb-1">
-                              Last Purchase Date
-                            </span>
-                            <div className="text-sm font-black text-slate-900 font-mono mt-1">
-                              {formData.lastPurchaseDate || '—'}
-                            </div>
-                            <p className="text-[10px] text-slate-500 mt-1">
-                              Most recent Agrimart transaction
-                            </p>
-                          </div>
-                        </div>
-
-                        {/* Purchase History Table (View-Only, hidden when Disabled by Backend) */}
-                        {formData.isPurchaseHistoryEnabled !== false && (
-                          <div className="rounded-xl border border-slate-200 bg-white overflow-hidden shadow-xs">
-                            <div className="bg-slate-900 text-white px-4 py-2.5 flex flex-wrap items-center justify-between gap-3">
-                              <div className="flex flex-wrap items-center gap-2.5">
-                                <span className="text-xs font-black uppercase tracking-wider text-amber-300">
-                                  Agrimart Products & Services Purchase History Ledger
-                                </span>
-                                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 text-[10px] font-extrabold uppercase tracking-wider">
-                                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                                  Enabled
-                                </span>
+                              <div className="text-xl font-black text-indigo-950">
+                                {formData.totalPurchaseCount ||
+                                  (formData.purchaseHistoryRecords?.length
+                                    ? String(formData.purchaseHistoryRecords.length)
+                                    : '0')}{' '}
+                                <span className="text-xs font-bold text-indigo-600">Times</span>
                               </div>
+                              <p className="text-[10px] text-slate-500 mt-1">
+                                Products & services from Agrimart
+                              </p>
+                            </div>
+
+                            <div className="bg-white rounded-xl border border-emerald-200 p-3.5 shadow-xs">
+                              <span className="block text-[10px] font-black uppercase tracking-wider text-emerald-800 mb-1">
+                                Products Purchased
+                              </span>
+                              <div className="text-xl font-black text-emerald-900">
+                                {formData.productsPurchaseCount || '0'}{' '}
+                                <span className="text-xs font-bold text-emerald-600">Orders</span>
+                              </div>
+                              <p className="text-[10px] text-slate-500 mt-1">
+                                Seeds, fertilizers & crop protection
+                              </p>
+                            </div>
+
+                            <div className="bg-white rounded-xl border border-amber-200 p-3.5 shadow-xs">
+                              <span className="block text-[10px] font-black uppercase tracking-wider text-amber-900 mb-1">
+                                Services / Rentals
+                              </span>
+                              <div className="text-xl font-black text-amber-900">
+                                {formData.servicesPurchaseCount || '0'}{' '}
+                                <span className="text-xs font-bold text-amber-700">Bookings</span>
+                              </div>
+                              <p className="text-[10px] text-slate-500 mt-1">
+                                Rent equipment & farm job work
+                              </p>
+                            </div>
+
+                            <div className="bg-white rounded-xl border border-emerald-300 p-3.5 shadow-xs">
+                              <span className="block text-[10px] font-black uppercase tracking-wider text-emerald-900 mb-1">
+                                Lifetime Value (LTV)
+                              </span>
+                              <div className="text-xl font-black text-emerald-700">
+                                {formData.lifetimePurchaseValue || '₹0'}
+                              </div>
+                              <p className="text-[10px] text-slate-500 mt-1">
+                                Cumulative Agrimart spend
+                              </p>
+                            </div>
+
+                            <div className="bg-white rounded-xl border border-purple-200 p-3.5 shadow-xs">
+                              <span className="block text-[10px] font-black uppercase tracking-wider text-purple-900 mb-1">
+                                Overall Engagement
+                              </span>
+                              <div className="inline-flex items-center px-2.5 py-1 rounded-lg bg-purple-100 text-purple-900 font-extrabold text-xs border border-purple-200 mt-0.5">
+                                {formData.farmerEngagementLevel || 'Not Recorded'}
+                              </div>
+                              <p className="text-[10px] text-slate-500 mt-1">
+                                Farmer retention & loyalty tier
+                              </p>
+                            </div>
+
+                            <div className="bg-white rounded-xl border border-slate-200 p-3.5 shadow-xs">
+                              <span className="block text-[10px] font-black uppercase tracking-wider text-slate-700 mb-1">
+                                Last Purchase Date
+                              </span>
+                              <div className="text-sm font-black text-slate-900 font-mono mt-1">
+                                {formData.lastPurchaseDate || '—'}
+                              </div>
+                              <p className="text-[10px] text-slate-500 mt-1">
+                                Most recent Agrimart transaction
+                              </p>
+                            </div>
+                          </div>
+
+                          {/* Purchase History Table (View-Only) */}
+                          <div className="rounded-xl border border-slate-200 bg-white overflow-hidden shadow-xs">
+                            <div className="bg-slate-900 text-white px-4 py-2.5 flex items-center justify-between">
+                              <span className="text-xs font-black uppercase tracking-wider text-amber-300">
+                                Agrimart Products & Services Purchase History Ledger
+                              </span>
                               <span className="text-[11px] font-bold text-slate-300">
                                 {(formData.purchaseHistoryRecords || []).length} Purchase Record(s)
                               </span>
@@ -6742,20 +6736,20 @@ export default function PackageOfPracticeForm() {
                               </table>
                             </div>
                           </div>
-                        )}
 
-                        {/* Purchase Details & Overall Engagement Summary (View-Only) */}
-                        <div className="bg-white rounded-xl border border-indigo-200/80 p-4 shadow-xs">
-                          <span className="block text-xs font-black uppercase tracking-wider text-indigo-950 mb-1.5">
-                            Purchase Details & Overall Farmer Engagement Summary
-                          </span>
-                          <p className="text-xs text-slate-700 leading-relaxed whitespace-pre-wrap">
-                            {formData.purchaseHistoryDetails ||
-                              'No additional purchase engagement notes recorded.'}
-                          </p>
+                          {/* Purchase Details & Overall Engagement Summary (View-Only) */}
+                          <div className="bg-white rounded-xl border border-indigo-200/80 p-4 shadow-xs">
+                            <span className="block text-xs font-black uppercase tracking-wider text-indigo-950 mb-1.5">
+                              Purchase Details & Overall Farmer Engagement Summary
+                            </span>
+                            <p className="text-xs text-slate-700 leading-relaxed whitespace-pre-wrap">
+                              {formData.purchaseHistoryDetails ||
+                                'No additional purchase engagement notes recorded.'}
+                            </p>
+                          </div>
                         </div>
                       </div>
-                    </div>
+                    )}
                   </div>
                 );
               })()}

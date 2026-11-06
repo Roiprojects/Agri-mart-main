@@ -8088,7 +8088,7 @@ export default function ProcurementPopFormsPage() {
                                 8
                               </span>
                               <div>
-                                <h3 className="text-sm sm:text-base font-black text-white tracking-tight flex items-center gap-2">
+                                <h3 className="text-sm sm:text-base font-black text-white tracking-tight flex flex-wrap items-center gap-2">
                                   Farmer Life Cycle Value
                                   <span className="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-amber-400/20 text-amber-200 border border-amber-300/30">
                                     Purchase History & Lifetime Value
@@ -8099,17 +8099,95 @@ export default function ProcurementPopFormsPage() {
                                 </p>
                               </div>
                             </div>
-                            {!isReadOnly && (
+
+                            <div className="flex flex-wrap items-center gap-2.5">
+                              {/* Master Farmer Life Cycle Value Enable/Disable Switch Toggle */}
                               <button
                                 type="button"
-                                onClick={handleAddPurchaseRecord}
-                                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-indigo-950 font-black text-xs shadow-sm transition-all cursor-pointer"
+                                onClick={async () => {
+                                  const nextVal =
+                                    formData.isPurchaseHistoryEnabled === false ? true : false;
+                                  setFormData((prev) => ({
+                                    ...prev,
+                                    isPurchaseHistoryEnabled: nextVal,
+                                  }));
+                                  try {
+                                    await fetch('/api/package-of-practice', {
+                                      method: 'POST',
+                                      headers: { 'Content-Type': 'application/json' },
+                                      body: JSON.stringify({
+                                        action: 'TOGGLE_PURCHASE_LEDGER',
+                                        recordId:
+                                          activeRecord?.id || (formData as any).id || '',
+                                        isPurchaseHistoryEnabled: nextVal,
+                                      }),
+                                    });
+                                  } catch {
+                                    // local state updated
+                                  }
+                                }}
+                                title={
+                                  formData.isPurchaseHistoryEnabled !== false
+                                    ? 'Click to disable Farmer Life Cycle Value'
+                                    : 'Click to enable Farmer Life Cycle Value'
+                                }
+                                className="bg-white border border-slate-200 hover:border-slate-300 px-3.5 py-1.5 rounded-full inline-flex items-center gap-2.5 transition shadow-xs cursor-pointer select-none"
                               >
-                                <Plus className="w-4 h-4 stroke-[2.5]" />
-                                Add Purchase Record
+                                <span
+                                  className={`text-xs font-bold transition-colors ${
+                                    formData.isPurchaseHistoryEnabled !== false
+                                      ? 'text-emerald-600'
+                                      : 'text-rose-600'
+                                  }`}
+                                >
+                                  {formData.isPurchaseHistoryEnabled !== false
+                                    ? 'Enabled'
+                                    : 'Disabled'}
+                                </span>
+                                <div
+                                  className={`relative inline-flex h-5 w-10 shrink-0 items-center rounded-full transition-colors duration-200 ease-in-out p-0.5 ${
+                                    formData.isPurchaseHistoryEnabled !== false
+                                      ? 'bg-emerald-500'
+                                      : 'bg-rose-500'
+                                  }`}
+                                >
+                                  <span
+                                    className={`inline-block h-4 w-4 transform rounded-full bg-white shadow-sm transition-transform duration-200 ease-in-out ${
+                                      formData.isPurchaseHistoryEnabled !== false
+                                        ? 'translate-x-5'
+                                        : 'translate-x-0'
+                                    }`}
+                                  />
+                                </div>
                               </button>
-                            )}
+
+                              {!isReadOnly && (
+                                <button
+                                  type="button"
+                                  onClick={handleAddPurchaseRecord}
+                                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-indigo-950 font-black text-xs shadow-sm transition-all cursor-pointer"
+                                >
+                                  <Plus className="w-4 h-4 stroke-[2.5]" />
+                                  Add Purchase Record
+                                </button>
+                              )}
+                            </div>
                           </div>
+
+                          {/* Notice when Farmer Life Cycle Value is Disabled in Backend */}
+                          {formData.isPurchaseHistoryEnabled === false && (
+                            <div className="p-3 bg-rose-50 border-b border-rose-200 text-rose-900 text-xs font-medium flex items-center justify-between gap-2">
+                              <div className="flex items-center gap-2">
+                                <span className="w-2.5 h-2.5 rounded-full bg-rose-600 shrink-0" />
+                                <span>
+                                  <strong>Farmer Life Cycle Value is Disabled:</strong> This section is hidden on the farmer frontend, but fully preserved here in the backend for management.
+                                </span>
+                              </div>
+                              <span className="text-[10px] font-bold text-rose-700 uppercase bg-rose-100 px-2 py-0.5 rounded shrink-0">
+                                Backend Only
+                              </span>
+                            </div>
+                          )}
 
                           <div className="p-5 space-y-5 bg-gradient-to-b from-indigo-50/30 to-white">
                             {/* Summary KPI Cards / Editable Inputs */}
@@ -8272,91 +8350,14 @@ export default function ProcurementPopFormsPage() {
 
                             {/* Detailed Purchase History Table */}
                             <div className="rounded-xl border border-slate-200 bg-white overflow-hidden shadow-xs">
-                              <div className="bg-slate-900 text-white px-4 py-2.5 flex flex-wrap items-center justify-between gap-3">
-                                <div className="flex flex-wrap items-center gap-3">
-                                  <span className="text-xs font-black uppercase tracking-wider text-amber-300">
-                                    Agrimart Products & Services Purchase History Ledger
-                                  </span>
-                                  {/* Enable / Disable Toggle Button right next to Agrimart Products & Services Purchase History Ledger */}
-                                  <button
-                                    type="button"
-                                    onClick={async () => {
-                                      const nextVal =
-                                        formData.isPurchaseHistoryEnabled === false ? true : false;
-                                      setFormData((prev) => ({
-                                        ...prev,
-                                        isPurchaseHistoryEnabled: nextVal,
-                                      }));
-                                      try {
-                                        await fetch('/api/package-of-practice', {
-                                          method: 'POST',
-                                          headers: { 'Content-Type': 'application/json' },
-                                          body: JSON.stringify({
-                                            action: 'TOGGLE_PURCHASE_LEDGER',
-                                            recordId:
-                                              activeRecord?.id || (formData as any).id || '',
-                                            isPurchaseHistoryEnabled: nextVal,
-                                          }),
-                                        });
-                                      } catch {
-                                        // local state updated
-                                      }
-                                    }}
-                                    title={
-                                      formData.isPurchaseHistoryEnabled !== false
-                                        ? 'Click to disable Agrimart Products & Services Purchase History Ledger'
-                                        : 'Click to enable Agrimart Products & Services Purchase History Ledger'
-                                    }
-                                    className="bg-white border border-slate-300 hover:border-white px-3 py-1 rounded-full inline-flex items-center gap-2 transition shadow-xs cursor-pointer select-none"
-                                  >
-                                    <span
-                                      className={`text-[11px] font-extrabold transition-colors ${
-                                        formData.isPurchaseHistoryEnabled !== false
-                                          ? 'text-emerald-600'
-                                          : 'text-rose-600'
-                                      }`}
-                                    >
-                                      {formData.isPurchaseHistoryEnabled !== false
-                                        ? 'Enabled'
-                                        : 'Disabled'}
-                                    </span>
-                                    <div
-                                      className={`relative inline-flex h-4 w-8 shrink-0 items-center rounded-full transition-colors duration-200 ease-in-out p-0.5 ${
-                                        formData.isPurchaseHistoryEnabled !== false
-                                          ? 'bg-emerald-500'
-                                          : 'bg-rose-500'
-                                      }`}
-                                    >
-                                      <span
-                                        className={`inline-block h-3 w-3 transform rounded-full bg-white shadow-sm transition-transform duration-200 ease-in-out ${
-                                          formData.isPurchaseHistoryEnabled !== false
-                                            ? 'translate-x-4'
-                                            : 'translate-x-0'
-                                        }`}
-                                      />
-                                    </div>
-                                  </button>
-                                </div>
+                              <div className="bg-slate-900 text-white px-4 py-2.5 flex items-center justify-between">
+                                <span className="text-xs font-black uppercase tracking-wider text-amber-300">
+                                  Agrimart Products & Services Purchase History Ledger
+                                </span>
                                 <span className="text-[11px] font-bold text-slate-300">
                                   {(formData.purchaseHistoryRecords || []).length} Purchase Record(s)
                                 </span>
                               </div>
-
-                              {/* Notice when Purchase History Ledger is Disabled in Backend */}
-                              {formData.isPurchaseHistoryEnabled === false && (
-                                <div className="p-3 bg-rose-50 border-b border-rose-200 text-rose-900 text-xs font-medium flex items-center justify-between gap-2">
-                                  <div className="flex items-center gap-2">
-                                    <span className="w-2.5 h-2.5 rounded-full bg-rose-600 shrink-0" />
-                                    <span>
-                                      <strong>Agrimart Products & Services Purchase History Ledger is Disabled:</strong>{' '}
-                                      This ledger is hidden on the farmer frontend, but preserved here in the backend for management.
-                                    </span>
-                                  </div>
-                                  <span className="text-[10px] font-bold text-rose-700 uppercase bg-rose-100 px-2 py-0.5 rounded shrink-0">
-                                    Backend Only
-                                  </span>
-                                </div>
-                              )}
                               <div className="overflow-x-auto">
                                 <table className="w-full text-left border-collapse min-w-[950px]">
                                   <thead>
