@@ -6182,14 +6182,14 @@ export default function ProcurementPopFormsPage() {
                   </div>
 
                   {/* 2. Practice by Farmers by His Experience */}
-                  <div className="space-y-2">
+                  <div className={`space-y-2 relative ${isFarmerPracticeDropdownOpen ? 'z-40' : ''}`}>
                     <h3 className="text-sm font-bold text-black flex items-center justify-between">
                       <span>2. Practice by Farmers by His Experience</span>
                       <span className="text-[10px] font-bold text-amber-900 bg-amber-100 px-2.5 py-0.5 rounded-full border border-amber-300">
                         Independent Experience Without Agronomist Rec
                       </span>
                     </h3>
-                    <div className="border border-black rounded-lg overflow-hidden bg-white text-black divide-y divide-black">
+                    <div className="border border-black rounded-lg bg-white text-black divide-y divide-black">
                       {/* Row 1: Farmer Practice Activity (Dropdown) + Date */}
                       <div className="grid grid-cols-1 md:grid-cols-12">
                         <div className="md:col-span-3 p-2.5 font-bold bg-white text-black border-b md:border-b-0 md:border-r border-black flex items-center">
