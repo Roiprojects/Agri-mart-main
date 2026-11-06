@@ -107,6 +107,28 @@ export interface CropLifecycleData {
   pendingActions: string;
   problemSummary: string;
   solutionSummary: string;
+  stageRecommendedDate?: string;
+  stageAppliedDate?: string;
+  progressRecommendedDate?: string;
+  progressAppliedDate?: string;
+  advisoryRecommendedDate?: string;
+  advisoryAppliedDate?: string;
+  practiceRecommendedDate?: string;
+  practiceAppliedDate?: string;
+  pestRecommendedDate?: string;
+  pestAppliedDate?: string;
+  irrigationRecommendedDate?: string;
+  irrigationAppliedDate?: string;
+  soilRecommendedDate?: string;
+  soilAppliedDate?: string;
+  harvestRecommendedDate?: string;
+  harvestAppliedDate?: string;
+  communicationRecommendedDate?: string;
+  communicationAppliedDate?: string;
+  yieldRecommendedDate?: string;
+  yieldAppliedDate?: string;
+  solutionRecommendedDate?: string;
+  solutionAppliedDate?: string;
 }
 
 export interface FarmerPurchaseHistoryItem {
@@ -922,6 +944,28 @@ const LIFECYCLE_FIELD_KEYS: (keyof CropLifecycleData)[] = [
   'pendingActions',
   'problemSummary',
   'solutionSummary',
+  'stageRecommendedDate',
+  'stageAppliedDate',
+  'progressRecommendedDate',
+  'progressAppliedDate',
+  'advisoryRecommendedDate',
+  'advisoryAppliedDate',
+  'practiceRecommendedDate',
+  'practiceAppliedDate',
+  'pestRecommendedDate',
+  'pestAppliedDate',
+  'irrigationRecommendedDate',
+  'irrigationAppliedDate',
+  'soilRecommendedDate',
+  'soilAppliedDate',
+  'harvestRecommendedDate',
+  'harvestAppliedDate',
+  'communicationRecommendedDate',
+  'communicationAppliedDate',
+  'yieldRecommendedDate',
+  'yieldAppliedDate',
+  'solutionRecommendedDate',
+  'solutionAppliedDate',
 ];
 
 const EMPTY_LIFECYCLE_DATA: CropLifecycleData = {
@@ -969,6 +1013,28 @@ const EMPTY_LIFECYCLE_DATA: CropLifecycleData = {
   pendingActions: '',
   problemSummary: '',
   solutionSummary: '',
+  stageRecommendedDate: '',
+  stageAppliedDate: '',
+  progressRecommendedDate: '',
+  progressAppliedDate: '',
+  advisoryRecommendedDate: '',
+  advisoryAppliedDate: '',
+  practiceRecommendedDate: '',
+  practiceAppliedDate: '',
+  pestRecommendedDate: '',
+  pestAppliedDate: '',
+  irrigationRecommendedDate: '',
+  irrigationAppliedDate: '',
+  soilRecommendedDate: '',
+  soilAppliedDate: '',
+  harvestRecommendedDate: '',
+  harvestAppliedDate: '',
+  communicationRecommendedDate: '',
+  communicationAppliedDate: '',
+  yieldRecommendedDate: '',
+  yieldAppliedDate: '',
+  solutionRecommendedDate: '',
+  solutionAppliedDate: '',
 };
 
 const BASE_CROP_STAGES = [
@@ -1119,6 +1185,28 @@ const EMPTY_FORM_DATA = {
   // 7. Problem and Solution Summary
   problemSummary: '',
   solutionSummary: '',
+  stageRecommendedDate: '',
+  stageAppliedDate: '',
+  progressRecommendedDate: '',
+  progressAppliedDate: '',
+  advisoryRecommendedDate: '',
+  advisoryAppliedDate: '',
+  practiceRecommendedDate: '',
+  practiceAppliedDate: '',
+  pestRecommendedDate: '',
+  pestAppliedDate: '',
+  irrigationRecommendedDate: '',
+  irrigationAppliedDate: '',
+  soilRecommendedDate: '',
+  soilAppliedDate: '',
+  harvestRecommendedDate: '',
+  harvestAppliedDate: '',
+  communicationRecommendedDate: '',
+  communicationAppliedDate: '',
+  yieldRecommendedDate: '',
+  yieldAppliedDate: '',
+  solutionRecommendedDate: '',
+  solutionAppliedDate: '',
 
   // 8. Farmer Life Cycle Value
   totalPurchaseCount: '',
@@ -1893,6 +1981,152 @@ export default function PackageOfPracticeForm() {
             pendingActions: primarySavedLc.pendingActions || rec.pendingActions || '',
             problemSummary: primarySavedLc.problemSummary || rec.problemSummary || '',
             solutionSummary: primarySavedLc.solutionSummary || rec.solutionSummary || '',
+            stageRecommendedDate:
+              primarySavedLc.stageRecommendedDate ||
+              rec.stageRecommendedDate ||
+              primarySavedLc.visitDate ||
+              rec.visitDate ||
+              '',
+            stageAppliedDate:
+              primarySavedLc.stageAppliedDate ||
+              rec.stageAppliedDate ||
+              primarySavedLc.visitDate ||
+              rec.visitDate ||
+              '',
+            progressRecommendedDate:
+              primarySavedLc.progressRecommendedDate ||
+              rec.progressRecommendedDate ||
+              primarySavedLc.visitDate ||
+              rec.visitDate ||
+              '',
+            progressAppliedDate:
+              primarySavedLc.progressAppliedDate ||
+              rec.progressAppliedDate ||
+              primarySavedLc.nextFollowUpDate ||
+              rec.nextFollowUpDate ||
+              primarySavedLc.visitDate ||
+              rec.visitDate ||
+              '',
+            advisoryRecommendedDate:
+              primarySavedLc.advisoryRecommendedDate ||
+              rec.advisoryRecommendedDate ||
+              primarySavedLc.visitDate ||
+              rec.visitDate ||
+              '',
+            advisoryAppliedDate:
+              primarySavedLc.advisoryAppliedDate ||
+              rec.advisoryAppliedDate ||
+              primarySavedLc.visitDate ||
+              rec.visitDate ||
+              '',
+            practiceRecommendedDate:
+              primarySavedLc.practiceRecommendedDate ||
+              rec.practiceRecommendedDate ||
+              primarySavedLc.farmerPracticeDate ||
+              rec.farmerPracticeDate ||
+              primarySavedLc.visitDate ||
+              rec.visitDate ||
+              '',
+            practiceAppliedDate:
+              primarySavedLc.practiceAppliedDate ||
+              rec.practiceAppliedDate ||
+              primarySavedLc.farmerPracticeDate ||
+              rec.farmerPracticeDate ||
+              primarySavedLc.visitDate ||
+              rec.visitDate ||
+              '',
+            pestRecommendedDate:
+              primarySavedLc.pestRecommendedDate ||
+              rec.pestRecommendedDate ||
+              primarySavedLc.visitDate ||
+              rec.visitDate ||
+              '',
+            pestAppliedDate:
+              primarySavedLc.pestAppliedDate ||
+              rec.pestAppliedDate ||
+              primarySavedLc.visitDate ||
+              rec.visitDate ||
+              '',
+            irrigationRecommendedDate:
+              primarySavedLc.irrigationRecommendedDate ||
+              rec.irrigationRecommendedDate ||
+              primarySavedLc.visitDate ||
+              rec.visitDate ||
+              '',
+            irrigationAppliedDate:
+              primarySavedLc.irrigationAppliedDate ||
+              rec.irrigationAppliedDate ||
+              primarySavedLc.visitDate ||
+              rec.visitDate ||
+              '',
+            soilRecommendedDate:
+              primarySavedLc.soilRecommendedDate ||
+              rec.soilRecommendedDate ||
+              primarySavedLc.visitDate ||
+              rec.visitDate ||
+              '',
+            soilAppliedDate:
+              primarySavedLc.soilAppliedDate ||
+              rec.soilAppliedDate ||
+              primarySavedLc.visitDate ||
+              rec.visitDate ||
+              '',
+            harvestRecommendedDate:
+              primarySavedLc.harvestRecommendedDate ||
+              rec.harvestRecommendedDate ||
+              primarySavedLc.harvestingDate ||
+              rec.harvestingDate ||
+              primarySavedLc.visitDate ||
+              rec.visitDate ||
+              '',
+            harvestAppliedDate:
+              primarySavedLc.harvestAppliedDate ||
+              rec.harvestAppliedDate ||
+              primarySavedLc.harvestingDate ||
+              rec.harvestingDate ||
+              primarySavedLc.visitDate ||
+              rec.visitDate ||
+              '',
+            communicationRecommendedDate:
+              primarySavedLc.communicationRecommendedDate ||
+              rec.communicationRecommendedDate ||
+              primarySavedLc.visitDate ||
+              rec.visitDate ||
+              '',
+            communicationAppliedDate:
+              primarySavedLc.communicationAppliedDate ||
+              rec.communicationAppliedDate ||
+              primarySavedLc.visitDate ||
+              rec.visitDate ||
+              '',
+            yieldRecommendedDate:
+              primarySavedLc.yieldRecommendedDate ||
+              rec.yieldRecommendedDate ||
+              primarySavedLc.harvestingDate ||
+              rec.harvestingDate ||
+              primarySavedLc.visitDate ||
+              rec.visitDate ||
+              '',
+            yieldAppliedDate:
+              primarySavedLc.yieldAppliedDate ||
+              rec.yieldAppliedDate ||
+              primarySavedLc.harvestingDate ||
+              rec.harvestingDate ||
+              primarySavedLc.visitDate ||
+              rec.visitDate ||
+              '',
+            solutionRecommendedDate:
+              primarySavedLc.solutionRecommendedDate ||
+              rec.solutionRecommendedDate ||
+              primarySavedLc.visitDate ||
+              rec.visitDate ||
+              '',
+            solutionAppliedDate:
+              primarySavedLc.solutionAppliedDate ||
+              rec.solutionAppliedDate ||
+              primarySavedLc.visitDate ||
+              rec.visitDate ||
+              '',
             totalPurchaseCount:
               rec.totalPurchaseCount ||
               (Array.isArray(rec.purchaseHistoryRecords) && rec.purchaseHistoryRecords.length > 0
@@ -6253,6 +6487,38 @@ export default function PackageOfPracticeForm() {
                   ...(cropExtraLifecycleStagesMap[activeCrop.id] || []),
                 ];
 
+                const renderOverviewCompulsoryDates = (
+                  lcItem: CropLifecycleData,
+                  recKey: keyof CropLifecycleData,
+                  appKey: keyof CropLifecycleData,
+                  fallbackRec: string = '',
+                  fallbackApp: string = ''
+                ) => {
+                  const recVal = (lcItem[recKey] as string) || fallbackRec || '';
+                  const appVal = (lcItem[appKey] as string) || fallbackApp || '';
+
+                  return (
+                    <div className="mt-2 pt-1.5 border-t border-slate-200/80 space-y-1 bg-slate-50/90 p-1.5 rounded-md border border-slate-200/60">
+                      <div className="text-[10px] leading-tight flex items-center justify-between gap-1">
+                        <span className="font-extrabold text-indigo-900">
+                          1. Recommended Date<span className="text-rose-600">*</span>:
+                        </span>
+                        <span className="font-mono font-bold text-indigo-700 bg-indigo-50 px-1.5 py-0.5 rounded border border-indigo-200">
+                          {recVal || '—'}
+                        </span>
+                      </div>
+                      <div className="text-[10px] leading-tight flex items-center justify-between gap-1">
+                        <span className="font-extrabold text-emerald-900">
+                          2. Applied Date<span className="text-rose-600">*</span>:
+                        </span>
+                        <span className="font-mono font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">
+                          {appVal || '—'}
+                        </span>
+                      </div>
+                    </div>
+                  );
+                };
+
                 return (
                   <div className="rounded-2xl border-2 border-emerald-700 bg-white shadow-sm overflow-hidden">
                     <div className="bg-gradient-to-r from-emerald-950 via-teal-900 to-emerald-950 text-white px-5 py-3.5 flex flex-wrap items-center justify-between gap-2">
@@ -6349,6 +6615,13 @@ export default function PackageOfPracticeForm() {
                                       {cropRow.variety ? ` (${cropRow.variety})` : ''}
                                       {' • '}Stage #{stageRowIdx + 1}
                                     </div>
+                                    {renderOverviewCompulsoryDates(
+                                      lc,
+                                      'stageRecommendedDate',
+                                      'stageAppliedDate',
+                                      lc.visitDate,
+                                      lc.visitDate
+                                    )}
                                   </td>
 
                                   {/* 2. Crop Progress */}
@@ -6373,6 +6646,13 @@ export default function PackageOfPracticeForm() {
                                         Next: {lc.nextFollowUpDate}
                                       </div>
                                     )}
+                                    {renderOverviewCompulsoryDates(
+                                      lc,
+                                      'progressRecommendedDate',
+                                      'progressAppliedDate',
+                                      lc.visitDate,
+                                      lc.nextFollowUpDate || lc.visitDate
+                                    )}
                                   </td>
 
                                   {/* 3. Visit & Advisory */}
@@ -6393,6 +6673,13 @@ export default function PackageOfPracticeForm() {
                                       <div className="text-[10px] text-slate-500">
                                         Method: {lc.visitApplicationType}
                                       </div>
+                                    )}
+                                    {renderOverviewCompulsoryDates(
+                                      lc,
+                                      'advisoryRecommendedDate',
+                                      'advisoryAppliedDate',
+                                      lc.visitDate,
+                                      lc.visitDate
                                     )}
                                   </td>
 
@@ -6417,6 +6704,13 @@ export default function PackageOfPracticeForm() {
                                     ) : (
                                       <div className="text-slate-400 text-[10px]">—</div>
                                     )}
+                                    {renderOverviewCompulsoryDates(
+                                      lc,
+                                      'practiceRecommendedDate',
+                                      'practiceAppliedDate',
+                                      lc.farmerPracticeDate || lc.visitDate,
+                                      lc.farmerPracticeDate || lc.visitDate
+                                    )}
                                   </td>
 
                                   {/* 4. Pest & Disease Tracking */}
@@ -6433,6 +6727,13 @@ export default function PackageOfPracticeForm() {
                                         <strong className="text-slate-900">Action:</strong>{' '}
                                         {lc.problemActionsTaken}
                                       </div>
+                                    )}
+                                    {renderOverviewCompulsoryDates(
+                                      lc,
+                                      'pestRecommendedDate',
+                                      'pestAppliedDate',
+                                      lc.visitDate,
+                                      lc.visitDate
                                     )}
                                   </td>
 
@@ -6452,6 +6753,13 @@ export default function PackageOfPracticeForm() {
                                           .join(' • ')}
                                       </div>
                                     )}
+                                    {renderOverviewCompulsoryDates(
+                                      lc,
+                                      'irrigationRecommendedDate',
+                                      'irrigationAppliedDate',
+                                      lc.visitDate,
+                                      lc.visitDate
+                                    )}
                                   </td>
 
                                   {/* 6. Soil Health & Fertilizer */}
@@ -6467,6 +6775,13 @@ export default function PackageOfPracticeForm() {
                                       <div className="text-[10px] text-slate-500">
                                         History: {lc.fertilizerHistory}
                                       </div>
+                                    )}
+                                    {renderOverviewCompulsoryDates(
+                                      lc,
+                                      'soilRecommendedDate',
+                                      'soilAppliedDate',
+                                      lc.visitDate,
+                                      lc.visitDate
                                     )}
                                   </td>
 
@@ -6491,6 +6806,13 @@ export default function PackageOfPracticeForm() {
                                       </div>
                                     )}
                                     <div>{lc.localMarketPriceInfo || '—'}</div>
+                                    {renderOverviewCompulsoryDates(
+                                      lc,
+                                      'harvestRecommendedDate',
+                                      'harvestAppliedDate',
+                                      lc.harvestingDate || lc.visitDate,
+                                      lc.harvestingDate || lc.visitDate
+                                    )}
                                   </td>
 
                                   {/* 8. Communication & Follow-up */}
@@ -6506,6 +6828,13 @@ export default function PackageOfPracticeForm() {
                                       <div className="text-[10px] text-amber-800 font-medium">
                                         Pending: {lc.pendingActions}
                                       </div>
+                                    )}
+                                    {renderOverviewCompulsoryDates(
+                                      lc,
+                                      'communicationRecommendedDate',
+                                      'communicationAppliedDate',
+                                      lc.visitDate,
+                                      lc.visitDate
                                     )}
                                   </td>
 
@@ -6526,6 +6855,13 @@ export default function PackageOfPracticeForm() {
                                     <div className="font-bold text-emerald-800">
                                       {lc.cropWiseReturns || '—'}
                                     </div>
+                                    {renderOverviewCompulsoryDates(
+                                      lc,
+                                      'yieldRecommendedDate',
+                                      'yieldAppliedDate',
+                                      lc.harvestingDate || lc.visitDate,
+                                      lc.harvestingDate || lc.visitDate
+                                    )}
                                   </td>
 
                                   {/* 10. Crop Problem & Recommended Solution */}
@@ -6545,6 +6881,13 @@ export default function PackageOfPracticeForm() {
                                           '—'}
                                       </span>
                                     </div>
+                                    {renderOverviewCompulsoryDates(
+                                      lc,
+                                      'solutionRecommendedDate',
+                                      'solutionAppliedDate',
+                                      lc.visitDate,
+                                      lc.visitDate
+                                    )}
                                   </td>
                                 </tr>
                               );

@@ -131,6 +131,29 @@ export interface PopSubmissionRecord {
   // 7. Problem and Solution Summary (Backend Managed)
   problemSummary?: string;
   solutionSummary?: string;
+  // Compulsory Recommended Date & Applied Date per Overview Box
+  stageRecommendedDate?: string;
+  stageAppliedDate?: string;
+  progressRecommendedDate?: string;
+  progressAppliedDate?: string;
+  advisoryRecommendedDate?: string;
+  advisoryAppliedDate?: string;
+  practiceRecommendedDate?: string;
+  practiceAppliedDate?: string;
+  pestRecommendedDate?: string;
+  pestAppliedDate?: string;
+  irrigationRecommendedDate?: string;
+  irrigationAppliedDate?: string;
+  soilRecommendedDate?: string;
+  soilAppliedDate?: string;
+  harvestRecommendedDate?: string;
+  harvestAppliedDate?: string;
+  communicationRecommendedDate?: string;
+  communicationAppliedDate?: string;
+  yieldRecommendedDate?: string;
+  yieldAppliedDate?: string;
+  solutionRecommendedDate?: string;
+  solutionAppliedDate?: string;
   // 8. Farmer Life Cycle Value (Purchase History, Frequency & Lifetime Engagement)
   totalPurchaseCount?: string;
   productsPurchaseCount?: string;
@@ -1801,6 +1824,138 @@ export async function POST(request: NextRequest) {
           ? String(data.solutionSummary).trim()
           : existingIdx >= 0
           ? records[existingIdx].solutionSummary || ''
+          : '',
+      stageRecommendedDate:
+        data.stageRecommendedDate !== undefined && String(data.stageRecommendedDate).trim() !== ''
+          ? String(data.stageRecommendedDate).trim()
+          : existingIdx >= 0
+          ? records[existingIdx].stageRecommendedDate || ''
+          : '',
+      stageAppliedDate:
+        data.stageAppliedDate !== undefined && String(data.stageAppliedDate).trim() !== ''
+          ? String(data.stageAppliedDate).trim()
+          : existingIdx >= 0
+          ? records[existingIdx].stageAppliedDate || ''
+          : '',
+      progressRecommendedDate:
+        data.progressRecommendedDate !== undefined && String(data.progressRecommendedDate).trim() !== ''
+          ? String(data.progressRecommendedDate).trim()
+          : existingIdx >= 0
+          ? records[existingIdx].progressRecommendedDate || ''
+          : '',
+      progressAppliedDate:
+        data.progressAppliedDate !== undefined && String(data.progressAppliedDate).trim() !== ''
+          ? String(data.progressAppliedDate).trim()
+          : existingIdx >= 0
+          ? records[existingIdx].progressAppliedDate || ''
+          : '',
+      advisoryRecommendedDate:
+        data.advisoryRecommendedDate !== undefined && String(data.advisoryRecommendedDate).trim() !== ''
+          ? String(data.advisoryRecommendedDate).trim()
+          : existingIdx >= 0
+          ? records[existingIdx].advisoryRecommendedDate || ''
+          : '',
+      advisoryAppliedDate:
+        data.advisoryAppliedDate !== undefined && String(data.advisoryAppliedDate).trim() !== ''
+          ? String(data.advisoryAppliedDate).trim()
+          : existingIdx >= 0
+          ? records[existingIdx].advisoryAppliedDate || ''
+          : '',
+      practiceRecommendedDate:
+        data.practiceRecommendedDate !== undefined && String(data.practiceRecommendedDate).trim() !== ''
+          ? String(data.practiceRecommendedDate).trim()
+          : existingIdx >= 0
+          ? records[existingIdx].practiceRecommendedDate || ''
+          : '',
+      practiceAppliedDate:
+        data.practiceAppliedDate !== undefined && String(data.practiceAppliedDate).trim() !== ''
+          ? String(data.practiceAppliedDate).trim()
+          : existingIdx >= 0
+          ? records[existingIdx].practiceAppliedDate || ''
+          : '',
+      pestRecommendedDate:
+        data.pestRecommendedDate !== undefined && String(data.pestRecommendedDate).trim() !== ''
+          ? String(data.pestRecommendedDate).trim()
+          : existingIdx >= 0
+          ? records[existingIdx].pestRecommendedDate || ''
+          : '',
+      pestAppliedDate:
+        data.pestAppliedDate !== undefined && String(data.pestAppliedDate).trim() !== ''
+          ? String(data.pestAppliedDate).trim()
+          : existingIdx >= 0
+          ? records[existingIdx].pestAppliedDate || ''
+          : '',
+      irrigationRecommendedDate:
+        data.irrigationRecommendedDate !== undefined && String(data.irrigationRecommendedDate).trim() !== ''
+          ? String(data.irrigationRecommendedDate).trim()
+          : existingIdx >= 0
+          ? records[existingIdx].irrigationRecommendedDate || ''
+          : '',
+      irrigationAppliedDate:
+        data.irrigationAppliedDate !== undefined && String(data.irrigationAppliedDate).trim() !== ''
+          ? String(data.irrigationAppliedDate).trim()
+          : existingIdx >= 0
+          ? records[existingIdx].irrigationAppliedDate || ''
+          : '',
+      soilRecommendedDate:
+        data.soilRecommendedDate !== undefined && String(data.soilRecommendedDate).trim() !== ''
+          ? String(data.soilRecommendedDate).trim()
+          : existingIdx >= 0
+          ? records[existingIdx].soilRecommendedDate || ''
+          : '',
+      soilAppliedDate:
+        data.soilAppliedDate !== undefined && String(data.soilAppliedDate).trim() !== ''
+          ? String(data.soilAppliedDate).trim()
+          : existingIdx >= 0
+          ? records[existingIdx].soilAppliedDate || ''
+          : '',
+      harvestRecommendedDate:
+        data.harvestRecommendedDate !== undefined && String(data.harvestRecommendedDate).trim() !== ''
+          ? String(data.harvestRecommendedDate).trim()
+          : existingIdx >= 0
+          ? records[existingIdx].harvestRecommendedDate || ''
+          : '',
+      harvestAppliedDate:
+        data.harvestAppliedDate !== undefined && String(data.harvestAppliedDate).trim() !== ''
+          ? String(data.harvestAppliedDate).trim()
+          : existingIdx >= 0
+          ? records[existingIdx].harvestAppliedDate || ''
+          : '',
+      communicationRecommendedDate:
+        data.communicationRecommendedDate !== undefined && String(data.communicationRecommendedDate).trim() !== ''
+          ? String(data.communicationRecommendedDate).trim()
+          : existingIdx >= 0
+          ? records[existingIdx].communicationRecommendedDate || ''
+          : '',
+      communicationAppliedDate:
+        data.communicationAppliedDate !== undefined && String(data.communicationAppliedDate).trim() !== ''
+          ? String(data.communicationAppliedDate).trim()
+          : existingIdx >= 0
+          ? records[existingIdx].communicationAppliedDate || ''
+          : '',
+      yieldRecommendedDate:
+        data.yieldRecommendedDate !== undefined && String(data.yieldRecommendedDate).trim() !== ''
+          ? String(data.yieldRecommendedDate).trim()
+          : existingIdx >= 0
+          ? records[existingIdx].yieldRecommendedDate || ''
+          : '',
+      yieldAppliedDate:
+        data.yieldAppliedDate !== undefined && String(data.yieldAppliedDate).trim() !== ''
+          ? String(data.yieldAppliedDate).trim()
+          : existingIdx >= 0
+          ? records[existingIdx].yieldAppliedDate || ''
+          : '',
+      solutionRecommendedDate:
+        data.solutionRecommendedDate !== undefined && String(data.solutionRecommendedDate).trim() !== ''
+          ? String(data.solutionRecommendedDate).trim()
+          : existingIdx >= 0
+          ? records[existingIdx].solutionRecommendedDate || ''
+          : '',
+      solutionAppliedDate:
+        data.solutionAppliedDate !== undefined && String(data.solutionAppliedDate).trim() !== ''
+          ? String(data.solutionAppliedDate).trim()
+          : existingIdx >= 0
+          ? records[existingIdx].solutionAppliedDate || ''
           : '',
       totalPurchaseCount:
         data.totalPurchaseCount !== undefined && String(data.totalPurchaseCount).trim() !== ''

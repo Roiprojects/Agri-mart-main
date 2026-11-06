@@ -100,6 +100,28 @@ export interface CropLifecycleData {
   pendingActions: string;
   problemSummary: string;
   solutionSummary: string;
+  stageRecommendedDate?: string;
+  stageAppliedDate?: string;
+  progressRecommendedDate?: string;
+  progressAppliedDate?: string;
+  advisoryRecommendedDate?: string;
+  advisoryAppliedDate?: string;
+  practiceRecommendedDate?: string;
+  practiceAppliedDate?: string;
+  pestRecommendedDate?: string;
+  pestAppliedDate?: string;
+  irrigationRecommendedDate?: string;
+  irrigationAppliedDate?: string;
+  soilRecommendedDate?: string;
+  soilAppliedDate?: string;
+  harvestRecommendedDate?: string;
+  harvestAppliedDate?: string;
+  communicationRecommendedDate?: string;
+  communicationAppliedDate?: string;
+  yieldRecommendedDate?: string;
+  yieldAppliedDate?: string;
+  solutionRecommendedDate?: string;
+  solutionAppliedDate?: string;
 }
 
 export interface CropSelectionItem {
@@ -230,6 +252,28 @@ export interface PopSubmissionRecord {
   pendingActions?: string;
   problemSummary?: string;
   solutionSummary?: string;
+  stageRecommendedDate?: string;
+  stageAppliedDate?: string;
+  progressRecommendedDate?: string;
+  progressAppliedDate?: string;
+  advisoryRecommendedDate?: string;
+  advisoryAppliedDate?: string;
+  practiceRecommendedDate?: string;
+  practiceAppliedDate?: string;
+  pestRecommendedDate?: string;
+  pestAppliedDate?: string;
+  irrigationRecommendedDate?: string;
+  irrigationAppliedDate?: string;
+  soilRecommendedDate?: string;
+  soilAppliedDate?: string;
+  harvestRecommendedDate?: string;
+  harvestAppliedDate?: string;
+  communicationRecommendedDate?: string;
+  communicationAppliedDate?: string;
+  yieldRecommendedDate?: string;
+  yieldAppliedDate?: string;
+  solutionRecommendedDate?: string;
+  solutionAppliedDate?: string;
   totalPurchaseCount?: string;
   productsPurchaseCount?: string;
   servicesPurchaseCount?: string;
@@ -840,6 +884,28 @@ const LIFECYCLE_FIELD_KEYS: (keyof CropLifecycleData)[] = [
   'pendingActions',
   'problemSummary',
   'solutionSummary',
+  'stageRecommendedDate',
+  'stageAppliedDate',
+  'progressRecommendedDate',
+  'progressAppliedDate',
+  'advisoryRecommendedDate',
+  'advisoryAppliedDate',
+  'practiceRecommendedDate',
+  'practiceAppliedDate',
+  'pestRecommendedDate',
+  'pestAppliedDate',
+  'irrigationRecommendedDate',
+  'irrigationAppliedDate',
+  'soilRecommendedDate',
+  'soilAppliedDate',
+  'harvestRecommendedDate',
+  'harvestAppliedDate',
+  'communicationRecommendedDate',
+  'communicationAppliedDate',
+  'yieldRecommendedDate',
+  'yieldAppliedDate',
+  'solutionRecommendedDate',
+  'solutionAppliedDate',
 ];
 
 const EMPTY_LIFECYCLE_DATA: CropLifecycleData = {
@@ -887,6 +953,28 @@ const EMPTY_LIFECYCLE_DATA: CropLifecycleData = {
   pendingActions: '',
   problemSummary: '',
   solutionSummary: '',
+  stageRecommendedDate: '',
+  stageAppliedDate: '',
+  progressRecommendedDate: '',
+  progressAppliedDate: '',
+  advisoryRecommendedDate: '',
+  advisoryAppliedDate: '',
+  practiceRecommendedDate: '',
+  practiceAppliedDate: '',
+  pestRecommendedDate: '',
+  pestAppliedDate: '',
+  irrigationRecommendedDate: '',
+  irrigationAppliedDate: '',
+  soilRecommendedDate: '',
+  soilAppliedDate: '',
+  harvestRecommendedDate: '',
+  harvestAppliedDate: '',
+  communicationRecommendedDate: '',
+  communicationAppliedDate: '',
+  yieldRecommendedDate: '',
+  yieldAppliedDate: '',
+  solutionRecommendedDate: '',
+  solutionAppliedDate: '',
 };
 
 // Empty Form State for "+ Add New Farmer" (all entered details empty so user can enter them)
@@ -985,6 +1073,28 @@ const EMPTY_RECORD: Omit<PopSubmissionRecord, 'id' | 'submittedAt' | 'updatedAt'
   pendingActions: '',
   problemSummary: '',
   solutionSummary: '',
+  stageRecommendedDate: '',
+  stageAppliedDate: '',
+  progressRecommendedDate: '',
+  progressAppliedDate: '',
+  advisoryRecommendedDate: '',
+  advisoryAppliedDate: '',
+  practiceRecommendedDate: '',
+  practiceAppliedDate: '',
+  pestRecommendedDate: '',
+  pestAppliedDate: '',
+  irrigationRecommendedDate: '',
+  irrigationAppliedDate: '',
+  soilRecommendedDate: '',
+  soilAppliedDate: '',
+  harvestRecommendedDate: '',
+  harvestAppliedDate: '',
+  communicationRecommendedDate: '',
+  communicationAppliedDate: '',
+  yieldRecommendedDate: '',
+  yieldAppliedDate: '',
+  solutionRecommendedDate: '',
+  solutionAppliedDate: '',
   totalPurchaseCount: '',
   productsPurchaseCount: '',
   servicesPurchaseCount: '',
@@ -2160,6 +2270,123 @@ export default function ProcurementPopFormsPage() {
       pendingActions: rec.pendingActions || '',
       problemSummary: rec.problemSummary || '',
       solutionSummary: rec.solutionSummary || '',
+      stageRecommendedDate:
+        (rec as any).cropLifecycleMap?.primary?.stageRecommendedDate ||
+        rec.stageRecommendedDate ||
+        rec.visitDate ||
+        '',
+      stageAppliedDate:
+        (rec as any).cropLifecycleMap?.primary?.stageAppliedDate ||
+        rec.stageAppliedDate ||
+        rec.visitDate ||
+        '',
+      progressRecommendedDate:
+        (rec as any).cropLifecycleMap?.primary?.progressRecommendedDate ||
+        rec.progressRecommendedDate ||
+        rec.visitDate ||
+        '',
+      progressAppliedDate:
+        (rec as any).cropLifecycleMap?.primary?.progressAppliedDate ||
+        rec.progressAppliedDate ||
+        rec.nextFollowUpDate ||
+        rec.visitDate ||
+        '',
+      advisoryRecommendedDate:
+        (rec as any).cropLifecycleMap?.primary?.advisoryRecommendedDate ||
+        rec.advisoryRecommendedDate ||
+        rec.visitDate ||
+        '',
+      advisoryAppliedDate:
+        (rec as any).cropLifecycleMap?.primary?.advisoryAppliedDate ||
+        rec.advisoryAppliedDate ||
+        rec.visitDate ||
+        '',
+      practiceRecommendedDate:
+        (rec as any).cropLifecycleMap?.primary?.practiceRecommendedDate ||
+        rec.practiceRecommendedDate ||
+        rec.farmerPracticeDate ||
+        rec.visitDate ||
+        '',
+      practiceAppliedDate:
+        (rec as any).cropLifecycleMap?.primary?.practiceAppliedDate ||
+        rec.practiceAppliedDate ||
+        rec.farmerPracticeDate ||
+        rec.visitDate ||
+        '',
+      pestRecommendedDate:
+        (rec as any).cropLifecycleMap?.primary?.pestRecommendedDate ||
+        rec.pestRecommendedDate ||
+        rec.visitDate ||
+        '',
+      pestAppliedDate:
+        (rec as any).cropLifecycleMap?.primary?.pestAppliedDate ||
+        rec.pestAppliedDate ||
+        rec.visitDate ||
+        '',
+      irrigationRecommendedDate:
+        (rec as any).cropLifecycleMap?.primary?.irrigationRecommendedDate ||
+        rec.irrigationRecommendedDate ||
+        rec.visitDate ||
+        '',
+      irrigationAppliedDate:
+        (rec as any).cropLifecycleMap?.primary?.irrigationAppliedDate ||
+        rec.irrigationAppliedDate ||
+        rec.visitDate ||
+        '',
+      soilRecommendedDate:
+        (rec as any).cropLifecycleMap?.primary?.soilRecommendedDate ||
+        rec.soilRecommendedDate ||
+        rec.visitDate ||
+        '',
+      soilAppliedDate:
+        (rec as any).cropLifecycleMap?.primary?.soilAppliedDate ||
+        rec.soilAppliedDate ||
+        rec.visitDate ||
+        '',
+      harvestRecommendedDate:
+        (rec as any).cropLifecycleMap?.primary?.harvestRecommendedDate ||
+        rec.harvestRecommendedDate ||
+        rec.harvestingDate ||
+        rec.visitDate ||
+        '',
+      harvestAppliedDate:
+        (rec as any).cropLifecycleMap?.primary?.harvestAppliedDate ||
+        rec.harvestAppliedDate ||
+        rec.harvestingDate ||
+        rec.visitDate ||
+        '',
+      communicationRecommendedDate:
+        (rec as any).cropLifecycleMap?.primary?.communicationRecommendedDate ||
+        rec.communicationRecommendedDate ||
+        rec.visitDate ||
+        '',
+      communicationAppliedDate:
+        (rec as any).cropLifecycleMap?.primary?.communicationAppliedDate ||
+        rec.communicationAppliedDate ||
+        rec.visitDate ||
+        '',
+      yieldRecommendedDate:
+        (rec as any).cropLifecycleMap?.primary?.yieldRecommendedDate ||
+        rec.yieldRecommendedDate ||
+        rec.harvestingDate ||
+        rec.visitDate ||
+        '',
+      yieldAppliedDate:
+        (rec as any).cropLifecycleMap?.primary?.yieldAppliedDate ||
+        rec.yieldAppliedDate ||
+        rec.harvestingDate ||
+        rec.visitDate ||
+        '',
+      solutionRecommendedDate:
+        (rec as any).cropLifecycleMap?.primary?.solutionRecommendedDate ||
+        rec.solutionRecommendedDate ||
+        rec.visitDate ||
+        '',
+      solutionAppliedDate:
+        (rec as any).cropLifecycleMap?.primary?.solutionAppliedDate ||
+        rec.solutionAppliedDate ||
+        rec.visitDate ||
+        '',
     };
 
     const nextMap: Record<string, CropLifecycleData> = {
@@ -2168,10 +2395,36 @@ export default function ProcurementPopFormsPage() {
     const extraCrops = Array.isArray(rec.additionalCrops) ? rec.additionalCrops : [];
     for (const item of extraCrops) {
       if (item?.id) {
-        const mergedLc = {
+        const rawMerged = {
           ...EMPTY_LIFECYCLE_DATA,
           ...((rec as any).cropLifecycleMap?.[item.id] || {}),
           ...(item.lifecycleData || (item as any).lifecycle || {}),
+        };
+        const defDate = rawMerged.visitDate || rec.visitDate || '';
+        const mergedLc: CropLifecycleData = {
+          ...rawMerged,
+          stageRecommendedDate: rawMerged.stageRecommendedDate || defDate,
+          stageAppliedDate: rawMerged.stageAppliedDate || defDate,
+          progressRecommendedDate: rawMerged.progressRecommendedDate || defDate,
+          progressAppliedDate: rawMerged.progressAppliedDate || rawMerged.nextFollowUpDate || defDate,
+          advisoryRecommendedDate: rawMerged.advisoryRecommendedDate || defDate,
+          advisoryAppliedDate: rawMerged.advisoryAppliedDate || defDate,
+          practiceRecommendedDate: rawMerged.practiceRecommendedDate || rawMerged.farmerPracticeDate || defDate,
+          practiceAppliedDate: rawMerged.practiceAppliedDate || rawMerged.farmerPracticeDate || defDate,
+          pestRecommendedDate: rawMerged.pestRecommendedDate || defDate,
+          pestAppliedDate: rawMerged.pestAppliedDate || defDate,
+          irrigationRecommendedDate: rawMerged.irrigationRecommendedDate || defDate,
+          irrigationAppliedDate: rawMerged.irrigationAppliedDate || defDate,
+          soilRecommendedDate: rawMerged.soilRecommendedDate || defDate,
+          soilAppliedDate: rawMerged.soilAppliedDate || defDate,
+          harvestRecommendedDate: rawMerged.harvestRecommendedDate || rawMerged.harvestingDate || defDate,
+          harvestAppliedDate: rawMerged.harvestAppliedDate || rawMerged.harvestingDate || defDate,
+          communicationRecommendedDate: rawMerged.communicationRecommendedDate || defDate,
+          communicationAppliedDate: rawMerged.communicationAppliedDate || defDate,
+          yieldRecommendedDate: rawMerged.yieldRecommendedDate || rawMerged.harvestingDate || defDate,
+          yieldAppliedDate: rawMerged.yieldAppliedDate || rawMerged.harvestingDate || defDate,
+          solutionRecommendedDate: rawMerged.solutionRecommendedDate || defDate,
+          solutionAppliedDate: rawMerged.solutionAppliedDate || defDate,
         };
         if (item.soilReportFileName && !mergedLc.soilReportFileName) {
           mergedLc.soilReportFileName = item.soilReportFileName;
@@ -7227,6 +7480,95 @@ export default function ProcurementPopFormsPage() {
                       ...(cropExtraLifecycleStagesMap[activeCropInfo.id] || []),
                     ];
 
+                    const renderOverviewCompulsoryDates = (
+                      cropId: string,
+                      stageIdx: number,
+                      lcItem: CropLifecycleData,
+                      recKey: keyof CropLifecycleData,
+                      appKey: keyof CropLifecycleData,
+                      fallbackRec: string = '',
+                      fallbackApp: string = ''
+                    ) => {
+                      const recVal = (lcItem[recKey] as string) || fallbackRec || '';
+                      const appVal = (lcItem[appKey] as string) || fallbackApp || '';
+
+                      if (isReadOnly) {
+                        return (
+                          <div className="mt-1.5 pt-1.5 border-t border-slate-200/80 space-y-1 bg-slate-50/90 p-1.5 rounded-md border border-slate-200/60">
+                            <div className="text-[10px] leading-tight flex items-center justify-between gap-1">
+                              <span className="font-extrabold text-indigo-900">
+                                1. Recommended Date<span className="text-rose-600">*</span>:
+                              </span>
+                              <span className="font-mono font-bold text-indigo-700 bg-indigo-50 px-1.5 py-0.5 rounded border border-indigo-200">
+                                {recVal || '—'}
+                              </span>
+                            </div>
+                            <div className="text-[10px] leading-tight flex items-center justify-between gap-1">
+                              <span className="font-extrabold text-emerald-900">
+                                2. Applied Date<span className="text-rose-600">*</span>:
+                              </span>
+                              <span className="font-mono font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">
+                                {appVal || '—'}
+                              </span>
+                            </div>
+                          </div>
+                        );
+                      }
+
+                      return (
+                        <div className="mt-1.5 pt-1.5 border-t border-slate-200/90 space-y-1 bg-slate-50/80 p-1.5 rounded-lg border border-slate-200">
+                          <div>
+                            <label className="text-[9px] font-extrabold text-indigo-950 uppercase tracking-tight flex items-center justify-between mb-0.5">
+                              <span>1. Recommended Date</span>
+                              <span className="text-rose-600 font-black" title="Compulsory">*</span>
+                            </label>
+                            <input
+                              type="date"
+                              required
+                              value={recVal}
+                              onChange={(e) =>
+                                updateCropRowLifecycleField(
+                                  cropId,
+                                  recKey,
+                                  e.target.value,
+                                  stageIdx
+                                )
+                              }
+                              className={`w-full bg-white text-[10px] font-mono font-bold px-1.5 py-0.5 rounded border focus:outline-none focus:ring-1 ${
+                                recVal
+                                  ? 'text-indigo-900 border-indigo-400 focus:border-indigo-600 focus:ring-indigo-500'
+                                  : 'text-rose-700 border-rose-400 bg-rose-50/40 focus:border-rose-600 focus:ring-rose-500'
+                              }`}
+                            />
+                          </div>
+                          <div>
+                            <label className="text-[9px] font-extrabold text-emerald-950 uppercase tracking-tight flex items-center justify-between mb-0.5">
+                              <span>2. Applied Date</span>
+                              <span className="text-rose-600 font-black" title="Compulsory">*</span>
+                            </label>
+                            <input
+                              type="date"
+                              required
+                              value={appVal}
+                              onChange={(e) =>
+                                updateCropRowLifecycleField(
+                                  cropId,
+                                  appKey,
+                                  e.target.value,
+                                  stageIdx
+                                )
+                              }
+                              className={`w-full bg-white text-[10px] font-mono font-bold px-1.5 py-0.5 rounded border focus:outline-none focus:ring-1 ${
+                                appVal
+                                  ? 'text-emerald-900 border-emerald-400 focus:border-emerald-600 focus:ring-emerald-500'
+                                  : 'text-rose-700 border-rose-400 bg-rose-50/40 focus:border-rose-600 focus:ring-rose-500'
+                              }`}
+                            />
+                          </div>
+                        </div>
+                      );
+                    };
+
                     return (
                       <div className="rounded-2xl border-2 border-emerald-700 bg-white shadow-sm overflow-hidden">
                         <div className="bg-gradient-to-r from-emerald-950 via-teal-900 to-emerald-950 text-white px-5 py-3.5 flex flex-wrap items-center justify-between gap-2">
@@ -7375,6 +7717,15 @@ export default function ProcurementPopFormsPage() {
                                           </div>
                                         </div>
                                       )}
+                                      {renderOverviewCompulsoryDates(
+                                        cropRow.id,
+                                        stageRowIdx,
+                                        lc,
+                                        'stageRecommendedDate',
+                                        'stageAppliedDate',
+                                        lc.visitDate,
+                                        lc.visitDate
+                                      )}
                                     </td>
 
                                     {/* 2. Crop Progress */}
@@ -7456,6 +7807,15 @@ export default function ProcurementPopFormsPage() {
                                           )}
                                         </div>
                                       )}
+                                      {renderOverviewCompulsoryDates(
+                                        cropRow.id,
+                                        stageRowIdx,
+                                        lc,
+                                        'progressRecommendedDate',
+                                        'progressAppliedDate',
+                                        lc.visitDate,
+                                        lc.nextFollowUpDate || lc.visitDate
+                                      )}
                                     </td>
 
                                     {/* 3. Visit & Advisory */}
@@ -7525,6 +7885,15 @@ export default function ProcurementPopFormsPage() {
                                             className="w-full bg-white text-[11px] text-emerald-800 font-medium px-2 py-1 rounded-md border border-emerald-500/40 resize-none overflow-y-auto pop-thin-scroll leading-relaxed focus:border-emerald-600 focus:outline-none"
                                           />
                                         </div>
+                                      )}
+                                      {renderOverviewCompulsoryDates(
+                                        cropRow.id,
+                                        stageRowIdx,
+                                        lc,
+                                        'advisoryRecommendedDate',
+                                        'advisoryAppliedDate',
+                                        lc.visitDate,
+                                        lc.visitDate
                                       )}
                                     </td>
 
@@ -7597,6 +7966,15 @@ export default function ProcurementPopFormsPage() {
                                           />
                                         </div>
                                       )}
+                                      {renderOverviewCompulsoryDates(
+                                        cropRow.id,
+                                        stageRowIdx,
+                                        lc,
+                                        'practiceRecommendedDate',
+                                        'practiceAppliedDate',
+                                        lc.farmerPracticeDate || lc.visitDate,
+                                        lc.farmerPracticeDate || lc.visitDate
+                                      )}
                                     </td>
 
                                     {/* 4. Pest & Disease Tracking */}
@@ -7662,6 +8040,15 @@ export default function ProcurementPopFormsPage() {
                                             className="w-full bg-white text-[11px] text-slate-800 px-2 py-1 rounded-md border border-emerald-500/40 resize-none overflow-y-auto pop-thin-scroll leading-relaxed focus:border-emerald-600 focus:outline-none"
                                           />
                                         </div>
+                                      )}
+                                      {renderOverviewCompulsoryDates(
+                                        cropRow.id,
+                                        stageRowIdx,
+                                        lc,
+                                        'pestRecommendedDate',
+                                        'pestAppliedDate',
+                                        lc.visitDate,
+                                        lc.visitDate
                                       )}
                                     </td>
 
@@ -7730,6 +8117,15 @@ export default function ProcurementPopFormsPage() {
                                           />
                                         </div>
                                       )}
+                                      {renderOverviewCompulsoryDates(
+                                        cropRow.id,
+                                        stageRowIdx,
+                                        lc,
+                                        'irrigationRecommendedDate',
+                                        'irrigationAppliedDate',
+                                        lc.visitDate,
+                                        lc.visitDate
+                                      )}
                                     </td>
 
                                     {/* 6. Soil Health & Fertilizer */}
@@ -7794,6 +8190,15 @@ export default function ProcurementPopFormsPage() {
                                             className="w-full bg-white text-[10px] text-slate-600 px-2 py-1 rounded-md border border-emerald-500/40 resize-none overflow-y-auto pop-thin-scroll leading-relaxed focus:border-emerald-600 focus:outline-none"
                                           />
                                         </div>
+                                      )}
+                                      {renderOverviewCompulsoryDates(
+                                        cropRow.id,
+                                        stageRowIdx,
+                                        lc,
+                                        'soilRecommendedDate',
+                                        'soilAppliedDate',
+                                        lc.visitDate,
+                                        lc.visitDate
                                       )}
                                     </td>
 
@@ -7880,6 +8285,15 @@ export default function ProcurementPopFormsPage() {
                                           />
                                         </div>
                                       )}
+                                      {renderOverviewCompulsoryDates(
+                                        cropRow.id,
+                                        stageRowIdx,
+                                        lc,
+                                        'harvestRecommendedDate',
+                                        'harvestAppliedDate',
+                                        lc.harvestingDate || lc.visitDate,
+                                        lc.harvestingDate || lc.visitDate
+                                      )}
                                     </td>
 
                                     {/* 8. Communication & Follow-up */}
@@ -7944,6 +8358,15 @@ export default function ProcurementPopFormsPage() {
                                             className="w-full bg-white text-[10px] text-amber-800 font-medium px-2 py-1 rounded-md border border-emerald-500/40 resize-none overflow-y-auto pop-thin-scroll leading-relaxed focus:border-emerald-600 focus:outline-none"
                                           />
                                         </div>
+                                      )}
+                                      {renderOverviewCompulsoryDates(
+                                        cropRow.id,
+                                        stageRowIdx,
+                                        lc,
+                                        'communicationRecommendedDate',
+                                        'communicationAppliedDate',
+                                        lc.visitDate,
+                                        lc.visitDate
                                       )}
                                     </td>
 
@@ -8013,6 +8436,15 @@ export default function ProcurementPopFormsPage() {
                                           />
                                         </div>
                                       )}
+                                      {renderOverviewCompulsoryDates(
+                                        cropRow.id,
+                                        stageRowIdx,
+                                        lc,
+                                        'yieldRecommendedDate',
+                                        'yieldAppliedDate',
+                                        lc.harvestingDate || lc.visitDate,
+                                        lc.harvestingDate || lc.visitDate
+                                      )}
                                     </td>
 
                                     {/* 10. Problem & Solution */}
@@ -8068,6 +8500,15 @@ export default function ProcurementPopFormsPage() {
                                             />
                                           </div>
                                         </div>
+                                      )}
+                                      {renderOverviewCompulsoryDates(
+                                        cropRow.id,
+                                        stageRowIdx,
+                                        lc,
+                                        'solutionRecommendedDate',
+                                        'solutionAppliedDate',
+                                        lc.visitDate,
+                                        lc.visitDate
                                       )}
                                     </td>
                                   </tr>
