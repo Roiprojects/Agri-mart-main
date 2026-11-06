@@ -14,6 +14,18 @@ export interface FarmerLoginAccount {
   updatedAt: string;
 }
 
+export interface FarmerPurchaseHistoryItem {
+  id: string;
+  purchaseDate: string;
+  purchaseCategory: string;
+  itemsOrServices: string;
+  orderInvoiceNo: string;
+  quantityOrDuration: string;
+  amount: string;
+  paymentStatus: string;
+  remarks: string;
+}
+
 export interface PopSubmissionRecord {
   id: string;
   userId?: string;
@@ -119,6 +131,15 @@ export interface PopSubmissionRecord {
   // 7. Problem and Solution Summary (Backend Managed)
   problemSummary?: string;
   solutionSummary?: string;
+  // 8. Farmer Life Cycle Value (Purchase History, Frequency & Lifetime Engagement)
+  totalPurchaseCount?: string;
+  productsPurchaseCount?: string;
+  servicesPurchaseCount?: string;
+  lifetimePurchaseValue?: string;
+  farmerEngagementLevel?: string;
+  lastPurchaseDate?: string;
+  purchaseHistoryDetails?: string;
+  purchaseHistoryRecords?: FarmerPurchaseHistoryItem[];
   cropLifecycleMap?: Record<string, any>;
   cropExtraLifecycleStagesMap?: Record<string, any[]>;
 
@@ -326,6 +347,59 @@ const DEFAULT_POP_FORMS: PopSubmissionRecord[] = [
     pendingActions: 'Verify FAW trap count after 7 days',
     problemSummary: 'Early Fall Armyworm (FAW) whorl incidence and mild nitrogen stress at knee-high vegetative stage.',
     solutionSummary: 'Directed whorl spray of Spinetoram 11.7 SC @ 0.5ml/L + 8 pheromone traps/acre + 35kg Urea top-dressing.',
+    totalPurchaseCount: '4',
+    productsPurchaseCount: '2',
+    servicesPurchaseCount: '2',
+    lifetimePurchaseValue: '₹24,850',
+    farmerEngagementLevel: 'High-Value Loyal Farmer',
+    lastPurchaseDate: '2026-10-19',
+    purchaseHistoryDetails: 'Consistently purchases hybrid seeds, IPM crop protection inputs, and books tractor deep ploughing & boom spraying services through Agrimart Maddur VLE Hub across Maize, Tomato, and Turmeric cycles.',
+    purchaseHistoryRecords: [
+      {
+        id: 'pur-ramesh-1',
+        purchaseDate: '2026-09-20',
+        purchaseCategory: 'Rent Services',
+        itemsOrServices: 'Tractor Deep Ploughing & Rotavator Bed Preparation',
+        orderInvoiceNo: 'AGM-SRV-2026-1084',
+        quantityOrDuration: '3.5 Acres',
+        amount: '₹6,300',
+        paymentStatus: 'Paid',
+        remarks: 'Pre-sowing land preparation for Maize & Tomato plots',
+      },
+      {
+        id: 'pur-ramesh-2',
+        purchaseDate: '2026-09-22',
+        purchaseCategory: 'Seeds & Inputs',
+        itemsOrServices: 'Pioneer 3396 Hybrid Maize Seeds + Arka Rakshak F1 Tomato + Basal DAP & ZnSO4',
+        orderInvoiceNo: 'AGM-ORD-2026-4412',
+        quantityOrDuration: '3 Acres Kit',
+        amount: '₹9,850',
+        paymentStatus: 'Paid',
+        remarks: 'Basal crop establishment package purchased from Agrimart Store',
+      },
+      {
+        id: 'pur-ramesh-3',
+        purchaseDate: '2026-10-18',
+        purchaseCategory: 'Crop Protection',
+        itemsOrServices: 'Spinetoram 11.7 SC (FAW Spray) + 16 Pheromone Traps + Neem Oil 10000 ppm',
+        orderInvoiceNo: 'AGM-ORD-2026-5190',
+        quantityOrDuration: '2 Acres Dose',
+        amount: '₹5,200',
+        paymentStatus: 'Paid',
+        remarks: 'Purchased immediately after agronomist field visit recommendation',
+      },
+      {
+        id: 'pur-ramesh-4',
+        purchaseDate: '2026-10-19',
+        purchaseCategory: 'Rent Equipment',
+        itemsOrServices: 'Battery Power Boom Sprayer Rental + Spraying Job Work',
+        orderInvoiceNo: 'AGM-RNT-2026-2205',
+        quantityOrDuration: '2 Days / 3 Acres',
+        amount: '₹3,500',
+        paymentStatus: 'Completed',
+        remarks: 'Used for whorl spray on Maize and foliar nutrition on Tomato',
+      },
+    ],
     vleFpoNo: 'VLE-KA-MND-042',
     distanceFromVle: '4.5',
     schedule: [
@@ -451,6 +525,48 @@ const DEFAULT_POP_FORMS: PopSubmissionRecord[] = [
     pendingActions: 'Inspect base of hills for Brown Plant Hopper at Day 50',
     problemSummary: 'Yellow Stem Borer dead-heart symptoms and early Sheath Blight in low-lying bund corners.',
     solutionSummary: 'AWD water regulation + Foliar spray of Chlorantraniliprole 18.5 SC @ 0.3ml/L and Hexaconazole 5% EC @ 2ml/L.',
+    totalPurchaseCount: '3',
+    productsPurchaseCount: '2',
+    servicesPurchaseCount: '1',
+    lifetimePurchaseValue: '₹19,400',
+    farmerEngagementLevel: 'Regular & Active Buyer',
+    lastPurchaseDate: '2026-10-19',
+    purchaseHistoryDetails: 'Active Paddy grower under Kundgol FPO hub; purchases certified BPT-5204 seeds, systemic fungicides, and books cage-wheel puddling & cono-weeding equipment rentals.',
+    purchaseHistoryRecords: [
+      {
+        id: 'pur-basavaraj-1',
+        purchaseDate: '2026-09-08',
+        purchaseCategory: 'Rent Services',
+        itemsOrServices: 'Tractor Cage-Wheel Wet Puddling & Leveling Service',
+        orderInvoiceNo: 'AGM-SRV-2026-0912',
+        quantityOrDuration: '5.0 Acres',
+        amount: '₹7,500',
+        paymentStatus: 'Paid',
+        remarks: 'Pre-transplanting wet puddling completed on schedule',
+      },
+      {
+        id: 'pur-basavaraj-2',
+        purchaseDate: '2026-09-12',
+        purchaseCategory: 'Seeds & Inputs',
+        itemsOrServices: 'BPT-5204 Sona Masuri Seeds + Basal DAP, MOP & Zinc Sulphate (10kg/acre)',
+        orderInvoiceNo: 'AGM-ORD-2026-3890',
+        quantityOrDuration: '5.0 Acres',
+        amount: '₹7,800',
+        paymentStatus: 'Paid',
+        remarks: 'Basal paddy nutrition & Khaira disease prevention kit',
+      },
+      {
+        id: 'pur-basavaraj-3',
+        purchaseDate: '2026-10-19',
+        purchaseCategory: 'Crop Protection',
+        itemsOrServices: 'Chlorantraniliprole 18.5 SC + Hexaconazole 5% EC + Stem Borer Traps',
+        orderInvoiceNo: 'AGM-ORD-2026-5241',
+        quantityOrDuration: '5.0 Acres Dose',
+        amount: '₹4,100',
+        paymentStatus: 'Paid',
+        remarks: 'Tillering stage stem borer & sheath blight control',
+      },
+    ],
     vleFpoNo: 'VLE-KA-DWD-019',
     distanceFromVle: '3.0',
     schedule: [
@@ -634,6 +750,70 @@ const DEFAULT_POP_FORMS: PopSubmissionRecord[] = [
     pendingActions: 'Monitor Tuta trap catch count after 5 days',
     problemSummary: 'Moderate Tuta absoluta (South American Pinworm) leaf mining and early blight risk due to morning dew at flowering stage.',
     solutionSummary: 'Installed 15 Tuta delta pheromone traps/acre + Foliar spray of Chlorantraniliprole 18.5 SC @ 0.3ml/L & Azoxystrobin 23% SC @ 1ml/L + Calcium-Boron foliar nutrition.',
+    totalPurchaseCount: '5',
+    productsPurchaseCount: '3',
+    servicesPurchaseCount: '2',
+    lifetimePurchaseValue: '₹34,600',
+    farmerEngagementLevel: 'High-Value Loyal Farmer',
+    lastPurchaseDate: '2026-10-27',
+    purchaseHistoryDetails: 'High-engagement commercial vegetable & spice grower (Tomato 2.5 Acres + Chilli 1.5 Acres). Regularly procures water-soluble fertigation inputs, IPM sticky/pheromone traps, mulching sheets, and power spraying services from Agrimart.',
+    purchaseHistoryRecords: [
+      {
+        id: 'pur-manju-1',
+        purchaseDate: '2026-09-12',
+        purchaseCategory: 'Rent Services',
+        itemsOrServices: 'Raised Bed Preparation & Silver-Black Plastic Mulching Installation',
+        orderInvoiceNo: 'AGM-SRV-2026-1120',
+        quantityOrDuration: '4.0 Acres',
+        amount: '₹9,200',
+        paymentStatus: 'Paid',
+        remarks: 'Completed raised bed mulching for Tomato & Byadgi Chilli blocks',
+      },
+      {
+        id: 'pur-manju-2',
+        purchaseDate: '2026-09-15',
+        purchaseCategory: 'Seeds & Inputs',
+        itemsOrServices: 'Arka Rakshak F1 Tomato + Byadgi Chilli Nursery Plugs + Enriched Neem Cake',
+        orderInvoiceNo: 'AGM-ORD-2026-4105',
+        quantityOrDuration: '4.0 Acres',
+        amount: '₹11,400',
+        paymentStatus: 'Paid',
+        remarks: 'Certified disease-resistant hybrid seedlings & basal organic kit',
+      },
+      {
+        id: 'pur-manju-3',
+        purchaseDate: '2026-10-08',
+        purchaseCategory: 'Product Purchase',
+        itemsOrServices: 'Water Soluble Fertilizers (19:19:19, 12:61:0, Calcium Nitrate & Boron 20%)',
+        orderInvoiceNo: 'AGM-ORD-2026-4782',
+        quantityOrDuration: '75 kg Combo',
+        amount: '₹6,200',
+        paymentStatus: 'Paid',
+        remarks: 'Venturi drip fertigation schedule for vegetative & flowering stages',
+      },
+      {
+        id: 'pur-manju-4',
+        purchaseDate: '2026-10-27',
+        purchaseCategory: 'Crop Protection',
+        itemsOrServices: 'Tuta Pheromone Delta Traps + Blue/Yellow Sticky Traps + Chlorantraniliprole & Azoxystrobin',
+        orderInvoiceNo: 'AGM-ORD-2026-5501',
+        quantityOrDuration: '4.0 Acres IPM Kit',
+        amount: '₹5,400',
+        paymentStatus: 'Paid',
+        remarks: 'Targeted Tuta pinworm, thrips & early blight protection kit',
+      },
+      {
+        id: 'pur-manju-5',
+        purchaseDate: '2026-10-27',
+        purchaseCategory: 'Rent Equipment',
+        itemsOrServices: 'High-Pressure Battery Power Boom Sprayer Rental',
+        orderInvoiceNo: 'AGM-RNT-2026-2389',
+        quantityOrDuration: '2 Days',
+        amount: '₹2,400',
+        paymentStatus: 'Completed',
+        remarks: 'Canopy foliar spray across Tomato & Chilli plots',
+      },
+    ],
     cropLifecycleMap: {
       primary: {
         visitDate: '2026-10-27',
@@ -997,6 +1177,14 @@ function getPopFormsList(): PopSubmissionRecord[] {
           }
           return updatedAc;
         });
+      }
+      if (
+        Array.isArray(def.purchaseHistoryRecords) &&
+        def.purchaseHistoryRecords.length > 0 &&
+        (!Array.isArray(merged.purchaseHistoryRecords) || merged.purchaseHistoryRecords.length === 0)
+      ) {
+        merged.purchaseHistoryRecords = def.purchaseHistoryRecords;
+        changed = true;
       }
       if (def.isUserSubmitted && !merged.isUserSubmitted) {
         merged.isUserSubmitted = true;
@@ -1595,6 +1783,53 @@ export async function POST(request: NextRequest) {
           : existingIdx >= 0
           ? records[existingIdx].solutionSummary || ''
           : '',
+      totalPurchaseCount:
+        data.totalPurchaseCount !== undefined && String(data.totalPurchaseCount).trim() !== ''
+          ? String(data.totalPurchaseCount).trim()
+          : existingIdx >= 0
+          ? records[existingIdx].totalPurchaseCount || ''
+          : '',
+      productsPurchaseCount:
+        data.productsPurchaseCount !== undefined && String(data.productsPurchaseCount).trim() !== ''
+          ? String(data.productsPurchaseCount).trim()
+          : existingIdx >= 0
+          ? records[existingIdx].productsPurchaseCount || ''
+          : '',
+      servicesPurchaseCount:
+        data.servicesPurchaseCount !== undefined && String(data.servicesPurchaseCount).trim() !== ''
+          ? String(data.servicesPurchaseCount).trim()
+          : existingIdx >= 0
+          ? records[existingIdx].servicesPurchaseCount || ''
+          : '',
+      lifetimePurchaseValue:
+        data.lifetimePurchaseValue !== undefined && String(data.lifetimePurchaseValue).trim() !== ''
+          ? String(data.lifetimePurchaseValue).trim()
+          : existingIdx >= 0
+          ? records[existingIdx].lifetimePurchaseValue || ''
+          : '',
+      farmerEngagementLevel:
+        data.farmerEngagementLevel !== undefined && String(data.farmerEngagementLevel).trim() !== ''
+          ? String(data.farmerEngagementLevel).trim()
+          : existingIdx >= 0
+          ? records[existingIdx].farmerEngagementLevel || ''
+          : '',
+      lastPurchaseDate:
+        data.lastPurchaseDate !== undefined && String(data.lastPurchaseDate).trim() !== ''
+          ? String(data.lastPurchaseDate).trim()
+          : existingIdx >= 0
+          ? records[existingIdx].lastPurchaseDate || ''
+          : '',
+      purchaseHistoryDetails:
+        data.purchaseHistoryDetails !== undefined && String(data.purchaseHistoryDetails).trim() !== ''
+          ? String(data.purchaseHistoryDetails).trim()
+          : existingIdx >= 0
+          ? records[existingIdx].purchaseHistoryDetails || ''
+          : '',
+      purchaseHistoryRecords: Array.isArray(data.purchaseHistoryRecords)
+        ? data.purchaseHistoryRecords
+        : existingIdx >= 0
+        ? records[existingIdx].purchaseHistoryRecords || []
+        : [],
       cropLifecycleMap:
         data.cropLifecycleMap && typeof data.cropLifecycleMap === 'object'
           ? data.cropLifecycleMap

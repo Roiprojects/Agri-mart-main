@@ -123,6 +123,18 @@ export interface CropSelectionItem {
   lifecycleData?: Partial<CropLifecycleData>;
 }
 
+export interface FarmerPurchaseHistoryItem {
+  id: string;
+  purchaseDate: string;
+  purchaseCategory: string;
+  itemsOrServices: string;
+  orderInvoiceNo: string;
+  quantityOrDuration: string;
+  amount: string;
+  paymentStatus: string;
+  remarks: string;
+}
+
 export interface PopSubmissionRecord {
   id: string;
   loginUsername?: string;
@@ -218,6 +230,14 @@ export interface PopSubmissionRecord {
   pendingActions?: string;
   problemSummary?: string;
   solutionSummary?: string;
+  totalPurchaseCount?: string;
+  productsPurchaseCount?: string;
+  servicesPurchaseCount?: string;
+  lifetimePurchaseValue?: string;
+  farmerEngagementLevel?: string;
+  lastPurchaseDate?: string;
+  purchaseHistoryDetails?: string;
+  purchaseHistoryRecords?: FarmerPurchaseHistoryItem[];
   schedule: PopScheduleStage[];
   isPopTableEnabled?: boolean;
   status: 'SUBMITTED' | 'VERIFIED' | 'IN_PROGRESS' | 'COMPLETED';
@@ -964,6 +984,14 @@ const EMPTY_RECORD: Omit<PopSubmissionRecord, 'id' | 'submittedAt' | 'updatedAt'
   pendingActions: '',
   problemSummary: '',
   solutionSummary: '',
+  totalPurchaseCount: '',
+  productsPurchaseCount: '',
+  servicesPurchaseCount: '',
+  lifetimePurchaseValue: '',
+  farmerEngagementLevel: '',
+  lastPurchaseDate: '',
+  purchaseHistoryDetails: '',
+  purchaseHistoryRecords: [],
   schedule: POP_SCHEDULES_BY_CROP.Maize.schedule,
   isPopTableEnabled: true,
   status: 'SUBMITTED',
@@ -2220,9 +2248,140 @@ export default function ProcurementPopFormsPage() {
       vleFpoNo: rec.vleFpoNo || '',
       distanceFromVle: rec.distanceFromVle || '',
       ...primaryLifecycle,
+      totalPurchaseCount:
+        rec.totalPurchaseCount ||
+        (Array.isArray(rec.purchaseHistoryRecords) && rec.purchaseHistoryRecords.length > 0
+          ? String(rec.purchaseHistoryRecords.length)
+          : ''),
+      productsPurchaseCount: rec.productsPurchaseCount || '',
+      servicesPurchaseCount: rec.servicesPurchaseCount || '',
+      lifetimePurchaseValue: rec.lifetimePurchaseValue || '',
+      farmerEngagementLevel: rec.farmerEngagementLevel || '',
+      lastPurchaseDate: rec.lastPurchaseDate || '',
+      purchaseHistoryDetails: rec.purchaseHistoryDetails || '',
+      purchaseHistoryRecords: Array.isArray(rec.purchaseHistoryRecords)
+        ? rec.purchaseHistoryRecords
+        : [],
       schedule: cropSchedule,
       isPopTableEnabled: rec.isPopTableEnabled !== undefined ? Boolean(rec.isPopTableEnabled) : true,
       status: rec.status || 'SUBMITTED',
+    });
+  };
+
+  const handleAddPurchaseRecord = () => {
+    if (modalMode === 'VIEW') return;
+    const today = new Date().toISOString().split('T')[0];
+    const newRow: FarmerPurchaseHistoryItem = {
+      id: `pur-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+      purchaseDate: today,
+      purchaseCategory: 'Product Purchase',
+      itemsOrServices: '',
+      orderInvoiceNo: `AGM-ORD-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`,
+      quantityOrDuration: '',
+      amount: '',
+      paymentStatus: 'Paid',
+      remarks: '',
+    };
+    setFormData((prev) => {
+      const nextRows = [...(prev.purchaseHistoryRecords || []), newRow];
+      const prodCount = nextRows.filter(
+        (r) =>
+          r.purchaseCategory === 'Product Purchase' ||
+          r.purchaseCategory === 'Seeds & Inputs' ||
+          r.purchaseCategory === 'Crop Protection'
+      ).length;
+      const srvCount = nextRows.filter(
+        (r) =>
+          r.purchaseCategory === 'Rent Equipment' ||
+          r.purchaseCategory === 'Rent Services' ||
+          r.purchaseCategory === 'Advisory / Soil Test'
+      ).length;
+      return {
+        ...prev,
+        purchaseHistoryRecords: nextRows,
+        totalPurchaseCount: String(nextRows.length),
+        productsPurchaseCount: String(prodCount),
+        servicesPurchaseCount: String(srvCount),
+        lastPurchaseDate: prev.lastPurchaseDate || today,
+      };
+    });
+  };
+
+  const handleUpdatePurchaseRecord = (
+    rowId: string,
+    field: keyof FarmerPurchaseHistoryItem,
+    value: string
+  ) => {
+    if (modalMode === 'VIEW') return;
+    setFormData((prev) => {
+      const nextRows = (prev.purchaseHistoryRecords || []).map((row) =>
+        row.id === rowId ? { ...row, [field]: value } : row
+      );
+      const prodCount = nextRows.filter(
+        (r) =>
+          r.purchaseCategory === 'Product Purchase' ||
+          r.purchaseCategory === 'Seeds & Inputs' ||
+          r.purchaseCategory === 'Crop Protection'
+      ).length;
+      const srvCount = nextRows.filter(
+        (r) =>
+          r.purchaseCategory === 'Rent Equipment' ||
+          r.purchaseCategory === 'Rent Services' ||
+          r.purchaseCategory === 'Advisory / Soil Test'
+      ).length;
+      const totalNumeric = nextRows.reduce((sum, r) => {
+        const num = parseFloat(String(r.amount || '').replace(/[^0-9.]/g, ''));
+        return sum + (isNaN(num) ? 0 : num);
+      }, 0);
+      return {
+        ...prev,
+        purchaseHistoryRecords: nextRows,
+        ...(field === 'purchaseCategory'
+          ? {
+              totalPurchaseCount: String(nextRows.length),
+              productsPurchaseCount: String(prodCount),
+              servicesPurchaseCount: String(srvCount),
+            }
+          : {}),
+        ...(field === 'amount' && totalNumeric > 0
+          ? {
+              lifetimePurchaseValue: `₹${totalNumeric.toLocaleString('en-IN')}`,
+            }
+          : {}),
+      };
+    });
+  };
+
+  const handleRemovePurchaseRecord = (rowId: string) => {
+    if (modalMode === 'VIEW') return;
+    setFormData((prev) => {
+      const nextRows = (prev.purchaseHistoryRecords || []).filter((row) => row.id !== rowId);
+      const prodCount = nextRows.filter(
+        (r) =>
+          r.purchaseCategory === 'Product Purchase' ||
+          r.purchaseCategory === 'Seeds & Inputs' ||
+          r.purchaseCategory === 'Crop Protection'
+      ).length;
+      const srvCount = nextRows.filter(
+        (r) =>
+          r.purchaseCategory === 'Rent Equipment' ||
+          r.purchaseCategory === 'Rent Services' ||
+          r.purchaseCategory === 'Advisory / Soil Test'
+      ).length;
+      const totalNumeric = nextRows.reduce((sum, r) => {
+        const num = parseFloat(String(r.amount || '').replace(/[^0-9.]/g, ''));
+        return sum + (isNaN(num) ? 0 : num);
+      }, 0);
+      return {
+        ...prev,
+        purchaseHistoryRecords: nextRows,
+        totalPurchaseCount: String(nextRows.length),
+        productsPurchaseCount: String(prodCount),
+        servicesPurchaseCount: String(srvCount),
+        ...(totalNumeric > 0
+          ? { lifetimePurchaseValue: `₹${totalNumeric.toLocaleString('en-IN')}` }
+          : {}),
+      };
     });
   };
 
@@ -7912,6 +8071,416 @@ export default function ProcurementPopFormsPage() {
                               })}
                             </tbody>
                           </table>
+                          </div>
+                        </div>
+
+                        {/* =========================================================
+                            8. FARMER LIFE CYCLE VALUE (At the bottom of Filled Farmer Lifecycle Details Overview)
+                        ========================================================= */}
+                        <div className="bg-white rounded-2xl border-2 border-indigo-500/40 shadow-md overflow-hidden mt-4">
+                          <div className="bg-gradient-to-r from-indigo-900 via-indigo-800 to-emerald-900 px-5 py-3.5 flex flex-wrap items-center justify-between gap-3">
+                            <div className="flex items-center gap-3">
+                              <span className="w-8 h-8 rounded-xl bg-amber-400 text-indigo-950 font-black text-sm flex items-center justify-center shadow-sm">
+                                8
+                              </span>
+                              <div>
+                                <h3 className="text-sm sm:text-base font-black text-white tracking-tight flex items-center gap-2">
+                                  Farmer Life Cycle Value
+                                  <span className="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-amber-400/20 text-amber-200 border border-amber-300/30">
+                                    Purchase History & Lifetime Value
+                                  </span>
+                                </h3>
+                                <p className="text-[11px] text-indigo-100/90">
+                                  Track the farmer&apos;s purchase history, record how many times the farmer has purchased products or services from Agrimart, and maintain purchase details to understand overall engagement and lifetime value.
+                                </p>
+                              </div>
+                            </div>
+                            {!isReadOnly && (
+                              <button
+                                type="button"
+                                onClick={handleAddPurchaseRecord}
+                                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-indigo-950 font-black text-xs shadow-sm transition-all cursor-pointer"
+                              >
+                                <Plus className="w-4 h-4 stroke-[2.5]" />
+                                Add Purchase Record
+                              </button>
+                            )}
+                          </div>
+
+                          <div className="p-5 space-y-5 bg-gradient-to-b from-indigo-50/30 to-white">
+                            {/* Summary KPI Cards / Editable Inputs */}
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3.5">
+                              {/* 1. Total Times Purchased from Agrimart */}
+                              <div className="bg-white rounded-xl border border-indigo-200 p-3.5 shadow-xs">
+                                <label className="block text-[10px] font-black uppercase tracking-wider text-indigo-900 mb-1">
+                                  Total Times Purchased
+                                </label>
+                                {isReadOnly ? (
+                                  <div className="text-xl font-black text-indigo-950">
+                                    {formData.totalPurchaseCount ||
+                                      (formData.purchaseHistoryRecords?.length
+                                        ? String(formData.purchaseHistoryRecords.length)
+                                        : '0')}{' '}
+                                    <span className="text-xs font-bold text-indigo-600">Times</span>
+                                  </div>
+                                ) : (
+                                  <input
+                                    type="text"
+                                    name="totalPurchaseCount"
+                                    value={formData.totalPurchaseCount || ''}
+                                    onChange={handleFieldChange}
+                                    placeholder="e.g. 4"
+                                    className="w-full px-3 py-1.5 rounded-lg border border-indigo-300 text-sm font-black text-indigo-950 focus:outline-none focus:border-indigo-600 bg-indigo-50/30"
+                                  />
+                                )}
+                                <p className="text-[10px] text-slate-500 mt-1">
+                                  Products & services from Agrimart
+                                </p>
+                              </div>
+
+                              {/* 2. Products Purchased Count */}
+                              <div className="bg-white rounded-xl border border-emerald-200 p-3.5 shadow-xs">
+                                <label className="block text-[10px] font-black uppercase tracking-wider text-emerald-800 mb-1">
+                                  Products Purchased
+                                </label>
+                                {isReadOnly ? (
+                                  <div className="text-xl font-black text-emerald-900">
+                                    {formData.productsPurchaseCount || '0'}{' '}
+                                    <span className="text-xs font-bold text-emerald-600">Orders</span>
+                                  </div>
+                                ) : (
+                                  <input
+                                    type="text"
+                                    name="productsPurchaseCount"
+                                    value={formData.productsPurchaseCount || ''}
+                                    onChange={handleFieldChange}
+                                    placeholder="e.g. 2"
+                                    className="w-full px-3 py-1.5 rounded-lg border border-emerald-300 text-sm font-black text-emerald-950 focus:outline-none focus:border-emerald-600 bg-emerald-50/30"
+                                  />
+                                )}
+                                <p className="text-[10px] text-slate-500 mt-1">
+                                  Seeds, fertilizers & crop protection
+                                </p>
+                              </div>
+
+                              {/* 3. Services / Rentals Availed Count */}
+                              <div className="bg-white rounded-xl border border-amber-200 p-3.5 shadow-xs">
+                                <label className="block text-[10px] font-black uppercase tracking-wider text-amber-900 mb-1">
+                                  Services / Rentals
+                                </label>
+                                {isReadOnly ? (
+                                  <div className="text-xl font-black text-amber-900">
+                                    {formData.servicesPurchaseCount || '0'}{' '}
+                                    <span className="text-xs font-bold text-amber-700">Bookings</span>
+                                  </div>
+                                ) : (
+                                  <input
+                                    type="text"
+                                    name="servicesPurchaseCount"
+                                    value={formData.servicesPurchaseCount || ''}
+                                    onChange={handleFieldChange}
+                                    placeholder="e.g. 2"
+                                    className="w-full px-3 py-1.5 rounded-lg border border-amber-300 text-sm font-black text-amber-950 focus:outline-none focus:border-amber-600 bg-amber-50/30"
+                                  />
+                                )}
+                                <p className="text-[10px] text-slate-500 mt-1">
+                                  Rent equipment & farm job work
+                                </p>
+                              </div>
+
+                              {/* 4. Lifetime Purchase Value (LTV) */}
+                              <div className="bg-white rounded-xl border border-emerald-300 p-3.5 shadow-xs">
+                                <label className="block text-[10px] font-black uppercase tracking-wider text-emerald-900 mb-1">
+                                  Lifetime Value (LTV)
+                                </label>
+                                {isReadOnly ? (
+                                  <div className="text-xl font-black text-emerald-700">
+                                    {formData.lifetimePurchaseValue || '₹0'}
+                                  </div>
+                                ) : (
+                                  <input
+                                    type="text"
+                                    name="lifetimePurchaseValue"
+                                    value={formData.lifetimePurchaseValue || ''}
+                                    onChange={handleFieldChange}
+                                    placeholder="e.g. ₹24,850"
+                                    className="w-full px-3 py-1.5 rounded-lg border border-emerald-400 text-sm font-black text-emerald-800 focus:outline-none focus:border-emerald-600 bg-emerald-50/40"
+                                  />
+                                )}
+                                <p className="text-[10px] text-slate-500 mt-1">
+                                  Cumulative Agrimart spend
+                                </p>
+                              </div>
+
+                              {/* 5. Overall Engagement & Loyalty Level */}
+                              <div className="bg-white rounded-xl border border-purple-200 p-3.5 shadow-xs">
+                                <label className="block text-[10px] font-black uppercase tracking-wider text-purple-900 mb-1">
+                                  Overall Engagement
+                                </label>
+                                {isReadOnly ? (
+                                  <div className="inline-flex items-center px-2.5 py-1 rounded-lg bg-purple-100 text-purple-900 font-extrabold text-xs border border-purple-200 mt-0.5">
+                                    {formData.farmerEngagementLevel || 'Not Recorded'}
+                                  </div>
+                                ) : (
+                                  <select
+                                    name="farmerEngagementLevel"
+                                    value={formData.farmerEngagementLevel || ''}
+                                    onChange={handleFieldChange}
+                                    className="w-full px-2.5 py-1.5 rounded-lg border border-purple-300 text-xs font-bold text-purple-950 focus:outline-none focus:border-purple-600 bg-purple-50/30"
+                                  >
+                                    <option value="">-- Select Engagement Tier --</option>
+                                    <option value="High-Value Loyal Farmer">High-Value Loyal Farmer</option>
+                                    <option value="Regular & Active Buyer">Regular & Active Buyer</option>
+                                    <option value="Repeat Buyer">Repeat Buyer</option>
+                                    <option value="First-Time Buyer">First-Time Buyer</option>
+                                    <option value="Occasional Buyer">Occasional Buyer</option>
+                                    <option value="New / Prospect Farmer">New / Prospect Farmer</option>
+                                  </select>
+                                )}
+                                <p className="text-[10px] text-slate-500 mt-1">
+                                  Farmer retention & loyalty tier
+                                </p>
+                              </div>
+
+                              {/* 6. Last Purchase Date */}
+                              <div className="bg-white rounded-xl border border-slate-200 p-3.5 shadow-xs">
+                                <label className="block text-[10px] font-black uppercase tracking-wider text-slate-700 mb-1">
+                                  Last Purchase Date
+                                </label>
+                                {isReadOnly ? (
+                                  <div className="text-sm font-black text-slate-900 font-mono mt-1">
+                                    {formData.lastPurchaseDate || '—'}
+                                  </div>
+                                ) : (
+                                  <input
+                                    type="date"
+                                    name="lastPurchaseDate"
+                                    value={formData.lastPurchaseDate || ''}
+                                    onChange={handleFieldChange}
+                                    className="w-full px-2.5 py-1.5 rounded-lg border border-slate-300 text-xs font-bold text-slate-900 focus:outline-none focus:border-indigo-600 bg-slate-50"
+                                  />
+                                )}
+                                <p className="text-[10px] text-slate-500 mt-1">
+                                  Most recent Agrimart transaction
+                                </p>
+                              </div>
+                            </div>
+
+                            {/* Detailed Purchase History Table */}
+                            <div className="rounded-xl border border-slate-200 bg-white overflow-hidden shadow-xs">
+                              <div className="bg-slate-900 text-white px-4 py-2.5 flex items-center justify-between">
+                                <span className="text-xs font-black uppercase tracking-wider text-amber-300">
+                                  Agrimart Products & Services Purchase History Ledger
+                                </span>
+                                <span className="text-[11px] font-bold text-slate-300">
+                                  {(formData.purchaseHistoryRecords || []).length} Purchase Record(s)
+                                </span>
+                              </div>
+                              <div className="overflow-x-auto">
+                                <table className="w-full text-left border-collapse min-w-[950px]">
+                                  <thead>
+                                    <tr className="bg-slate-100 text-slate-700 text-[10px] font-extrabold uppercase tracking-wider border-b border-slate-200">
+                                      <th className="py-2.5 px-3 border-r border-slate-200 w-[50px]">#</th>
+                                      <th className="py-2.5 px-3 border-r border-slate-200 w-[130px]">Purchase Date</th>
+                                      <th className="py-2.5 px-3 border-r border-slate-200 w-[160px]">Category (Product / Service)</th>
+                                      <th className="py-2.5 px-3 border-r border-slate-200 min-w-[230px]">Products or Services Purchased</th>
+                                      <th className="py-2.5 px-3 border-r border-slate-200 w-[145px]">Order / Invoice No.</th>
+                                      <th className="py-2.5 px-3 border-r border-slate-200 w-[120px]">Qty / Acreage</th>
+                                      <th className="py-2.5 px-3 border-r border-slate-200 w-[115px]">Amount (₹)</th>
+                                      <th className="py-2.5 px-3 border-r border-slate-200 w-[115px]">Status</th>
+                                      <th className="py-2.5 px-3 min-w-[180px]">Engagement Remarks</th>
+                                      {!isReadOnly && <th className="py-2.5 px-2 w-[50px] text-center">Action</th>}
+                                    </tr>
+                                  </thead>
+                                  <tbody className="divide-y divide-slate-200 text-xs">
+                                    {(formData.purchaseHistoryRecords || []).length === 0 ? (
+                                      <tr>
+                                        <td
+                                          colSpan={isReadOnly ? 9 : 10}
+                                          className="py-6 text-center text-slate-400 italic text-xs"
+                                        >
+                                          No purchase records logged yet.{' '}
+                                          {!isReadOnly && 'Click "+ Add Purchase Record" above to record farmer purchases from Agrimart.'}
+                                        </td>
+                                      </tr>
+                                    ) : (
+                                      (formData.purchaseHistoryRecords || []).map((pur, idx) => (
+                                        <tr key={pur.id || idx} className="hover:bg-indigo-50/20 align-top">
+                                          <td className="p-2.5 border-r border-slate-200 font-black text-slate-600 text-center">
+                                            #{idx + 1}
+                                          </td>
+                                          <td className="p-2.5 border-r border-slate-200 font-mono text-[11px] text-slate-800">
+                                            {isReadOnly ? (
+                                              pur.purchaseDate || '—'
+                                            ) : (
+                                              <input
+                                                type="date"
+                                                value={pur.purchaseDate || ''}
+                                                onChange={(e) =>
+                                                  handleUpdatePurchaseRecord(pur.id, 'purchaseDate', e.target.value)
+                                                }
+                                                className="w-full px-2 py-1 rounded border border-slate-300 text-[11px] bg-white"
+                                              />
+                                            )}
+                                          </td>
+                                          <td className="p-2.5 border-r border-slate-200">
+                                            {isReadOnly ? (
+                                              <span className="inline-block px-2 py-0.5 rounded-md text-[10px] font-extrabold bg-indigo-50 text-indigo-800 border border-indigo-200">
+                                                {pur.purchaseCategory || 'Product Purchase'}
+                                              </span>
+                                            ) : (
+                                              <select
+                                                value={pur.purchaseCategory || 'Product Purchase'}
+                                                onChange={(e) =>
+                                                  handleUpdatePurchaseRecord(pur.id, 'purchaseCategory', e.target.value)
+                                                }
+                                                className="w-full px-2 py-1 rounded border border-slate-300 text-[11px] font-semibold bg-white"
+                                              >
+                                                <option value="Product Purchase">Product Purchase</option>
+                                                <option value="Seeds & Inputs">Seeds & Inputs</option>
+                                                <option value="Crop Protection">Crop Protection</option>
+                                                <option value="Rent Equipment">Rent Equipment</option>
+                                                <option value="Rent Services">Rent Services</option>
+                                                <option value="Advisory / Soil Test">Advisory / Soil Test</option>
+                                              </select>
+                                            )}
+                                          </td>
+                                          <td className="p-2.5 border-r border-slate-200 font-semibold text-slate-900">
+                                            {isReadOnly ? (
+                                              pur.itemsOrServices || '—'
+                                            ) : (
+                                              <input
+                                                type="text"
+                                                value={pur.itemsOrServices || ''}
+                                                onChange={(e) =>
+                                                  handleUpdatePurchaseRecord(pur.id, 'itemsOrServices', e.target.value)
+                                                }
+                                                placeholder="Items or services purchased..."
+                                                className="w-full px-2 py-1 rounded border border-slate-300 text-[11px] bg-white"
+                                              />
+                                            )}
+                                          </td>
+                                          <td className="p-2.5 border-r border-slate-200 font-mono text-[11px] text-slate-700">
+                                            {isReadOnly ? (
+                                              pur.orderInvoiceNo || '—'
+                                            ) : (
+                                              <input
+                                                type="text"
+                                                value={pur.orderInvoiceNo || ''}
+                                                onChange={(e) =>
+                                                  handleUpdatePurchaseRecord(pur.id, 'orderInvoiceNo', e.target.value)
+                                                }
+                                                placeholder="AGM-ORD-..."
+                                                className="w-full px-2 py-1 rounded border border-slate-300 text-[11px] bg-white"
+                                              />
+                                            )}
+                                          </td>
+                                          <td className="p-2.5 border-r border-slate-200 text-[11px] text-slate-700">
+                                            {isReadOnly ? (
+                                              pur.quantityOrDuration || '—'
+                                            ) : (
+                                              <input
+                                                type="text"
+                                                value={pur.quantityOrDuration || ''}
+                                                onChange={(e) =>
+                                                  handleUpdatePurchaseRecord(pur.id, 'quantityOrDuration', e.target.value)
+                                                }
+                                                placeholder="Qty / Acres..."
+                                                className="w-full px-2 py-1 rounded border border-slate-300 text-[11px] bg-white"
+                                              />
+                                            )}
+                                          </td>
+                                          <td className="p-2.5 border-r border-slate-200 font-black text-emerald-800">
+                                            {isReadOnly ? (
+                                              pur.amount || '—'
+                                            ) : (
+                                              <input
+                                                type="text"
+                                                value={pur.amount || ''}
+                                                onChange={(e) =>
+                                                  handleUpdatePurchaseRecord(pur.id, 'amount', e.target.value)
+                                                }
+                                                placeholder="₹0"
+                                                className="w-full px-2 py-1 rounded border border-emerald-400 text-[11px] font-bold text-emerald-900 bg-white"
+                                              />
+                                            )}
+                                          </td>
+                                          <td className="p-2.5 border-r border-slate-200">
+                                            {isReadOnly ? (
+                                              <span className="inline-block px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">
+                                                {pur.paymentStatus || 'Paid'}
+                                              </span>
+                                            ) : (
+                                              <select
+                                                value={pur.paymentStatus || 'Paid'}
+                                                onChange={(e) =>
+                                                  handleUpdatePurchaseRecord(pur.id, 'paymentStatus', e.target.value)
+                                                }
+                                                className="w-full px-2 py-1 rounded border border-slate-300 text-[11px] font-semibold bg-white"
+                                              >
+                                                <option value="Paid">Paid</option>
+                                                <option value="Completed">Completed</option>
+                                                <option value="Partial">Partial</option>
+                                                <option value="Credit / FPO">Credit / FPO</option>
+                                              </select>
+                                            )}
+                                          </td>
+                                          <td className="p-2.5 text-[11px] text-slate-600">
+                                            {isReadOnly ? (
+                                              pur.remarks || '—'
+                                            ) : (
+                                              <input
+                                                type="text"
+                                                value={pur.remarks || ''}
+                                                onChange={(e) =>
+                                                  handleUpdatePurchaseRecord(pur.id, 'remarks', e.target.value)
+                                                }
+                                                placeholder="Remarks..."
+                                                className="w-full px-2 py-1 rounded border border-slate-300 text-[11px] bg-white"
+                                              />
+                                            )}
+                                          </td>
+                                          {!isReadOnly && (
+                                            <td className="p-2.5 text-center">
+                                              <button
+                                                type="button"
+                                                onClick={() => handleRemovePurchaseRecord(pur.id)}
+                                                className="p-1.5 rounded-lg text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
+                                                title="Remove Purchase Row"
+                                              >
+                                                <Trash2 className="w-3.5 h-3.5" />
+                                              </button>
+                                            </td>
+                                          )}
+                                        </tr>
+                                      ))
+                                    )}
+                                  </tbody>
+                                </table>
+                              </div>
+                            </div>
+
+                            {/* Purchase Details & Overall Engagement Summary Notes */}
+                            <div className="bg-white rounded-xl border border-indigo-200/80 p-4 shadow-xs">
+                              <label className="block text-xs font-black uppercase tracking-wider text-indigo-950 mb-1.5">
+                                Purchase Details & Overall Farmer Engagement Summary
+                              </label>
+                              {isReadOnly ? (
+                                <p className="text-xs text-slate-700 leading-relaxed whitespace-pre-wrap">
+                                  {formData.purchaseHistoryDetails ||
+                                    'No additional purchase engagement notes recorded.'}
+                                </p>
+                              ) : (
+                                <textarea
+                                  rows={2}
+                                  name="purchaseHistoryDetails"
+                                  value={formData.purchaseHistoryDetails || ''}
+                                  onChange={handleFieldChange}
+                                  placeholder="Maintain purchase details, repeat buying patterns, products/services availed, and overall lifetime value notes..."
+                                  className="w-full px-3.5 py-2.5 rounded-xl border border-indigo-300 text-xs text-slate-800 focus:outline-none focus:border-indigo-600 bg-indigo-50/20"
+                                />
+                              )}
+                            </div>
                           </div>
                         </div>
                       </div>
