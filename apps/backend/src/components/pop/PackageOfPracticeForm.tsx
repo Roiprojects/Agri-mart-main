@@ -1129,6 +1129,7 @@ const EMPTY_FORM_DATA = {
   lastPurchaseDate: '',
   purchaseHistoryDetails: '',
   purchaseHistoryRecords: [] as FarmerPurchaseHistoryItem[],
+  isPurchaseHistoryEnabled: true,
   isPopTableEnabled: true,
 };
 
@@ -1906,6 +1907,10 @@ export default function PackageOfPracticeForm() {
             purchaseHistoryRecords: Array.isArray(rec.purchaseHistoryRecords)
               ? rec.purchaseHistoryRecords
               : [],
+            isPurchaseHistoryEnabled:
+              rec.isPurchaseHistoryEnabled !== undefined
+                ? Boolean(rec.isPurchaseHistoryEnabled)
+                : true,
           };
           const initialLifecycleMap: Record<string, CropLifecycleData> = {
             primary: {
@@ -6657,79 +6662,87 @@ export default function PackageOfPracticeForm() {
                           </div>
                         </div>
 
-                        {/* Purchase History Table (View-Only) */}
-                        <div className="rounded-xl border border-slate-200 bg-white overflow-hidden shadow-xs">
-                          <div className="bg-slate-900 text-white px-4 py-2.5 flex items-center justify-between">
-                            <span className="text-xs font-black uppercase tracking-wider text-amber-300">
-                              Agrimart Products & Services Purchase History Ledger
-                            </span>
-                            <span className="text-[11px] font-bold text-slate-300">
-                              {(formData.purchaseHistoryRecords || []).length} Purchase Record(s)
-                            </span>
-                          </div>
-                          <div className="overflow-x-auto">
-                            <table className="w-full text-left border-collapse min-w-[900px]">
-                              <thead>
-                                <tr className="bg-slate-100 text-slate-700 text-[10px] font-extrabold uppercase tracking-wider border-b border-slate-200">
-                                  <th className="py-2.5 px-3 border-r border-slate-200 w-[50px]">#</th>
-                                  <th className="py-2.5 px-3 border-r border-slate-200 w-[130px]">Purchase Date</th>
-                                  <th className="py-2.5 px-3 border-r border-slate-200 w-[160px]">Category (Product / Service)</th>
-                                  <th className="py-2.5 px-3 border-r border-slate-200 min-w-[230px]">Products or Services Purchased</th>
-                                  <th className="py-2.5 px-3 border-r border-slate-200 w-[145px]">Order / Invoice No.</th>
-                                  <th className="py-2.5 px-3 border-r border-slate-200 w-[120px]">Qty / Acreage</th>
-                                  <th className="py-2.5 px-3 border-r border-slate-200 w-[115px]">Amount (₹)</th>
-                                  <th className="py-2.5 px-3 border-r border-slate-200 w-[115px]">Status</th>
-                                  <th className="py-2.5 px-3 min-w-[180px]">Engagement Remarks</th>
-                                </tr>
-                              </thead>
-                              <tbody className="divide-y divide-slate-200 text-xs">
-                                {(formData.purchaseHistoryRecords || []).length === 0 ? (
-                                  <tr>
-                                    <td colSpan={9} className="py-6 text-center text-slate-400 italic text-xs">
-                                      No purchase records recorded by the Agrimart team yet.
-                                    </td>
+                        {/* Purchase History Table (View-Only, hidden when Disabled by Backend) */}
+                        {formData.isPurchaseHistoryEnabled !== false && (
+                          <div className="rounded-xl border border-slate-200 bg-white overflow-hidden shadow-xs">
+                            <div className="bg-slate-900 text-white px-4 py-2.5 flex flex-wrap items-center justify-between gap-3">
+                              <div className="flex flex-wrap items-center gap-2.5">
+                                <span className="text-xs font-black uppercase tracking-wider text-amber-300">
+                                  Agrimart Products & Services Purchase History Ledger
+                                </span>
+                                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 text-[10px] font-extrabold uppercase tracking-wider">
+                                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                                  Enabled
+                                </span>
+                              </div>
+                              <span className="text-[11px] font-bold text-slate-300">
+                                {(formData.purchaseHistoryRecords || []).length} Purchase Record(s)
+                              </span>
+                            </div>
+                            <div className="overflow-x-auto">
+                              <table className="w-full text-left border-collapse min-w-[900px]">
+                                <thead>
+                                  <tr className="bg-slate-100 text-slate-700 text-[10px] font-extrabold uppercase tracking-wider border-b border-slate-200">
+                                    <th className="py-2.5 px-3 border-r border-slate-200 w-[50px]">#</th>
+                                    <th className="py-2.5 px-3 border-r border-slate-200 w-[130px]">Purchase Date</th>
+                                    <th className="py-2.5 px-3 border-r border-slate-200 w-[160px]">Category (Product / Service)</th>
+                                    <th className="py-2.5 px-3 border-r border-slate-200 min-w-[230px]">Products or Services Purchased</th>
+                                    <th className="py-2.5 px-3 border-r border-slate-200 w-[145px]">Order / Invoice No.</th>
+                                    <th className="py-2.5 px-3 border-r border-slate-200 w-[120px]">Qty / Acreage</th>
+                                    <th className="py-2.5 px-3 border-r border-slate-200 w-[115px]">Amount (₹)</th>
+                                    <th className="py-2.5 px-3 border-r border-slate-200 w-[115px]">Status</th>
+                                    <th className="py-2.5 px-3 min-w-[180px]">Engagement Remarks</th>
                                   </tr>
-                                ) : (
-                                  (formData.purchaseHistoryRecords || []).map((pur, idx) => (
-                                    <tr key={pur.id || idx} className="hover:bg-indigo-50/20 align-top">
-                                      <td className="p-2.5 border-r border-slate-200 font-black text-slate-600 text-center">
-                                        #{idx + 1}
-                                      </td>
-                                      <td className="p-2.5 border-r border-slate-200 font-mono text-[11px] text-slate-800">
-                                        {pur.purchaseDate || '—'}
-                                      </td>
-                                      <td className="p-2.5 border-r border-slate-200">
-                                        <span className="inline-block px-2 py-0.5 rounded-md text-[10px] font-extrabold bg-indigo-50 text-indigo-800 border border-indigo-200">
-                                          {pur.purchaseCategory || 'Product Purchase'}
-                                        </span>
-                                      </td>
-                                      <td className="p-2.5 border-r border-slate-200 font-semibold text-slate-900">
-                                        {pur.itemsOrServices || '—'}
-                                      </td>
-                                      <td className="p-2.5 border-r border-slate-200 font-mono text-[11px] text-slate-700">
-                                        {pur.orderInvoiceNo || '—'}
-                                      </td>
-                                      <td className="p-2.5 border-r border-slate-200 text-[11px] text-slate-700">
-                                        {pur.quantityOrDuration || '—'}
-                                      </td>
-                                      <td className="p-2.5 border-r border-slate-200 font-black text-emerald-800">
-                                        {pur.amount || '—'}
-                                      </td>
-                                      <td className="p-2.5 border-r border-slate-200">
-                                        <span className="inline-block px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">
-                                          {pur.paymentStatus || 'Paid'}
-                                        </span>
-                                      </td>
-                                      <td className="p-2.5 text-[11px] text-slate-600">
-                                        {pur.remarks || '—'}
+                                </thead>
+                                <tbody className="divide-y divide-slate-200 text-xs">
+                                  {(formData.purchaseHistoryRecords || []).length === 0 ? (
+                                    <tr>
+                                      <td colSpan={9} className="py-6 text-center text-slate-400 italic text-xs">
+                                        No purchase records recorded by the Agrimart team yet.
                                       </td>
                                     </tr>
-                                  ))
-                                )}
-                              </tbody>
-                            </table>
+                                  ) : (
+                                    (formData.purchaseHistoryRecords || []).map((pur, idx) => (
+                                      <tr key={pur.id || idx} className="hover:bg-indigo-50/20 align-top">
+                                        <td className="p-2.5 border-r border-slate-200 font-black text-slate-600 text-center">
+                                          #{idx + 1}
+                                        </td>
+                                        <td className="p-2.5 border-r border-slate-200 font-mono text-[11px] text-slate-800">
+                                          {pur.purchaseDate || '—'}
+                                        </td>
+                                        <td className="p-2.5 border-r border-slate-200">
+                                          <span className="inline-block px-2 py-0.5 rounded-md text-[10px] font-extrabold bg-indigo-50 text-indigo-800 border border-indigo-200">
+                                            {pur.purchaseCategory || 'Product Purchase'}
+                                          </span>
+                                        </td>
+                                        <td className="p-2.5 border-r border-slate-200 font-semibold text-slate-900">
+                                          {pur.itemsOrServices || '—'}
+                                        </td>
+                                        <td className="p-2.5 border-r border-slate-200 font-mono text-[11px] text-slate-700">
+                                          {pur.orderInvoiceNo || '—'}
+                                        </td>
+                                        <td className="p-2.5 border-r border-slate-200 text-[11px] text-slate-700">
+                                          {pur.quantityOrDuration || '—'}
+                                        </td>
+                                        <td className="p-2.5 border-r border-slate-200 font-black text-emerald-800">
+                                          {pur.amount || '—'}
+                                        </td>
+                                        <td className="p-2.5 border-r border-slate-200">
+                                          <span className="inline-block px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">
+                                            {pur.paymentStatus || 'Paid'}
+                                          </span>
+                                        </td>
+                                        <td className="p-2.5 text-[11px] text-slate-600">
+                                          {pur.remarks || '—'}
+                                        </td>
+                                      </tr>
+                                    ))
+                                  )}
+                                </tbody>
+                              </table>
+                            </div>
                           </div>
-                        </div>
+                        )}
 
                         {/* Purchase Details & Overall Engagement Summary (View-Only) */}
                         <div className="bg-white rounded-xl border border-indigo-200/80 p-4 shadow-xs">

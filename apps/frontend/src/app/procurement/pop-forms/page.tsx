@@ -238,6 +238,7 @@ export interface PopSubmissionRecord {
   lastPurchaseDate?: string;
   purchaseHistoryDetails?: string;
   purchaseHistoryRecords?: FarmerPurchaseHistoryItem[];
+  isPurchaseHistoryEnabled?: boolean;
   schedule: PopScheduleStage[];
   isPopTableEnabled?: boolean;
   status: 'SUBMITTED' | 'VERIFIED' | 'IN_PROGRESS' | 'COMPLETED';
@@ -992,6 +993,7 @@ const EMPTY_RECORD: Omit<PopSubmissionRecord, 'id' | 'submittedAt' | 'updatedAt'
   lastPurchaseDate: '',
   purchaseHistoryDetails: '',
   purchaseHistoryRecords: [],
+  isPurchaseHistoryEnabled: true,
   schedule: POP_SCHEDULES_BY_CROP.Maize.schedule,
   isPopTableEnabled: true,
   status: 'SUBMITTED',
@@ -2262,6 +2264,8 @@ export default function ProcurementPopFormsPage() {
       purchaseHistoryRecords: Array.isArray(rec.purchaseHistoryRecords)
         ? rec.purchaseHistoryRecords
         : [],
+      isPurchaseHistoryEnabled:
+        rec.isPurchaseHistoryEnabled !== undefined ? Boolean(rec.isPurchaseHistoryEnabled) : true,
       schedule: cropSchedule,
       isPopTableEnabled: rec.isPopTableEnabled !== undefined ? Boolean(rec.isPopTableEnabled) : true,
       status: rec.status || 'SUBMITTED',
@@ -8268,14 +8272,91 @@ export default function ProcurementPopFormsPage() {
 
                             {/* Detailed Purchase History Table */}
                             <div className="rounded-xl border border-slate-200 bg-white overflow-hidden shadow-xs">
-                              <div className="bg-slate-900 text-white px-4 py-2.5 flex items-center justify-between">
-                                <span className="text-xs font-black uppercase tracking-wider text-amber-300">
-                                  Agrimart Products & Services Purchase History Ledger
-                                </span>
+                              <div className="bg-slate-900 text-white px-4 py-2.5 flex flex-wrap items-center justify-between gap-3">
+                                <div className="flex flex-wrap items-center gap-3">
+                                  <span className="text-xs font-black uppercase tracking-wider text-amber-300">
+                                    Agrimart Products & Services Purchase History Ledger
+                                  </span>
+                                  {/* Enable / Disable Toggle Button right next to Agrimart Products & Services Purchase History Ledger */}
+                                  <button
+                                    type="button"
+                                    onClick={async () => {
+                                      const nextVal =
+                                        formData.isPurchaseHistoryEnabled === false ? true : false;
+                                      setFormData((prev) => ({
+                                        ...prev,
+                                        isPurchaseHistoryEnabled: nextVal,
+                                      }));
+                                      try {
+                                        await fetch('/api/package-of-practice', {
+                                          method: 'POST',
+                                          headers: { 'Content-Type': 'application/json' },
+                                          body: JSON.stringify({
+                                            action: 'TOGGLE_PURCHASE_LEDGER',
+                                            recordId:
+                                              activeRecord?.id || (formData as any).id || '',
+                                            isPurchaseHistoryEnabled: nextVal,
+                                          }),
+                                        });
+                                      } catch {
+                                        // local state updated
+                                      }
+                                    }}
+                                    title={
+                                      formData.isPurchaseHistoryEnabled !== false
+                                        ? 'Click to disable Agrimart Products & Services Purchase History Ledger'
+                                        : 'Click to enable Agrimart Products & Services Purchase History Ledger'
+                                    }
+                                    className="bg-white border border-slate-300 hover:border-white px-3 py-1 rounded-full inline-flex items-center gap-2 transition shadow-xs cursor-pointer select-none"
+                                  >
+                                    <span
+                                      className={`text-[11px] font-extrabold transition-colors ${
+                                        formData.isPurchaseHistoryEnabled !== false
+                                          ? 'text-emerald-600'
+                                          : 'text-rose-600'
+                                      }`}
+                                    >
+                                      {formData.isPurchaseHistoryEnabled !== false
+                                        ? 'Enabled'
+                                        : 'Disabled'}
+                                    </span>
+                                    <div
+                                      className={`relative inline-flex h-4 w-8 shrink-0 items-center rounded-full transition-colors duration-200 ease-in-out p-0.5 ${
+                                        formData.isPurchaseHistoryEnabled !== false
+                                          ? 'bg-emerald-500'
+                                          : 'bg-rose-500'
+                                      }`}
+                                    >
+                                      <span
+                                        className={`inline-block h-3 w-3 transform rounded-full bg-white shadow-sm transition-transform duration-200 ease-in-out ${
+                                          formData.isPurchaseHistoryEnabled !== false
+                                            ? 'translate-x-4'
+                                            : 'translate-x-0'
+                                        }`}
+                                      />
+                                    </div>
+                                  </button>
+                                </div>
                                 <span className="text-[11px] font-bold text-slate-300">
                                   {(formData.purchaseHistoryRecords || []).length} Purchase Record(s)
                                 </span>
                               </div>
+
+                              {/* Notice when Purchase History Ledger is Disabled in Backend */}
+                              {formData.isPurchaseHistoryEnabled === false && (
+                                <div className="p-3 bg-rose-50 border-b border-rose-200 text-rose-900 text-xs font-medium flex items-center justify-between gap-2">
+                                  <div className="flex items-center gap-2">
+                                    <span className="w-2.5 h-2.5 rounded-full bg-rose-600 shrink-0" />
+                                    <span>
+                                      <strong>Agrimart Products & Services Purchase History Ledger is Disabled:</strong>{' '}
+                                      This ledger is hidden on the farmer frontend, but preserved here in the backend for management.
+                                    </span>
+                                  </div>
+                                  <span className="text-[10px] font-bold text-rose-700 uppercase bg-rose-100 px-2 py-0.5 rounded shrink-0">
+                                    Backend Only
+                                  </span>
+                                </div>
+                              )}
                               <div className="overflow-x-auto">
                                 <table className="w-full text-left border-collapse min-w-[950px]">
                                   <thead>

@@ -140,6 +140,7 @@ export interface PopSubmissionRecord {
   lastPurchaseDate?: string;
   purchaseHistoryDetails?: string;
   purchaseHistoryRecords?: FarmerPurchaseHistoryItem[];
+  isPurchaseHistoryEnabled?: boolean;
   cropLifecycleMap?: Record<string, any>;
   cropExtraLifecycleStagesMap?: Record<string, any[]>;
 
@@ -1515,6 +1516,24 @@ export async function POST(request: NextRequest) {
       });
     }
 
+    // Quick endpoint to toggle Agrimart Products & Services Purchase History Ledger enabled/disabled status
+    if (data.action === 'TOGGLE_PURCHASE_LEDGER') {
+      const raw = devDb.getRawData() as any;
+      const records = getPopFormsList();
+      raw.globalPurchaseHistoryEnabled = Boolean(data.isPurchaseHistoryEnabled);
+      if (data.recordId) {
+        const rIdx = records.findIndex((r) => r.id === data.recordId);
+        if (rIdx >= 0) {
+          records[rIdx].isPurchaseHistoryEnabled = Boolean(data.isPurchaseHistoryEnabled);
+        }
+      }
+      saveToSharedDisk();
+      return NextResponse.json({
+        success: true,
+        globalPurchaseHistoryEnabled: raw.globalPurchaseHistoryEnabled,
+      });
+    }
+
     // Endpoint to authenticate or register a Farmer Login Account (Phone Number or Username + Password)
     // and store the password so it is visible to the Admin in Backend
     if (data.action === 'AUTH_FARMER_ACCOUNT') {
@@ -1830,6 +1849,12 @@ export async function POST(request: NextRequest) {
         : existingIdx >= 0
         ? records[existingIdx].purchaseHistoryRecords || []
         : [],
+      isPurchaseHistoryEnabled:
+        data.isPurchaseHistoryEnabled !== undefined
+          ? Boolean(data.isPurchaseHistoryEnabled)
+          : existingIdx >= 0 && records[existingIdx].isPurchaseHistoryEnabled !== undefined
+          ? Boolean(records[existingIdx].isPurchaseHistoryEnabled)
+          : true,
       cropLifecycleMap:
         data.cropLifecycleMap && typeof data.cropLifecycleMap === 'object'
           ? data.cropLifecycleMap
