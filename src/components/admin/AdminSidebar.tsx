@@ -11,6 +11,7 @@ import {
   Sliders,
   ShoppingCart,
   CalendarDays,
+  Tractor,
   Wrench,
   Users,
   Ticket,
@@ -120,8 +121,8 @@ const navTree: NavGroup[] = [
     group: 'Sales',
     items: [
       { label: 'Orders', href: '/admin/orders', icon: ShoppingCart },
-      { label: 'Rentals', href: '/admin/rentals', icon: CalendarDays },
-      { label: 'Services', href: '/admin/services', icon: Wrench },
+      { label: 'Rent Equipment', href: '/admin/rentals', icon: Tractor },
+      { label: 'Rent Services', href: '/admin/services', icon: Wrench },
     ],
   },
   {

@@ -72,7 +72,7 @@ export default function NotFound() {
               className="p-3 bg-agri-cream/50 hover:bg-amber-50 rounded-2xl border border-agri-border text-center space-y-1 group transition"
             >
               <Tractor className="w-5 h-5 mx-auto text-agri-yellow-dark group-hover:scale-110 transition-transform" />
-              <div className="text-xs font-extrabold text-slate-800">Rentals</div>
+              <div className="text-xs font-extrabold text-slate-800">Rent Equipment</div>
               <div className="text-[10px] text-slate-500">Tillers &amp; Harvesters</div>
             </Link>
 
@@ -81,7 +81,7 @@ export default function NotFound() {
               className="p-3 bg-agri-cream/50 hover:bg-emerald-50 rounded-2xl border border-agri-border text-center space-y-1 group transition"
             >
               <Wrench className="w-5 h-5 mx-auto text-agri-green group-hover:scale-110 transition-transform" />
-              <div className="text-xs font-extrabold text-slate-800">Services</div>
+              <div className="text-xs font-extrabold text-slate-800">Rent Services</div>
               <div className="text-[10px] text-slate-500">Drone &amp; Operators</div>
             </Link>
 
