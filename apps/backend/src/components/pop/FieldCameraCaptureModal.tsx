@@ -135,9 +135,11 @@ export function FieldCameraCaptureModal({
 
   // Effective names
   const effectiveFarmerName = farmerName?.trim() || 'Farmer';
-  const effectiveTotalAcreage = totalAcreage || '10';
+  const rawTotalAcreage = String(totalAcreage || '10').trim();
+  const effectiveTotalAcreage = rawTotalAcreage.replace(/\s*acres?\s*$/i, '') || '10';
   const effectiveCropName = activeCropName?.trim() || 'General Crop';
-  const effectiveCropAcreage = activeCropAcreage || '4';
+  const rawCropAcreage = String(activeCropAcreage || '4').trim();
+  const effectiveCropAcreage = rawCropAcreage.replace(/\s*acres?\s*$/i, '') || '4';
 
   // Load cached live photos from localStorage on mount/open
   useEffect(() => {
@@ -588,7 +590,10 @@ export function FieldCameraCaptureModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/85 backdrop-blur-md animate-in fade-in duration-200">
+    <div
+      style={{ zIndex: 10050 }}
+      className="fixed inset-0 z-[10050] flex items-center justify-center p-3 sm:p-5 bg-black/85 backdrop-blur-md animate-in fade-in duration-200"
+    >
       <div className="bg-white rounded-3xl shadow-2xl border-2 border-emerald-500/30 overflow-hidden w-full max-w-3xl max-h-[92vh] flex flex-col text-slate-900">
         {/* ========================================================= */}
         {/* MODAL HEADER: Farmer Name, Total Farm, Active Crop Details */}
@@ -1020,7 +1025,8 @@ export function FieldCameraCaptureModal({
       {/* Enlarged Lightbox Modal */}
       {enlargedPhoto && (
         <div
-          className="fixed inset-0 z-60 bg-black/95 flex items-center justify-center p-4"
+          style={{ zIndex: 10060 }}
+          className="fixed inset-0 z-[10060] bg-black/95 flex items-center justify-center p-4"
           onClick={() => setEnlargedPhoto(null)}
         >
           <div
