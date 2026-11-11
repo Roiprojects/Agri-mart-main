@@ -61,7 +61,7 @@ export async function generateMetadata({ params }: RentalDetailPageProps): Promi
     openGraph: {
       title,
       description,
-      url,
+      url: canonical,
       siteName: SITE_CONFIG.name,
       images: (machine.images || []).map((img: string) => ({
         url: img,
