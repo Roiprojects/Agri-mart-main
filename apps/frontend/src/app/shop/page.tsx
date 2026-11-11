@@ -22,7 +22,6 @@ export default function ShopPage() {
 
   const [selectedCategory, setSelectedCategory] = useState<string>('ALL');
   const [selectedBrand, setSelectedBrand] = useState<string>('ALL');
-  const [selectedCrop, setSelectedCrop] = useState<string>('ALL');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [sortBy, setSortBy] = useState<string>('popular');
 
@@ -56,7 +55,6 @@ export default function ShopPage() {
     return products.filter((p) => {
       if (selectedCategory !== 'ALL' && p.categoryId !== selectedCategory) return false;
       if (selectedBrand !== 'ALL' && (p.brand || p.brandName) !== selectedBrand) return false;
-      if (selectedCrop !== 'ALL' && !p.targetCrops?.toLowerCase().includes(selectedCrop.toLowerCase())) return false;
       if (searchQuery.trim()) {
         const q = searchQuery.toLowerCase();
         const matchName = p.name.toLowerCase().includes(q) || (p.nameKn && p.nameKn.toLowerCase().includes(q));
@@ -75,7 +73,7 @@ export default function ShopPage() {
       if (sortBy === 'rating') return (b.rating || 5) - (a.rating || 5);
       return (b.reviewsCount || 0) - (a.reviewsCount || 0);
     });
-  }, [products, selectedCategory, selectedBrand, selectedCrop, searchQuery, sortBy]);
+  }, [products, selectedCategory, selectedBrand, searchQuery, sortBy]);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6 text-xs">
@@ -117,12 +115,11 @@ export default function ShopPage() {
             <h3 className="font-extrabold text-sm text-slate-900 flex items-center gap-2">
               <Filter className="w-4 h-4 text-agri-green" /> Filters
             </h3>
-            {(selectedCategory !== 'ALL' || selectedBrand !== 'ALL' || selectedCrop !== 'ALL' || searchQuery) && (
+            {(selectedCategory !== 'ALL' || selectedBrand !== 'ALL' || searchQuery) && (
               <button
                 onClick={() => {
                   setSelectedCategory('ALL');
                   setSelectedBrand('ALL');
-                  setSelectedCrop('ALL');
                   setSearchQuery('');
                 }}
                 className="text-[11px] text-agri-green font-bold hover:underline"
@@ -222,26 +219,6 @@ export default function ShopPage() {
               })}
             </div>
           </div>
-
-          {/* Target Crop Filter */}
-          <div className="space-y-2">
-            <label className="font-bold text-slate-800 text-xs">Suitability by Crop</label>
-            <select
-              value={selectedCrop}
-              onChange={(e) => setSelectedCrop(e.target.value)}
-              className="w-full p-2.5 border border-slate-200 rounded-xl text-xs focus:ring-1 focus:ring-agri-green outline-none"
-            >
-              <option value="ALL">All Crops</option>
-              <option value="Paddy">Paddy / Rice</option>
-              <option value="Cotton">Cotton</option>
-              <option value="Sugarcane">Sugarcane</option>
-              <option value="Maize">Maize</option>
-              <option value="Tomato">Tomato / Vegetables</option>
-              <option value="Chili">Chili (Byadgi)</option>
-              <option value="Wheat">Wheat</option>
-            </select>
-          </div>
-
         </div>
 
         {/* Products Grid */}
