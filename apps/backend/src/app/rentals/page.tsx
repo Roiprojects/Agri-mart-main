@@ -1,18 +1,24 @@
 import React from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { ApiClient } from '@/lib/api-client';
+import { devDb } from '@/lib/dev-db';
 import { SEED_RENTAL_PRODUCTS } from '@/lib/seed-data';
-import { Tractor, Calendar, ShieldCheck, ArrowRight } from 'lucide-react';
+import { Tractor, Calendar, ShieldCheck, ArrowRight, Eye } from 'lucide-react';
 
-export const revalidate = 60;
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 export default async function RentalsPage() {
-  let rentalProducts = SEED_RENTAL_PRODUCTS;
+  let rentalProducts: any[] = SEED_RENTAL_PRODUCTS;
   try {
-    const res = await ApiClient.getRentals();
-    if (res.success && res.data && res.data.length > 0) {
-      rentalProducts = res.data;
+    const dbItems = devDb.getRentalProducts();
+    if (Array.isArray(dbItems) && dbItems.length > 0) {
+      rentalProducts = dbItems;
+    } else {
+      const res = await ApiClient.getRentals();
+      if (res.success && res.data && res.data.length > 0) {
+        rentalProducts = res.data;
+      }
     }
   } catch (err) {
     // Fallback to seed data
@@ -23,10 +29,15 @@ export default async function RentalsPage() {
       {/* Header */}
       <div className="bg-gradient-to-r from-emerald-900 to-slate-900 text-white rounded-2xl p-6 sm:p-10 shadow-lg flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
         <div>
-          <span className="text-amber-400 text-xs font-bold uppercase tracking-wider">Rent a Product Module</span>
-          <h1 className="text-2xl sm:text-4xl font-extrabold mt-1 text-white">Agricultural Equipment Rental Marketplace</h1>
+          <span className="text-amber-400 text-xs font-bold uppercase tracking-wider">
+            Rent Equipment Module
+          </span>
+          <h1 className="text-2xl sm:text-4xl font-extrabold mt-1 text-white">
+            Agricultural Equipment Rental Marketplace
+          </h1>
           <p className="text-xs sm:text-sm text-emerald-100 mt-2 max-w-2xl">
-            Mechanize your farm operations without heavy capital investment. Rent power weeders, brush cutters, sprayers, and reapers by Hour, Day, Week, or Month.
+            Mechanize your farm operations without heavy capital investment. Rent power weeders,
+            brush cutters, sprayers, tractors, and reapers by Hour, Day, Week, or Month.
           </p>
         </div>
         <div className="bg-white/10 p-4 rounded-xl border border-white/20 text-xs space-y-1">
@@ -39,51 +50,81 @@ export default async function RentalsPage() {
       {/* Rentals List */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {rentalProducts.map((machine) => {
-          const hourlyRate = (machine as any).hourlyRate || Math.max(50, Math.round(machine.dailyRate / 6));
+          const hourlyRate =
+            (machine as any).hourlyRate || Math.max(50, Math.round((machine.dailyRate || 1200) / 6));
+          const equipImg =
+            (Array.isArray(machine.images) && machine.images[0]) ||
+            '/images/gallery/01-hero-tractor-sunrise.jpg';
+
           return (
-          <div key={machine.id} className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-md transition flex flex-col justify-between">
-            <div className="relative aspect-video w-full bg-slate-100">
-              <Image src={machine.images[0]} alt={machine.title} fill className="object-cover" />
-              <span className="absolute top-3 left-3 bg-slate-900/80 text-white font-bold text-[10px] px-2.5 py-1 rounded-full">
-                {machine.category}
-              </span>
-              <span className="absolute top-3 right-3 bg-emerald-700 text-white font-extrabold text-[10px] px-2.5 py-1 rounded-full shadow-xs">
-                ₹{hourlyRate}/hr Available
-              </span>
-            </div>
-
-            <div className="p-5 space-y-4 flex-1 flex flex-col justify-between">
-              <div>
-                <h3 className="font-extrabold text-base text-slate-900 leading-snug">{machine.title}</h3>
-                <p className="text-xs text-slate-600 mt-1 line-clamp-2">{machine.description}</p>
-
-                <div className="mt-3 bg-slate-50 p-3 rounded-xl border border-slate-100 text-xs space-y-1 text-slate-700">
-                  <div><strong>Power:</strong> {machine.powerRating}</div>
-                  <div><strong>Suitable for:</strong> {machine.suitableFor}</div>
-                  <div className="text-emerald-700 font-semibold">
-                    <strong>Security Deposit:</strong> ₹{machine.securityDeposit.toLocaleString('en-IN')} (Refundable)
-                  </div>
-                </div>
+            <div
+              key={machine.id}
+              className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-md transition flex flex-col justify-between group"
+            >
+              <div className="relative aspect-video w-full bg-slate-100 overflow-hidden">
+                <img
+                  src={equipImg}
+                  alt={machine.title}
+                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                />
+                <span className="absolute top-3 left-3 bg-slate-900/80 text-white font-bold text-[10px] px-2.5 py-1 rounded-full">
+                  {machine.category}
+                </span>
+                <span className="absolute top-3 right-3 bg-emerald-700 text-white font-extrabold text-[10px] px-2.5 py-1 rounded-full shadow-xs">
+                  ₹{hourlyRate}/hr Available
+                </span>
               </div>
 
-              <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
+              <div className="p-5 space-y-4 flex-1 flex flex-col justify-between">
                 <div>
-                  <div className="text-base font-black text-emerald-800">
-                    ₹{hourlyRate}/hr <span className="text-slate-400 font-normal">&bull;</span> <span className="text-slate-900">₹{machine.dailyRate}/day</span>
+                  <h3 className="font-extrabold text-base text-slate-900 leading-snug">
+                    <Link
+                      href={`/rentals/${machine.slug}`}
+                      className="hover:text-emerald-700 transition"
+                    >
+                      {machine.title}
+                    </Link>
+                  </h3>
+                  <p className="text-xs text-slate-600 mt-1 line-clamp-2">{machine.description}</p>
+
+                  <div className="mt-3 bg-slate-50 p-3 rounded-xl border border-slate-100 text-xs space-y-1 text-slate-700">
+                    <div>
+                      <strong>Power:</strong> {machine.powerRating}
+                    </div>
+                    <div>
+                      <strong>Suitable for:</strong> {machine.suitableFor}
+                    </div>
+                    <div className="text-emerald-700 font-semibold">
+                      <strong>Security Deposit:</strong> ₹
+                      {(Number(machine.securityDeposit) || 0).toLocaleString('en-IN')} (Refundable)
+                    </div>
                   </div>
-                  <div className="text-[10px] text-slate-500">₹{machine.weeklyRate}/week | ₹{machine.monthlyRate}/month</div>
                 </div>
 
-                <Link
-                  href={`/rentals/${machine.slug}`}
-                  className="bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs px-4 py-2.5 rounded-xl transition flex items-center gap-1"
-                >
-                  <span>Book Now</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </Link>
+                <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
+                  <div>
+                    <div className="text-base font-black text-emerald-800">
+                      ₹{hourlyRate}/hr{' '}
+                      <span className="text-slate-400 font-normal">&bull;</span>{' '}
+                      <span className="text-slate-900">₹{machine.dailyRate}/day</span>
+                    </div>
+                    <div className="text-[10px] text-slate-500">
+                      ₹{machine.weeklyRate}/week | ₹{machine.monthlyRate}/month
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <Link
+                      href={`/rentals/${machine.slug}`}
+                      className="bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs px-4 py-2.5 rounded-xl transition flex items-center gap-1"
+                    >
+                      <span>View &amp; Book</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </Link>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
           );
         })}
       </div>

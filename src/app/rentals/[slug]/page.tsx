@@ -1,10 +1,10 @@
 import React from 'react';
 import { Metadata } from 'next';
 import Link from 'next/link';
-import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { SITE_CONFIG } from '@/lib/config';
 import { SEED_RENTAL_PRODUCTS } from '@/lib/seed-data';
+import { devDb } from '@/lib/dev-db';
 import { ApiClient } from '@/lib/api-client';
 import { Breadcrumbs } from '@/components/ui/Breadcrumbs';
 import { Badge } from '@/components/ui/Badge';
@@ -25,6 +25,8 @@ interface RentalDetailPageProps {
 
 async function fetchDbRental(slug: string) {
   try {
+    const direct = devDb.getRentalProductBySlug(slug);
+    if (direct) return direct;
     const res = await ApiClient.getRentalBySlug(slug);
     if (res.success && res.data) return res.data;
   } catch (e) {
@@ -47,7 +49,7 @@ export async function generateMetadata({ params }: RentalDetailPageProps): Promi
   }
 
   const title = `Rent ${machine.title} | AGRI MART MEGA`;
-  const description = `${machine.description.slice(0, 155)}... Rent starting at ₹${machine.dailyRate}/day with direct dark warehouse delivery across Karnataka.`;
+  const description = `${(machine.description || '').slice(0, 155)}... Rent starting at ₹${machine.dailyRate}/day with direct dark warehouse delivery across Karnataka.`;
   const canonical = `https://www.${SITE_CONFIG.domain}/rentals/${machine.slug}`;
 
   return {
@@ -59,9 +61,9 @@ export async function generateMetadata({ params }: RentalDetailPageProps): Promi
     openGraph: {
       title,
       description,
-      url: canonical,
+      url,
       siteName: SITE_CONFIG.name,
-      images: machine.images.map((img: string) => ({
+      images: (machine.images || []).map((img: string) => ({
         url: img,
         width: 800,
         height: 600,
@@ -69,12 +71,12 @@ export async function generateMetadata({ params }: RentalDetailPageProps): Promi
       })),
       locale: 'en_IN',
       type: 'website',
-    },
+    } as any,
     twitter: {
       card: 'summary_large_image',
       title,
       description,
-      images: machine.images,
+      images: machine.images || [],
     },
   };
 }
@@ -89,6 +91,14 @@ export default async function RentalDetailPage({ params }: RentalDetailPageProps
     notFound();
   }
 
+  const isAvailable =
+    machine.isAvailable !== undefined
+      ? Boolean(machine.isAvailable)
+      : (machine.availableUnits ?? 1) > 0;
+  const primaryImage =
+    (Array.isArray(machine.images) && machine.images[0]) ||
+    '/images/gallery/01-hero-tractor-sunrise.jpg';
+
   const canonicalUrl = `https://www.${SITE_CONFIG.domain}/rentals/${machine.slug}`;
 
   // Structured Data (Schema.org)
@@ -96,7 +106,7 @@ export default async function RentalDetailPage({ params }: RentalDetailPageProps
     '@context': 'https://schema.org',
     '@type': 'Product',
     name: machine.title,
-    image: machine.images,
+    image: machine.images || [primaryImage],
     description: machine.description,
     category: machine.category,
     offers: {
@@ -106,7 +116,7 @@ export default async function RentalDetailPage({ params }: RentalDetailPageProps
       price: machine.dailyRate,
       priceValidUntil: '2027-12-31',
       itemCondition: 'https://schema.org/UsedCondition',
-      availability: machine.isAvailable
+      availability: isAvailable
         ? 'https://schema.org/InStock'
         : 'https://schema.org/OutOfStock',
       seller: {
@@ -118,7 +128,7 @@ export default async function RentalDetailPage({ params }: RentalDetailPageProps
 
   const breadcrumbItems = [
     { label: 'Home', href: '/' },
-    { label: 'Farm Rentals', href: '/rentals' },
+    { label: 'Rent Equipment', href: '/rentals' },
     { label: machine.title },
   ];
 
@@ -135,7 +145,7 @@ export default async function RentalDetailPage({ params }: RentalDetailPageProps
       {
         '@type': 'ListItem',
         position: 2,
-        name: 'Farm Rentals',
+        name: 'Rent Equipment',
         item: `https://www.${SITE_CONFIG.domain}/rentals`,
       },
       {
@@ -147,7 +157,8 @@ export default async function RentalDetailPage({ params }: RentalDetailPageProps
     ],
   };
 
-  const otherRentals = SEED_RENTAL_PRODUCTS.filter((r) => r.id !== machine.id);
+  const allRentals = devDb.getRentalProducts().length > 0 ? devDb.getRentalProducts() : SEED_RENTAL_PRODUCTS;
+  const otherRentals = allRentals.filter((r) => r.id !== machine.id);
 
   return (
     <>
@@ -167,16 +178,14 @@ export default async function RentalDetailPage({ params }: RentalDetailPageProps
           {/* Machine Info */}
           <div className="lg:col-span-7 space-y-6">
             <div className="relative aspect-video w-full rounded-2xl overflow-hidden bg-slate-100 border border-slate-200 shadow-sm">
-              <Image
-                src={machine.images[0]}
+              <img
+                src={primaryImage}
                 alt={machine.title}
-                fill
-                className="object-cover"
-                priority
+                className="w-full h-full object-cover"
               />
               <div className="absolute top-4 left-4">
-                <Badge variant={machine.isAvailable ? 'success' : 'warning'}>
-                  {machine.isAvailable ? 'Available for Rent' : 'Currently On Field'}
+                <Badge variant={isAvailable ? 'success' : 'warning'}>
+                  {isAvailable ? 'Available for Rent' : 'Currently On Field'}
                 </Badge>
               </div>
             </div>
@@ -211,10 +220,30 @@ export default async function RentalDetailPage({ params }: RentalDetailPageProps
                 <div className="p-3 bg-brand-lightGreen/60 rounded-xl border border-brand-green/20">
                   <div className="text-brand-greenDark font-medium">Pre-Dispatch Inspection:</div>
                   <div className="font-bold text-brand-green mt-0.5">
-                    100% Tested & Lubricated
+                    100% Tested &amp; Lubricated
                   </div>
                 </div>
               </div>
+
+              {/* Technical Specifications if available */}
+              {machine.specifications && Object.keys(machine.specifications).length > 0 && (
+                <div className="space-y-2 pt-2 border-t border-slate-100">
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500">
+                    Technical Specifications
+                  </h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
+                    {Object.entries(machine.specifications).map(([key, val]) => (
+                      <div
+                        key={key}
+                        className="p-2.5 bg-slate-50 rounded-xl border border-slate-100 flex justify-between items-center gap-2"
+                      >
+                        <span className="text-slate-500 font-medium">{key}</span>
+                        <span className="text-slate-900 font-bold text-right">{String(val)}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               {/* Machine Rental Rates Slab */}
               <div className="space-y-2 pt-2">
@@ -231,19 +260,19 @@ export default async function RentalDetailPage({ params }: RentalDetailPageProps
                   <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
                     <div className="text-xs text-slate-500">Daily Rate</div>
                     <div className="text-base font-black text-slate-900 mt-0.5">
-                      ₹{machine.dailyRate.toLocaleString('en-IN')}/day
+                      ₹{(Number(machine.dailyRate) || 0).toLocaleString('en-IN')}/day
                     </div>
                   </div>
                   <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
                     <div className="text-xs text-slate-500">Weekly Rate</div>
                     <div className="text-base font-black text-slate-900 mt-0.5">
-                      ₹{machine.weeklyRate.toLocaleString('en-IN')}/wk
+                      ₹{(Number(machine.weeklyRate) || 0).toLocaleString('en-IN')}/wk
                     </div>
                   </div>
                   <div className="p-3 bg-brand-lightGreen/50 rounded-xl border border-brand-green/30">
                     <div className="text-xs text-brand-greenDark">Monthly Rate</div>
                     <div className="text-base font-black text-brand-green mt-0.5">
-                      ₹{machine.monthlyRate.toLocaleString('en-IN')}/mo
+                      ₹{(Number(machine.monthlyRate) || 0).toLocaleString('en-IN')}/mo
                     </div>
                   </div>
                 </div>
@@ -272,31 +301,36 @@ export default async function RentalDetailPage({ params }: RentalDetailPageProps
               </Link>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {otherRentals.map((r) => (
-                <div
-                  key={r.id}
-                  className="bg-white rounded-2xl border border-slate-200 p-5 flex flex-col sm:flex-row gap-4 items-center shadow-sm hover:shadow-md transition"
-                >
-                  <div className="relative w-full sm:w-36 h-28 rounded-xl overflow-hidden bg-slate-100 shrink-0">
-                    <Image src={r.images[0]} alt={r.title} fill className="object-cover" />
-                  </div>
-                  <div className="flex-1 space-y-1.5">
-                    <span className="text-[11px] font-bold text-brand-green uppercase">
-                      {r.category}
-                    </span>
-                    <h3 className="font-bold text-slate-900 text-sm line-clamp-1">{r.title}</h3>
-                    <div className="text-xs font-extrabold text-slate-900">
-                      ₹{r.dailyRate}/day &bull; Dep: ₹{r.securityDeposit}
+              {otherRentals.map((r: any) => {
+                const imgUrl =
+                  (Array.isArray(r.images) && r.images[0]) ||
+                  '/images/gallery/01-hero-tractor-sunrise.jpg';
+                return (
+                  <div
+                    key={r.id}
+                    className="bg-white rounded-2xl border border-slate-200 p-5 flex flex-col sm:flex-row gap-4 items-center shadow-sm hover:shadow-md transition"
+                  >
+                    <div className="relative w-full sm:w-36 h-28 rounded-xl overflow-hidden bg-slate-100 shrink-0">
+                      <img src={imgUrl} alt={r.title} className="w-full h-full object-cover" />
                     </div>
-                    <Link
-                      href={`/rentals/${r.slug}`}
-                      className="inline-block text-xs font-bold text-brand-green hover:underline pt-1"
-                    >
-                      View & Book &rarr;
-                    </Link>
+                    <div className="flex-1 space-y-1.5">
+                      <span className="text-[11px] font-bold text-brand-green uppercase">
+                        {r.category}
+                      </span>
+                      <h3 className="font-bold text-slate-900 text-sm line-clamp-1">{r.title}</h3>
+                      <div className="text-xs font-extrabold text-slate-900">
+                        ₹{r.dailyRate}/day &bull; Dep: ₹{r.securityDeposit}
+                      </div>
+                      <Link
+                        href={`/rentals/${r.slug}`}
+                        className="inline-block text-xs font-bold text-brand-green hover:underline pt-1"
+                      >
+                        View &amp; Book &rarr;
+                      </Link>
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         )}
