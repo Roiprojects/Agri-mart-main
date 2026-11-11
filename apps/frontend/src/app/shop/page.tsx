@@ -21,6 +21,7 @@ export default function ShopPage() {
   const [loading, setLoading] = useState(false);
 
   const [selectedCategory, setSelectedCategory] = useState<string>('ALL');
+  const [selectedBrand, setSelectedBrand] = useState<string>('ALL');
   const [selectedCrop, setSelectedCrop] = useState<string>('ALL');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [sortBy, setSortBy] = useState<string>('popular');
@@ -54,6 +55,7 @@ export default function ShopPage() {
   const filteredProducts = useMemo(() => {
     return products.filter((p) => {
       if (selectedCategory !== 'ALL' && p.categoryId !== selectedCategory) return false;
+      if (selectedBrand !== 'ALL' && (p.brand || p.brandName) !== selectedBrand) return false;
       if (selectedCrop !== 'ALL' && !p.targetCrops?.toLowerCase().includes(selectedCrop.toLowerCase())) return false;
       if (searchQuery.trim()) {
         const q = searchQuery.toLowerCase();
@@ -73,7 +75,7 @@ export default function ShopPage() {
       if (sortBy === 'rating') return (b.rating || 5) - (a.rating || 5);
       return (b.reviewsCount || 0) - (a.reviewsCount || 0);
     });
-  }, [products, selectedCategory, selectedCrop, searchQuery, sortBy]);
+  }, [products, selectedCategory, selectedBrand, selectedCrop, searchQuery, sortBy]);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6 text-xs">
@@ -115,10 +117,11 @@ export default function ShopPage() {
             <h3 className="font-extrabold text-sm text-slate-900 flex items-center gap-2">
               <Filter className="w-4 h-4 text-agri-green" /> Filters
             </h3>
-            {(selectedCategory !== 'ALL' || selectedCrop !== 'ALL' || searchQuery) && (
+            {(selectedCategory !== 'ALL' || selectedBrand !== 'ALL' || selectedCrop !== 'ALL' || searchQuery) && (
               <button
                 onClick={() => {
                   setSelectedCategory('ALL');
+                  setSelectedBrand('ALL');
                   setSelectedCrop('ALL');
                   setSearchQuery('');
                 }}
@@ -173,6 +176,44 @@ export default function ShopPage() {
                     <span>{cat.name}</span>
                     {count > 0 && (
                       <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${selectedCategory === cat.id ? 'bg-agri-green text-white' : 'bg-slate-100 text-slate-500'}`}>
+                        {count}
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Brand Filter */}
+          <div className="space-y-2">
+            <label className="font-bold text-slate-800 text-xs">Brand</label>
+            <div className="space-y-1">
+              <button
+                onClick={() => setSelectedBrand('ALL')}
+                className={`w-full text-left px-3 py-2 rounded-xl text-xs transition ${
+                  selectedBrand === 'ALL'
+                    ? 'bg-agri-pale text-agri-green-dark font-extrabold'
+                    : 'text-slate-600 hover:bg-slate-50'
+                }`}
+              >
+                All Brands ({products.length})
+              </button>
+              {[...new Set(products.map((p: any) => p.brand || p.brandName).filter(Boolean))].sort().map((brand: any) => {
+                const count = products.filter((p: any) => (p.brand || p.brandName) === brand).length;
+                return (
+                  <button
+                    key={brand}
+                    onClick={() => setSelectedBrand(brand)}
+                    className={`w-full text-left px-3 py-2 rounded-xl text-xs transition flex items-center justify-between ${
+                      selectedBrand === brand
+                        ? 'bg-agri-pale text-agri-green-dark font-extrabold'
+                        : 'text-slate-600 hover:bg-slate-50'
+                    }`}
+                  >
+                    <span>{brand}</span>
+                    {count > 0 && (
+                      <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${selectedBrand === brand ? 'bg-agri-green text-white' : 'bg-slate-100 text-slate-500'}`}>
                         {count}
                       </span>
                     )}
