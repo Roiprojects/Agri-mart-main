@@ -13,6 +13,10 @@ import {
   AlertCircle,
   HelpCircle,
 } from 'lucide-react';
+import {
+  mergeProductsWithOverrides,
+  saveProductOverridesBulk,
+} from '@/lib/admin-product-overrides';
 
 interface BulkProductItem {
   id: string;
@@ -80,13 +84,19 @@ export default function BulkEditProductsPage() {
   // Fetch data
   useEffect(() => {
     Promise.all([
-      fetch('/api/admin/catalogue/products').then((r) => r.json()),
-      fetch('/api/admin/catalogue/categories').then((r) => r.json()),
-      fetch('/api/admin/brands').then((r) => r.json()),
+      fetch('/api/admin/catalogue/products', { cache: 'no-store' }).then((r) => r.json()),
+      fetch('/api/admin/catalogue/categories', { cache: 'no-store' }).then((r) => r.json()),
+      fetch('/api/admin/brands', { cache: 'no-store' }).then((r) => r.json()),
     ])
       .then(([prodRes, catRes, brandRes]) => {
+        const cats = catRes.success && Array.isArray(catRes.data) ? catRes.data : [];
+        const brs = brandRes.success && Array.isArray(brandRes.data) ? brandRes.data : [];
+        setCategories(cats);
+        setBrands(brs);
+
         if (prodRes.success && Array.isArray(prodRes.data)) {
-          const list: BulkProductItem[] = prodRes.data.map((p: any) => ({
+          const mergedRaw = mergeProductsWithOverrides(prodRes.data, cats, brs);
+          const list: BulkProductItem[] = mergedRaw.map((p: any) => ({
             id: p.id,
             name: p.name,
             sku: p.sku,
@@ -112,12 +122,6 @@ export default function BulkEditProductsPage() {
             initialMap[item.id] = { ...item };
           });
           setEditedProducts(initialMap);
-        }
-        if (catRes.success && Array.isArray(catRes.data)) {
-          setCategories(catRes.data);
-        }
-        if (brandRes.success && Array.isArray(brandRes.data)) {
-          setBrands(brandRes.data);
         }
       })
       .catch((err) => {
@@ -225,6 +229,7 @@ export default function BulkEditProductsPage() {
       });
       const data = await res.json();
       if (data.success) {
+        saveProductOverridesBulk(itemsToSave);
         showToast(`Saved ${selectedIds.length} selected product(s) successfully!`);
         // Update baseline products
         setProducts((prev) =>
@@ -257,6 +262,7 @@ export default function BulkEditProductsPage() {
       });
       const data = await res.json();
       if (data.success) {
+        saveProductOverridesBulk(itemsToSave);
         showToast(`Saved all ${itemsToSave.length} product(s) successfully!`);
         // Update baseline products
         setProducts((prev) =>

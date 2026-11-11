@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import { CatalogueService } from '@/lib/catalogue-service';
 import { devDb } from '@/lib/dev-db';
 
+export const dynamic = 'force-dynamic';
+
 // Catalogue products admin route with full nopCommerce pricing and metadata support
 export async function GET() {
   const products = devDb.getProducts({ onlyPublished: false });
@@ -9,7 +11,7 @@ export async function GET() {
   return NextResponse.json({ success: true, count: fullProducts.length, data: fullProducts });
 }
 
-export async function POST(request: Request) {
+async function handleSaveProductRequest(request: Request) {
   try {
     const body = await request.json();
 
@@ -24,7 +26,7 @@ export async function POST(request: Request) {
               ...existing,
               ...item,
             });
-            results.push(updated);
+            results.push(devDb.getProductWithDetails(updated.id) || updated);
           }
         }
       }
@@ -36,15 +38,22 @@ export async function POST(request: Request) {
       });
     }
 
-    if (!body.name || !body.sku) {
-      return NextResponse.json({ success: false, message: 'Product name and SKU are required.' }, { status: 400 });
+    const existing = body.id ? devDb.getProductById(body.id) : undefined;
+    const mergedPayload = existing ? { ...existing, ...body } : body;
+
+    if (!mergedPayload.name || !mergedPayload.sku) {
+      return NextResponse.json(
+        { success: false, message: 'Product name and SKU are required.' },
+        { status: 400 }
+      );
     }
 
-    const saved = await CatalogueService.saveProduct(body);
+    const saved = await CatalogueService.saveProduct(mergedPayload);
+    const enriched = devDb.getProductWithDetails(saved.id) || saved;
 
     return NextResponse.json({
       success: true,
-      data: saved,
+      data: enriched,
       message: `Product "${saved.name}" saved and public storefront caches revalidated.`,
     });
   } catch (err: any) {
@@ -52,18 +61,35 @@ export async function POST(request: Request) {
   }
 }
 
+export async function POST(request: Request) {
+  return handleSaveProductRequest(request);
+}
+
+export async function PUT(request: Request) {
+  return handleSaveProductRequest(request);
+}
+
+export async function PATCH(request: Request) {
+  return handleSaveProductRequest(request);
+}
+
 export async function DELETE(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
     if (!id) {
-      return NextResponse.json({ success: false, message: 'Product ID is required.' }, { status: 400 });
+      return NextResponse.json(
+        { success: false, message: 'Product ID is required.' },
+        { status: 400 }
+      );
     }
 
     const deleted = await CatalogueService.deleteProduct(id);
     return NextResponse.json({
       success: deleted,
-      message: deleted ? 'Product deleted and public caches revalidated.' : 'Product not found.',
+      message: deleted
+        ? 'Product deleted and public caches revalidated.'
+        : 'Product not found.',
     });
   } catch (err: any) {
     return NextResponse.json({ success: false, message: err.message }, { status: 500 });

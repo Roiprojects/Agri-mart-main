@@ -869,6 +869,10 @@ function resolveDataFilePath(): string {
   if (process.env.DATA_DIR) {
     return path.join(process.env.DATA_DIR, 'dev-database.json');
   }
+  const tmpPath = path.join('/tmp', 'dev-database.json');
+  if (process.env.VERCEL && fs.existsSync(tmpPath)) {
+    return tmpPath;
+  }
   const candidate1 = path.join(process.cwd(), 'data', 'dev-database.json');
   if (fs.existsSync(candidate1)) return candidate1;
   const candidate2 = path.join(process.cwd(), 'apps', 'backend', 'data', 'dev-database.json');
@@ -877,12 +881,15 @@ function resolveDataFilePath(): string {
 }
 
 const DATA_FILE_PATH = resolveDataFilePath();
+const TMP_FALLBACK_PATH = path.join('/tmp', 'dev-database.json');
 
-function ensureDataDirectory() {
-  const dir = path.dirname(DATA_FILE_PATH);
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
-  }
+function ensureDataDirectory(filePath: string = DATA_FILE_PATH) {
+  try {
+    const dir = path.dirname(filePath);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+  } catch {}
 }
 
 export function getInitialFarmerCropGalleries(): DbFarmerCropGallery[] {
@@ -2568,39 +2575,27 @@ class PersistentDevDatabase {
   public save() {
     if (this.saveTimeout) {
       clearTimeout(this.saveTimeout);
+      this.saveTimeout = null;
     }
-    this.saveTimeout = setTimeout(() => {
-      this.flushToDisk();
-    }, 50);
+    this.saveSync();
   }
 
   public async flushToDisk(): Promise<void> {
-    if (this.isSaving) {
-      this.pendingSave = true;
-      return;
-    }
-    this.isSaving = true;
-    try {
-      ensureDataDirectory();
-      const content = JSON.stringify(this.data, null, 2);
-      await fs.promises.writeFile(DATA_FILE_PATH, content, 'utf-8');
-    } catch (err) {
-      console.error('[DEV_DB] Error saving dev database file asynchronously', err);
-    } finally {
-      this.isSaving = false;
-      if (this.pendingSave) {
-        this.pendingSave = false;
-        this.save();
-      }
-    }
+    this.saveSync();
   }
 
   public saveSync(): void {
+    const content = JSON.stringify(this.data, null, 2);
     try {
-      ensureDataDirectory();
-      fs.writeFileSync(DATA_FILE_PATH, JSON.stringify(this.data, null, 2), 'utf-8');
+      ensureDataDirectory(DATA_FILE_PATH);
+      fs.writeFileSync(DATA_FILE_PATH, content, 'utf-8');
     } catch (err) {
-      console.error('[DEV_DB] Error saving dev database file synchronously', err);
+      try {
+        ensureDataDirectory(TMP_FALLBACK_PATH);
+        fs.writeFileSync(TMP_FALLBACK_PATH, content, 'utf-8');
+      } catch (tmpErr) {
+        console.error('[DEV_DB] Error saving dev database file synchronously', tmpErr);
+      }
     }
   }
 
@@ -2820,8 +2815,14 @@ class PersistentDevDatabase {
       }];
     }
 
+    const stockQuantity =
+      (product as any).stockQuantity !== undefined
+        ? Number((product as any).stockQuantity) || 0
+        : variants.reduce((sum, v) => sum + (v.stockQuantity || 0), 0);
+
     return {
       ...product,
+      stockQuantity,
       parentCategoryId: parentCategory?.id || product.parentCategoryId || product.categoryId,
       subCategoryId: subCategory?.id || product.subCategoryId || '',
       brand,
@@ -2839,9 +2840,21 @@ class PersistentDevDatabase {
   }
 
   saveProduct(product: Partial<DbProduct> & { name: string; sku: string }): DbProduct {
-    const existingIndex = this.data.products.findIndex((p) => p.id === product.id || p.sku === product.sku);
+    let existingIndex = product.id
+      ? this.data.products.findIndex((p) => p.id === product.id)
+      : -1;
+    if (existingIndex === -1 && product.sku) {
+      existingIndex = this.data.products.findIndex((p) => p.sku === product.sku);
+    }
+
     const now = new Date().toISOString();
-    const slug = product.slug || product.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    const slug =
+      product.seName ||
+      product.slug ||
+      (product.name || 'product')
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/(^-|-$)/g, '');
 
     // Resolve parentCategoryId and subCategoryId if categoryId is a child category
     let resolvedCategoryId = product.categoryId || product.parentCategoryId || 'cat-machinery';
@@ -2855,29 +2868,79 @@ class PersistentDevDatabase {
     }
 
     if (existingIndex >= 0) {
+      const prev = this.data.products[existingIndex];
       const updated: DbProduct = {
-        ...this.data.products[existingIndex],
+        ...prev,
         ...product,
+        id: prev.id,
+        name: product.name !== undefined ? product.name : prev.name,
+        sku: product.sku !== undefined ? product.sku : prev.sku,
+        price: product.price !== undefined ? Number(product.price) || 0 : prev.price,
+        comparePrice:
+          product.comparePrice !== undefined
+            ? Number(product.comparePrice) || 0
+            : prev.comparePrice,
+        cost: product.cost !== undefined ? Number(product.cost) || 0 : prev.cost,
+        weight: product.weight !== undefined ? Number(product.weight) || 0 : prev.weight,
+        length: product.length !== undefined ? Number(product.length) || 0 : prev.length,
+        width: product.width !== undefined ? Number(product.width) || 0 : prev.width,
+        height: product.height !== undefined ? Number(product.height) || 0 : prev.height,
         categoryId: resolvedParentCategoryId,
         parentCategoryId: resolvedParentCategoryId,
-        subCategoryId: resolvedSubCategoryId !== undefined ? resolvedSubCategoryId : this.data.products[existingIndex].subCategoryId,
-        slug: product.seName || slug,
-        seName: product.seName || slug,
-        metaKeywords: product.metaKeywords,
+        subCategoryId:
+          resolvedSubCategoryId !== undefined ? resolvedSubCategoryId : prev.subCategoryId,
+        slug: product.seName || prev.slug || slug,
+        seName: product.seName || prev.seName || prev.slug || slug,
+        metaKeywords:
+          product.metaKeywords !== undefined ? product.metaKeywords : prev.metaKeywords,
+        isPublished:
+          product.isPublished !== undefined ? Boolean(product.isPublished) : prev.isPublished,
         updatedAt: now,
       };
+
+      if ((product as any).stockQuantity !== undefined) {
+        (updated as any).stockQuantity = Math.max(0, Number((product as any).stockQuantity) || 0);
+      }
+
       this.data.products[existingIndex] = updated;
 
       const pVars = this.data.variants.filter((v) => v.productId === updated.id);
       if (pVars.length > 0) {
         if ((product as any).stockQuantity !== undefined) {
-          pVars[0].stockQuantity = Number((product as any).stockQuantity) || 0;
+          const targetStock = Math.max(0, Number((product as any).stockQuantity) || 0);
+          pVars[0].stockQuantity = targetStock;
+          for (let i = 1; i < pVars.length; i++) {
+            pVars[i].stockQuantity = 0;
+          }
         }
         if (updated.price !== undefined) {
           pVars[0].price = updated.price;
         }
         if (updated.comparePrice !== undefined) {
           pVars[0].comparePrice = updated.comparePrice;
+        }
+      } else if ((product as any).stockQuantity !== undefined) {
+        const targetStock = Math.max(0, Number((product as any).stockQuantity) || 0);
+        this.data.variants.push({
+          id: `var-${updated.id}-1`,
+          productId: updated.id,
+          sku: `${updated.sku}-DEF`,
+          title: 'Standard Pack',
+          variantName: 'Standard',
+          price: updated.price,
+          comparePrice: updated.comparePrice,
+          isDefault: true,
+          stockQuantity: targetStock,
+          createdAt: now,
+          updatedAt: now,
+        });
+      }
+
+      if ((product as any).stockQuantity !== undefined) {
+        const targetStock = Math.max(0, Number((product as any).stockQuantity) || 0);
+        const whStocks = this.data.warehouseStocks.filter((ws) => ws.productId === updated.id);
+        if (whStocks.length > 0) {
+          whStocks[0].quantity = targetStock;
         }
       }
 

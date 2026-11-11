@@ -282,13 +282,18 @@ export function ProductForm({
 
   // Rich text editor ref
   const richTextRef = useRef<HTMLDivElement>(null);
+  const initializedSignatureRef = useRef<string>('');
   const [richTextHtml, setRichTextHtml] = useState(
     formData.description || '<p>Enter full product specifications, warranty details, and instructions here...</p>'
   );
 
-  // Sync formData & richTextRef whenever initialValues or categories/brands change
+  // Sync formData & richTextRef when switching to a different product ID or when categories/brands first load
   useEffect(() => {
     if (!initialValues) return;
+    const signature = `${initialValues.id || 'new'}|${categories.length > 0 ? 'cats' : 'nocats'}|${brands.length > 0 ? 'brands' : 'nobrands'}`;
+    if (initializedSignatureRef.current === signature) return;
+    initializedSignatureRef.current = signature;
+
     const resolved = resolveInitialCategoryHierarchy();
     const desc =
       initialValues.description ||
@@ -304,12 +309,12 @@ export function ProductForm({
       categoryId: resolved.parentCategoryId,
       parentCategoryId: resolved.parentCategoryId,
       subCategoryId: resolved.subCategoryId,
-      price: initialValues.price !== undefined ? initialValues.price : prev.price,
-      comparePrice: initialValues.comparePrice ?? prev.comparePrice,
+      price: initialValues.price !== undefined ? Number(initialValues.price) : prev.price,
+      comparePrice: initialValues.comparePrice !== undefined ? Number(initialValues.comparePrice) : prev.comparePrice,
       shortDescription: initialValues.shortDescription ?? prev.shortDescription,
       description: initialValues.description ?? prev.description,
-      targetCrops: initialValues.targetCrops || prev.targetCrops || 'Paddy, Cotton, Sugarcane',
-      cropStages: initialValues.cropStages || prev.cropStages || '1, 2, 3',
+      targetCrops: initialValues.targetCrops ?? prev.targetCrops ?? 'Paddy, Cotton, Sugarcane',
+      cropStages: initialValues.cropStages ?? prev.cropStages ?? '1, 2, 3',
       seName: initialValues.seName || (initialValues as any)?.slug || prev.seName,
       metaTitle: initialValues.metaTitle || `Buy ${initialValues.name || prev.name} Online | Agri-Mart India`,
       metaKeywords:
@@ -327,18 +332,19 @@ export function ProductForm({
           : prev.images,
       stockQuantity:
         initialValues.stockQuantity !== undefined
-          ? initialValues.stockQuantity
+          ? Number(initialValues.stockQuantity)
           : (initialValues as any)?.variants?.[0]?.stockQuantity !== undefined
-          ? (initialValues as any).variants[0].stockQuantity
+          ? Number((initialValues as any).variants[0].stockQuantity)
           : prev.stockQuantity,
       cost:
-        initialValues.cost ??
-        Math.round(((initialValues.price !== undefined ? initialValues.price : prev.price) || 0) * 0.78),
+        initialValues.cost !== undefined
+          ? Number(initialValues.cost)
+          : Math.round(((initialValues.price !== undefined ? Number(initialValues.price) : prev.price) || 0) * 0.78),
       taxCategory: initialValues.taxCategory || prev.taxCategory || 'Agricultural Essentials (5% GST)',
-      weight: initialValues.weight ?? prev.weight ?? 5,
-      length: initialValues.length ?? prev.length ?? 35,
-      width: initialValues.width ?? prev.width ?? 25,
-      height: initialValues.height ?? prev.height ?? 20,
+      weight: initialValues.weight !== undefined ? Number(initialValues.weight) : (prev.weight ?? 5),
+      length: initialValues.length !== undefined ? Number(initialValues.length) : (prev.length ?? 35),
+      width: initialValues.width !== undefined ? Number(initialValues.width) : (prev.width ?? 25),
+      height: initialValues.height !== undefined ? Number(initialValues.height) : (prev.height ?? 20),
       deliveryDate: initialValues.deliveryDate || prev.deliveryDate || '1-2 days',
       gtin: initialValues.gtin || prev.gtin || '8901234560011',
       manufacturerPartNumber:
@@ -386,7 +392,7 @@ export function ProductForm({
           : prev.shipSeparately,
       additionalShippingCharge:
         initialValues.additionalShippingCharge !== undefined
-          ? initialValues.additionalShippingCharge
+          ? Number(initialValues.additionalShippingCharge)
           : prev.additionalShippingCharge,
       isGiftCard:
         initialValues.isGiftCard !== undefined
@@ -400,9 +406,9 @@ export function ProductForm({
           : prev.isRental,
       rentalPeriodLength: initialValues.rentalPeriodLength || prev.rentalPeriodLength,
       rentalPeriod: (initialValues.rentalPeriod as any) || prev.rentalPeriod,
-      minCartQty: initialValues.minCartQty || prev.minCartQty,
-      maxCartQty: initialValues.maxCartQty || prev.maxCartQty,
-      productTags: initialValues.productTags || prev.productTags,
+      minCartQty: initialValues.minCartQty !== undefined ? Number(initialValues.minCartQty) : prev.minCartQty,
+      maxCartQty: initialValues.maxCartQty !== undefined ? Number(initialValues.maxCartQty) : prev.maxCartQty,
+      productTags: initialValues.productTags ?? prev.productTags,
       showOnHomePage:
         initialValues.showOnHomePage !== undefined
           ? Boolean(initialValues.showOnHomePage)
@@ -427,13 +433,13 @@ export function ProductForm({
         initialValues.allowCustomerReviews !== undefined
           ? Boolean(initialValues.allowCustomerReviews)
           : prev.allowCustomerReviews,
-      availableStartDate: initialValues.availableStartDate || prev.availableStartDate,
-      availableEndDate: initialValues.availableEndDate || prev.availableEndDate,
+      availableStartDate: initialValues.availableStartDate ?? prev.availableStartDate,
+      availableEndDate: initialValues.availableEndDate ?? prev.availableEndDate,
       markAsNew:
         initialValues.markAsNew !== undefined
           ? Boolean(initialValues.markAsNew)
           : prev.markAsNew,
-      adminComment: initialValues.adminComment || prev.adminComment,
+      adminComment: initialValues.adminComment ?? prev.adminComment,
       isPublished:
         initialValues.isPublished !== undefined
           ? Boolean(initialValues.isPublished)
@@ -458,15 +464,17 @@ export function ProductForm({
     }
   }, [
     initialValues?.id,
-    initialValues?.sku,
-    initialValues?.name,
-    initialValues?.disableBuyButton,
-    initialValues?.disableWishlistButton,
-    initialValues?.callForPrice,
-    initialValues?.isPublished,
     categories.length,
     brands.length,
   ]);
+
+  useEffect(() => {
+    if (!sourceCodeMode && infoOpen && richTextRef.current) {
+      if (richTextRef.current.innerHTML !== richTextHtml) {
+        richTextRef.current.innerHTML = richTextHtml;
+      }
+    }
+  }, [sourceCodeMode, infoOpen]);
 
   // Validation
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
@@ -515,14 +523,31 @@ export function ProductForm({
       return;
     }
 
+    const latestDesc =
+      !sourceCodeMode && richTextRef.current
+        ? richTextRef.current.innerHTML
+        : sourceCodeMode
+        ? formData.description
+        : richTextHtml;
+
     const payload: ProductFormData = {
       ...formData,
-      description: sourceCodeMode ? formData.description : richTextHtml,
+      price: Number(formData.price) || 0,
+      comparePrice: formData.comparePrice !== undefined ? Number(formData.comparePrice) : 0,
+      cost: formData.cost !== undefined ? Number(formData.cost) : 0,
+      stockQuantity: formData.stockQuantity !== undefined ? Number(formData.stockQuantity) : 0,
+      weight: formData.weight !== undefined ? Number(formData.weight) : 0,
+      length: formData.length !== undefined ? Number(formData.length) : 0,
+      width: formData.width !== undefined ? Number(formData.width) : 0,
+      height: formData.height !== undefined ? Number(formData.height) : 0,
+      description: latestDesc,
     };
 
     await onSave(payload, continueEditing);
     if (continueEditing) {
       showToast('Product saved successfully! Continue editing.');
+    } else {
+      showToast('Product changes saved successfully!');
     }
   };
 
@@ -989,7 +1014,12 @@ export function ProductForm({
                       <div
                         ref={richTextRef}
                         contentEditable
-                        dangerouslySetInnerHTML={{ __html: richTextHtml }}
+                        suppressContentEditableWarning
+                        onInput={(e) => {
+                          const html = e.currentTarget.innerHTML;
+                          setRichTextHtml(html);
+                          handleChange('description', html);
+                        }}
                         onBlur={(e) => {
                           setRichTextHtml(e.currentTarget.innerHTML);
                           handleChange('description', e.currentTarget.innerHTML);
@@ -2386,6 +2416,34 @@ export function ProductForm({
               ))}
             </div>
           )}
+        </div>
+
+        {/* BOTTOM SAVE BAR */}
+        <div className="bg-white rounded border border-[#d2d6de] shadow-2xs p-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div className="text-xs text-slate-600">
+            Ready to apply changes for <strong className="text-slate-900">{formData.name || 'this product'}</strong> ({formData.sku || 'SKU'})
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              disabled={saving}
+              onClick={() => handleSaveAction(false)}
+              className="bg-[#2585be] hover:bg-[#1f72a3] disabled:opacity-50 text-white text-xs font-semibold px-4 py-2 rounded flex items-center gap-1.5 shadow-xs transition cursor-pointer"
+            >
+              <Save className="w-3.5 h-3.5" />
+              <span>{saving ? 'Saving...' : 'Save Changes'}</span>
+            </button>
+
+            <button
+              type="button"
+              disabled={saving}
+              onClick={() => handleSaveAction(true)}
+              className="bg-[#00a65a] hover:bg-[#008d4c] disabled:opacity-50 text-white text-xs font-semibold px-4 py-2 rounded flex items-center gap-1.5 shadow-xs transition cursor-pointer"
+            >
+              <Save className="w-3.5 h-3.5" />
+              <span>{saving ? 'Saving...' : 'Save and Continue Edit'}</span>
+            </button>
+          </div>
         </div>
       </div>
 

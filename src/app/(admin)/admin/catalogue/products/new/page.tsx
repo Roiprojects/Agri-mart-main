@@ -3,18 +3,19 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { ProductForm, ProductFormData } from '../ProductForm';
+import { saveProductOverride } from '@/lib/admin-product-overrides';
 
 export default function NewProductPage() {
   const router = useRouter();
-  const [categories, setCategories] = useState<{ id: string; name: string }[]>([]);
+  const [categories, setCategories] = useState<{ id: string; name: string; parentId?: string | null }[]>([]);
   const [brands, setBrands] = useState<{ id: string; name: string }[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     Promise.all([
-      fetch('/api/admin/catalogue/categories').then((r) => r.json()),
-      fetch('/api/admin/brands').then((r) => r.json()),
+      fetch('/api/admin/catalogue/categories', { cache: 'no-store' }).then((r) => r.json()),
+      fetch('/api/admin/brands', { cache: 'no-store' }).then((r) => r.json()),
     ])
       .then(([catRes, brandRes]) => {
         if (catRes.success) setCategories(catRes.data || []);
@@ -33,13 +34,24 @@ export default function NewProductPage() {
       });
       const json = await res.json();
       if (json.success) {
-        if (continueEditing && json.data?.id) {
-          router.push(`/admin/catalogue/products/${json.data.id}/edit`);
+        const createdId = json.data?.id || data.id || `prod-${Date.now()}`;
+        saveProductOverride({
+          ...data,
+          ...(json.data || {}),
+          id: createdId,
+          price: Number(data.price) || 0,
+          comparePrice: data.comparePrice !== undefined ? Number(data.comparePrice) : 0,
+          stockQuantity: data.stockQuantity !== undefined ? Number(data.stockQuantity) : 0,
+          isPublished: Boolean(data.isPublished),
+        });
+        if (continueEditing && createdId) {
+          router.push(`/admin/catalogue/products/${createdId}/edit`);
         } else {
           router.push('/admin/catalogue/products');
+          router.refresh();
         }
       } else {
-        alert(json.message || 'Failed to create product');
+        alert(json.error || json.message || 'Failed to create product');
       }
     } catch (err: any) {
       alert(err.message);

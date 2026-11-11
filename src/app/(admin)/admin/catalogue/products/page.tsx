@@ -23,8 +23,15 @@ import {
   AlertTriangle,
   CheckCircle2,
   SlidersHorizontal,
+  Save,
 } from 'lucide-react';
 import { ProductForm, ProductFormData } from './ProductForm';
+import {
+  markProductDeletedOverride,
+  mergeProductsWithOverrides,
+  saveProductOverride,
+  saveProductOverridesBulk,
+} from '@/lib/admin-product-overrides';
 
 interface Product {
   id: string;
@@ -39,6 +46,7 @@ interface Product {
   price: number;
   comparePrice?: number;
   cost?: number;
+  stockQuantity?: number;
   weight?: number;
   length?: number;
   width?: number;
@@ -172,19 +180,29 @@ export default function AdminProductsPage() {
         fetch('/api/admin/brands', { cache: 'no-store' }).then((r) => r.json()),
       ]);
 
+      const loadedCategories: CategoryOption[] =
+        catRes.success && Array.isArray(catRes.data) ? catRes.data : [];
+      const loadedBrands: BrandOption[] =
+        brandRes.success && Array.isArray(brandRes.data) ? brandRes.data : [];
+
+      if (loadedCategories.length > 0) {
+        setCategories(loadedCategories);
+      }
+      if (loadedBrands.length > 0) {
+        setBrands(loadedBrands);
+      }
+
       let loadedProducts: Product[] = [];
       if (prodRes.success && Array.isArray(prodRes.data)) {
         loadedProducts = prodRes.data;
       }
 
-      setProducts(loadedProducts);
-
-      if (catRes.success && Array.isArray(catRes.data)) {
-        setCategories(catRes.data);
-      }
-      if (brandRes.success && Array.isArray(brandRes.data)) {
-        setBrands(brandRes.data);
-      }
+      const merged = mergeProductsWithOverrides(
+        loadedProducts,
+        loadedCategories,
+        loadedBrands
+      );
+      setProducts(merged);
     } catch (err) {
       console.error('Error loading products:', err);
       showToast('Failed to load products catalogue.', 'error');
@@ -297,6 +315,123 @@ export default function AdminProductsPage() {
   const [showInlineForm, setShowInlineForm] = useState(true);
   const autoFilledFromUrlRef = useRef<string>('');
 
+  // Inline table row quick-edit state
+  const [editingRowId, setEditingRowId] = useState<string | null>(null);
+  const [rowEditData, setRowEditData] = useState<{
+    name: string;
+    sku: string;
+    brandId: string;
+    parentCategoryId: string;
+    subCategoryId: string;
+    price: number;
+    comparePrice: number;
+    stockQuantity: number;
+    targetCrops: string;
+    isPublished: boolean;
+  } | null>(null);
+  const [rowSaving, setRowSaving] = useState(false);
+
+  const handleStartRowEdit = (p: Product) => {
+    const resolved = resolveProductCategories(p);
+    const currentStock =
+      p.stockQuantity !== undefined
+        ? Number(p.stockQuantity)
+        : p.variants?.reduce((sum, v) => sum + (v.stockQuantity || 0), 0) || 0;
+
+    setEditingRowId(p.id);
+    setRowEditData({
+      name: p.name || '',
+      sku: p.sku || '',
+      brandId: p.brandId || brands[0]?.id || 'br-agripro',
+      parentCategoryId: resolved.parentId || p.categoryId || parentCategories[0]?.id || '',
+      subCategoryId: resolved.childId || p.subCategoryId || '',
+      price: Number(p.price) || 0,
+      comparePrice: p.comparePrice !== undefined ? Number(p.comparePrice) : Number(p.price) || 0,
+      stockQuantity: currentStock,
+      targetCrops: p.targetCrops || '',
+      isPublished: Boolean(p.isPublished),
+    });
+  };
+
+  const handleCancelRowEdit = () => {
+    setEditingRowId(null);
+    setRowEditData(null);
+  };
+
+  const handleSaveRowEdit = async (p: Product) => {
+    if (!rowEditData) return;
+    if (!rowEditData.name.trim() || !rowEditData.sku.trim()) {
+      showToast('Product name and SKU are required.', 'error');
+      return;
+    }
+
+    try {
+      setRowSaving(true);
+      const parentCat = categoryMap.get(rowEditData.parentCategoryId);
+      const subCat = rowEditData.subCategoryId
+        ? categoryMap.get(rowEditData.subCategoryId)
+        : undefined;
+      const brandObj = brands.find((b) => b.id === rowEditData.brandId);
+
+      const payload = {
+        ...p,
+        id: p.id,
+        name: rowEditData.name.trim(),
+        sku: rowEditData.sku.trim(),
+        brandId: rowEditData.brandId,
+        categoryId: rowEditData.parentCategoryId || p.categoryId,
+        parentCategoryId: rowEditData.parentCategoryId || p.parentCategoryId,
+        subCategoryId: rowEditData.subCategoryId || '',
+        price: Number(rowEditData.price) || 0,
+        comparePrice: Number(rowEditData.comparePrice) || 0,
+        stockQuantity: Number(rowEditData.stockQuantity) || 0,
+        targetCrops: rowEditData.targetCrops,
+        isPublished: Boolean(rowEditData.isPublished),
+      };
+
+      const res = await fetch(`/api/admin/catalogue/products/${p.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      const json = await res.json();
+
+      const updatedProd: Product = {
+        ...p,
+        ...(json.data || {}),
+        ...payload,
+        category: parentCat
+          ? { id: parentCat.id, name: parentCat.name, parentId: parentCat.parentId }
+          : p.category,
+        parentCategory: parentCat
+          ? { id: parentCat.id, name: parentCat.name }
+          : p.parentCategory,
+        subCategory: subCat ? { id: subCat.id, name: subCat.name } : undefined,
+        brand: brandObj ? { id: brandObj.id, name: brandObj.name } : p.brand,
+        variants: [
+          {
+            ...(p.variants?.[0] || {}),
+            sku: payload.sku,
+            price: payload.price,
+            stockQuantity: payload.stockQuantity,
+          },
+        ],
+      };
+
+      saveProductOverride(updatedProd);
+      setProducts((prev) =>
+        prev.map((item) => (item.id === p.id ? updatedProd : item))
+      );
+      setEditingRowId(null);
+      setRowEditData(null);
+      showToast(`Product "${updatedProd.name}" edited and saved successfully!`);
+    } catch (err: any) {
+      showToast(`Error saving product: ${err.message}`, 'error');
+    } finally {
+      setRowSaving(false);
+    }
+  };
+
   // Auto-fill all search/filter inputs and select the product to display its full details & editable form
   const autoFillProductDetails = (targetProduct: Product, applyToTableFilter = false) => {
     const resolved = resolveProductCategories(targetProduct);
@@ -375,15 +510,72 @@ export default function AdminProductsPage() {
     if (!targetId) return;
     try {
       setInlineFormSaving(true);
+      const existingProd = products.find((p) => p.id === targetId);
+      const parentCat = formData.parentCategoryId
+        ? categoryMap.get(formData.parentCategoryId)
+        : formData.categoryId
+        ? categoryMap.get(formData.categoryId)
+        : undefined;
+      const subCat = formData.subCategoryId
+        ? categoryMap.get(formData.subCategoryId)
+        : undefined;
+      const brandObj = formData.brandId
+        ? brands.find((b) => b.id === formData.brandId)
+        : undefined;
+
+      const payload = {
+        ...(existingProd || {}),
+        ...formData,
+        id: targetId,
+        slug: formData.seName || existingProd?.slug || targetId,
+        categoryId: formData.parentCategoryId || formData.categoryId || existingProd?.categoryId || '',
+        parentCategoryId: formData.parentCategoryId || formData.categoryId || existingProd?.parentCategoryId || '',
+        subCategoryId: formData.subCategoryId ?? existingProd?.subCategoryId ?? '',
+        price: Number(formData.price) || 0,
+        comparePrice: formData.comparePrice !== undefined ? Number(formData.comparePrice) : 0,
+        cost: formData.cost !== undefined ? Number(formData.cost) : 0,
+        stockQuantity: formData.stockQuantity !== undefined ? Number(formData.stockQuantity) : 0,
+        isPublished: Boolean(formData.isPublished),
+      };
+
       const res = await fetch(`/api/admin/catalogue/products/${targetId}`, {
-        method: 'PATCH',
+        method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(payload),
       });
       const json = await res.json();
       if (json.success) {
-        showToast(`Product "${formData.name}" updated and synced successfully!`);
-        await fetchData();
+        const updatedProd: Product = {
+          ...(existingProd || {}),
+          ...(json.data || {}),
+          ...payload,
+          category: parentCat
+            ? { id: parentCat.id, name: parentCat.name, parentId: parentCat.parentId }
+            : existingProd?.category,
+          parentCategory: parentCat
+            ? { id: parentCat.id, name: parentCat.name }
+            : existingProd?.parentCategory,
+          subCategory: subCat
+            ? { id: subCat.id, name: subCat.name }
+            : existingProd?.subCategory,
+          brand: brandObj
+            ? { id: brandObj.id, name: brandObj.name }
+            : existingProd?.brand,
+          variants: [
+            {
+              ...(existingProd?.variants?.[0] || {}),
+              sku: payload.sku,
+              price: payload.price,
+              stockQuantity: payload.stockQuantity,
+            },
+          ],
+        };
+
+        saveProductOverride(updatedProd);
+        setProducts((prev) =>
+          prev.map((item) => (item.id === targetId ? updatedProd : item))
+        );
+        showToast(`Product "${updatedProd.name}" updated and saved successfully!`);
         if (!continueEditing) {
           setShowInlineForm(false);
         }
@@ -580,19 +772,21 @@ export default function AdminProductsPage() {
   // Toggle Published Status inline
   const handleTogglePublished = async (p: Product) => {
     const updatedStatus = !p.isPublished;
+    const updatedProd = { ...p, isPublished: updatedStatus };
     // Optimistic UI update
     setProducts((prev) =>
       prev.map((item) =>
-        item.id === p.id ? { ...item, isPublished: updatedStatus } : item
+        item.id === p.id ? updatedProd : item
       )
     );
+    saveProductOverride(updatedProd);
 
     try {
-      await fetch('/api/admin/catalogue/products', {
-        method: 'POST',
+      await fetch(`/api/admin/catalogue/products/${p.id}`, {
+        method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          ...p,
+          id: p.id,
           isPublished: updatedStatus,
         }),
       });
@@ -615,6 +809,7 @@ export default function AdminProductsPage() {
     if (selectedIds.length === 0) return;
     try {
       for (const id of selectedIds) {
+        markProductDeletedOverride(id);
         await fetch(`/api/admin/catalogue/products?id=${id}`, {
           method: 'DELETE',
         });
@@ -839,7 +1034,10 @@ export default function AdminProductsPage() {
           }
         }
 
-        let newStock = p.variants?.[0]?.stockQuantity || 0;
+        let newStock =
+          p.stockQuantity !== undefined
+            ? Number(p.stockQuantity)
+            : p.variants?.[0]?.stockQuantity || 0;
         if (bulkStockChange) {
           const sVal = parseInt(bulkStockChange, 10);
           if (!isNaN(sVal)) newStock = sVal;
@@ -852,11 +1050,14 @@ export default function AdminProductsPage() {
         const updatedProduct = {
           ...p,
           price: newPrice,
+          stockQuantity: newStock,
           isPublished: newPublish,
           variants: p.variants?.map((v, i) =>
-            i === 0 ? { ...v, stockQuantity: newStock, price: newPrice } : v
+            i === 0 ? { ...v, stockQuantity: newStock, price: newPrice } : { ...v, stockQuantity: 0 }
           ) || [{ stockQuantity: newStock, sku: p.sku, price: newPrice }],
         };
+
+        saveProductOverride(updatedProduct);
 
         // Fire-and-forget background update
         fetch('/api/admin/catalogue/products', {
@@ -1436,6 +1637,7 @@ export default function AdminProductsPage() {
                       externalAdvancedMode={advancedMode}
                       onToggleAdvancedMode={setAdvancedMode}
                       initialValues={{
+                        ...(activeProd as any),
                         id: activeProd.id,
                         name: activeProd.name || '',
                         sku: activeProd.sku || '',
@@ -1453,10 +1655,10 @@ export default function AdminProductsPage() {
                         targetCrops:
                           activeProd.targetCrops || 'Paddy, Cotton, Sugarcane, Vegetables',
                         cropStages: activeProd.cropStages || '1, 2, 3',
-                        isPublished: false,
-                        isDraft: false,
-                        isFeatured: false,
-                        isBestSeller: false,
+                        isPublished: Boolean(activeProd.isPublished),
+                        isDraft: Boolean(activeProd.isDraft),
+                        isFeatured: Boolean(activeProd.isFeatured),
+                        isBestSeller: Boolean(activeProd.isBestSeller),
                         seName: activeProd.slug || activeProd.id || '',
                         metaTitle:
                           activeProd.metaTitle || `Buy ${activeProd.name} Online | Agri-Mart India`,
@@ -1475,12 +1677,12 @@ export default function AdminProductsPage() {
                                 'https://images.unsplash.com/photo-1590874103328-eac38a683ce7?auto=format&fit=crop&w=400&q=80',
                               ],
                         stockQuantity:
-                          activeProd.variants?.reduce(
-                            (sum, v) => sum + (v.stockQuantity || 0),
-                            0
-                          ) ||
-                          (activeProd as any).stockQuantity ||
-                          25,
+                          activeProd.stockQuantity !== undefined
+                            ? Number(activeProd.stockQuantity)
+                            : activeProd.variants?.reduce(
+                                (sum, v) => sum + (v.stockQuantity || 0),
+                                0
+                              ) || 25,
                         weight: activeProd.weight ?? 5,
                         length: activeProd.length ?? 35,
                         width: activeProd.width ?? 25,
@@ -1796,7 +1998,7 @@ export default function AdminProductsPage() {
                 <th className="py-2.5 px-3 w-28 text-right">Price (INR)</th>
                 <th className="py-2.5 px-3 w-28 text-center">Stock quantity</th>
                 <th className="py-2.5 px-3 w-24 text-center">Published</th>
-                <th className="py-2.5 px-3 w-24 text-center">Edit</th>
+                <th className="py-2.5 px-3 w-40 text-center">Edit / Save</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
@@ -1826,25 +2028,35 @@ export default function AdminProductsPage() {
               ) : (
                 paginatedProducts.map((p) => {
                   const isChecked = selectedIds.includes(p.id);
+                  const isRowEditing = editingRowId === p.id && rowEditData !== null;
                   const stock =
-                    p.variants?.reduce(
-                      (sum, v) => sum + (v.stockQuantity || 0),
-                      0
-                    ) ||
-                    (p as any).stockQuantity ||
-                    0;
+                    p.stockQuantity !== undefined
+                      ? Number(p.stockQuantity)
+                      : p.variants?.reduce(
+                          (sum, v) => sum + (v.stockQuantity || 0),
+                          0
+                        ) || 0;
                   const thumb = p.images?.[0];
                   const catInfo = resolveProductCategories(p);
                   const brandName =
                     p.brand?.name ||
                     brands.find((b) => b.id === p.brandId)?.name ||
                     'AgriPro';
+                  const rowSubcategories = isRowEditing
+                    ? childCategories.filter(
+                        (c) => c.parentId === rowEditData.parentCategoryId
+                      )
+                    : [];
 
                   return (
                     <tr
                       key={p.id}
                       className={`hover:bg-slate-50/80 transition-colors ${
-                        isChecked ? 'bg-blue-50/40' : ''
+                        isRowEditing
+                          ? 'bg-amber-50/60 ring-1 ring-inset ring-[#3c8dbc]'
+                          : isChecked
+                          ? 'bg-blue-50/40'
+                          : ''
                       }`}
                     >
                       {/* Checkbox */}
@@ -1888,94 +2100,288 @@ export default function AdminProductsPage() {
 
                       {/* Product Name & Summary Details */}
                       <td className="py-2.5 px-3 font-medium text-slate-800">
-                        <div className="flex items-center gap-1.5 flex-wrap">
-                          <Link
-                            href={`/admin/catalogue/products/${p.id}/edit`}
-                            className="hover:text-[#3c8dbc] transition font-semibold"
-                          >
-                            {p.name}
-                          </Link>
-                          {p.disableBuyButton && (
-                            <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-300">
-                              Buy Disabled
-                            </span>
-                          )}
-                          {p.callForPrice && (
-                            <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
-                              Call for Price
-                            </span>
-                          )}
-                        </div>
-                        <div className="flex flex-wrap items-center gap-2 mt-1 text-[11px] text-slate-500 font-normal">
-                          <span>Brand: <strong className="text-slate-700">{brandName}</strong></span>
-                          {p.targetCrops && (
-                            <span>• Crops: {p.targetCrops}</span>
-                          )}
-                        </div>
+                        {isRowEditing && rowEditData ? (
+                          <div className="space-y-1.5 min-w-[200px]">
+                            <input
+                              type="text"
+                              value={rowEditData.name}
+                              onChange={(e) =>
+                                setRowEditData({ ...rowEditData, name: e.target.value })
+                              }
+                              placeholder="Product name"
+                              className="w-full px-2 py-1 text-xs font-semibold border border-[#3c8dbc] rounded bg-white outline-none"
+                            />
+                            <div className="grid grid-cols-2 gap-1.5">
+                              <select
+                                value={rowEditData.brandId}
+                                onChange={(e) =>
+                                  setRowEditData({ ...rowEditData, brandId: e.target.value })
+                                }
+                                className="px-1.5 py-1 text-[11px] border border-slate-300 rounded bg-white outline-none"
+                              >
+                                {brands.map((b) => (
+                                  <option key={b.id} value={b.id}>
+                                    {b.name}
+                                  </option>
+                                ))}
+                              </select>
+                              <input
+                                type="text"
+                                value={rowEditData.targetCrops}
+                                onChange={(e) =>
+                                  setRowEditData({
+                                    ...rowEditData,
+                                    targetCrops: e.target.value,
+                                  })
+                                }
+                                placeholder="Target crops"
+                                className="px-2 py-1 text-[11px] border border-slate-300 rounded bg-white outline-none"
+                              />
+                            </div>
+                          </div>
+                        ) : (
+                          <>
+                            <div className="flex items-center gap-1.5 flex-wrap">
+                              <Link
+                                href={`/admin/catalogue/products/${p.id}/edit`}
+                                className="hover:text-[#3c8dbc] transition font-semibold"
+                              >
+                                {p.name}
+                              </Link>
+                              {p.disableBuyButton && (
+                                <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-300">
+                                  Buy Disabled
+                                </span>
+                              )}
+                              {p.callForPrice && (
+                                <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
+                                  Call for Price
+                                </span>
+                              )}
+                            </div>
+                            <div className="flex flex-wrap items-center gap-2 mt-1 text-[11px] text-slate-500 font-normal">
+                              <span>
+                                Brand: <strong className="text-slate-700">{brandName}</strong>
+                              </span>
+                              {p.targetCrops && <span>• Crops: {p.targetCrops}</span>}
+                            </div>
+                          </>
+                        )}
                       </td>
 
                       {/* Parent & Child Category */}
                       <td className="py-2.5 px-3">
-                        <div className="space-y-1">
-                          <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-blue-50 text-blue-800 border border-blue-200 text-[11px] font-medium">
-                            <span className="text-[9px] uppercase font-bold text-blue-600">Parent:</span>
-                            <span>{catInfo.parentName}</span>
+                        {isRowEditing && rowEditData ? (
+                          <div className="space-y-1.5">
+                            <select
+                              value={rowEditData.parentCategoryId}
+                              onChange={(e) => {
+                                const newParent = e.target.value;
+                                const firstSub = childCategories.find(
+                                  (c) => c.parentId === newParent
+                                );
+                                setRowEditData({
+                                  ...rowEditData,
+                                  parentCategoryId: newParent,
+                                  subCategoryId: firstSub ? firstSub.id : '',
+                                });
+                              }}
+                              className="w-full px-1.5 py-1 text-[11px] border border-blue-300 rounded bg-white outline-none"
+                            >
+                              {parentCategories.map((c) => (
+                                <option key={c.id} value={c.id}>
+                                  Parent: {c.name}
+                                </option>
+                              ))}
+                            </select>
+                            <select
+                              value={rowEditData.subCategoryId}
+                              onChange={(e) =>
+                                setRowEditData({
+                                  ...rowEditData,
+                                  subCategoryId: e.target.value,
+                                })
+                              }
+                              className="w-full px-1.5 py-1 text-[11px] border border-emerald-300 rounded bg-white outline-none"
+                            >
+                              <option value="">-- No Subcategory --</option>
+                              {rowSubcategories.map((sub) => (
+                                <option key={sub.id} value={sub.id}>
+                                  Child: {sub.name}
+                                </option>
+                              ))}
+                            </select>
                           </div>
-                          <div className="flex items-center gap-1 pl-1">
-                            <span className="text-slate-400 text-[10px]">↳</span>
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-emerald-50 text-emerald-800 border border-emerald-200 text-[11px] font-medium">
-                              <span className="text-[9px] uppercase font-bold text-emerald-600">Child:</span>
-                              <span>{catInfo.childName}</span>
-                            </span>
+                        ) : (
+                          <div className="space-y-1">
+                            <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-blue-50 text-blue-800 border border-blue-200 text-[11px] font-medium">
+                              <span className="text-[9px] uppercase font-bold text-blue-600">
+                                Parent:
+                              </span>
+                              <span>{catInfo.parentName}</span>
+                            </div>
+                            <div className="flex items-center gap-1 pl-1">
+                              <span className="text-slate-400 text-[10px]">↳</span>
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-emerald-50 text-emerald-800 border border-emerald-200 text-[11px] font-medium">
+                                <span className="text-[9px] uppercase font-bold text-emerald-600">
+                                  Child:
+                                </span>
+                                <span>{catInfo.childName}</span>
+                              </span>
+                            </div>
                           </div>
-                        </div>
+                        )}
                       </td>
 
                       {/* SKU */}
                       <td className="py-2.5 px-3 font-mono text-[11px] text-slate-600">
-                        {p.sku || '-'}
+                        {isRowEditing && rowEditData ? (
+                          <input
+                            type="text"
+                            value={rowEditData.sku}
+                            onChange={(e) =>
+                              setRowEditData({ ...rowEditData, sku: e.target.value })
+                            }
+                            className="w-full px-2 py-1 text-[11px] font-mono border border-slate-300 rounded bg-white outline-none"
+                          />
+                        ) : (
+                          p.sku || '-'
+                        )}
                       </td>
 
                       {/* Price */}
                       <td className="py-2.5 px-3 text-right font-semibold text-slate-800">
-                        ₹{p.price?.toLocaleString('en-IN')}
-                        {p.comparePrice && p.comparePrice > p.price && (
-                          <span className="block text-[10px] text-slate-400 line-through font-normal">
-                            ₹{p.comparePrice.toLocaleString('en-IN')}
-                          </span>
+                        {isRowEditing && rowEditData ? (
+                          <div className="space-y-1">
+                            <input
+                              type="number"
+                              value={rowEditData.price}
+                              onChange={(e) =>
+                                setRowEditData({
+                                  ...rowEditData,
+                                  price: parseFloat(e.target.value) || 0,
+                                })
+                              }
+                              placeholder="Selling Price"
+                              className="w-24 px-2 py-1 text-xs text-right border border-[#3c8dbc] rounded bg-white outline-none"
+                            />
+                            <input
+                              type="number"
+                              value={rowEditData.comparePrice}
+                              onChange={(e) =>
+                                setRowEditData({
+                                  ...rowEditData,
+                                  comparePrice: parseFloat(e.target.value) || 0,
+                                })
+                              }
+                              placeholder="MRP"
+                              title="Old / Compare Price (MRP)"
+                              className="w-24 px-2 py-0.5 text-[10px] text-right border border-slate-300 rounded bg-white outline-none text-slate-500"
+                            />
+                          </div>
+                        ) : (
+                          <>
+                            ₹{p.price?.toLocaleString('en-IN')}
+                            {p.comparePrice && p.comparePrice > p.price && (
+                              <span className="block text-[10px] text-slate-400 line-through font-normal">
+                                ₹{p.comparePrice.toLocaleString('en-IN')}
+                              </span>
+                            )}
+                          </>
                         )}
                       </td>
 
                       {/* Stock Quantity */}
                       <td className="py-2.5 px-3 text-center text-slate-700">
-                        {stock}
+                        {isRowEditing && rowEditData ? (
+                          <input
+                            type="number"
+                            value={rowEditData.stockQuantity}
+                            onChange={(e) =>
+                              setRowEditData({
+                                ...rowEditData,
+                                stockQuantity: parseInt(e.target.value, 10) || 0,
+                              })
+                            }
+                            className="w-20 px-2 py-1 text-xs text-center border border-[#3c8dbc] rounded bg-white outline-none"
+                          />
+                        ) : (
+                          stock
+                        )}
                       </td>
 
                       {/* Published */}
                       <td className="py-2.5 px-3 text-center">
-                        <button
-                          type="button"
-                          onClick={() => handleTogglePublished(p)}
-                          title={`Click to ${p.isPublished ? 'unpublish' : 'publish'}`}
-                          className="p-1 hover:bg-slate-100 rounded transition inline-flex items-center justify-center"
-                        >
-                          {p.isPublished ? (
-                            <Check className="w-4 h-4 text-[#2585be] stroke-[2.5]" />
-                          ) : (
-                            <X className="w-4 h-4 text-slate-300 stroke-[2]" />
-                          )}
-                        </button>
+                        {isRowEditing && rowEditData ? (
+                          <input
+                            type="checkbox"
+                            checked={rowEditData.isPublished}
+                            onChange={(e) =>
+                              setRowEditData({
+                                ...rowEditData,
+                                isPublished: e.target.checked,
+                              })
+                            }
+                            className="h-4 w-4 rounded border-slate-300 text-[#2585be] focus:ring-[#2585be]"
+                          />
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => handleTogglePublished(p)}
+                            title={`Click to ${p.isPublished ? 'unpublish' : 'publish'}`}
+                            className="p-1 hover:bg-slate-100 rounded transition inline-flex items-center justify-center"
+                          >
+                            {p.isPublished ? (
+                              <Check className="w-4 h-4 text-[#2585be] stroke-[2.5]" />
+                            ) : (
+                              <X className="w-4 h-4 text-slate-300 stroke-[2]" />
+                            )}
+                          </button>
+                        )}
                       </td>
 
-                      {/* Edit Button */}
+                      {/* Edit / Save Buttons */}
                       <td className="py-2.5 px-3 text-center">
-                        <Link
-                          href={`/admin/catalogue/products/${p.id}/edit`}
-                          className="inline-flex items-center gap-1 px-2.5 py-1 bg-white hover:bg-slate-50 border border-slate-300 rounded text-slate-700 text-xs font-medium shadow-2xs transition"
-                        >
-                          <Edit3 className="w-3 h-3 text-slate-500" />
-                          <span>Edit</span>
-                        </Link>
+                        {isRowEditing ? (
+                          <div className="flex items-center justify-center gap-1.5">
+                            <button
+                              type="button"
+                              disabled={rowSaving}
+                              onClick={() => handleSaveRowEdit(p)}
+                              className="inline-flex items-center gap-1 px-2.5 py-1 bg-[#00a65a] hover:bg-[#008d4c] disabled:opacity-50 text-white rounded text-xs font-semibold shadow-2xs transition cursor-pointer"
+                            >
+                              <Save className="w-3 h-3" />
+                              <span>{rowSaving ? '...' : 'Save'}</span>
+                            </button>
+                            <button
+                              type="button"
+                              disabled={rowSaving}
+                              onClick={handleCancelRowEdit}
+                              className="inline-flex items-center px-2 py-1 bg-white hover:bg-slate-100 border border-slate-300 rounded text-slate-600 text-xs font-medium transition cursor-pointer"
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        ) : (
+                          <div className="flex items-center justify-center gap-1.5">
+                            <button
+                              type="button"
+                              onClick={() => handleStartRowEdit(p)}
+                              title="Edit fields right in this row and click Save"
+                              className="inline-flex items-center gap-1 px-2 py-1 bg-[#2585be] hover:bg-[#1f72a3] text-white rounded text-[11px] font-semibold shadow-2xs transition cursor-pointer"
+                            >
+                              <Edit3 className="w-3 h-3" />
+                              <span>Quick Edit</span>
+                            </button>
+                            <Link
+                              href={`/admin/catalogue/products/${p.id}/edit`}
+                              title="Open full product editor"
+                              className="inline-flex items-center gap-1 px-2 py-1 bg-white hover:bg-slate-50 border border-slate-300 rounded text-slate-700 text-[11px] font-medium shadow-2xs transition"
+                            >
+                              <span>Full Edit</span>
+                            </Link>
+                          </div>
+                        )}
                       </td>
                     </tr>
                   );
