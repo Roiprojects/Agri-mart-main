@@ -469,12 +469,12 @@ export function ProductForm({
   ]);
 
   useEffect(() => {
-    if (!sourceCodeMode && infoOpen && richTextRef.current) {
+    if (!sourceCodeMode && !productInfoCollapsed && richTextRef.current) {
       if (richTextRef.current.innerHTML !== richTextHtml) {
         richTextRef.current.innerHTML = richTextHtml;
       }
     }
-  }, [sourceCodeMode, infoOpen]);
+  }, [sourceCodeMode, productInfoCollapsed]);
 
   // Validation
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
