@@ -234,12 +234,32 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
         <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 leading-tight mt-2">
           {product.name}
         </h1>
-        <div className="text-xs text-slate-500 mt-1 font-mono">
-          SKU: <strong>{currentSku}</strong>
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs text-slate-500 mt-2 font-mono">
+          <div>
+            SKU: <strong className="text-slate-800">{currentSku}</strong>
+          </div>
+          {(product.riplCode || selectedVariant?.riplCode) && (
+            <div className="flex items-center gap-1">
+              <span className="text-slate-400">&bull;</span>
+              <span>RIPL Code:</span>
+              <strong className="text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                {product.riplCode || selectedVariant?.riplCode}
+              </strong>
+            </div>
+          )}
+          {(product.modelNumber || selectedVariant?.title) && (
+            <div className="flex items-center gap-1">
+              <span className="text-slate-400">&bull;</span>
+              <span>Model:</span>
+              <strong className="text-slate-800">
+                {product.modelNumber || selectedVariant?.title}
+              </strong>
+            </div>
+          )}
         </div>
 
         {/* Rating & Stock */}
-        <div className="flex items-center space-x-3 mt-3 text-xs">
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-3 text-xs">
           <div className="flex items-center text-amber-500">
             <Star className="w-4 h-4 fill-current" />
             <span className="font-extrabold ml-1 text-slate-900 text-sm">4.9</span>
@@ -250,7 +270,10 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
           </span>
           <span className="text-slate-300">|</span>
           <span className="text-emerald-700 font-bold flex items-center gap-1">
-            <CheckCircle className="w-3.5 h-3.5" /> In Stock &bull; Dark Warehouse Dispatch
+            <CheckCircle className="w-3.5 h-3.5" />
+            {product.availableQty !== undefined && product.availableQty > 0
+              ? `${product.availableQty} Units Ready in Dark Warehouse`
+              : 'In Stock • Dark Warehouse Dispatch'}
           </span>
         </div>
       </div>
@@ -282,7 +305,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
               </span>
             )}
             <span className="text-xs text-emerald-800 font-semibold ml-auto">
-              (Inclusive of 5% Agri GST &amp; Transit Insurance)
+              {product.priceNote || '(MRP • Inclusive of All Taxes & Transit Insurance)'}
             </span>
           </>
         )}

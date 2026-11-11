@@ -27,17 +27,19 @@ export async function GET(request: Request) {
 
     return {
       ...p,
+      brand: p.brandName || full?.brand?.name || (p as any).brand || 'Agrimate',
+      brandName: p.brandName || full?.brand?.name || 'Agrimate',
       disableBuyButton: Boolean(p.disableBuyButton),
       disableWishlistButton: Boolean(p.disableWishlistButton),
       callForPrice: Boolean(p.callForPrice),
       availableForPreOrder: Boolean(p.availableForPreOrder),
-      category: categoryObj?.name || 'General Agri Input',
+      category: categoryObj?.name || (p as any).category || 'General Agri Input',
       categoryKn: categoryObj?.nameKn,
       image,
-      images: full?.media?.map((m) => m.url) || [image],
+      images: full?.media?.map((m) => m.url) || p.images || [image],
       rating: 4.8,
       reviewsCount: full?.reviews?.length || 12,
-      inStock: full?.warehouseStocks?.some((ws) => ws.quantity > 0) ?? true,
+      inStock: (p.stockQuantity ?? 0) > 0 || (full?.warehouseStocks?.some((ws) => ws.quantity > 0) ?? true),
       variants: full?.variants || [],
       specifications: full?.specifications || [],
     };

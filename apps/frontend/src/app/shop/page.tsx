@@ -68,7 +68,10 @@ export default function ShopPage() {
         const matchDesc = p.description?.toLowerCase().includes(q);
         const matchCat = p.category?.toLowerCase().includes(q);
         const matchSku = p.sku?.toLowerCase().includes(q);
-        if (!matchName && !matchDesc && !matchCat && !matchSku) return false;
+        const matchRipl = p.riplCode?.toLowerCase().includes(q);
+        const matchBrand = (p.brand || p.brandName)?.toLowerCase().includes(q);
+        const matchModel = p.modelNumber?.toLowerCase().includes(q);
+        if (!matchName && !matchDesc && !matchCat && !matchSku && !matchRipl && !matchBrand && !matchModel) return false;
       }
       return true;
     }).sort((a, b) => {

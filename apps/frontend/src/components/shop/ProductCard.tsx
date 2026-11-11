@@ -138,16 +138,27 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
       {/* Content */}
       <div className="p-4 sm:p-5 flex-1 flex flex-col justify-between space-y-3">
         <div>
-          <div className="text-[10px] font-bold text-agri-green uppercase tracking-wider mb-1">
-            {product.category}
+          <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-wider mb-1">
+            <span className="text-agri-green">{product.category}</span>
+            {product.brand && (
+              <span className="text-slate-500 font-extrabold bg-slate-100 px-2 py-0.5 rounded text-[9px] border border-slate-200">
+                {product.brand}
+              </span>
+            )}
           </div>
 
           <Link
             href={`/products/${product.slug}`}
-            className="font-bold text-sm text-agri-dark hover:text-agri-green line-clamp-2 transition-colors duration-150 mb-2 leading-snug"
+            className="font-bold text-sm text-agri-dark hover:text-agri-green line-clamp-2 transition-colors duration-150 mb-1 leading-snug"
           >
             {product.name}
           </Link>
+
+          {(product.riplCode || product.sku) && (
+            <div className="text-[10px] font-mono text-slate-400 mb-2">
+              Code: <strong className="text-slate-700">{product.riplCode || product.sku}</strong>
+            </div>
+          )}
 
           {/* Rating */}
           <div className="flex items-center space-x-1.5 mb-2.5 text-xs text-agri-secondary">
@@ -191,6 +202,9 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
                     ₹{product.comparePrice.toLocaleString('en-IN')}
                   </div>
                 )}
+                <div className="text-[9px] text-slate-400 font-medium">
+                  {(product as any).priceNote || 'MRP (Incl. taxes)'}
+                </div>
               </>
             )}
           </div>

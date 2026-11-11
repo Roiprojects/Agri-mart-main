@@ -34,3 +34,6 @@ yarn-error.log*
 .vscode/
 *.swp
 *.swo
+
+# Large imported Agrimart product brochures & videos (host on CDN / Vercel Blob; see NEXT_PUBLIC_AGRIMART_MEDIA_BASE)
+public/agrimart-media/
