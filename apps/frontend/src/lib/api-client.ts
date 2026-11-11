@@ -1,7 +1,6 @@
 /**
- * AGRI MART Decoupled Typed Backend API Client
- * Used by Server Components (with Next.js ISR tags) and Client Components.
- * Zero direct database access or server secrets.
+ * AGRI MART Unified Typed Backend & In-Process API Client
+ * Used by Server Components (direct in-process devDb / CatalogueService access) and Client Components (same-origin /api/*).
  */
 
 import {
@@ -14,6 +13,9 @@ import {
   VerifyPaymentRequest,
   VerifyPaymentResponse,
 } from '@agrimart/contracts';
+import { devDb, readDb, writeDb } from './dev-db';
+import { CatalogueService } from './catalogue-service';
+import { SERVICES_CATALOGUE, ServiceDefinition } from './services-data';
 
 const IS_SERVER = typeof window === 'undefined';
 
@@ -42,21 +44,20 @@ function getBackendBaseUrl(): string {
     const rawUrl =
       process.env.BACKEND_INTERNAL_URL ||
       process.env.NEXT_PUBLIC_BACKEND_URL ||
-      'http://127.0.0.1:3011';
+      (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://127.0.0.1:3011');
     return rawUrl.replace('://localhost:', '://127.0.0.1:');
   }
-  return process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3011';
+  return process.env.NEXT_PUBLIC_BACKEND_URL || '';
 }
 
 export class ApiClient {
-  private static baseUrl = getBackendBaseUrl();
-
   private static async fetchJson<T>(
     endpoint: string,
     options?: RequestInit & { next?: { tags?: string[]; revalidate?: number } }
   ): Promise<T> {
     const method = (options?.method || 'GET').toUpperCase();
-    const url = `${getBackendBaseUrl()}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`;
+    const baseUrl = getBackendBaseUrl();
+    const url = `${baseUrl}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`;
     const headers = {
       'Content-Type': 'application/json',
       ...(options?.headers || {}),
@@ -70,7 +71,6 @@ export class ApiClient {
         return cached.data as T;
       }
       if (cached) {
-        // Stale-while-revalidate: return cached immediately and refresh in background
         fetch(url, { ...options, headers })
           .then((r) => (r.ok ? r.json() : null))
           .then((fresh) => {
@@ -109,6 +109,38 @@ export class ApiClient {
     search?: string;
     sort?: string;
   }) {
+    if (IS_SERVER) {
+      const products = await CatalogueService.getProducts({
+        categoryId: query?.category && query.category !== 'ALL' ? query.category : undefined,
+        crop: query?.crop && query.crop !== 'ALL' ? query.crop : undefined,
+        stage: query?.stage,
+        search: query?.search,
+        onlyPublished: true,
+      });
+
+      const detailed = products.map((p) => {
+        const full = devDb.getProductWithDetails(p.id);
+        const categoryObj = full?.category;
+        const mediaObj = full?.media?.[0];
+        const image = mediaObj?.url || 'https://images.unsplash.com/photo-1589923188900-85dae523342b?auto=format&fit=crop&w=600&q=80';
+
+        return {
+          ...p,
+          category: categoryObj?.name || 'General Agri Input',
+          categoryKn: categoryObj?.nameKn,
+          image,
+          images: full?.media?.map((m) => m.url) || [image],
+          rating: 4.8,
+          reviewsCount: full?.reviews?.length || 12,
+          inStock: full?.warehouseStocks?.some((ws) => ws.quantity > 0) ?? true,
+          variants: full?.variants || [],
+          specifications: full?.specifications || [],
+        };
+      });
+
+      return { success: true, data: detailed };
+    }
+
     const params = new URLSearchParams();
     if (query?.category && query.category !== 'ALL') params.set('category', query.category);
     if (query?.crop && query.crop !== 'ALL') params.set('crop', query.crop);
@@ -123,12 +155,77 @@ export class ApiClient {
   }
 
   static async getProductBySlug(slug: string) {
+    if (IS_SERVER) {
+      const product = devDb.getProductBySlug(slug) || devDb.getProductById(slug);
+      if (!product) {
+        return { success: false, data: null };
+      }
+      const detailed = devDb.getProductWithDetails(product.id);
+      const categoryObj = detailed?.category;
+      const mediaList = detailed?.media?.map((m) => m.url) || [];
+      const defaultImage = 'https://images.unsplash.com/photo-1589923188900-85dae523342b?auto=format&fit=crop&w=600&q=80';
+
+      return {
+        success: true,
+        data: {
+          id: product.id,
+          slug: product.slug,
+          sku: product.sku,
+          name: product.name,
+          nameKn: product.nameKn,
+          brand: detailed?.brand?.name || product.brandId || 'AgriPro',
+          categoryId: product.categoryId,
+          category: categoryObj?.name || 'Farm Equipment & Machinery',
+          categoryKn: categoryObj?.nameKn,
+          price: product.price,
+          comparePrice: product.comparePrice,
+          description: product.description,
+          targetCrops: product.targetCrops || [],
+          cropStages: product.cropStages || [],
+          images: mediaList.length > 0 ? mediaList : [defaultImage],
+          variants: detailed?.variants || [],
+          specifications: detailed?.specifications || [],
+          reviews: detailed?.reviews || [],
+          warehouseStocks: detailed?.warehouseStocks || [],
+          disableBuyButton: Boolean(product.disableBuyButton),
+          disableWishlistButton: Boolean(product.disableWishlistButton),
+          availableForPreOrder: Boolean(product.availableForPreOrder),
+          callForPrice: Boolean(product.callForPrice),
+          customerEntersPrice: Boolean(product.customerEntersPrice),
+          isPublished: product.isPublished !== undefined ? Boolean(product.isPublished) : true,
+          isFeatured: Boolean(product.isFeatured),
+          isBestSeller: Boolean(product.isBestSeller),
+          stockQuantity: (detailed?.variants?.[0]?.stockQuantity ?? product.stockQuantity ?? 25),
+        },
+      };
+    }
+
     return this.fetchJson<{ success: boolean; data: any }>(`/api/products/${slug}`, {
       cache: 'no-store',
     });
   }
 
   static async getCategories() {
+    if (IS_SERVER) {
+      const categories = devDb.getCategories();
+      const products = devDb.getProducts();
+      const formatted = categories.map((cat) => {
+        const count = products.filter((p) => p.categoryId === cat.id).length;
+        return {
+          id: cat.id,
+          slug: cat.slug,
+          name: cat.name,
+          nameKn: cat.nameKn,
+          description: cat.description,
+          image: cat.image,
+          imageUrl: cat.image,
+          productCount: count,
+          featured: cat.displayOrder <= 4,
+        };
+      });
+      return { success: true, data: formatted };
+    }
+
     return this.fetchJson<{ success: boolean; data: any[] }>(`/api/categories`, {
       cache: 'no-store',
     });
@@ -143,18 +240,30 @@ export class ApiClient {
   // --- RENTALS ---
 
   static async getRentals() {
+    if (IS_SERVER) {
+      const items = devDb.getRentalProducts();
+      return { success: true, data: items };
+    }
     return this.fetchJson<{ success: boolean; data: any[] }>(`/api/rentals`, {
       cache: 'no-store',
     });
   }
 
   static async getRentalBySlug(slug: string) {
+    if (IS_SERVER) {
+      const item = devDb.getRentalProductBySlug(slug) || devDb.getRentalProductById(slug);
+      return { success: Boolean(item), data: item || null };
+    }
     return this.fetchJson<{ success: boolean; data: any }>(`/api/rentals?slug=${slug}`, {
       cache: 'no-store',
     });
   }
 
   static async getCustomerRentals(userId: string = 'usr-farmer-01') {
+    if (IS_SERVER) {
+      const bookings = devDb.getRentalBookings({ userId });
+      return { success: true, data: bookings };
+    }
     return this.fetchJson<{ success: boolean; data: any[] }>(`/api/rentals/book?userId=${userId}`, {
       cache: 'no-store',
     });
@@ -170,17 +279,51 @@ export class ApiClient {
   // --- SERVICES ---
 
   static async getServicesCatalogue(query?: { category?: string; search?: string; slug?: string }) {
+    if (IS_SERVER) {
+      const db = readDb();
+      if (!db.services || !Array.isArray(db.services) || db.services.length === 0) {
+        db.services = JSON.parse(JSON.stringify(SERVICES_CATALOGUE));
+        writeDb(db);
+      }
+      let services: ServiceDefinition[] = db.services;
+
+      if (query?.slug) {
+        const found = services.find((s) => s.slug === query.slug);
+        return { success: Boolean(found), service: found || null, services: found ? [found] : [] };
+      }
+
+      if (query?.category && query.category !== 'All') {
+        services = services.filter((s) => s.category.toLowerCase() === query.category!.toLowerCase());
+      }
+
+      if (query?.search) {
+        const q = query.search.toLowerCase();
+        services = services.filter(
+          (s) =>
+            s.name.toLowerCase().includes(q) ||
+            s.shortDescription.toLowerCase().includes(q) ||
+            s.category.toLowerCase().includes(q)
+        );
+      }
+
+      return { success: true, services, total: services.length };
+    }
+
     const params = new URLSearchParams();
     if (query?.category && query.category !== 'All') params.set('category', query.category);
     if (query?.search) params.set('search', query.search);
     if (query?.slug) params.set('slug', query.slug);
     const qs = params.toString() ? `?${params.toString()}` : '';
-    return this.fetchJson<{ success: boolean; services: any[] }>(`/api/services${qs}`, {
+    return this.fetchJson<{ success: boolean; services: any[]; service?: any }>(`/api/services${qs}`, {
       cache: 'no-store',
     });
   }
 
   static async getCustomerServices(userId: string = 'usr-farmer-01') {
+    if (IS_SERVER) {
+      const requests = devDb.getServiceRequests({ userId });
+      return { success: true, data: requests };
+    }
     return this.fetchJson<{ success: boolean; data: any[] }>(`/api/services/request?userId=${userId}`, {
       cache: 'no-store',
     });
@@ -230,6 +373,15 @@ export class ApiClient {
   }
 
   static async getCustomerOrders(userId: string = 'usr-farmer-01', orderId?: string) {
+    if (IS_SERVER) {
+      if (orderId) {
+        const details = devDb.getOrderWithDetails(orderId);
+        return { success: Boolean(details), data: details || null };
+      }
+      const orders = devDb.getOrders(userId || undefined);
+      const fullOrders = orders.map((o) => devDb.getOrderWithDetails(o.id));
+      return { success: true, data: fullOrders };
+    }
     const qs = orderId ? `?userId=${userId}&id=${orderId}` : `?userId=${userId}`;
     return this.fetchJson<{ success: boolean; data: any }>(`/api/customer/orders${qs}`, {
       cache: 'no-store',
@@ -239,6 +391,10 @@ export class ApiClient {
   // --- FARMER PROFILE & ADVISORY ---
 
   static async getFarmerProfile(userId: string = 'usr-farmer-01') {
+    if (IS_SERVER) {
+      const profile = devDb.getFarmerProfileById(userId) || devDb.getFarmerProfiles()[0] || null;
+      return { success: Boolean(profile), data: profile, profile };
+    }
     return this.fetchJson<{ success: boolean; data: any }>(`/api/procurement/farmers?farmerId=${userId}`, {
       cache: 'no-store',
     });

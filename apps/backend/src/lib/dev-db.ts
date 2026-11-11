@@ -23,6 +23,7 @@ import {
 } from './repair-finance-types';
 import { getInitialRepairFinanceData } from './repair-finance-data';
 import { getInitialGalleryAndBlogData } from './gallery-blog-data';
+import agrimartCatalogue from '../data/agrimart-catalogue.json';
 
 export interface DbBrand {
   id: string;
@@ -168,6 +169,23 @@ export interface DbProduct {
   isRental?: boolean;
   rentalPeriodLength?: number | string;
   rentalPeriod?: string;
+  // Imported Agrimart catalogue details
+  riplCode?: string;
+  sourceProductId?: string;
+  descriptionHtml?: string;
+  brandName?: string;
+  priceNote?: string;
+  variantLabel?: string;
+  modelNumber?: string;
+  stockQuantity?: number;
+  availableQty?: number;
+  maxOrderQty?: number;
+  minOrderQty?: number;
+  brochures?: { label: string; url: string; fileName?: string; available?: boolean }[];
+  videos?: { url: string; type: 'mp4' | 'youtube'; fileName?: string; available?: boolean }[];
+  accessoriesInfo?: string;
+  accessoriesAvailable?: boolean;
+  sparePartsAvailable?: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -2387,6 +2405,31 @@ class PersistentDevDatabase {
       this.save();
     }
     this.clearStorefrontCatalogueOnce();
+    this.importAgrimartCatalogueOnce();
+  }
+
+  /**
+   * One-time import of the full Agrimart product catalogue (226 products with images, brands,
+   * categories, prices, model/RIPL codes, specifications, brochures and videos).
+   */
+  private importAgrimartCatalogueOnce() {
+    const anyData = this.data as any;
+    if (anyData.agrimartCatalogueImportV1) return;
+    const cat = agrimartCatalogue as any;
+    const upsert = (key: string, rows: any[]) => {
+      if (!Array.isArray(anyData[key])) anyData[key] = [];
+      const ids = new Set(anyData[key].map((r: any) => r.id));
+      for (const r of rows) if (!ids.has(r.id)) anyData[key].push(r);
+    };
+    upsert('brands', cat.brands || []);
+    upsert('categories', cat.categories || []);
+    upsert('products', cat.products || []);
+    upsert('variants', cat.variants || []);
+    upsert('media', cat.media || []);
+    upsert('specifications', cat.specifications || []);
+    upsert('warehouseStocks', cat.warehouseStocks || []);
+    anyData.agrimartCatalogueImportV1 = new Date().toISOString();
+    this.save();
   }
 
   /**

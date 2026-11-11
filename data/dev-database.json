@@ -557,8 +557,8 @@
       "displayOrder": 1,
       "published": true,
       "isPublished": true,
-      "createdAt": "2026-11-11T10:02:15.439Z",
-      "updatedAt": "2026-11-11T10:02:15.439Z"
+      "createdAt": "2026-11-11T10:50:02.755Z",
+      "updatedAt": "2026-11-11T10:50:02.755Z"
     },
     {
       "id": "cat-seeds",
@@ -571,8 +571,8 @@
       "displayOrder": 2,
       "published": true,
       "isPublished": true,
-      "createdAt": "2026-11-11T10:02:15.439Z",
-      "updatedAt": "2026-11-11T10:02:15.439Z"
+      "createdAt": "2026-11-11T10:50:02.755Z",
+      "updatedAt": "2026-11-11T10:50:02.755Z"
     },
     {
       "id": "cat-fertilizers",
@@ -585,8 +585,8 @@
       "displayOrder": 3,
       "published": true,
       "isPublished": true,
-      "createdAt": "2026-11-11T10:02:15.439Z",
-      "updatedAt": "2026-11-11T10:02:15.439Z"
+      "createdAt": "2026-11-11T10:50:02.755Z",
+      "updatedAt": "2026-11-11T10:50:02.755Z"
     },
     {
       "id": "cat-protection",
@@ -599,8 +599,8 @@
       "displayOrder": 4,
       "published": true,
       "isPublished": true,
-      "createdAt": "2026-11-11T10:02:15.439Z",
-      "updatedAt": "2026-11-11T10:02:15.439Z"
+      "createdAt": "2026-11-11T10:50:02.755Z",
+      "updatedAt": "2026-11-11T10:50:02.755Z"
     },
     {
       "id": "cat-irrigation",
@@ -613,8 +613,8 @@
       "displayOrder": 5,
       "published": true,
       "isPublished": true,
-      "createdAt": "2026-11-11T10:02:15.439Z",
-      "updatedAt": "2026-11-11T10:02:15.439Z"
+      "createdAt": "2026-11-11T10:50:02.755Z",
+      "updatedAt": "2026-11-11T10:50:02.755Z"
     },
     {
       "id": "cat-tools",
@@ -627,8 +627,8 @@
       "displayOrder": 6,
       "published": true,
       "isPublished": true,
-      "createdAt": "2026-11-11T10:02:15.439Z",
-      "updatedAt": "2026-11-11T10:02:15.439Z"
+      "createdAt": "2026-11-11T10:50:02.755Z",
+      "updatedAt": "2026-11-11T10:50:02.755Z"
     },
     {
       "id": "subcat-weeders-tillers",
@@ -641,8 +641,8 @@
       "displayOrder": 11,
       "published": true,
       "isPublished": true,
-      "createdAt": "2026-11-11T10:02:15.439Z",
-      "updatedAt": "2026-11-11T10:02:15.439Z"
+      "createdAt": "2026-11-11T10:50:02.755Z",
+      "updatedAt": "2026-11-11T10:50:02.755Z"
     },
     {
       "id": "subcat-sprayers",
@@ -655,8 +655,8 @@
       "displayOrder": 12,
       "published": true,
       "isPublished": true,
-      "createdAt": "2026-11-11T10:02:15.439Z",
-      "updatedAt": "2026-11-11T10:02:15.439Z"
+      "createdAt": "2026-11-11T10:50:02.755Z",
+      "updatedAt": "2026-11-11T10:50:02.755Z"
     },
     {
       "id": "subcat-cereal-seeds",
@@ -669,8 +669,8 @@
       "displayOrder": 21,
       "published": true,
       "isPublished": true,
-      "createdAt": "2026-11-11T10:02:15.439Z",
-      "updatedAt": "2026-11-11T10:02:15.439Z"
+      "createdAt": "2026-11-11T10:50:02.755Z",
+      "updatedAt": "2026-11-11T10:50:02.755Z"
     },
     {
       "id": "subcat-vegetable-seeds",
@@ -683,8 +683,8 @@
       "displayOrder": 22,
       "published": true,
       "isPublished": true,
-      "createdAt": "2026-11-11T10:02:15.439Z",
-      "updatedAt": "2026-11-11T10:02:15.439Z"
+      "createdAt": "2026-11-11T10:50:02.755Z",
+      "updatedAt": "2026-11-11T10:50:02.755Z"
     },
     {
       "id": "subcat-bio-fertilizers",
@@ -697,8 +697,8 @@
       "displayOrder": 31,
       "published": true,
       "isPublished": true,
-      "createdAt": "2026-11-11T10:02:15.439Z",
-      "updatedAt": "2026-11-11T10:02:15.439Z"
+      "createdAt": "2026-11-11T10:50:02.755Z",
+      "updatedAt": "2026-11-11T10:50:02.755Z"
     },
     {
       "id": "subcat-soil-conditioners",
@@ -711,8 +711,8 @@
       "displayOrder": 32,
       "published": true,
       "isPublished": true,
-      "createdAt": "2026-11-11T10:02:15.439Z",
-      "updatedAt": "2026-11-11T10:02:15.439Z"
+      "createdAt": "2026-11-11T10:50:02.755Z",
+      "updatedAt": "2026-11-11T10:50:02.755Z"
     },
     {
       "id": "subcat-bio-insecticides",
@@ -725,8 +725,8 @@
       "displayOrder": 41,
       "published": true,
       "isPublished": true,
-      "createdAt": "2026-11-11T10:02:15.439Z",
-      "updatedAt": "2026-11-11T10:02:15.439Z"
+      "createdAt": "2026-11-11T10:50:02.755Z",
+      "updatedAt": "2026-11-11T10:50:02.755Z"
     },
     {
       "id": "subcat-pest-traps",
@@ -739,8 +739,8 @@
       "displayOrder": 42,
       "published": true,
       "isPublished": true,
-      "createdAt": "2026-11-11T10:02:15.439Z",
-      "updatedAt": "2026-11-11T10:02:15.439Z"
+      "createdAt": "2026-11-11T10:50:02.755Z",
+      "updatedAt": "2026-11-11T10:50:02.755Z"
     },
     {
       "id": "subcat-drip-fertigation",
@@ -753,8 +753,8 @@
       "displayOrder": 51,
       "published": true,
       "isPublished": true,
-      "createdAt": "2026-11-11T10:02:15.439Z",
-      "updatedAt": "2026-11-11T10:02:15.439Z"
+      "createdAt": "2026-11-11T10:50:02.755Z",
+      "updatedAt": "2026-11-11T10:50:02.755Z"
     },
     {
       "id": "subcat-sprinklers-pipes",
@@ -767,8 +767,8 @@
       "displayOrder": 52,
       "published": true,
       "isPublished": true,
-      "createdAt": "2026-11-11T10:02:15.439Z",
-      "updatedAt": "2026-11-11T10:02:15.439Z"
+      "createdAt": "2026-11-11T10:50:02.755Z",
+      "updatedAt": "2026-11-11T10:50:02.755Z"
     },
     {
       "id": "subcat-harvest-storage",
@@ -781,8 +781,8 @@
       "displayOrder": 61,
       "published": true,
       "isPublished": true,
-      "createdAt": "2026-11-11T10:02:15.439Z",
-      "updatedAt": "2026-11-11T10:02:15.439Z"
+      "createdAt": "2026-11-11T10:50:02.755Z",
+      "updatedAt": "2026-11-11T10:50:02.755Z"
     },
     {
       "id": "subcat-machinery-spares",
@@ -795,8 +795,8 @@
       "displayOrder": 62,
       "published": true,
       "isPublished": true,
-      "createdAt": "2026-11-11T10:02:15.439Z",
-      "updatedAt": "2026-11-11T10:02:15.439Z"
+      "createdAt": "2026-11-11T10:50:02.755Z",
+      "updatedAt": "2026-11-11T10:50:02.755Z"
     }
   ],
   "products": [

@@ -64,8 +64,9 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
     notFound();
   }
 
+  // Match by categoryId OR by category name (supports both old and new slugs)
   const categoryProducts = SEED_PRODUCTS.filter(
-    (p) => p.categoryId === category.id || p.category.toLowerCase().includes(category.name.toLowerCase().slice(0, 5))
+    (p) => p.categoryId === category.id || (p as any).category === category.name
   );
 
   const breadcrumbsListJsonLd = {

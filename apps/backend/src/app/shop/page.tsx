@@ -21,8 +21,7 @@ export default function ShopPage() {
   const [loading, setLoading] = useState(false);
 
   const [selectedCategory, setSelectedCategory] = useState<string>('ALL');
-  const [selectedCrop, setSelectedCrop] = useState<string>('ALL');
-  const [selectedStage, setSelectedStage] = useState<string>('ALL');
+  const [selectedBrand, setSelectedBrand] = useState<string>('ALL');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [sortBy, setSortBy] = useState<string>('popular');
 
@@ -55,20 +54,17 @@ export default function ShopPage() {
   const filteredProducts = useMemo(() => {
     return products.filter((p) => {
       if (selectedCategory !== 'ALL' && p.categoryId !== selectedCategory) return false;
-      if (selectedCrop !== 'ALL' && !p.targetCrops?.toLowerCase().includes(selectedCrop.toLowerCase())) return false;
-      if (selectedStage !== 'ALL') {
-        const stages = typeof p.cropStages === 'string'
-          ? p.cropStages.split(',').map((s: string) => Number(s.trim()))
-          : p.cropStages || [];
-        if (!stages.includes(Number(selectedStage))) return false;
-      }
+      if (selectedBrand !== 'ALL' && (p.brand || p.brandName) !== selectedBrand) return false;
       if (searchQuery.trim()) {
         const q = searchQuery.toLowerCase();
         const matchName = p.name.toLowerCase().includes(q) || (p.nameKn && p.nameKn.toLowerCase().includes(q));
         const matchDesc = p.description?.toLowerCase().includes(q);
         const matchCat = p.category?.toLowerCase().includes(q);
         const matchSku = p.sku?.toLowerCase().includes(q);
-        if (!matchName && !matchDesc && !matchCat && !matchSku) return false;
+        const matchRipl = p.riplCode?.toLowerCase().includes(q);
+        const matchBrand = (p.brand || p.brandName)?.toLowerCase().includes(q);
+        const matchModel = p.modelNumber?.toLowerCase().includes(q);
+        if (!matchName && !matchDesc && !matchCat && !matchSku && !matchRipl && !matchBrand && !matchModel) return false;
       }
       return true;
     }).sort((a, b) => {
@@ -77,7 +73,7 @@ export default function ShopPage() {
       if (sortBy === 'rating') return (b.rating || 5) - (a.rating || 5);
       return (b.reviewsCount || 0) - (a.reviewsCount || 0);
     });
-  }, [products, selectedCategory, selectedCrop, selectedStage, searchQuery, sortBy]);
+  }, [products, selectedCategory, selectedBrand, searchQuery, sortBy]);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6 text-xs">
@@ -119,12 +115,11 @@ export default function ShopPage() {
             <h3 className="font-extrabold text-sm text-slate-900 flex items-center gap-2">
               <Filter className="w-4 h-4 text-agri-green" /> Filters
             </h3>
-            {(selectedCategory !== 'ALL' || selectedCrop !== 'ALL' || selectedStage !== 'ALL' || searchQuery) && (
+            {(selectedCategory !== 'ALL' || selectedBrand !== 'ALL' || searchQuery) && (
               <button
                 onClick={() => {
                   setSelectedCategory('ALL');
-                  setSelectedCrop('ALL');
-                  setSelectedStage('ALL');
+                  setSelectedBrand('ALL');
                   setSearchQuery('');
                 }}
                 className="text-[11px] text-agri-green font-bold hover:underline"
@@ -163,58 +158,66 @@ export default function ShopPage() {
               >
                 All Categories ({products.length})
               </button>
-              {categories.map((cat) => (
-                <button
-                  key={cat.id}
-                  onClick={() => setSelectedCategory(cat.id)}
-                  className={`w-full text-left px-3 py-2 rounded-xl text-xs transition ${
-                    selectedCategory === cat.id
-                      ? 'bg-agri-pale text-agri-green-dark font-extrabold'
-                      : 'text-slate-600 hover:bg-slate-50'
-                  }`}
-                >
-                  {cat.name}
-                </button>
-              ))}
+              {categories.map((cat) => {
+                const count = products.filter((p) => p.categoryId === cat.id).length;
+                return (
+                  <button
+                    key={cat.id}
+                    onClick={() => setSelectedCategory(cat.id)}
+                    className={`w-full text-left px-3 py-2 rounded-xl text-xs transition flex items-center justify-between ${
+                      selectedCategory === cat.id
+                        ? 'bg-agri-pale text-agri-green-dark font-extrabold'
+                        : 'text-slate-600 hover:bg-slate-50'
+                    }`}
+                  >
+                    <span>{cat.name}</span>
+                    {count > 0 && (
+                      <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${selectedCategory === cat.id ? 'bg-agri-green text-white' : 'bg-slate-100 text-slate-500'}`}>
+                        {count}
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
             </div>
           </div>
 
-          {/* Target Crop Filter */}
+          {/* Brand Filter */}
           <div className="space-y-2">
-            <label className="font-bold text-slate-800 text-xs">Suitability by Crop</label>
-            <select
-              value={selectedCrop}
-              onChange={(e) => setSelectedCrop(e.target.value)}
-              className="w-full p-2.5 border border-slate-200 rounded-xl text-xs focus:ring-1 focus:ring-agri-green outline-none"
-            >
-              <option value="ALL">All Crops</option>
-              <option value="Paddy">Paddy / Rice</option>
-              <option value="Cotton">Cotton</option>
-              <option value="Sugarcane">Sugarcane</option>
-              <option value="Maize">Maize</option>
-              <option value="Tomato">Tomato / Vegetables</option>
-              <option value="Chili">Chili (Byadgi)</option>
-              <option value="Wheat">Wheat</option>
-            </select>
-          </div>
-
-          {/* Farming Stage Filter */}
-          <div className="space-y-2">
-            <label className="font-bold text-slate-800 text-xs">7-Stage Crop Journey</label>
-            <select
-              value={selectedStage}
-              onChange={(e) => setSelectedStage(e.target.value)}
-              className="w-full p-2.5 border border-slate-200 rounded-xl text-xs focus:ring-1 focus:ring-agri-green outline-none"
-            >
-              <option value="ALL">All Stages (1–7)</option>
-              <option value="1">Stage 1: Preparation of Soil</option>
-              <option value="2">Stage 2: Sowing &amp; Seed Treatment</option>
-              <option value="3">Stage 3: Manure &amp; Fertilizers</option>
-              <option value="4">Stage 4: Irrigation</option>
-              <option value="5">Stage 5: Weed &amp; Pest Protection</option>
-              <option value="6">Stage 6: Harvesting &amp; Threshing</option>
-              <option value="7">Stage 7: Storage &amp; Quality Care</option>
-            </select>
+            <label className="font-bold text-slate-800 text-xs">Brand</label>
+            <div className="space-y-1">
+              <button
+                onClick={() => setSelectedBrand('ALL')}
+                className={`w-full text-left px-3 py-2 rounded-xl text-xs transition ${
+                  selectedBrand === 'ALL'
+                    ? 'bg-agri-pale text-agri-green-dark font-extrabold'
+                    : 'text-slate-600 hover:bg-slate-50'
+                }`}
+              >
+                All Brands ({products.length})
+              </button>
+              {[...new Set(products.map((p: any) => p.brand || p.brandName).filter(Boolean))].sort().map((brand: any) => {
+                const count = products.filter((p: any) => (p.brand || p.brandName) === brand).length;
+                return (
+                  <button
+                    key={brand}
+                    onClick={() => setSelectedBrand(brand)}
+                    className={`w-full text-left px-3 py-2 rounded-xl text-xs transition flex items-center justify-between ${
+                      selectedBrand === brand
+                        ? 'bg-agri-pale text-agri-green-dark font-extrabold'
+                        : 'text-slate-600 hover:bg-slate-50'
+                    }`}
+                  >
+                    <span>{brand}</span>
+                    {count > 0 && (
+                      <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${selectedBrand === brand ? 'bg-agri-green text-white' : 'bg-slate-100 text-slate-500'}`}>
+                        {count}
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </div>
 

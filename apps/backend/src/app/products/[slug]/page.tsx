@@ -14,6 +14,10 @@ import {
   ArrowRight,
   CheckCircle2,
   MessageSquare,
+  FileText,
+  Download,
+  Video,
+  Wrench,
 } from 'lucide-react';
 import ProductCard from '@/components/shop/ProductCard';
 import ProductDetailClient from '@/components/shop/ProductDetailClient';
@@ -105,20 +109,27 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
         id: `var-${fallbackProduct.id}-1`,
         productId: fallbackProduct.id,
         sku: fallbackProduct.sku,
-        title: 'Standard Pack',
-        variantName: 'Standard',
+        riplCode: (fallbackProduct as any).riplCode,
+        title: (fallbackProduct as any).modelNumber || 'Standard Pack',
+        variantName: (fallbackProduct as any).variantLabel || 'Standard',
         price: fallbackProduct.price,
         comparePrice: fallbackProduct.comparePrice,
         isDefault: true,
         stockQuantity: fallbackProduct.stock,
       },
     ],
-    specifications: Object.entries(fallbackProduct.specifications).map(([name, value], i) => ({
-      group: 'General',
-      name,
-      value: String(value),
-      displayOrder: i,
-    })),
+    specifications: Array.isArray((fallbackProduct as any).specifications)
+      ? (fallbackProduct as any).specifications
+      : Object.entries(fallbackProduct.specifications || {}).map(([name, value], i) => ({
+          group: 'General',
+          name,
+          value: String(value),
+          displayOrder: i,
+        })),
+    brochures: (fallbackProduct as any).brochures || [],
+    videos: (fallbackProduct as any).videos || [],
+    accessoriesInfo: (fallbackProduct as any).accessoriesInfo || '',
+    descriptionHtml: (fallbackProduct as any).descriptionHtml,
     reviews: [
       {
         id: 'rev-01',
@@ -221,9 +232,16 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
           {/* Description Box */}
           <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-3">
             <h3 className="font-extrabold text-sm text-slate-900">Agronomic Overview &amp; Description</h3>
-            <p className="text-slate-600 leading-relaxed text-xs">
-              {product.description}
-            </p>
+            {product.descriptionHtml ? (
+              <div
+                className="text-slate-600 leading-relaxed text-xs space-y-2 [&>ul]:list-disc [&>ul]:pl-5 [&>ol]:list-decimal [&>ol]:pl-5 [&>p]:mb-2"
+                dangerouslySetInnerHTML={{ __html: product.descriptionHtml }}
+              />
+            ) : (
+              <p className="text-slate-600 leading-relaxed text-xs whitespace-pre-line">
+                {product.description}
+              </p>
+            )}
           </div>
         </div>
 
@@ -246,6 +264,117 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
                 <span className="text-slate-900 font-bold text-right">{spec.value}</span>
               </div>
             ))}
+          </div>
+        </div>
+      )}
+
+      {/* Genuine Attachments & Accessories */}
+      {product.accessoriesInfo && (
+        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-4">
+          <h2 className="text-base font-extrabold text-slate-900 border-b border-slate-100 pb-3 flex items-center gap-2">
+            <Wrench className="w-5 h-5 text-agri-green" />
+            <span>Compatible Genuine Attachments &amp; Accessories</span>
+          </h2>
+          <div className="text-slate-700 text-xs whitespace-pre-line leading-relaxed bg-slate-50 p-4 rounded-2xl border border-slate-100 font-medium">
+            {product.accessoriesInfo}
+          </div>
+        </div>
+      )}
+
+      {/* Official Brochures & Operating Manuals */}
+      {product.brochures && product.brochures.length > 0 && (
+        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-4">
+          <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+            <div>
+              <h2 className="text-base font-extrabold text-slate-900 flex items-center gap-2">
+                <FileText className="w-5 h-5 text-rose-600" />
+                <span>Brochures, Spec Sheets &amp; Operating Manuals</span>
+              </h2>
+              <p className="text-xs text-slate-500 mt-0.5">
+                Official manufacturer technical leaflets, maintenance diagrams &amp; user manuals.
+              </p>
+            </div>
+            <span className="text-[11px] font-bold text-slate-600 bg-slate-100 px-3 py-1 rounded-full border border-slate-200">
+              {product.brochures.length} Document{product.brochures.length > 1 ? 's' : ''}
+            </span>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">
+            {product.brochures.map((b: any, idx: number) => (
+              <a
+                key={idx}
+                href={b.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group p-4 rounded-2xl border border-slate-200 hover:border-agri-green bg-slate-50 hover:bg-emerald-50/50 transition flex items-center justify-between gap-3 shadow-2xs"
+              >
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="w-10 h-10 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center shrink-0">
+                    <FileText className="w-5 h-5" />
+                  </div>
+                  <div className="min-w-0">
+                    <div className="font-bold text-xs text-slate-900 group-hover:text-agri-green truncate">
+                      {b.label || b.fileName || `Product Leaflet #${idx + 1}`}
+                    </div>
+                    <div className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold">
+                      PDF Document &bull; Official Manufacturer Catalog
+                    </div>
+                  </div>
+                </div>
+                <span className="shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white group-hover:bg-agri-green group-hover:text-white border border-slate-200 group-hover:border-agri-green text-slate-700 text-xs font-bold transition">
+                  <Download className="w-3.5 h-3.5" />
+                  <span>Download</span>
+                </span>
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Video Demonstrations */}
+      {product.videos && product.videos.length > 0 && (
+        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-4">
+          <div className="border-b border-slate-100 pb-3">
+            <h2 className="text-base font-extrabold text-slate-900 flex items-center gap-2">
+              <Video className="w-5 h-5 text-emerald-600" />
+              <span>Video Demonstration &amp; Field Operations</span>
+            </h2>
+            <p className="text-xs text-slate-500 mt-0.5">
+              Watch real field operations, start-up procedures, and maintenance guides.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+            {product.videos.map((v: any, idx: number) => {
+              const isYouTube = v.type === 'youtube' || (typeof v.url === 'string' && (v.url.includes('youtube.com') || v.url.includes('youtu.be')));
+              const ytId = isYouTube ? (v.url.match(/(?:embed\/|v=|vi\/|youtu\.be\/|\/v\/)([^&?/\s]+)/) || [])[1] : null;
+              const embedSrc = ytId ? `https://www.youtube-nocookie.com/embed/${ytId}` : v.url;
+
+              return (
+                <div key={idx} className="rounded-2xl overflow-hidden border border-slate-200 bg-slate-950 shadow-sm flex flex-col">
+                  {isYouTube ? (
+                    <iframe
+                      src={embedSrc}
+                      title={`${product.name} Video ${idx + 1}`}
+                      className="w-full aspect-video border-0"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                    />
+                  ) : (
+                    <video
+                      controls
+                      preload="metadata"
+                      className="w-full aspect-video bg-black"
+                      src={v.url}
+                    >
+                      Your browser does not support HTML5 video.
+                    </video>
+                  )}
+                  <div className="p-3 bg-slate-900 text-white text-[11px] font-semibold flex items-center justify-between">
+                    <span className="truncate">{v.fileName || `${product.name} Field Demo`}</span>
+                    <span className="text-emerald-400 font-bold uppercase text-[10px] tracking-wider shrink-0 ml-2">Video #{idx + 1}</span>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       )}
