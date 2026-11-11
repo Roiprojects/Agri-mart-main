@@ -22,7 +22,6 @@ export default function ShopPage() {
 
   const [selectedCategory, setSelectedCategory] = useState<string>('ALL');
   const [selectedCrop, setSelectedCrop] = useState<string>('ALL');
-  const [selectedStage, setSelectedStage] = useState<string>('ALL');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [sortBy, setSortBy] = useState<string>('popular');
 
@@ -56,12 +55,6 @@ export default function ShopPage() {
     return products.filter((p) => {
       if (selectedCategory !== 'ALL' && p.categoryId !== selectedCategory) return false;
       if (selectedCrop !== 'ALL' && !p.targetCrops?.toLowerCase().includes(selectedCrop.toLowerCase())) return false;
-      if (selectedStage !== 'ALL') {
-        const stages = typeof p.cropStages === 'string'
-          ? p.cropStages.split(',').map((s: string) => Number(s.trim()))
-          : p.cropStages || [];
-        if (!stages.includes(Number(selectedStage))) return false;
-      }
       if (searchQuery.trim()) {
         const q = searchQuery.toLowerCase();
         const matchName = p.name.toLowerCase().includes(q) || (p.nameKn && p.nameKn.toLowerCase().includes(q));
@@ -80,7 +73,7 @@ export default function ShopPage() {
       if (sortBy === 'rating') return (b.rating || 5) - (a.rating || 5);
       return (b.reviewsCount || 0) - (a.reviewsCount || 0);
     });
-  }, [products, selectedCategory, selectedCrop, selectedStage, searchQuery, sortBy]);
+  }, [products, selectedCategory, selectedCrop, searchQuery, sortBy]);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6 text-xs">
@@ -122,12 +115,11 @@ export default function ShopPage() {
             <h3 className="font-extrabold text-sm text-slate-900 flex items-center gap-2">
               <Filter className="w-4 h-4 text-agri-green" /> Filters
             </h3>
-            {(selectedCategory !== 'ALL' || selectedCrop !== 'ALL' || selectedStage !== 'ALL' || searchQuery) && (
+            {(selectedCategory !== 'ALL' || selectedCrop !== 'ALL' || searchQuery) && (
               <button
                 onClick={() => {
                   setSelectedCategory('ALL');
                   setSelectedCrop('ALL');
-                  setSelectedStage('ALL');
                   setSearchQuery('');
                 }}
                 className="text-[11px] text-agri-green font-bold hover:underline"
@@ -166,19 +158,27 @@ export default function ShopPage() {
               >
                 All Categories ({products.length})
               </button>
-              {categories.map((cat) => (
-                <button
-                  key={cat.id}
-                  onClick={() => setSelectedCategory(cat.id)}
-                  className={`w-full text-left px-3 py-2 rounded-xl text-xs transition ${
-                    selectedCategory === cat.id
-                      ? 'bg-agri-pale text-agri-green-dark font-extrabold'
-                      : 'text-slate-600 hover:bg-slate-50'
-                  }`}
-                >
-                  {cat.name}
-                </button>
-              ))}
+              {categories.map((cat) => {
+                const count = products.filter((p) => p.categoryId === cat.id).length;
+                return (
+                  <button
+                    key={cat.id}
+                    onClick={() => setSelectedCategory(cat.id)}
+                    className={`w-full text-left px-3 py-2 rounded-xl text-xs transition flex items-center justify-between ${
+                      selectedCategory === cat.id
+                        ? 'bg-agri-pale text-agri-green-dark font-extrabold'
+                        : 'text-slate-600 hover:bg-slate-50'
+                    }`}
+                  >
+                    <span>{cat.name}</span>
+                    {count > 0 && (
+                      <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${selectedCategory === cat.id ? 'bg-agri-green text-white' : 'bg-slate-100 text-slate-500'}`}>
+                        {count}
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
             </div>
           </div>
 
@@ -201,24 +201,6 @@ export default function ShopPage() {
             </select>
           </div>
 
-          {/* Farming Stage Filter */}
-          <div className="space-y-2">
-            <label className="font-bold text-slate-800 text-xs">7-Stage Crop Journey</label>
-            <select
-              value={selectedStage}
-              onChange={(e) => setSelectedStage(e.target.value)}
-              className="w-full p-2.5 border border-slate-200 rounded-xl text-xs focus:ring-1 focus:ring-agri-green outline-none"
-            >
-              <option value="ALL">All Stages (1–7)</option>
-              <option value="1">Stage 1: Preparation of Soil</option>
-              <option value="2">Stage 2: Sowing &amp; Seed Treatment</option>
-              <option value="3">Stage 3: Manure &amp; Fertilizers</option>
-              <option value="4">Stage 4: Irrigation</option>
-              <option value="5">Stage 5: Weed &amp; Pest Protection</option>
-              <option value="6">Stage 6: Harvesting &amp; Threshing</option>
-              <option value="7">Stage 7: Storage &amp; Quality Care</option>
-            </select>
-          </div>
         </div>
 
         {/* Products Grid */}
