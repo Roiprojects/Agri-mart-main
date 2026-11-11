@@ -2386,6 +2386,25 @@ class PersistentDevDatabase {
       this.data = getInitialData();
       this.save();
     }
+    this.clearStorefrontCatalogueOnce();
+  }
+
+  /**
+   * One-time reset: removes every existing shop product (and its variants, media,
+   * specifications and warehouse stock) so the catalogue can be re-imported from a new source.
+   * Products created afterwards via Admin are kept because the flag stays set.
+   */
+  private clearStorefrontCatalogueOnce() {
+    const anyData = this.data as any;
+    if (anyData.catalogueResetV1) return;
+    this.data.products = [];
+    this.data.variants = [];
+    this.data.media = [];
+    this.data.specifications = [];
+    this.data.warehouseStocks = [];
+    if (Array.isArray(anyData.stockReservations)) anyData.stockReservations = [];
+    anyData.catalogueResetV1 = new Date().toISOString();
+    this.save();
   }
 
   private ensureCategoriesAndProductsEnriched(defaults: DevDatabaseData) {

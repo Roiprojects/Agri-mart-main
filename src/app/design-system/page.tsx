@@ -26,7 +26,7 @@ import {
 } from '@/components/ui';
 import ProductCard from '@/components/shop/ProductCard';
 import ServiceCard from '@/components/services/ServiceCard';
-import { SEED_PRODUCTS } from '@/lib/seed-data';
+import { SEED_PRODUCTS, DEMO_SAMPLE_PRODUCTS } from '@/lib/seed-data';
 import {
   Sparkles,
   CheckCircle2,
@@ -57,7 +57,7 @@ export default function DesignSystemPage() {
     landAcreage: '4.5',
   });
 
-  const sampleProduct = SEED_PRODUCTS[0];
+  const sampleProduct = SEED_PRODUCTS[0] || DEMO_SAMPLE_PRODUCTS[0];
 
   const sampleService = {
     id: 'srv-plough',

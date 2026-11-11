@@ -1,4 +1,4 @@
-﻿import { SEED_PRODUCTS, ProductType } from './seed-data';
+import { SEED_PRODUCTS, ProductType } from './seed-data';
 
 export interface QuestionnaireInput {
   crop: string;
@@ -54,10 +54,11 @@ export function generateFarmerRecommendations(input: QuestionnaireInput): Recomm
     (p) => p.categoryId === 'cat-seeds' && p.targetCrops.includes(input.crop)
   );
 
-  const comboFertilizer = matchingFertilizers[0] || allProducts.find((p) => p.categoryId === 'cat-fertilizers')!;
-  const comboPest = matchingProtection[0] || allProducts.find((p) => p.categoryId === 'cat-protection')!;
-  const comboOriginal = comboFertilizer.price + comboPest.price;
+  const comboFertilizer = matchingFertilizers[0] || allProducts.find((p) => p.categoryId === 'cat-fertilizers');
+  const comboPest = matchingProtection[0] || allProducts.find((p) => p.categoryId === 'cat-protection');
+  const comboOriginal = (comboFertilizer?.price || 0) + (comboPest?.price || 0);
   const comboBundle = Math.round(comboOriginal * 0.88);
+  const fallback = (p?: ProductType) => (p ? [p] : []);
 
   const stageNames = [
     '',
@@ -83,20 +84,23 @@ export function generateFarmerRecommendations(input: QuestionnaireInput): Recomm
 
   return {
     summary: 'AI Agronomy Plan generated for ' + input.acreage + ' Acres of ' + input.crop + ' in ' + input.location + ' (' + input.soilType + ' Soil - Stage ' + input.farmingStage + ')',
-    fertilizers: matchingFertilizers.length > 0 ? matchingFertilizers : [allProducts[2]],
-    pestProtection: matchingProtection.length > 0 ? matchingProtection : [allProducts[4]],
-    equipment: matchingEquipment.length > 0 ? matchingEquipment : [allProducts[1]],
-    seeds: matchingSeeds.length > 0 ? matchingSeeds : [allProducts[3]],
-    recommendedCombos: [
-      {
-        title: input.crop + ' Stage ' + input.farmingStage + ' Green Care Power Combo',
-        description: 'Synergistic combination of ' + comboFertilizer.name + ' with ' + comboPest.name + ' for combined nutrient feeding and systemic immunity.',
-        items: [comboFertilizer, comboPest],
-        originalPrice: comboOriginal,
-        bundlePrice: comboBundle,
-        savings: comboOriginal - comboBundle,
-      },
-    ],
+    fertilizers: matchingFertilizers.length > 0 ? matchingFertilizers : fallback(allProducts[2]),
+    pestProtection: matchingProtection.length > 0 ? matchingProtection : fallback(allProducts[4]),
+    equipment: matchingEquipment.length > 0 ? matchingEquipment : fallback(allProducts[1]),
+    seeds: matchingSeeds.length > 0 ? matchingSeeds : fallback(allProducts[3]),
+    recommendedCombos:
+      comboFertilizer && comboPest
+        ? [
+            {
+              title: input.crop + ' Stage ' + input.farmingStage + ' Green Care Power Combo',
+              description: 'Synergistic combination of ' + comboFertilizer.name + ' with ' + comboPest.name + ' for combined nutrient feeding and systemic immunity.',
+              items: [comboFertilizer, comboPest],
+              originalPrice: comboOriginal,
+              bundlePrice: comboBundle,
+              savings: comboOriginal - comboBundle,
+            },
+          ]
+        : [],
     agronomistAdvice: adviceList,
   };
 }

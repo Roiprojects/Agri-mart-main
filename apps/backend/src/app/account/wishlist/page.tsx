@@ -28,7 +28,7 @@ export default function WishlistPage() {
   ];
 
   // Saved items preview from seed data
-  const wishlistItems = [SEED_PRODUCTS[0], SEED_PRODUCTS[2], SEED_PRODUCTS[5]];
+  const wishlistItems = [SEED_PRODUCTS[0], SEED_PRODUCTS[2], SEED_PRODUCTS[5]].filter(Boolean);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">

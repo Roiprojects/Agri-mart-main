@@ -204,7 +204,11 @@ export const SEED_CATEGORIES = [
   },
 ];
 
-export const SEED_PRODUCTS: ProductType[] = [
+// Storefront catalogue is intentionally empty — products will be imported from the new source later.
+export const SEED_PRODUCTS: ProductType[] = [];
+
+// Sample-only data used by the internal design-system showcase (NOT shown in the shop).
+export const DEMO_SAMPLE_PRODUCTS: ProductType[] = [
   {
     id: 'prod-001',
     name: 'AgriPro 7HP Heavy-Duty Multi-Speed Power Weeder (Petrol Engine)',
