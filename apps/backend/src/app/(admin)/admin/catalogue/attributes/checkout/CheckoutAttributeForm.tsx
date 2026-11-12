@@ -540,29 +540,6 @@ export function CheckoutAttributeForm({
                     </select>
                   </div>
                 </div>
-
-                {/* Limited to stores field */}
-                <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2 pt-1">
-                  <div className="sm:col-span-3 flex items-center justify-start sm:justify-end font-medium text-slate-700">
-                    <span>Limited to stores</span>
-                    <Tooltip text="Determines whether the attribute is available only for specific stores." />
-                  </div>
-                  <div className="sm:col-span-9 flex flex-col md:flex-row items-start md:items-center gap-3">
-                    <input
-                      type="text"
-                      value={limitedToStores}
-                      onChange={(e) => setLimitedToStores(e.target.value)}
-                      placeholder=""
-                      className="w-full md:w-64 text-xs px-2.5 py-1.5 rounded border border-[#d2d6de] bg-white focus:border-[#3c8dbc] outline-none text-slate-700"
-                    />
-                    <div className="p-2.5 rounded border border-[#d2d6de] bg-slate-50/90 text-slate-600 text-xs leading-relaxed flex-1">
-                      In order to use this functionality, you have to disable the following setting:{' '}
-                      <span className="font-semibold text-slate-700">
-                        Catalog settings &gt; Ignore &quot;limit per store&quot; rules.
-                      </span>
-                    </div>
-                  </div>
-                </div>
               </>
             )}
           </div>

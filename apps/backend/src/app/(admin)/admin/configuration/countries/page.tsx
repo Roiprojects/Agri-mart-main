@@ -840,26 +840,6 @@ export default function CountriesPage() {
                 </div>
               </div>
 
-              {/* 8. Limited to stores with helper note */}
-              <div className="grid grid-cols-1 md:grid-cols-12 gap-y-2 md:gap-x-4 items-center">
-                <div className="md:col-span-3 flex items-center justify-start md:justify-end gap-1.5 text-right font-medium text-slate-700 text-xs">
-                  <span>Limited to stores</span>
-                  <HelpTooltip text="Determines whether the country is limited to certain stores." />
-                </div>
-                <div className="md:col-span-9 flex flex-col sm:flex-row items-start sm:items-center gap-3">
-                  <input
-                    type="text"
-                    value={formLimitedToStores}
-                    onChange={(e) => setFormLimitedToStores(e.target.value)}
-                    placeholder="All stores"
-                    className="w-full sm:w-1/2 border border-slate-300 rounded px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:ring-1 focus:ring-blue-500 shadow-2xs"
-                  />
-                  <span className="text-[11px] text-slate-500 leading-snug">
-                    In order to use this functionality, you have to disable the following setting: Catalog settings &gt; Ignore &quot;limit per store&quot; rules.
-                  </span>
-                </div>
-              </div>
-
               {/* 9. Published */}
               <div className="grid grid-cols-1 md:grid-cols-12 gap-y-2 md:gap-x-4 items-center">
                 <div className="md:col-span-3 flex items-center justify-start md:justify-end gap-1.5 text-right font-medium text-slate-700 text-xs">

@@ -1094,54 +1094,6 @@ export function ManufacturerForm({
                     </div>
                   </div>
                 </div>
-
-                {/* Limited to customer roles */}
-                <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
-                  <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
-                    <span>Limited to customer roles</span>
-                    <Tooltip text="Select customer roles that can view this manufacturer. Leave empty for all." />
-                  </div>
-                  <div className="sm:col-span-9">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 items-center">
-                      <div className="relative">
-                        <input
-                          type="text"
-                          placeholder=""
-                          value={formData.customerRoles || ''}
-                          onChange={(e) => handleChange('customerRoles', e.target.value)}
-                          className="w-full text-xs px-2.5 py-1.5 rounded border border-[#d2d6de] bg-white focus:border-[#3c8dbc] outline-none text-slate-700 h-9"
-                        />
-                      </div>
-                      <div className="bg-[#f4f4f4] border border-[#d2d6de] rounded-xs px-3 py-2 text-xs text-slate-700 shadow-2xs">
-                        In order to use this functionality, you have to disable the following setting: Catalog settings &gt; Ignore ACL rules.
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Limited to stores */}
-                <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
-                  <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
-                    <span>Limited to stores</span>
-                    <Tooltip text="Select stores in which this manufacturer is available. Leave empty for all stores." />
-                  </div>
-                  <div className="sm:col-span-9">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 items-center">
-                      <div className="relative">
-                        <input
-                          type="text"
-                          placeholder=""
-                          value={formData.limitedToStores || ''}
-                          onChange={(e) => handleChange('limitedToStores', e.target.value)}
-                          className="w-full text-xs px-2.5 py-1.5 rounded border border-[#d2d6de] bg-white focus:border-[#3c8dbc] outline-none text-slate-700 h-9"
-                        />
-                      </div>
-                      <div className="bg-[#f4f4f4] border border-[#d2d6de] rounded-xs px-3 py-2 text-xs text-slate-700 shadow-2xs">
-                        In order to use this functionality, you have to disable the following setting: Catalog settings &gt; Ignore &quot;limit per store&quot; rules.
-                      </div>
-                    </div>
-                  </div>
-                </div>
               </div>
             )}
           </div>

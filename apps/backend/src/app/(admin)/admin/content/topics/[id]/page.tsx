@@ -705,46 +705,6 @@ export default function EditTopicPage() {
                   </div>
                 </div>
 
-                {/* 6. Limited to customer roles */}
-                <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
-                  <div className="md:col-span-3 flex items-center justify-start md:justify-end gap-1.5 text-xs font-semibold text-slate-700">
-                    <span>Limited to customer roles</span>
-                    <HelpTooltip text="Determines whether the topic is available only to certain customer roles." />
-                  </div>
-                  <div className="md:col-span-9 flex flex-col sm:flex-row items-start sm:items-center gap-3">
-                    <input
-                      type="text"
-                      value={limitedToCustomerRoles}
-                      onChange={(e) => setLimitedToCustomerRoles(e.target.value)}
-                      placeholder=""
-                      className="w-full sm:w-72 border border-[#d2d6de] focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none rounded-xs px-2.5 py-1.5 text-xs text-slate-800 bg-white"
-                    />
-                    <div className="bg-[#f4f4f4] border border-[#d2d6de] rounded p-2.5 text-xs text-slate-700 shadow-2xs flex-1">
-                      In order to use this functionality, you have to disable the following setting: Catalog settings &gt; Ignore ACL rules.
-                    </div>
-                  </div>
-                </div>
-
-                {/* 7. Limited to stores */}
-                <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
-                  <div className="md:col-span-3 flex items-center justify-start md:justify-end gap-1.5 text-xs font-semibold text-slate-700">
-                    <span>Limited to stores</span>
-                    <HelpTooltip text="Determines whether the topic is available only in certain stores." />
-                  </div>
-                  <div className="md:col-span-9 flex flex-col sm:flex-row items-start sm:items-center gap-3">
-                    <input
-                      type="text"
-                      value={limitedToStores}
-                      onChange={(e) => setLimitedToStores(e.target.value)}
-                      placeholder=""
-                      className="w-full sm:w-72 border border-[#d2d6de] focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none rounded-xs px-2.5 py-1.5 text-xs text-slate-800 bg-white"
-                    />
-                    <div className="bg-[#f4f4f4] border border-[#d2d6de] rounded p-2.5 text-xs text-slate-700 shadow-2xs flex-1">
-                      In order to use this functionality, you have to disable the following setting: Catalog settings &gt; Ignore &quot;limit per store&quot; rules.
-                    </div>
-                  </div>
-                </div>
-
                 {/* 8. Accessible when store closed */}
                 <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
                   <div className="md:col-span-3 flex items-center justify-start md:justify-end gap-1.5 text-xs font-semibold text-slate-700">

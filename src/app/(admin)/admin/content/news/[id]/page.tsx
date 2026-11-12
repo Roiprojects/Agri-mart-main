@@ -602,31 +602,6 @@ export default function EditNewsItemPage({ params }: { params: Promise<{ id: str
               </div>
             </div>
 
-            {/* Limited to stores */}
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-start">
-              <label className="md:col-span-3 pt-2 text-xs font-semibold text-slate-700 md:text-right flex items-center md:justify-end gap-1">
-                <span>Limited to stores</span>
-                <HelpTooltip text="Determines whether the news item is available in certain stores only." />
-              </label>
-              <div className="md:col-span-9 flex flex-col sm:flex-row items-start gap-4 max-w-4xl">
-                <div className="w-full sm:w-64">
-                  <input
-                    type="text"
-                    value={limitedToStores}
-                    onChange={(e) => setLimitedToStores(e.target.value)}
-                    placeholder=""
-                    className="w-full border border-[#d2d6de] focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none rounded px-3 py-1.5 text-xs text-slate-800 bg-white"
-                  />
-                </div>
-                <div className="flex-1 bg-[#f9fafb] border border-[#e5e7eb] rounded p-3 text-xs text-slate-600 leading-relaxed shadow-2xs">
-                  In order to use this functionality, you have to disable the following setting:{' '}
-                  <span className="font-semibold text-slate-700">
-                    Catalog settings &gt; Ignore &quot;limit per store&quot; rules.
-                  </span>
-                </div>
-              </div>
-            </div>
-
             {/* Published */}
             <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
               <label className="md:col-span-3 text-xs font-semibold text-slate-700 md:text-right flex items-center md:justify-end gap-1">
