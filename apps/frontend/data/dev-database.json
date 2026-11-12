@@ -1,128 +1,25 @@
 {
   "brands": [
     {
-      "id": "br-agripro",
-      "name": "AgriPro",
-      "slug": "agripro",
-      "description": "Heavy-duty agricultural machinery and field power tillers.",
-      "createdAt": "2026-09-17T11:18:16.946Z",
-      "updatedAt": "2026-09-17T11:18:16.948Z"
-    },
-    {
-      "id": "br-kisankraft",
-      "name": "KisanKraft",
-      "slug": "kisankraft",
-      "description": "Premier farm mechanization and battery-operated spraying systems.",
-      "createdAt": "2026-09-17T11:18:16.948Z",
-      "updatedAt": "2026-09-17T11:18:16.948Z"
-    },
-    {
-      "id": "br-bhoomi",
-      "name": "Bhoomi Sanjivani",
-      "slug": "bhoomi-sanjivani",
-      "description": "Certified bio-organic soil enhancers and liquid microbial consortia.",
-      "createdAt": "2026-09-17T11:18:16.948Z",
-      "updatedAt": "2026-09-17T11:18:16.948Z"
-    },
-    {
-      "id": "br-neemguard",
-      "name": "Neem-Guard",
-      "slug": "neem-guard",
-      "description": "High-potency botanical bio-insecticides and crop protectors.",
-      "createdAt": "2026-09-17T11:18:16.948Z",
-      "updatedAt": "2026-09-17T11:18:16.948Z"
-    },
-    {
-      "id": "br-uasd",
-      "name": "UAS Dharwad Certified",
-      "slug": "uas-dharwad",
-      "description": "High-yield certified foundation seeds and drought-resilient varieties.",
-      "createdAt": "2026-09-17T11:18:16.948Z",
-      "updatedAt": "2026-09-17T11:18:16.948Z"
-    },
-    {
-      "id": "br-jain",
-      "name": "Jain Drip Tech",
-      "slug": "jain-drip-tech",
-      "description": "Micro-irrigation, venturi injectors, and pressure compensation drippers.",
-      "createdAt": "2026-09-17T11:18:16.948Z",
-      "updatedAt": "2026-09-17T11:18:16.948Z"
+      "id": "br-am-agrimate",
+      "name": "AGRIMATE",
+      "slug": "agrimate",
+      "logoUrl": "/images/brands/agrimart/brand_3.jpg",
+      "description": "AGRIMATE farm machinery — sprayers, power weeders, seeders, pumpsets, harvesters & more."
     },
     {
       "id": "br-am-kasei",
       "name": "KASEI",
       "slug": "kasei",
       "logoUrl": "/images/brands/agrimart/brand_1.jpeg",
-      "description": "KASEI professional 2-stroke & 4-stroke garden and farm power tools.",
-      "createdAt": "2026-11-11T09:28:50.049Z",
-      "updatedAt": "2026-11-11T09:28:50.049Z"
+      "description": "KASEI professional 2-stroke & 4-stroke garden and farm power tools."
     },
     {
       "id": "br-am-oleo-mac",
       "name": "OLEO MAC",
       "slug": "oleo-mac",
       "logoUrl": "/images/brands/agrimart/brand_2.jpeg",
-      "description": "OLEO MAC (Emak, Italy) chain saws, brush cutters, lawn mowers, washers & engines.",
-      "createdAt": "2026-11-11T09:28:50.049Z",
-      "updatedAt": "2026-11-11T09:28:50.049Z"
-    },
-    {
-      "id": "br-am-agrimate",
-      "name": "AGRIMATE",
-      "slug": "agrimate",
-      "logoUrl": "/images/brands/agrimart/brand_3.jpg",
-      "description": "AGRIMATE farm machinery — sprayers, power weeders, seeders, pumpsets, harvesters & more.",
-      "createdAt": "2026-11-11T09:28:50.049Z",
-      "updatedAt": "2026-11-11T09:28:50.049Z"
-    },
-    {
-      "id": "br-am-green-panther",
-      "name": "GREEN PANTHER",
-      "slug": "green-panther",
-      "logoUrl": "/images/brands/agrimart/brand_12.jpeg",
-      "description": "GREEN PANTHER fog sprayers, diaphragm pumps and earth augers.",
-      "createdAt": "2026-11-11T09:28:50.049Z",
-      "updatedAt": "2026-11-11T09:28:50.049Z"
-    },
-    {
-      "id": "br-am-honda",
-      "name": "HONDA",
-      "slug": "honda",
-      "description": "Honda power equipment.",
-      "createdAt": "2026-11-11T09:28:50.049Z",
-      "updatedAt": "2026-11-11T09:28:50.049Z"
-    },
-    {
-      "id": "br-am-sunmax",
-      "name": "SUNMAX",
-      "slug": "sunmax",
-      "description": "SUNMAX intercultivators and power weeders.",
-      "createdAt": "2026-11-11T09:28:50.049Z",
-      "updatedAt": "2026-11-11T09:28:50.049Z"
-    },
-    {
-      "id": "br-am-alrite",
-      "name": "ALRITE",
-      "slug": "alrite",
-      "description": "ALRITE commercial lawn mowers.",
-      "createdAt": "2026-11-11T09:28:50.049Z",
-      "updatedAt": "2026-11-11T09:28:50.049Z"
-    },
-    {
-      "id": "br-am-five-star",
-      "name": "FIVE STAR",
-      "slug": "five-star",
-      "description": "FIVE STAR high pressure washers.",
-      "createdAt": "2026-11-11T09:28:50.049Z",
-      "updatedAt": "2026-11-11T09:28:50.049Z"
-    },
-    {
-      "id": "br-am-super-gold",
-      "name": "SUPER GOLD",
-      "slug": "super-gold",
-      "description": "SUPER GOLD mini fog sprayers.",
-      "createdAt": "2026-11-11T09:28:50.049Z",
-      "updatedAt": "2026-11-11T09:28:50.049Z"
+      "description": "OLEO MAC (Emak, Italy) chain saws, brush cutters, lawn mowers, washers & engines."
     }
   ],
   "categories": [
@@ -345,36 +242,6 @@
       "image": "/images/products/agrimart/product_3267_1.jpg",
       "parentId": null,
       "displayOrder": 114,
-      "published": true,
-      "isPublished": true,
-      "showOnHomePage": false,
-      "createdAt": "2026-11-11T09:59:49.113Z",
-      "updatedAt": "2026-11-11T09:59:49.113Z"
-    },
-    {
-      "id": "cat-am-mb-plough",
-      "name": "MB PLOUGH",
-      "nameKn": "MB PLOUGH",
-      "slug": "mb-plough",
-      "description": "MB PLOUGH — genuine power machinery and agricultural equipment from AGRIMATE, KASEI, OLEO MAC and more.",
-      "image": "/images/products/agrimart/default.jpg",
-      "parentId": null,
-      "displayOrder": 115,
-      "published": true,
-      "isPublished": true,
-      "showOnHomePage": false,
-      "createdAt": "2026-11-11T09:59:49.113Z",
-      "updatedAt": "2026-11-11T09:59:49.113Z"
-    },
-    {
-      "id": "cat-am-milking-machine",
-      "name": "MILKING MACHINE",
-      "nameKn": "MILKING MACHINE",
-      "slug": "milking-machine",
-      "description": "MILKING MACHINE — genuine power machinery and agricultural equipment from AGRIMATE, KASEI, OLEO MAC and more.",
-      "image": "/images/products/agrimart/default.jpg",
-      "parentId": null,
-      "displayOrder": 116,
       "published": true,
       "isPublished": true,
       "showOnHomePage": false,
@@ -633,7 +500,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3337",
@@ -706,7 +574,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3267",
@@ -782,7 +651,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3014",
@@ -869,7 +739,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3269",
@@ -945,7 +816,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-1646",
@@ -1026,7 +898,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-1157",
@@ -1117,7 +990,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3295",
@@ -1191,7 +1065,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-1891",
@@ -1282,7 +1157,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-2460",
@@ -1371,7 +1247,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3446",
@@ -1446,7 +1323,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3341",
@@ -1526,7 +1404,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-2112",
@@ -1609,7 +1488,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3343",
@@ -1706,7 +1586,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-2961",
@@ -1791,7 +1672,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3492",
@@ -1870,7 +1752,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3299",
@@ -1947,7 +1830,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3456",
@@ -2022,7 +1906,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-1645",
@@ -2115,7 +2000,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3506",
@@ -2190,7 +2076,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3570",
@@ -2264,7 +2151,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3510",
@@ -2346,7 +2234,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3436",
@@ -2429,7 +2318,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "OLEO MAC"
     },
     {
       "id": "am-3586",
@@ -2498,7 +2388,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3512",
@@ -2580,7 +2471,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3524",
@@ -2661,7 +2553,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3582",
@@ -2730,7 +2623,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3347",
@@ -2813,7 +2707,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3263",
@@ -2888,7 +2783,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3576",
@@ -2964,7 +2860,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "OLEO MAC"
     },
     {
       "id": "am-3588",
@@ -3033,7 +2930,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3598",
@@ -3114,7 +3012,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3526",
@@ -3193,7 +3092,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3502",
@@ -3268,7 +3168,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3500",
@@ -3344,7 +3245,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3600",
@@ -3421,7 +3323,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "OLEO MAC"
     },
     {
       "id": "am-3528",
@@ -3502,7 +3405,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3480",
@@ -3578,7 +3482,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-1750",
@@ -3655,7 +3560,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-1720",
@@ -3671,8 +3577,8 @@
       "shortDescription": "Tank capacity: 2 Liter Fuel: Gas Displacement : 20 CC N et weight: 4 KG",
       "description": "Tank capacity:  2 Liter     Fuel:  Gas    Displacement : 20 CC    N et weight:  4 KG",
       "descriptionHtml": "<p>Tank capacity: 2 Liter    Fuel: Gas   Displacement: 20 CC   <b>N</b>et weight: 4 KG</p><p><br></p>",
-      "brandId": "br-am-super-gold",
-      "brandName": "SUPER GOLD",
+      "brandId": "br-am-agrimate",
+      "brandName": "AGRIMATE",
       "categoryId": "cat-am-fogger-ulv-thermal",
       "parentCategoryId": "cat-am-fogger-ulv-thermal",
       "subCategoryId": "subcat-weeders-tillers",
@@ -3739,7 +3645,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-1901",
@@ -3822,7 +3729,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3265",
@@ -3895,7 +3803,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-2031",
@@ -3978,7 +3887,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3522",
@@ -4059,7 +3969,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-1636",
@@ -4136,7 +4047,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3153",
@@ -4215,7 +4127,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-2590",
@@ -4303,7 +4216,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3584",
@@ -4372,7 +4286,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3476",
@@ -4467,7 +4382,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3440",
@@ -4554,7 +4470,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-1098",
@@ -4642,7 +4559,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3594",
@@ -4723,7 +4641,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3516",
@@ -4796,7 +4715,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3131",
@@ -4886,7 +4806,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3297",
@@ -4959,7 +4880,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3360",
@@ -5047,7 +4969,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-996",
@@ -5063,8 +4986,8 @@
       "shortDescription": "Motor Capacity: 1500W/AC Motor with 6 meter cable Power Supply Voltage: 230V-50Hz Max. Water Temperature: 50C Delivery Hose: 8 mtr Working Pressure : 9MPA(90Bar) Working Flow Rate : 6 L/MIN Max. Pressure Water Supply : 0",
       "description": "Motor Capacity:  1500W/AC Motor with 6 meter cable     Power Supply Voltage:  230V-50Hz    Max. Water Temperature:  50C    Delivery Hose: 8  mtr\nWorking Pressure :  9MPA(90Bar)    Working Flow Rate :  6 L/MIN    Max. Pressure Water Supply :  0.4MPA(4Bar)  Weight: 8 KG",
       "descriptionHtml": "<div><b>Motor Capacity: </b>1500W/AC Motor with 6 meter cable    <b>Power Supply Voltage: </b>230V-50Hz   <b>Max. Water Temperature:</b> 50C   <b>Delivery Hose: 8 </b>mtr<br>Working Pressure: 9MPA(90Bar)   Working Flow Rate: 6 L/MIN   Max. Pressure Water Supply: 0.4MPA(4Bar)  <b>Weight: </b>8 KG <br>",
-      "brandId": "br-am-five-star",
-      "brandName": "FIVE STAR",
+      "brandId": "br-am-agrimate",
+      "brandName": "AGRIMATE",
       "categoryId": "cat-am-pressure-washer",
       "parentCategoryId": "cat-am-pressure-washer",
       "subCategoryId": "subcat-weeders-tillers",
@@ -5131,7 +5054,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3566",
@@ -5212,7 +5136,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "KASEI"
     },
     {
       "id": "am-3111",
@@ -5301,7 +5226,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3474",
@@ -5396,7 +5322,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-2600",
@@ -5469,7 +5396,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3468",
@@ -5549,7 +5477,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3149",
@@ -5630,7 +5559,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-1106",
@@ -5718,7 +5648,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-1644",
@@ -5801,7 +5732,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3009",
@@ -5877,7 +5809,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-1923",
@@ -5959,7 +5892,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-1653",
@@ -6041,7 +5975,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "OLEO MAC"
     },
     {
       "id": "am-3564",
@@ -6114,7 +6049,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3090",
@@ -6196,7 +6132,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-1757",
@@ -6284,7 +6221,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-1637",
@@ -6361,7 +6299,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-2005",
@@ -6445,7 +6384,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3007",
@@ -6521,7 +6461,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3592",
@@ -6602,7 +6543,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-382",
@@ -6683,7 +6625,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "KASEI"
     },
     {
       "id": "am-1625",
@@ -6760,7 +6703,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3380",
@@ -6840,7 +6784,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3488",
@@ -6915,7 +6860,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "OLEO MAC"
     },
     {
       "id": "am-3580",
@@ -6991,7 +6937,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3392",
@@ -7068,7 +7015,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3125",
@@ -7160,7 +7108,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3333",
@@ -7233,7 +7182,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3214",
@@ -7315,7 +7265,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3450",
@@ -7396,7 +7347,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "KASEI"
     },
     {
       "id": "am-1763",
@@ -7487,7 +7439,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3578",
@@ -7563,7 +7516,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3366",
@@ -7631,7 +7585,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "KASEI"
     },
     {
       "id": "am-3216",
@@ -7715,7 +7670,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-2596",
@@ -7803,7 +7759,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "OLEO MAC"
     },
     {
       "id": "am-1919",
@@ -7887,7 +7844,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-181",
@@ -7977,7 +7935,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "KASEI"
     },
     {
       "id": "am-3420",
@@ -8060,7 +8019,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "OLEO MAC"
     },
     {
       "id": "am-3113",
@@ -8140,7 +8100,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3084",
@@ -8222,7 +8183,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3508",
@@ -8314,7 +8276,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-2",
@@ -8404,7 +8367,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "KASEI"
     },
     {
       "id": "am-138",
@@ -8488,7 +8452,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "OLEO MAC"
     },
     {
       "id": "am-2053",
@@ -8578,7 +8543,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "OLEO MAC"
     },
     {
       "id": "am-3030",
@@ -8660,7 +8626,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3184",
@@ -8733,7 +8700,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-2999",
@@ -8816,7 +8784,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-66",
@@ -8891,7 +8860,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "KASEI"
     },
     {
       "id": "am-3486",
@@ -8966,7 +8936,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "OLEO MAC"
     },
     {
       "id": "am-2051",
@@ -9055,7 +9026,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "OLEO MAC"
     },
     {
       "id": "am-3309",
@@ -9128,7 +9100,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "OLEO MAC"
     },
     {
       "id": "am-2822",
@@ -9217,7 +9190,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "KASEI"
     },
     {
       "id": "am-2692",
@@ -9300,7 +9274,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "OLEO MAC"
     },
     {
       "id": "am-1748",
@@ -9377,7 +9352,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-2603",
@@ -9452,7 +9428,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-2824",
@@ -9533,7 +9510,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "KASEI"
     },
     {
       "id": "am-3289",
@@ -9622,7 +9600,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3358",
@@ -9705,7 +9684,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "KASEI"
     },
     {
       "id": "am-3370",
@@ -9781,7 +9761,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-1027",
@@ -9872,7 +9853,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "OLEO MAC"
     },
     {
       "id": "am-70",
@@ -9968,7 +9950,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "KASEI"
     },
     {
       "id": "am-3372",
@@ -10044,7 +10027,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-423",
@@ -10127,7 +10111,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "OLEO MAC"
     },
     {
       "id": "am-406",
@@ -10210,7 +10195,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "OLEO MAC"
     },
     {
       "id": "am-1839",
@@ -10298,7 +10284,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "KASEI"
     },
     {
       "id": "am-3291",
@@ -10385,7 +10372,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3424",
@@ -10468,7 +10456,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "OLEO MAC"
     },
     {
       "id": "am-1718",
@@ -10484,8 +10473,8 @@
       "shortDescription": "Model : Super 3000 Gold Fog sprayer Fuel : Fuel liquified butane gas Capacity of chemical tank : 3L Weight (empty) : 4Kg",
       "description": "Model :  Super 3000 Gold Fog sprayer    Fuel :   Fuel liquified butane gas    Capacity of chemical tank  : 3L    Weight (empty)  : 4Kg",
       "descriptionHtml": "<p>Model : Super 3000 Gold Fog sprayer   Fuel :  Fuel liquified butane gas   Capacity of chemical tank : 3L   Weight (empty) : 4Kg<br></p>",
-      "brandId": "br-am-super-gold",
-      "brandName": "SUPER GOLD",
+      "brandId": "br-am-agrimate",
+      "brandName": "AGRIMATE",
       "categoryId": "cat-am-fogger-ulv-thermal",
       "parentCategoryId": "cat-am-fogger-ulv-thermal",
       "subCategoryId": "subcat-weeders-tillers",
@@ -10538,7 +10527,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3261",
@@ -10615,7 +10605,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3554",
@@ -10698,7 +10689,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3378",
@@ -10774,7 +10766,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-644",
@@ -10865,7 +10858,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3418",
@@ -10934,7 +10928,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3432",
@@ -11022,7 +11017,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3283",
@@ -11098,7 +11094,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3542",
@@ -11175,7 +11172,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-2462",
@@ -11262,7 +11260,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "OLEO MAC"
     },
     {
       "id": "am-3384",
@@ -11342,7 +11341,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-247",
@@ -11435,7 +11435,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3348",
@@ -11523,7 +11524,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3301",
@@ -11595,7 +11597,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3546",
@@ -11671,7 +11674,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-380",
@@ -11752,7 +11756,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "KASEI"
     },
     {
       "id": "am-249",
@@ -11822,7 +11827,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-1917",
@@ -11905,7 +11911,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3430",
@@ -11984,7 +11991,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-419",
@@ -12074,7 +12082,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "OLEO MAC"
     },
     {
       "id": "am-3327",
@@ -12147,7 +12156,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-514",
@@ -12229,7 +12239,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-2001",
@@ -12319,7 +12330,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-2038",
@@ -12400,7 +12412,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "KASEI"
     },
     {
       "id": "am-3094",
@@ -12489,7 +12502,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3572",
@@ -12575,7 +12589,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-581",
@@ -12591,8 +12606,8 @@
       "shortDescription": "Engine Type: Single Cylinder Air-Cooled 4 Stroke Engine Max. Engine Power: 6 HP Tilling Width: 600 - 900 mm Tilling Depth: 150 - 300 cm Gear Box Oil: SA90 Engine Oil: 20w40/ 15w40",
       "description": "Engine Type: Single Cylinder Air-Cooled 4 Stroke Engine    Max. Engine Power: 6 HP    Tilling Width: 600 - 900 mm     Tilling Depth: 150 - 300 cm   Gear Box Oil: SA90    Engine Oil: 20w40/ 15w40",
       "descriptionHtml": "<p><b>Engine Type:</b> Single Cylinder Air-Cooled 4 Stroke Engine   <b> Max. Engine Power: </b>6 HP   <b>Tilling Width:</b> 600 - 900 mm    <b>Tilling Depth:</b> 150 - 300 cm  <b> Gear Box Oil: </b>SA90<b>   Engine Oil: </b>20w40/ 15w40<br><br></p>",
-      "brandId": "br-am-sunmax",
-      "brandName": "SUNMAX",
+      "brandId": "br-am-agrimate",
+      "brandName": "AGRIMATE",
       "categoryId": "cat-am-intercultivator-power-weeder",
       "parentCategoryId": "cat-am-intercultivator-power-weeder",
       "subCategoryId": "subcat-weeders-tillers",
@@ -12652,7 +12667,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-2846",
@@ -12725,7 +12741,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-1069",
@@ -12806,7 +12823,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "OLEO MAC"
     },
     {
       "id": "am-3548",
@@ -12882,7 +12900,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3313",
@@ -12955,7 +12974,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-96",
@@ -13044,7 +13064,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "OLEO MAC"
     },
     {
       "id": "am-3186",
@@ -13125,7 +13146,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "OLEO MAC"
     },
     {
       "id": "am-3257",
@@ -13217,7 +13239,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3315",
@@ -13290,7 +13313,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3329",
@@ -13363,7 +13387,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-161",
@@ -13379,8 +13404,8 @@
       "shortDescription": "Chemical Tank Capacity: 6 L Fuel Tank Capacity : 1.2 L Fuel Consumption : 2.0 L/H Fogging Capacity : 25 L/H Starting method : Manual & electric Battery : Dry battery 3V Storage battery : 6V 3.3Ah. Net Weight : 9.7 Kg",
       "description": "Chemical Tank Capacity:  6 L    Fuel Tank Capacity :  1.2 L    Fuel Consumption :  2.0 L/H    Fogging Capacity :  25 L/H    Starting method :  Manual & electric  Battery :  Dry battery 3V    Storage battery :  6V 3.3Ah.    Net Weight :  9.7 Kg",
       "descriptionHtml": "<div><b>Chemical Tank Capacity: </b>6 L   <b>Fuel Tank Capacity</b>: 1.2 L   <b>Fuel Consumption</b>: 2.0 L/H   <b>Fogging Capacity</b>: 25 L/H   <b>Starting method</b>: Manual & electric  <b>Battery</b>: Dry battery 3V   <b>Storage battery</b>: 6V 3.3Ah.   <b>Net Weight</b>: 9.7 Kg",
-      "brandId": "br-am-green-panther",
-      "brandName": "GREEN PANTHER",
+      "brandId": "br-am-agrimate",
+      "brandName": "AGRIMATE",
       "categoryId": "cat-am-fogger-ulv-thermal",
       "parentCategoryId": "cat-am-fogger-ulv-thermal",
       "subCategoryId": "subcat-weeders-tillers",
@@ -13445,7 +13470,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3478",
@@ -13521,7 +13547,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3024",
@@ -13612,7 +13639,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3368",
@@ -13702,7 +13730,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-2850",
@@ -13775,7 +13804,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-1861",
@@ -13791,8 +13821,8 @@
       "shortDescription": "",
       "description": "",
       "descriptionHtml": "<p><br></p>",
-      "brandId": "br-am-green-panther",
-      "brandName": "GREEN PANTHER",
+      "brandId": "br-am-agrimate",
+      "brandName": "AGRIMATE",
       "categoryId": "cat-am-sprayer",
       "parentCategoryId": "cat-am-sprayer",
       "subCategoryId": "subcat-weeders-tillers",
@@ -13843,7 +13873,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3311",
@@ -13916,7 +13947,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3560",
@@ -13987,7 +14019,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-2918",
@@ -14003,8 +14036,8 @@
       "shortDescription": "No Information Available.",
       "description": "No Information Available.",
       "descriptionHtml": "No Information Available.",
-      "brandId": "br-am-sunmax",
-      "brandName": "SUNMAX",
+      "brandId": "br-am-agrimate",
+      "brandName": "AGRIMATE",
       "categoryId": "cat-am-intercultivator-power-weeder",
       "parentCategoryId": "cat-am-intercultivator-power-weeder",
       "subCategoryId": "subcat-weeders-tillers",
@@ -14055,7 +14088,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-2633",
@@ -14144,7 +14178,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "OLEO MAC"
     },
     {
       "id": "am-1604",
@@ -14160,8 +14195,8 @@
       "shortDescription": "Gasoline tank capacity S.S : 1.5L Solution tank capacity : 6L Flow rate : 0-42L/H Pressure in solution tank : 0.25Bar Pressure in gasoline tank : 0.06Bar Fuel consumption : 1.5 - 2.0 L/H Net weight : 8.5kg",
       "description": "Gasoline tank capacity S.S : 1.5L    Solution tank capacity : 6L    Flow rate : 0-42L/H    Pressure in solution tank : 0.25Bar\nPressure in gasoline tank : 0.06Bar    Fuel consumption : 1.5 - 2.0 L/H    Net weight : 8.5kg",
       "descriptionHtml": "<p><b>Gasoline tank capacity S.S :</b> 1.5L   <b>Solution tank capacity :</b> 6L   <b>Flow rate : </b>0-42L/H   <b>Pressure in solution tank : </b>0.25Bar    <br><b>Pressure in gasoline tank :</b> 0.06Bar   <b>Fuel consumption :</b> 1.5 - 2.0 L/H   <b>Net weight : </b>8.5kg</p>",
-      "brandId": "br-am-green-panther",
-      "brandName": "GREEN PANTHER",
+      "brandId": "br-am-agrimate",
+      "brandName": "AGRIMATE",
       "categoryId": "cat-am-fogger-ulv-thermal",
       "parentCategoryId": "cat-am-fogger-ulv-thermal",
       "subCategoryId": "subcat-weeders-tillers",
@@ -14220,7 +14255,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-1606",
@@ -14301,7 +14337,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "OLEO MAC"
     },
     {
       "id": "am-58",
@@ -14391,7 +14428,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-1837",
@@ -14472,7 +14510,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "OLEO MAC"
     },
     {
       "id": "am-1857",
@@ -14488,8 +14527,8 @@
       "shortDescription": "Model: GP-DP-306F Max. Flow: 35 L/Min Max. Pressure: 40 Bar Max. Speed: 550 rpm Max. temperature: 50 C Weight: 11 Kg",
       "description": "Model: GP-DP-306F    Max. Flow: 35 L/Min    Max. Pressure: 40 Bar    Max. Speed: 550 rpm   Max. temperature: 50 C     Weight: 11 Kg",
       "descriptionHtml": "<p><b>Model:</b> GP-DP-306F    <b>Max. Flow:</b> 35 L/Min   <b>Max. Pressure:</b> 40 Bar   <b>Max. Speed:</b> 550 rpm  <b>Max. temperature:</b> 50 C    <b>Weight:</b> 11 Kg</p>",
-      "brandId": "br-am-green-panther",
-      "brandName": "GREEN PANTHER",
+      "brandId": "br-am-agrimate",
+      "brandName": "AGRIMATE",
       "categoryId": "cat-am-sprayer",
       "parentCategoryId": "cat-am-sprayer",
       "subCategoryId": "subcat-weeders-tillers",
@@ -14547,7 +14586,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3034",
@@ -14615,7 +14655,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-421",
@@ -14704,7 +14745,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "OLEO MAC"
     },
     {
       "id": "am-596",
@@ -14794,7 +14836,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "OLEO MAC"
     },
     {
       "id": "am-3319",
@@ -14867,7 +14910,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "OLEO MAC"
     },
     {
       "id": "am-3354",
@@ -14883,8 +14927,8 @@
       "shortDescription": "Model: GPEA-2M-196L Engine: 4 Cycle Power: 196 CC Max. RPM: 121 Bit Weight: 15 Kgs Engine Weight: 25 kgs",
       "description": "Model: GPEA-2M-196L  Engine: 4 Cycle  Power: 196 CC    Max. RPM: 121  Bit Weight: 15 Kgs  Engine Weight: 25 kgs",
       "descriptionHtml": "<b>Model: </b>GPEA-2M-196L <b> Engine: </b>4 Cycle  <b>Power: </b>196 CC   <b>Max. RPM: </b>121  <b>Bit Weight: </b>15 Kgs  <b>Engine Weight:</b> 25 kgs",
-      "brandId": "br-am-green-panther",
-      "brandName": "GREEN PANTHER",
+      "brandId": "br-am-agrimate",
+      "brandName": "AGRIMATE",
       "categoryId": "cat-am-earth-auger",
       "parentCategoryId": "cat-am-earth-auger",
       "subCategoryId": "subcat-weeders-tillers",
@@ -14942,7 +14986,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3374",
@@ -15011,7 +15056,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-108",
@@ -15101,7 +15147,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "OLEO MAC"
     },
     {
       "id": "am-2989",
@@ -15176,7 +15223,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "OLEO MAC"
     },
     {
       "id": "am-90",
@@ -15266,7 +15314,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "OLEO MAC"
     },
     {
       "id": "am-604",
@@ -15349,7 +15398,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "OLEO MAC"
     },
     {
       "id": "am-3538",
@@ -15431,7 +15481,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3036",
@@ -15499,7 +15550,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-1706",
@@ -15515,8 +15567,8 @@
       "shortDescription": "Model: MIRAGE 3000 Power: 4 HP,3000W Cutting Width: 46Cm, 18\" Grass Box: 50L Height Adjustment: 12 Settings, Single Lever",
       "description": "Model: MIRAGE 3000     Power: 4 HP,3000W     Cutting Width: 46Cm, 18\"     Grass Box: 50L    Height Adjustment: 12 Settings, Single Lever",
       "descriptionHtml": "<div> <b>Model:</b> MIRAGE 3000    <b>Power:</b> 4 HP,3000W    <b>Cutting Width:</b> 46Cm, 18\"    <b>Grass Box:</b> 50L    <b>Height Adjustment:</b> 12 Settings, Single Lever",
-      "brandId": "br-am-alrite",
-      "brandName": "ALRITE",
+      "brandId": "br-am-agrimate",
+      "brandName": "AGRIMATE",
       "categoryId": "cat-am-lawn-mower",
       "parentCategoryId": "cat-am-lawn-mower",
       "subCategoryId": "subcat-weeders-tillers",
@@ -15589,7 +15641,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3321",
@@ -15655,7 +15708,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3496",
@@ -15741,7 +15795,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3028",
@@ -15835,7 +15890,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-1657",
@@ -15918,7 +15974,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "OLEO MAC"
     },
     {
       "id": "am-3218",
@@ -16006,7 +16063,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3137",
@@ -16095,7 +16153,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-2894",
@@ -16170,7 +16229,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3574",
@@ -16258,7 +16318,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-2898",
@@ -16333,7 +16394,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3458",
@@ -16419,7 +16481,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-1712",
@@ -16435,8 +16498,8 @@
       "shortDescription": "Model: MAX53 THX Engine make/model: Honda GCV 170 OHV Displacement: 166 cm ³ Cutting width: 51 cm Propulsion(Speed): Self-propelled (3.6 km/h) Deck: Aluminium Cutting adjustment: Central Cutting height: from 28 to 75 mm ",
       "description": "Model: MAX53 THX      Engine make/model:  Honda GCV 170 OHV    Displacement: 166 cm ³     Cutting width: 51 cm    Propulsion(Speed): Self-propelled (3.6 km/h)     Deck:  Aluminium    Cutting adjustment: Central    Cutting height: from 28 to 75 mm    Weight: 41.6 Kg    Grass box capacity: 80L    Mulching/side discharge: Standard/not available",
       "descriptionHtml": "<p>Model: MAX53 THX     Engine make/model: Honda GCV 170 OHV   <b>Displacement: </b>166 cm³   <b>Cutting width: </b>51 cm   <b>Propulsion(Speed):</b> Self-propelled (3.6 km/h)    Deck: Aluminium   <b>Cutting adjustment:</b> Central    <b>Cutting height:</b> from 28 to 75 mm   <b>Weight:</b> 41.6 Kg    <b>Grass box capacity: </b>80L    <b>Mulching/side discharge: </b>Standard/not available</p>",
-      "brandId": "br-am-honda",
-      "brandName": "HONDA",
+      "brandId": "br-am-oleo-mac",
+      "brandName": "OLEO MAC",
       "categoryId": "cat-am-lawn-mower",
       "parentCategoryId": "cat-am-lawn-mower",
       "subCategoryId": "subcat-weeders-tillers",
@@ -16500,7 +16563,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "OLEO MAC"
     },
     {
       "id": "am-3208",
@@ -16589,7 +16653,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3038",
@@ -16657,7 +16722,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3550",
@@ -16745,7 +16811,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-1966",
@@ -16835,7 +16902,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3345",
@@ -16916,7 +16984,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3408",
@@ -16998,7 +17067,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3540",
@@ -17076,7 +17146,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-585",
@@ -17174,7 +17245,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3317",
@@ -17239,7 +17311,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3048",
@@ -17329,7 +17402,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3335",
@@ -17397,7 +17471,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3323",
@@ -17463,7 +17538,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3109",
@@ -17553,7 +17629,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3396",
@@ -17641,7 +17718,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-2908",
@@ -17717,7 +17795,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3117",
@@ -17805,7 +17884,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3412",
@@ -17899,7 +17979,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-1663",
@@ -17995,7 +18076,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3562",
@@ -18076,7 +18158,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-78",
@@ -18166,7 +18249,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "OLEO MAC"
     },
     {
       "id": "am-510",
@@ -18249,7 +18333,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-2842",
@@ -18330,7 +18415,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3115",
@@ -18418,7 +18504,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3482",
@@ -18509,7 +18596,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-1978",
@@ -18600,7 +18688,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3602",
@@ -18684,7 +18773,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3590",
@@ -18760,7 +18850,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-153",
@@ -18844,7 +18935,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     },
     {
       "id": "am-3552",
@@ -18927,7 +19019,8 @@
       "length": 35,
       "width": 25,
       "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)"
+      "deliveryDate": "1-2 days (Express Hub)",
+      "brand": "AGRIMATE"
     }
   ],
   "variants": [

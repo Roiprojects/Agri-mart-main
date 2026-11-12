@@ -196,7 +196,7 @@ export default function ShopPage() {
               >
                 All Brands ({products.length})
               </button>
-              {[...new Set(products.map((p: any) => p.brand || p.brandName).filter(Boolean))].sort().map((brand: any) => {
+              {['AGRIMATE', 'KASEI', 'OLEO MAC'].map((brand: string) => {
                 const count = products.filter((p: any) => (p.brand || p.brandName) === brand).length;
                 return (
                   <button
