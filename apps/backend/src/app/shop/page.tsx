@@ -6,10 +6,19 @@ import { Filter, Search, Sparkles, RefreshCw } from 'lucide-react';
 import Link from 'next/link';
 import { SEED_PRODUCTS, SEED_CATEGORIES } from '@/lib/seed-data';
 import { mergeCategoriesWithOverrides } from '@/lib/admin-category-overrides';
+import { mergeBrandsWithOverrides } from '@/lib/admin-brand-overrides';
+import { mergeProductsWithOverrides } from '@/lib/admin-product-overrides';
+
+const DEFAULT_BRANDS = [
+  { id: 'br-am-agrimate', name: 'AGRIMATE', slug: 'agrimate', published: true },
+  { id: 'br-am-kasei', name: 'KASEI', slug: 'kasei', published: true },
+  { id: 'br-am-oleo-mac', name: 'OLEO MAC', slug: 'oleo-mac', published: true },
+];
 
 const globalShopCache = globalThis as unknown as {
   __shopProducts?: any[];
   __shopCategories?: any[];
+  __shopBrands?: any[];
 };
 
 export default function ShopPage() {
@@ -18,6 +27,9 @@ export default function ShopPage() {
   );
   const [categories, setCategories] = useState<any[]>(
     () => globalShopCache.__shopCategories || SEED_CATEGORIES
+  );
+  const [brands, setBrands] = useState<any[]>(
+    () => globalShopCache.__shopBrands || DEFAULT_BRANDS
   );
   const [loading, setLoading] = useState(false);
 
@@ -30,16 +42,29 @@ export default function ShopPage() {
     Promise.all([
       fetch('/api/products', { cache: 'no-store' }).then((r) => r.json()),
       fetch('/api/categories', { cache: 'no-store' }).then((r) => r.json()),
+      fetch('/api/admin/brands', { cache: 'no-store' }).then((r) => r.json()).catch(() => ({ success: false, data: [] })),
     ])
-      .then(([prodData, catData]) => {
+      .then(([prodData, catData, brandData]) => {
+        const mergedCats = mergeCategoriesWithOverrides(
+          catData.success && Array.isArray(catData.data) ? catData.data : SEED_CATEGORIES
+        );
+        globalShopCache.__shopCategories = mergedCats;
+        setCategories(mergedCats);
+
+        const rawBrands = brandData.success && Array.isArray(brandData.data) && brandData.data.length > 0
+          ? brandData.data
+          : DEFAULT_BRANDS;
+        const mergedBrands = mergeBrandsWithOverrides(rawBrands).filter(
+          (b: any) => b.published !== false && b.isPublished !== false
+        );
+        globalShopCache.__shopBrands = mergedBrands;
+        setBrands(mergedBrands);
+
         if (prodData.success && Array.isArray(prodData.data)) {
-          globalShopCache.__shopProducts = prodData.data;
-          setProducts(prodData.data);
-        }
-        if (catData.success && Array.isArray(catData.data)) {
-          const mergedCats = mergeCategoriesWithOverrides(catData.data);
-          globalShopCache.__shopCategories = mergedCats;
-          setCategories(mergedCats);
+          const mergedProds = mergeProductsWithOverrides(prodData.data, mergedCats, mergedBrands)
+            .filter((p: any) => p.isPublished !== false);
+          globalShopCache.__shopProducts = mergedProds;
+          setProducts(mergedProds);
         }
         setLoading(false);
       })
@@ -53,18 +78,31 @@ export default function ShopPage() {
     fetchCatalogue();
   }, []);
 
+  const getProductBrandName = (p: any): string => {
+    if (p.brandId) {
+      const matched = brands.find((b: any) => b.id === p.brandId);
+      if (matched?.name) return matched.name;
+    }
+    if (typeof p.brand === 'object' && p.brand?.name) return p.brand.name;
+    return p.brand || p.brandName || '';
+  };
+
   const filteredProducts = useMemo(() => {
     return products.filter((p) => {
-      if (selectedCategory !== 'ALL' && p.categoryId !== selectedCategory) return false;
-      if (selectedBrand !== 'ALL' && (p.brand || p.brandName) !== selectedBrand) return false;
+      if (selectedCategory !== 'ALL' && p.categoryId !== selectedCategory && p.parentCategoryId !== selectedCategory && p.subCategoryId !== selectedCategory) return false;
+      if (selectedBrand !== 'ALL') {
+        const pBrand = getProductBrandName(p);
+        if (pBrand.toLowerCase() !== selectedBrand.toLowerCase()) return false;
+      }
       if (searchQuery.trim()) {
         const q = searchQuery.toLowerCase();
         const matchName = p.name.toLowerCase().includes(q) || (p.nameKn && p.nameKn.toLowerCase().includes(q));
         const matchDesc = p.description?.toLowerCase().includes(q);
-        const matchCat = p.category?.toLowerCase().includes(q);
+        const catName = typeof p.category === 'object' ? p.category?.name : p.category;
+        const matchCat = catName?.toLowerCase().includes(q);
         const matchSku = p.sku?.toLowerCase().includes(q);
         const matchRipl = p.riplCode?.toLowerCase().includes(q);
-        const matchBrand = (p.brand || p.brandName)?.toLowerCase().includes(q);
+        const matchBrand = getProductBrandName(p).toLowerCase().includes(q);
         const matchModel = p.modelNumber?.toLowerCase().includes(q);
         if (!matchName && !matchDesc && !matchCat && !matchSku && !matchRipl && !matchBrand && !matchModel) return false;
       }
@@ -75,7 +113,7 @@ export default function ShopPage() {
       if (sortBy === 'rating') return (b.rating || 5) - (a.rating || 5);
       return (b.reviewsCount || 0) - (a.reviewsCount || 0);
     });
-  }, [products, selectedCategory, selectedBrand, searchQuery, sortBy]);
+  }, [products, brands, selectedCategory, selectedBrand, searchQuery, sortBy]);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6 text-xs">
@@ -198,24 +236,26 @@ export default function ShopPage() {
               >
                 All Brands ({products.length})
               </button>
-              {['AGRIMATE', 'KASEI', 'OLEO MAC'].map((brand: string) => {
-                const count = products.filter((p: any) => (p.brand || p.brandName) === brand).length;
+              {brands.map((brandObj: any) => {
+                const brandName = brandObj.name;
+                const count = products.filter(
+                  (p: any) => getProductBrandName(p).toLowerCase() === brandName.toLowerCase()
+                ).length;
+                const isSelected = selectedBrand.toLowerCase() === brandName.toLowerCase();
                 return (
                   <button
-                    key={brand}
-                    onClick={() => setSelectedBrand(brand)}
+                    key={brandObj.id || brandName}
+                    onClick={() => setSelectedBrand(brandName)}
                     className={`w-full text-left px-3 py-2 rounded-xl text-xs transition flex items-center justify-between ${
-                      selectedBrand === brand
+                      isSelected
                         ? 'bg-agri-pale text-agri-green-dark font-extrabold'
                         : 'text-slate-600 hover:bg-slate-50'
                     }`}
                   >
-                    <span>{brand}</span>
-                    {count > 0 && (
-                      <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${selectedBrand === brand ? 'bg-agri-green text-white' : 'bg-slate-100 text-slate-500'}`}>
-                        {count}
-                      </span>
-                    )}
+                    <span>{brandName}</span>
+                    <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${isSelected ? 'bg-agri-green text-white' : 'bg-slate-100 text-slate-500'}`}>
+                      {count}
+                    </span>
                   </button>
                 );
               })}

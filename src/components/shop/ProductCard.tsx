@@ -139,10 +139,14 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
       <div className="p-4 sm:p-5 flex-1 flex flex-col justify-between space-y-3">
         <div>
           <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-wider mb-1">
-            <span className="text-agri-green">{product.category}</span>
-            {product.brand && (
+            <span className="text-agri-green">
+              {typeof product.category === 'object' ? (product.category as any)?.name : product.category}
+            </span>
+            {(product.brand || (product as any).brandName) && (
               <span className="text-slate-500 font-extrabold bg-slate-100 px-2 py-0.5 rounded text-[9px] border border-slate-200">
-                {product.brand}
+                {typeof product.brand === 'object'
+                  ? (product.brand as any)?.name
+                  : product.brand || (product as any).brandName}
               </span>
             )}
           </div>
