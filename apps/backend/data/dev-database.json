@@ -12593,84 +12593,6 @@
       "brand": "AGRIMATE"
     },
     {
-      "id": "am-581",
-      "name": "SM505-SUNMAX WM500-INTERCULTIVATOR/POWER WEEDER",
-      "nameKn": "SM505-SUNMAX WM500-INTERCULTIVATOR/POWER WEEDER",
-      "slug": "sm505-sunmax-wm500-intercultivator-power-weeder-581",
-      "sku": "RIPL024824",
-      "riplCode": "RIPL024824",
-      "sourceProductId": "581",
-      "sourceProductGroup": "276",
-      "sourcePage": "AM-product-149-NTgxMjc2.html",
-      "sourceListPosition": 149,
-      "shortDescription": "Engine Type: Single Cylinder Air-Cooled 4 Stroke Engine Max. Engine Power: 6 HP Tilling Width: 600 - 900 mm Tilling Depth: 150 - 300 cm Gear Box Oil: SA90 Engine Oil: 20w40/ 15w40",
-      "description": "Engine Type: Single Cylinder Air-Cooled 4 Stroke Engine    Max. Engine Power: 6 HP    Tilling Width: 600 - 900 mm     Tilling Depth: 150 - 300 cm   Gear Box Oil: SA90    Engine Oil: 20w40/ 15w40",
-      "descriptionHtml": "<p><b>Engine Type:</b> Single Cylinder Air-Cooled 4 Stroke Engine   <b> Max. Engine Power: </b>6 HP   <b>Tilling Width:</b> 600 - 900 mm    <b>Tilling Depth:</b> 150 - 300 cm  <b> Gear Box Oil: </b>SA90<b>   Engine Oil: </b>20w40/ 15w40<br><br></p>",
-      "brandId": "br-am-agrimate",
-      "brandName": "AGRIMATE",
-      "categoryId": "cat-am-intercultivator-power-weeder",
-      "parentCategoryId": "cat-am-intercultivator-power-weeder",
-      "subCategoryId": "subcat-weeders-tillers",
-      "price": 52200,
-      "comparePrice": 52200,
-      "priceNote": "MRP (Inclusive Of All Taxes)",
-      "variantLabel": "Intercultivator/power Weeder Model",
-      "modelNumber": "SM505",
-      "stockQuantity": 1,
-      "availableQty": 1,
-      "maxOrderQty": 1,
-      "minOrderQty": 1,
-      "images": [
-        "/images/products/agrimart/product_581_1.jpg",
-        "/images/products/agrimart/product_581_2.jpg",
-        "/images/products/agrimart/product_581_3.jpg"
-      ],
-      "brochures": [],
-      "videos": [
-        {
-          "url": "/agrimart-media/videos/product_581_1.mp4",
-          "fileName": "product_581_1.mp4",
-          "type": "mp4",
-          "available": true
-        }
-      ],
-      "accessoriesInfo": "1. Blades- 24 nos.    2. Tool kit",
-      "accessoriesAvailable": false,
-      "sparePartsAvailable": false,
-      "sourceTabs": [
-        "Product description",
-        "Accessories",
-        "Brochure",
-        "Video"
-      ],
-      "isPublished": true,
-      "isDraft": false,
-      "isFeatured": false,
-      "isBestSeller": false,
-      "targetCrops": "",
-      "cropStages": "",
-      "vendor": "Agrimart",
-      "taxCategory": "MRP – Inclusive Of All Taxes",
-      "gtin": "8901234024824",
-      "manufacturerPartNumber": "SM505",
-      "metaTitle": "SM505-SUNMAX WM500-INTERCULTIVATOR/POWER WEEDER | SUNMAX | Agri Mart",
-      "metaKeywords": "SM505-SUNMAX WM500-INTERCULTIVATOR/POWER WEEDER, SUNMAX, Intercultivator / Power Weeder, RIPL024824",
-      "metaDescription": "Engine Type: Single Cylinder Air-Cooled 4 Stroke Engine Max. Engine Power: 6 HP Tilling Width: 600 - 900 mm Tilling Depth: 150 - 300 cm Gear Box Oil: SA90 Engine Oil: 20w40/ 15w40",
-      "seName": "sm505-sunmax-wm500-intercultivator-power-weeder-581",
-      "allowCustomerReviews": true,
-      "visibleIndividually": true,
-      "productType": "Simple",
-      "createdAt": "2026-11-11T09:28:50.049Z",
-      "updatedAt": "2026-11-11T09:28:50.049Z",
-      "cost": 40716,
-      "weight": 5,
-      "length": 35,
-      "width": 25,
-      "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
-    },
-    {
       "id": "am-2846",
       "name": "AM22+GX 80D-HTP POWER SPRAYER",
       "nameKn": "AM22+GX 80D-HTP POWER SPRAYER",
@@ -14015,75 +13937,6 @@
       "createdAt": "2026-11-11T09:28:50.049Z",
       "updatedAt": "2026-11-11T09:28:50.049Z",
       "cost": 51464,
-      "weight": 5,
-      "length": 35,
-      "width": 25,
-      "height": 20,
-      "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
-    },
-    {
-      "id": "am-2918",
-      "name": "SMH-505+HONDA ENGINE SUNMAX POWER WEEDER",
-      "nameKn": "SMH-505+HONDA ENGINE SUNMAX POWER WEEDER",
-      "slug": "smh-505-honda-engine-sunmax-power-weeder-2918",
-      "sku": "RIPL033128",
-      "riplCode": "RIPL033128",
-      "sourceProductId": "2918",
-      "sourceProductGroup": "1411",
-      "sourcePage": "AM-product-167-MjkxOAMTQxMQ.html",
-      "sourceListPosition": 167,
-      "shortDescription": "No Information Available.",
-      "description": "No Information Available.",
-      "descriptionHtml": "No Information Available.",
-      "brandId": "br-am-agrimate",
-      "brandName": "AGRIMATE",
-      "categoryId": "cat-am-intercultivator-power-weeder",
-      "parentCategoryId": "cat-am-intercultivator-power-weeder",
-      "subCategoryId": "subcat-weeders-tillers",
-      "price": 66590,
-      "comparePrice": 66590,
-      "priceNote": "MRP (Inclusive Of All Taxes)",
-      "variantLabel": "Intercultivator/power Weeder Model",
-      "modelNumber": "SMH505",
-      "stockQuantity": 14,
-      "availableQty": 14,
-      "maxOrderQty": 14,
-      "minOrderQty": 1,
-      "images": [
-        "/images/products/agrimart/product_2918_1.jpg"
-      ],
-      "brochures": [],
-      "videos": [],
-      "accessoriesInfo": "",
-      "accessoriesAvailable": false,
-      "sparePartsAvailable": false,
-      "sourceTabs": [
-        "Product description",
-        "Accessories",
-        "Brochure",
-        "Video"
-      ],
-      "isPublished": true,
-      "isDraft": false,
-      "isFeatured": false,
-      "isBestSeller": false,
-      "targetCrops": "",
-      "cropStages": "",
-      "vendor": "Agrimart",
-      "taxCategory": "MRP – Inclusive Of All Taxes",
-      "gtin": "8901234033128",
-      "manufacturerPartNumber": "SMH505",
-      "metaTitle": "SMH-505+HONDA ENGINE SUNMAX POWER WEEDER | SUNMAX | Agri Mart",
-      "metaKeywords": "SMH-505+HONDA ENGINE SUNMAX POWER WEEDER, SUNMAX, Intercultivator / Power Weeder, RIPL033128",
-      "metaDescription": "No Information Available.",
-      "seName": "smh-505-honda-engine-sunmax-power-weeder-2918",
-      "allowCustomerReviews": true,
-      "visibleIndividually": true,
-      "productType": "Simple",
-      "createdAt": "2026-11-11T09:28:50.049Z",
-      "updatedAt": "2026-11-11T09:28:50.049Z",
-      "cost": 51940,
       "weight": 5,
       "length": 35,
       "width": 25,
@@ -21097,20 +20950,6 @@
       "updatedAt": "2026-11-11T09:28:50.049Z"
     },
     {
-      "id": "var-am-581-1",
-      "productId": "am-581",
-      "sku": "RIPL024824",
-      "title": "SM505",
-      "variantName": "Intercultivator/power Weeder Model",
-      "price": 52200,
-      "comparePrice": 52200,
-      "unit": "Unit",
-      "isDefault": true,
-      "stockQuantity": 1,
-      "createdAt": "2026-11-11T09:28:50.049Z",
-      "updatedAt": "2026-11-11T09:28:50.049Z"
-    },
-    {
       "id": "var-am-2846-1",
       "productId": "am-2846",
       "sku": "RIPL005900BOM-R-2",
@@ -21345,20 +21184,6 @@
       "unit": "Unit",
       "isDefault": true,
       "stockQuantity": 42,
-      "createdAt": "2026-11-11T09:28:50.049Z",
-      "updatedAt": "2026-11-11T09:28:50.049Z"
-    },
-    {
-      "id": "var-am-2918-1",
-      "productId": "am-2918",
-      "sku": "RIPL033128",
-      "title": "SMH505",
-      "variantName": "Intercultivator/power Weeder Model",
-      "price": 66590,
-      "comparePrice": 66590,
-      "unit": "Unit",
-      "isDefault": true,
-      "stockQuantity": 14,
       "createdAt": "2026-11-11T09:28:50.049Z",
       "updatedAt": "2026-11-11T09:28:50.049Z"
     },
@@ -25591,36 +25416,6 @@
       "createdAt": "2026-11-11T09:28:50.049Z"
     },
     {
-      "id": "med-am-581-1",
-      "productId": "am-581",
-      "url": "/images/products/agrimart/product_581_1.jpg",
-      "altText": "SM505-SUNMAX WM500-INTERCULTIVATOR/POWER WEEDER - Picture 1",
-      "type": "IMAGE",
-      "isPrimary": true,
-      "displayOrder": 1,
-      "createdAt": "2026-11-11T09:28:50.049Z"
-    },
-    {
-      "id": "med-am-581-2",
-      "productId": "am-581",
-      "url": "/images/products/agrimart/product_581_2.jpg",
-      "altText": "SM505-SUNMAX WM500-INTERCULTIVATOR/POWER WEEDER - Picture 2",
-      "type": "IMAGE",
-      "isPrimary": false,
-      "displayOrder": 2,
-      "createdAt": "2026-11-11T09:28:50.049Z"
-    },
-    {
-      "id": "med-am-581-3",
-      "productId": "am-581",
-      "url": "/images/products/agrimart/product_581_3.jpg",
-      "altText": "SM505-SUNMAX WM500-INTERCULTIVATOR/POWER WEEDER - Picture 3",
-      "type": "IMAGE",
-      "isPrimary": false,
-      "displayOrder": 3,
-      "createdAt": "2026-11-11T09:28:50.049Z"
-    },
-    {
       "id": "med-am-2846-1",
       "productId": "am-2846",
       "url": "/images/products/agrimart/product_2846_1.jpg",
@@ -25908,16 +25703,6 @@
       "type": "IMAGE",
       "isPrimary": false,
       "displayOrder": 4,
-      "createdAt": "2026-11-11T09:28:50.049Z"
-    },
-    {
-      "id": "med-am-2918-1",
-      "productId": "am-2918",
-      "url": "/images/products/agrimart/product_2918_1.jpg",
-      "altText": "SMH-505+HONDA ENGINE SUNMAX POWER WEEDER - Picture 1",
-      "type": "IMAGE",
-      "isPrimary": true,
-      "displayOrder": 1,
       "createdAt": "2026-11-11T09:28:50.049Z"
     },
     {
@@ -35547,78 +35332,6 @@
       "displayOrder": 4
     },
     {
-      "id": "sp-am-581-1",
-      "productId": "am-581",
-      "group": "Model",
-      "name": "Intercultivator/power Weeder Model",
-      "value": "SM505",
-      "displayOrder": 1
-    },
-    {
-      "id": "sp-am-581-2",
-      "productId": "am-581",
-      "group": "Model",
-      "name": "RIPL Code",
-      "value": "RIPL024824",
-      "displayOrder": 2
-    },
-    {
-      "id": "sp-am-581-3",
-      "productId": "am-581",
-      "group": "Model",
-      "name": "Brand",
-      "value": "SUNMAX",
-      "displayOrder": 3
-    },
-    {
-      "id": "sp-am-581-4",
-      "productId": "am-581",
-      "group": "Technical Specifications",
-      "name": "Engine Type",
-      "value": "Single Cylinder Air-Cooled 4 Stroke Engine",
-      "displayOrder": 4
-    },
-    {
-      "id": "sp-am-581-5",
-      "productId": "am-581",
-      "group": "Technical Specifications",
-      "name": "Max. Engine Power",
-      "value": "6 HP",
-      "displayOrder": 5
-    },
-    {
-      "id": "sp-am-581-6",
-      "productId": "am-581",
-      "group": "Technical Specifications",
-      "name": "Tilling Width",
-      "value": "600 - 900 mm",
-      "displayOrder": 6
-    },
-    {
-      "id": "sp-am-581-7",
-      "productId": "am-581",
-      "group": "Technical Specifications",
-      "name": "Tilling Depth",
-      "value": "150 - 300 cm",
-      "displayOrder": 7
-    },
-    {
-      "id": "sp-am-581-8",
-      "productId": "am-581",
-      "group": "Technical Specifications",
-      "name": "Gear Box Oil",
-      "value": "SA90",
-      "displayOrder": 8
-    },
-    {
-      "id": "sp-am-581-9",
-      "productId": "am-581",
-      "group": "Technical Specifications",
-      "name": "Engine Oil",
-      "value": "20w40/ 15w40",
-      "displayOrder": 9
-    },
-    {
       "id": "sp-am-2846-1",
       "productId": "am-2846",
       "group": "Model",
@@ -36921,30 +36634,6 @@
       "name": "Productivity",
       "value": "500-750Kg/H",
       "displayOrder": 7
-    },
-    {
-      "id": "sp-am-2918-1",
-      "productId": "am-2918",
-      "group": "Model",
-      "name": "Intercultivator/power Weeder Model",
-      "value": "SMH505",
-      "displayOrder": 1
-    },
-    {
-      "id": "sp-am-2918-2",
-      "productId": "am-2918",
-      "group": "Model",
-      "name": "RIPL Code",
-      "value": "RIPL033128",
-      "displayOrder": 2
-    },
-    {
-      "id": "sp-am-2918-3",
-      "productId": "am-2918",
-      "group": "Model",
-      "name": "Brand",
-      "value": "SUNMAX",
-      "displayOrder": 3
     },
     {
       "id": "sp-am-2633-1",
@@ -41857,15 +41546,6 @@
       "reorderThreshold": 0
     },
     {
-      "id": "ws-am-581",
-      "warehouseId": "wh-hubballi",
-      "productId": "am-581",
-      "variantId": "var-am-581-1",
-      "quantity": 1,
-      "reservedQuantity": 0,
-      "reorderThreshold": 1
-    },
-    {
       "id": "ws-am-2846",
       "warehouseId": "wh-hubballi",
       "productId": "am-2846",
@@ -42015,15 +41695,6 @@
       "productId": "am-3560",
       "variantId": "var-am-3560-1",
       "quantity": 42,
-      "reservedQuantity": 0,
-      "reorderThreshold": 5
-    },
-    {
-      "id": "ws-am-2918",
-      "warehouseId": "wh-hubballi",
-      "productId": "am-2918",
-      "variantId": "var-am-2918-1",
-      "quantity": 14,
       "reservedQuantity": 0,
       "reorderThreshold": 5
     },

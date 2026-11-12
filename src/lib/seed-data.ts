@@ -7722,55 +7722,7 @@ export const SEED_PRODUCTS: ProductType[] = [
     "videos": [],
     "accessoriesInfo": ""
   },
-  {
-    "id": "am-581",
-    "name": "SM505-SUNMAX WM500-INTERCULTIVATOR/POWER WEEDER",
-    "slug": "sm505-sunmax-wm500-intercultivator-power-weeder-581",
-    "sku": "RIPL024824",
-    "riplCode": "RIPL024824",
-    "modelNumber": "SM505",
-    "category": "Intercultivator / Power Weeder",
-    "categoryId": "cat-am-intercultivator",
-    "price": 52200,
-    "comparePrice": 52200,
-    "brand": "AGRIMATE",
-    "rating": 4.8,
-    "reviewsCount": 14,
-    "stock": 1,
-    "images": [
-      "/images/products/agrimart/product_581_1.jpg",
-      "/images/products/agrimart/product_581_2.jpg",
-      "/images/products/agrimart/product_581_3.jpg"
-    ],
-    "description": "Engine Type: Single Cylinder Air-Cooled 4 Stroke Engine    Max. Engine Power: 6 HP    Tilling Width: 600 - 900 mm     Tilling Depth: 150 - 300 cm   Gear Box Oil: SA90    Engine Oil: 20w40/ 15w40",
-    "descriptionHtml": "<p><b>Engine Type:</b> Single Cylinder Air-Cooled 4 Stroke Engine   <b> Max. Engine Power: </b>6 HP   <b>Tilling Width:</b> 600 - 900 mm    <b>Tilling Depth:</b> 150 - 300 cm  <b> Gear Box Oil: </b>SA90<b>   Engine Oil: </b>20w40/ 15w40<br><br></p>",
-    "specifications": {
-      "Intercultivator/power Weeder Model": "SM505",
-      "RIPL Code": "RIPL024824",
-      "Brand": "SUNMAX",
-      "Engine Type": "Single Cylinder Air-Cooled 4 Stroke Engine",
-      "Max. Engine Power": "6 HP",
-      "Tilling Width": "600 - 900 mm",
-      "Tilling Depth": "150 - 300 cm",
-      "Gear Box Oil": "SA90",
-      "Engine Oil": "20w40/ 15w40"
-    },
-    "targetCrops": [],
-    "cropStages": [],
-    "isBestSeller": false,
-    "isFeatured": true,
-    "brochures": [],
-    "videos": [
-      {
-        "url": "/agrimart-media/videos/product_581_1.mp4",
-        "fileName": "product_581_1.mp4",
-        "type": "mp4",
-        "available": true
-      }
-    ],
-    "accessoriesInfo": "1. Blades- 24 nos.    2. Tool kit"
-  },
-  {
+    {
     "id": "am-2846",
     "name": "AM22+GX 80D-HTP POWER SPRAYER",
     "slug": "am22-gx-80d-htp-power-sprayer-2846",
@@ -8636,40 +8588,7 @@ export const SEED_PRODUCTS: ProductType[] = [
     "videos": [],
     "accessoriesInfo": ""
   },
-  {
-    "id": "am-2918",
-    "name": "SMH-505+HONDA ENGINE SUNMAX POWER WEEDER",
-    "slug": "smh-505-honda-engine-sunmax-power-weeder-2918",
-    "sku": "RIPL033128",
-    "riplCode": "RIPL033128",
-    "modelNumber": "SMH505",
-    "category": "Intercultivator / Power Weeder",
-    "categoryId": "cat-am-intercultivator",
-    "price": 66590,
-    "comparePrice": 66590,
-    "brand": "AGRIMATE",
-    "rating": 4.8,
-    "reviewsCount": 14,
-    "stock": 14,
-    "images": [
-      "/images/products/agrimart/product_2918_1.jpg"
-    ],
-    "description": "No Information Available.",
-    "descriptionHtml": "No Information Available.",
-    "specifications": {
-      "Intercultivator/power Weeder Model": "SMH505",
-      "RIPL Code": "RIPL033128",
-      "Brand": "SUNMAX"
-    },
-    "targetCrops": [],
-    "cropStages": [],
-    "isBestSeller": false,
-    "isFeatured": true,
-    "brochures": [],
-    "videos": [],
-    "accessoriesInfo": ""
-  },
-  {
+    {
     "id": "am-2633",
     "name": "G48 PK - COMFORT PLUS OLEO MAC LAWN MOWER - GASOLINE",
     "slug": "g48-pk-comfort-plus-oleo-mac-lawn-mower-gasoline-2633",
