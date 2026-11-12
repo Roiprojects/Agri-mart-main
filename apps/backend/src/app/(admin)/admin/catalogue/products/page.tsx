@@ -32,6 +32,7 @@ import {
   saveProductOverride,
   saveProductOverridesBulk,
 } from '@/lib/admin-product-overrides';
+import { mergeCategoriesWithOverrides } from '@/lib/admin-category-overrides';
 
 interface Product {
   id: string;
@@ -181,8 +182,9 @@ export default function AdminProductsPage() {
         fetch('/api/admin/brands', { cache: 'no-store' }).then((r) => r.json()),
       ]);
 
-      const loadedCategories: CategoryOption[] =
-        catRes.success && Array.isArray(catRes.data) ? catRes.data : [];
+      const loadedCategories: CategoryOption[] = mergeCategoriesWithOverrides(
+        catRes.success && Array.isArray(catRes.data) ? catRes.data : []
+      );
       const loadedBrands: BrandOption[] =
         brandRes.success && Array.isArray(brandRes.data) ? brandRes.data : [];
 

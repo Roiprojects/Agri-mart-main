@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { ProductForm, ProductFormData } from '../ProductForm';
 import { saveProductOverride } from '@/lib/admin-product-overrides';
+import { mergeCategoriesWithOverrides } from '@/lib/admin-category-overrides';
 
 export default function NewProductPage() {
   const router = useRouter();
@@ -18,7 +19,7 @@ export default function NewProductPage() {
       fetch('/api/admin/brands', { cache: 'no-store' }).then((r) => r.json()),
     ])
       .then(([catRes, brandRes]) => {
-        if (catRes.success) setCategories(catRes.data || []);
+        if (catRes.success) setCategories(mergeCategoriesWithOverrides(catRes.data || []));
         if (brandRes.success) setBrands(brandRes.data || []);
       })
       .finally(() => setLoading(false));

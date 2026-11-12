@@ -19,6 +19,11 @@ import {
   FileSpreadsheet,
   FileCode,
 } from 'lucide-react';
+import {
+  mergeCategoriesWithOverrides,
+  saveCategoryOverride,
+  markCategoryDeletedOverride,
+} from '@/lib/admin-category-overrides';
 
 interface Category {
   id: string;
@@ -106,10 +111,12 @@ export default function AdminCategoriesPage() {
   const fetchCategories = async () => {
     try {
       setLoading(true);
-      const res = await fetch('/api/admin/catalogue/categories');
+      const res = await fetch('/api/admin/catalogue/categories', { cache: 'no-store' });
       const json = await res.json();
       if (json.success && Array.isArray(json.data)) {
-        setCategories(json.data);
+        setCategories(mergeCategoriesWithOverrides(json.data));
+      } else {
+        setCategories(mergeCategoriesWithOverrides([]));
       }
     } catch (err: any) {
       showToast('Error loading categories: ' + err.message, 'error');
@@ -239,6 +246,7 @@ export default function AdminCategoriesPage() {
       });
       const json = await res.json();
       if (json.success) {
+        if (json.data) saveCategoryOverride(json.data);
         showToast(editingCategory ? 'Category updated successfully!' : 'Category created successfully!');
         setModalOpen(false);
         fetchCategories();
@@ -271,6 +279,7 @@ export default function AdminCategoriesPage() {
       );
       const json = await res.json();
       if (json.success) {
+        deleteTargetIds.forEach((id) => markCategoryDeletedOverride(id));
         showToast(`Deleted ${deleteTargetIds.length} category/categories successfully!`);
         setSelectedIds((prev) => prev.filter((id) => !deleteTargetIds.includes(id)));
         setDeleteConfirmOpen(false);

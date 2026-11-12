@@ -2707,9 +2707,9 @@ class PersistentDevDatabase {
       this.save();
       return updated;
     } else {
-      const isPub = category.published !== undefined ? category.published : (category.isPublished !== undefined ? category.isPublished : false);
+      const isPub = category.published !== undefined ? category.published : (category.isPublished !== undefined ? category.isPublished : true);
       const created: DbCategory = {
-        id: category.id || `cat-${Date.now()}`,
+        id: category.id || `cat-am-${category.slug}-${Date.now()}`,
         name: category.name,
         nameKn: category.nameKn,
         slug: category.slug,

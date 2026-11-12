@@ -5,6 +5,7 @@ import ProductCard from '@/components/shop/ProductCard';
 import { Filter, Search, Sparkles, RefreshCw } from 'lucide-react';
 import Link from 'next/link';
 import { SEED_PRODUCTS, SEED_CATEGORIES } from '@/lib/seed-data';
+import { mergeCategoriesWithOverrides } from '@/lib/admin-category-overrides';
 
 const globalShopCache = globalThis as unknown as {
   __shopProducts?: any[];
@@ -36,8 +37,9 @@ export default function ShopPage() {
           setProducts(prodData.data);
         }
         if (catData.success && Array.isArray(catData.data)) {
-          globalShopCache.__shopCategories = catData.data;
-          setCategories(catData.data);
+          const mergedCats = mergeCategoriesWithOverrides(catData.data);
+          globalShopCache.__shopCategories = mergedCats;
+          setCategories(mergedCats);
         }
         setLoading(false);
       })

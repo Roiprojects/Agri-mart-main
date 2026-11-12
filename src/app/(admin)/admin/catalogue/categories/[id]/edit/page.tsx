@@ -3,6 +3,11 @@
 import { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
 import { CategoryForm, CategoryFormData } from '../../CategoryForm';
+import {
+  getCategoryOverrideById,
+  mergeCategoriesWithOverrides,
+  saveCategoryOverride,
+} from '@/lib/admin-category-overrides';
 
 export default function EditCategoryPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = use(params);
@@ -13,14 +18,13 @@ export default function EditCategoryPage({ params }: { params: Promise<{ id: str
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    fetch('/api/admin/catalogue/categories')
+    fetch('/api/admin/catalogue/categories', { cache: 'no-store' })
       .then((r) => r.json())
       .then((catRes) => {
-        if (catRes.success && Array.isArray(catRes.data)) {
-          setCategories(catRes.data);
-          const match = catRes.data.find((c: any) => c.id === resolvedParams.id);
-          setCategory(match || null);
-        }
+        const merged = mergeCategoriesWithOverrides(catRes.success && Array.isArray(catRes.data) ? catRes.data : []);
+        setCategories(merged);
+        const match = merged.find((c: any) => c.id === resolvedParams.id) || getCategoryOverrideById(resolvedParams.id);
+        setCategory(match || null);
       })
       .finally(() => setLoading(false));
   }, [resolvedParams.id]);
@@ -28,20 +32,32 @@ export default function EditCategoryPage({ params }: { params: Promise<{ id: str
   const handleSave = async (data: CategoryFormData, continueEditing = false) => {
     try {
       setSaving(true);
+      const slug =
+        data.slug?.trim() ||
+        data.name
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/(^-|-$)/g, '');
+
       const res = await fetch('/api/admin/catalogue/categories', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...data,
+          slug,
           id: resolvedParams.id,
         }),
       });
       const json = await res.json();
       if (json.success) {
+        const savedObj = json.data || { ...data, slug, id: resolvedParams.id };
+        saveCategoryOverride(savedObj);
+
         if (!continueEditing) {
           router.push('/admin/catalogue/categories');
+          router.refresh();
         } else {
-          setCategory({ ...data, id: resolvedParams.id });
+          setCategory(savedObj);
         }
       } else {
         alert(json.message || 'Failed to update category');

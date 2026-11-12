@@ -8,6 +8,7 @@ import {
   mergeProductsWithOverrides,
   saveProductOverride,
 } from '@/lib/admin-product-overrides';
+import { mergeCategoriesWithOverrides } from '@/lib/admin-category-overrides';
 
 export default function EditProductPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = use(params);
@@ -34,7 +35,7 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
         .catch(() => ({ success: false, data: [] })),
     ])
       .then(([singleRes, prodRes, catRes, brandRes]) => {
-        const cats = catRes.success && Array.isArray(catRes.data) ? catRes.data : [];
+        const cats = mergeCategoriesWithOverrides(catRes.success && Array.isArray(catRes.data) ? catRes.data : []);
         const brs = brandRes.success && Array.isArray(brandRes.data) ? brandRes.data : [];
         setCategories(cats);
         setBrands(brs);

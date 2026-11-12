@@ -2,6 +2,9 @@ import { NextResponse } from 'next/server';
 import { CatalogueService } from '@/lib/catalogue-service';
 import { devDb } from '@/lib/dev-db';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export async function GET() {
   const categories = await CatalogueService.getCategories();
   return NextResponse.json({ success: true, count: categories.length, data: categories });
@@ -10,11 +13,17 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    if (!body.name || !body.slug) {
-      return NextResponse.json({ success: false, message: 'Category name and slug are required.' }, { status: 400 });
+    if (!body.name || !String(body.name).trim()) {
+      return NextResponse.json({ success: false, message: 'Category name is required.' }, { status: 400 });
     }
+    const slug =
+      (body.slug && String(body.slug).trim()) ||
+      String(body.name)
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/(^-|-$)/g, '');
 
-    const saved = await CatalogueService.saveCategory(body);
+    const saved = await CatalogueService.saveCategory({ ...body, name: String(body.name).trim(), slug });
     return NextResponse.json({
       success: true,
       data: saved,
