@@ -1372,8 +1372,12 @@ export function ProductForm({
                     </div>
                   </div>
 
-                  {/* Vendor */}
-                  <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
+                  {/* Vendor (Hidden per user request — kept in DOM/state) */}
+                  <div
+                    className="hidden grid-cols-1 sm:grid-cols-12 items-center gap-2"
+                    style={{ display: 'none' }}
+                    aria-hidden="true"
+                  >
                     <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
                       <span>Vendor</span>
                       <Tooltip text="Choose the vendor for this product." />
