@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server';
 import { devDb } from '@/lib/dev-db';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export async function GET() {
   try {
     const brands = devDb.getBrands();
@@ -39,8 +42,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: true, data: data.brands[existingIndex] });
     } else {
       const newBrand = {
-        id: body.id || `br-${Date.now()}`,
-        name: body.name,
+        id: body.id || `br-am-${slug}-${Date.now()}`,
+        name: String(body.name).trim(),
         slug,
         logoUrl: body.logoUrl || '',
         description: body.description || '',

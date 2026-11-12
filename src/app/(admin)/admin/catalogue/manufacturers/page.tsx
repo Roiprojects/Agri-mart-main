@@ -18,6 +18,11 @@ import {
   FileSpreadsheet,
   FileCode,
 } from 'lucide-react';
+import {
+  mergeBrandsWithOverrides,
+  saveBrandOverride,
+  markBrandDeletedOverride,
+} from '@/lib/admin-brand-overrides';
 
 interface Manufacturer {
   id: string;
@@ -102,21 +107,12 @@ export default function AdminManufacturersPage() {
   const fetchManufacturers = async () => {
     try {
       setLoading(true);
-      const res = await fetch('/api/admin/brands');
+      const res = await fetch('/api/admin/brands', { cache: 'no-store' });
       const json = await res.json();
-      if (json.success && Array.isArray(json.data)) {
-        // Sort so Diamond & Gold, Bird, Vasari appear first matching screenshot
-        const priorityOrder = ['Diamond & Gold', 'Bird', 'Vasari'];
-        const sorted = [...json.data].sort((a, b) => {
-          const indexA = priorityOrder.indexOf(a.name);
-          const indexB = priorityOrder.indexOf(b.name);
-          if (indexA !== -1 && indexB !== -1) return indexA - indexB;
-          if (indexA !== -1) return -1;
-          if (indexB !== -1) return 1;
-          return (a.displayOrder || 0) - (b.displayOrder || 0);
-        });
-        setManufacturers(sorted);
-      }
+      const rawList = json.success && Array.isArray(json.data) ? json.data : [];
+      const merged = mergeBrandsWithOverrides(rawList);
+      const sorted = [...merged].sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0));
+      setManufacturers(sorted);
     } catch (err: any) {
       showToast('Error loading manufacturers: ' + err.message, 'error');
     } finally {
@@ -230,6 +226,7 @@ export default function AdminManufacturersPage() {
       });
       const json = await res.json();
       if (json.success) {
+        if (json.data) saveBrandOverride(json.data);
         showToast(
           editingManufacturer
             ? 'Manufacturer updated successfully!'
@@ -266,6 +263,7 @@ export default function AdminManufacturersPage() {
       );
       const json = await res.json();
       if (json.success) {
+        deleteTargetIds.forEach((id) => markBrandDeletedOverride(id));
         showToast(`Deleted ${deleteTargetIds.length} manufacturer(s) successfully!`);
         setSelectedIds((prev) => prev.filter((id) => !deleteTargetIds.includes(id)));
         setDeleteConfirmOpen(false);

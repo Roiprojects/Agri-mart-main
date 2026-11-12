@@ -18,6 +18,7 @@ import {
   saveProductOverridesBulk,
 } from '@/lib/admin-product-overrides';
 import { mergeCategoriesWithOverrides } from '@/lib/admin-category-overrides';
+import { mergeBrandsWithOverrides } from '@/lib/admin-brand-overrides';
 
 interface BulkProductItem {
   id: string;
@@ -91,7 +92,7 @@ export default function BulkEditProductsPage() {
     ])
       .then(([prodRes, catRes, brandRes]) => {
         const cats = mergeCategoriesWithOverrides(catRes.success && Array.isArray(catRes.data) ? catRes.data : []);
-        const brs = brandRes.success && Array.isArray(brandRes.data) ? brandRes.data : [];
+        const brs = mergeBrandsWithOverrides(brandRes.success && Array.isArray(brandRes.data) ? brandRes.data : []);
         setCategories(cats);
         setBrands(brs);
 

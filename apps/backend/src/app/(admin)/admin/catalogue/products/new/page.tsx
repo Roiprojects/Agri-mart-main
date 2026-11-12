@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { ProductForm, ProductFormData } from '../ProductForm';
 import { saveProductOverride } from '@/lib/admin-product-overrides';
 import { mergeCategoriesWithOverrides } from '@/lib/admin-category-overrides';
+import { mergeBrandsWithOverrides } from '@/lib/admin-brand-overrides';
 
 export default function NewProductPage() {
   const router = useRouter();
@@ -20,7 +21,7 @@ export default function NewProductPage() {
     ])
       .then(([catRes, brandRes]) => {
         if (catRes.success) setCategories(mergeCategoriesWithOverrides(catRes.data || []));
-        if (brandRes.success) setBrands(brandRes.data || []);
+        if (brandRes.success) setBrands(mergeBrandsWithOverrides(brandRes.data || []));
       })
       .finally(() => setLoading(false));
   }, []);
