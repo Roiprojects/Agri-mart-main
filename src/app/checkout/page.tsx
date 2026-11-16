@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Truck, MapPin, ShieldCheck, CheckCircle2, CreditCard, Smartphone, Banknote, Building2, AlertTriangle } from 'lucide-react';
 import { useAuth } from '@/lib/auth-client';
 import { validatePhoneNumber, validateEmailOptional, validatePinCode } from '@/lib/validation';
+import { getProductOverrideById, saveProductOverride } from '@/lib/admin-product-overrides';
 
 const INDIAN_BANKS = [
   'State Bank of India (SBI)',
@@ -143,6 +144,28 @@ export default function CheckoutPage() {
         setErrorMessage(data.message || 'Could not complete order');
         setIsSubmitting(false);
         return;
+      }
+
+      // Sync remaining stock quantity to client overrides so Admin Products, Low Stock, and Frontend update immediately
+      if (typeof window !== 'undefined' && Array.isArray(data.updatedStocks)) {
+        for (const st of data.updatedStocks) {
+          if (!st?.productId) continue;
+          const existingOv = getProductOverrideById(st.productId) || {};
+          const currentOvStock =
+            existingOv.stockQuantity !== undefined
+              ? Math.max(0, Number(existingOv.stockQuantity) - (Number(st.orderedQty) || 0))
+              : st.remainingStock;
+          if (currentOvStock !== undefined) {
+            saveProductOverride({
+              ...existingOv,
+              id: st.productId,
+              stockQuantity: currentOvStock,
+              stock: currentOvStock,
+              availableQty: currentOvStock,
+              maxOrderQty: currentOvStock,
+            });
+          }
+        }
       }
 
       // Show Payment Confirmation Modal with UPI Pay, NetBanking, and Cash on Delivery options

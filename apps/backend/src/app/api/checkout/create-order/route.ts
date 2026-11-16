@@ -63,6 +63,20 @@ export async function POST(request: Request) {
     }
 
     const order = orderResult.order;
+    const updatedStocks = (items || []).map((it: any) => {
+      const prod = devDb.getProductById(it.productId) || devDb.getProductBySlug(it.productId);
+      const remainingStock = prod ? Number((prod as any).stockQuantity ?? 0) : undefined;
+      const minStockQuantity = prod
+        ? Math.max(1, Number((prod as any).minStockQuantity ?? (prod as any).lowStockQuantity ?? 1) || 1)
+        : 1;
+      return {
+        productId: prod?.id || it.productId,
+        orderedQty: Number(it.quantity) || 1,
+        remainingStock,
+        minStockQuantity,
+        isLowStock: remainingStock !== undefined ? remainingStock <= minStockQuantity : false,
+      };
+    });
     const keyId = process.env.RAZORPAY_KEY_ID || 'rzp_test_placeholder';
     const isSandboxPayment =
       !process.env.RAZORPAY_KEY_ID ||
@@ -85,6 +99,7 @@ export async function POST(request: Request) {
       success: true,
       orderId: order.id,
       orderNumber: order.orderNumber,
+      updatedStocks,
       order: {
         id: order.id,
         orderNumber: order.orderNumber,

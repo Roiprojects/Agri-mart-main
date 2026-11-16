@@ -69,20 +69,9 @@ export default function ProductDetailClient({ product: initialProduct }: Product
       ? Number(product.availableQty)
       : 0;
   const maxStock = Math.max(0, Number.isFinite(rawMaxStock) ? rawMaxStock : 0);
+  const minQty = 1;
 
-  const rawMinQty = Number(
-    product.minStockQuantity ??
-      product.lowStockQuantity ??
-      product.minOrderQty ??
-      product.minCartQty ??
-      1
-  );
-  const minQty =
-    maxStock > 0
-      ? Math.min(Math.max(1, Number.isFinite(rawMinQty) ? rawMinQty : 1), maxStock)
-      : 1;
-
-  const [quantity, setQuantity] = useState(minQty);
+  const [quantity, setQuantity] = useState(1);
   const [addedNotice, setAddedNotice] = useState(false);
   const [isWishlisted, setIsWishlisted] = useState(false);
 

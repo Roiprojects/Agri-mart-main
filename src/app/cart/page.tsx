@@ -131,7 +131,7 @@ export default function CartPage() {
     const updated = items
       .map((item) => {
         if (item.id === id) {
-          const minAllowed = Math.max(1, Number(item.minQty) || 1);
+          const minAllowed = 1;
           const maxAllowed =
             item.maxStock !== undefined && item.maxStock > 0
               ? Number(item.maxStock)

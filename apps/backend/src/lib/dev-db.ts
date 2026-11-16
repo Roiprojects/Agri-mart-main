@@ -3680,6 +3680,55 @@ class PersistentDevDatabase {
 
     this.reserveStock(orderId, orderData.items, assignedWarehouse.id);
 
+    // Deduct ordered quantities from product, variant, and warehouse stock levels
+    for (const item of orderData.items) {
+      const prod = this.getProductById(item.productId) || this.getProductBySlug(item.productId);
+      const qtyToDeduct = Math.max(1, Number(item.quantity) || 1);
+      if (prod) {
+        const pVars = this.data.variants.filter((v) => v.productId === prod.id);
+        const currentStock =
+          (prod as any).stockQuantity !== undefined
+            ? Number((prod as any).stockQuantity) || 0
+            : pVars.reduce((sum, v) => sum + (v.stockQuantity || 0), 0);
+        const remainingStock = Math.max(0, currentStock - qtyToDeduct);
+
+        (prod as any).stockQuantity = remainingStock;
+        (prod as any).stock = remainingStock;
+        (prod as any).availableQty = remainingStock;
+        (prod as any).maxOrderQty = remainingStock;
+        prod.updatedAt = new Date().toISOString();
+
+        if (pVars.length > 0) {
+          const matchedVar = item.variantId ? pVars.find((v) => v.id === item.variantId) : pVars[0];
+          if (matchedVar) {
+            matchedVar.stockQuantity = Math.max(0, (matchedVar.stockQuantity ?? currentStock) - qtyToDeduct);
+          } else {
+            pVars[0].stockQuantity = remainingStock;
+          }
+        }
+
+        const whStocks = this.data.warehouseStocks.filter((ws) => ws.productId === prod.id);
+        if (whStocks.length > 0) {
+          const targetWh = whStocks.find((ws) => ws.warehouseId === assignedWarehouse.id) || whStocks[0];
+          targetWh.quantity = Math.max(0, (targetWh.quantity ?? currentStock) - qtyToDeduct);
+        } else {
+          const minStock = Math.max(
+            1,
+            Number((prod as any).minStockQuantity ?? (prod as any).lowStockQuantity ?? 1) || 1
+          );
+          this.data.warehouseStocks.push({
+            id: `ws-${prod.id}`,
+            warehouseId: assignedWarehouse.id,
+            productId: prod.id,
+            variantId: pVars[0]?.id || `var-${prod.id}-1`,
+            quantity: remainingStock,
+            reservedQuantity: 0,
+            reorderThreshold: minStock,
+          });
+        }
+      }
+    }
+
     // 6. Create Order with Full Operational Metadata
     const newOrder: DbOrder = {
       id: orderId,
