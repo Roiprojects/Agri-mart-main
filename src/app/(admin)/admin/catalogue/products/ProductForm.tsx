@@ -1467,22 +1467,6 @@ export function ProductForm({
                     </div>
                   </div>
 
-                  {/* Age verification */}
-                  <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
-                    <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
-                      <span>Age verification</span>
-                      <Tooltip text="Check to require age verification before viewing or purchasing this product." />
-                    </div>
-                    <div className="sm:col-span-9 flex items-center">
-                      <input
-                        type="checkbox"
-                        checked={formData.ageVerification}
-                        onChange={(e) => handleChange('ageVerification', e.target.checked)}
-                        className="h-4 w-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc]"
-                      />
-                    </div>
-                  </div>
-
                   {/* Vendor (Hidden per user request — kept in DOM/state) */}
                   <div
                     className="hidden grid-cols-1 sm:grid-cols-12 items-center gap-2"
