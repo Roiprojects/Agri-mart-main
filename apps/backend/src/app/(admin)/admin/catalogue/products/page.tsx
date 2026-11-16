@@ -49,6 +49,8 @@ interface Product {
   comparePrice?: number;
   cost?: number;
   stockQuantity?: number;
+  minStockQuantity?: number;
+  lowStockQuantity?: number;
   weight?: number;
   length?: number;
   width?: number;
@@ -540,6 +542,14 @@ export default function AdminProductsPage() {
         comparePrice: formData.comparePrice !== undefined ? Number(formData.comparePrice) : 0,
         cost: formData.cost !== undefined ? Number(formData.cost) : 0,
         stockQuantity: formData.stockQuantity !== undefined ? Number(formData.stockQuantity) : 0,
+        minStockQuantity:
+          formData.minStockQuantity !== undefined
+            ? Math.max(1, Number(formData.minStockQuantity) || 1)
+            : (existingProd as any)?.minStockQuantity ?? 1,
+        lowStockQuantity:
+          formData.minStockQuantity !== undefined
+            ? Math.max(1, Number(formData.minStockQuantity) || 1)
+            : (existingProd as any)?.lowStockQuantity ?? 1,
         isPublished: Boolean(formData.isPublished),
       };
 
@@ -1697,6 +1707,16 @@ export default function AdminProductsPage() {
                                 (sum, v) => sum + (v.stockQuantity || 0),
                                 0
                               ) || 25,
+                        minStockQuantity:
+                          activeProd.minStockQuantity ??
+                          activeProd.lowStockQuantity ??
+                          (activeProd as any).minOrderQty ??
+                          1,
+                        lowStockQuantity:
+                          activeProd.lowStockQuantity ??
+                          activeProd.minStockQuantity ??
+                          (activeProd as any).minOrderQty ??
+                          1,
                         weight: activeProd.weight ?? 5,
                         length: activeProd.length ?? 35,
                         width: activeProd.width ?? 25,
@@ -1847,6 +1867,12 @@ export default function AdminProductsPage() {
                         <div className="flex justify-between">
                           <span className="text-slate-500">Stock Quantity:</span>
                           <span className="font-bold text-blue-700">{stock} units</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-slate-500">Min / Low Stock Qty:</span>
+                          <span className="font-bold text-amber-700">
+                            {p.minStockQuantity ?? p.lowStockQuantity ?? 1} units
+                          </span>
                         </div>
                         {advancedMode && (
                           <>

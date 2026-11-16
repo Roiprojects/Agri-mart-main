@@ -8,6 +8,8 @@ import {
   mergeProductsWithOverrides,
   saveProductOverride,
 } from '@/lib/admin-product-overrides';
+import { mergeCategoriesWithOverrides } from '@/lib/admin-category-overrides';
+import { mergeBrandsWithOverrides } from '@/lib/admin-brand-overrides';
 
 export default function EditProductPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = use(params);
@@ -34,8 +36,8 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
         .catch(() => ({ success: false, data: [] })),
     ])
       .then(([singleRes, prodRes, catRes, brandRes]) => {
-        const cats = catRes.success && Array.isArray(catRes.data) ? catRes.data : [];
-        const brs = brandRes.success && Array.isArray(brandRes.data) ? brandRes.data : [];
+        const cats = mergeCategoriesWithOverrides(catRes.success && Array.isArray(catRes.data) ? catRes.data : []);
+        const brs = mergeBrandsWithOverrides(brandRes.success && Array.isArray(brandRes.data) ? brandRes.data : []);
         setCategories(cats);
         setBrands(brs);
 
@@ -81,6 +83,14 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
           comparePrice: data.comparePrice !== undefined ? Number(data.comparePrice) : 0,
           cost: data.cost !== undefined ? Number(data.cost) : 0,
           stockQuantity: data.stockQuantity !== undefined ? Number(data.stockQuantity) : 0,
+          minStockQuantity:
+            data.minStockQuantity !== undefined
+              ? Math.max(1, Number(data.minStockQuantity) || 1)
+              : 1,
+          lowStockQuantity:
+            data.minStockQuantity !== undefined
+              ? Math.max(1, Number(data.minStockQuantity) || 1)
+              : 1,
           isPublished: Boolean(data.isPublished),
           variants: [
             {

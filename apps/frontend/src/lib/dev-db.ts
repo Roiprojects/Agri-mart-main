@@ -178,9 +178,13 @@ export interface DbProduct {
   variantLabel?: string;
   modelNumber?: string;
   stockQuantity?: number;
+  minStockQuantity?: number;
+  lowStockQuantity?: number;
   availableQty?: number;
   maxOrderQty?: number;
   minOrderQty?: number;
+  minCartQty?: number;
+  maxCartQty?: number;
   brochures?: { label: string; url: string; fileName?: string; available?: boolean }[];
   videos?: { url: string; type: 'mp4' | 'youtube'; fileName?: string; available?: boolean }[];
   accessoriesInfo?: string;
@@ -2552,6 +2556,19 @@ class PersistentDevDatabase {
         }
 
         // Enrich missing commercial/logistics details on custom products
+        if ((prod as any).minStockQuantity === undefined) {
+          (prod as any).minStockQuantity =
+            (prod as any).lowStockQuantity !== undefined
+              ? Math.max(1, Number((prod as any).lowStockQuantity) || 1)
+              : (prod as any).minOrderQty !== undefined
+              ? Math.max(1, Number((prod as any).minOrderQty) || 1)
+              : 1;
+          changed = true;
+        }
+        if ((prod as any).lowStockQuantity === undefined) {
+          (prod as any).lowStockQuantity = (prod as any).minStockQuantity ?? 1;
+          changed = true;
+        }
         if (!prod.brandId) {
           prod.brandId = 'br-agripro';
           changed = true;
@@ -2882,9 +2899,25 @@ class PersistentDevDatabase {
         ? Number((product as any).stockQuantity) || 0
         : variants.reduce((sum, v) => sum + (v.stockQuantity || 0), 0);
 
+    const minStockQuantity =
+      (product as any).minStockQuantity !== undefined
+        ? Math.max(1, Number((product as any).minStockQuantity) || 1)
+        : (product as any).lowStockQuantity !== undefined
+        ? Math.max(1, Number((product as any).lowStockQuantity) || 1)
+        : (product as any).minOrderQty !== undefined
+        ? Math.max(1, Number((product as any).minOrderQty) || 1)
+        : 1;
+
     return {
       ...product,
       stockQuantity,
+      stock: stockQuantity,
+      availableQty: stockQuantity,
+      maxOrderQty: stockQuantity,
+      minStockQuantity,
+      lowStockQuantity: minStockQuantity,
+      minOrderQty: minStockQuantity,
+      minCartQty: minStockQuantity,
       parentCategoryId: parentCategory?.id || product.parentCategoryId || product.categoryId,
       subCategoryId: subCategory?.id || product.subCategoryId || '',
       brand,
@@ -2961,8 +2994,25 @@ class PersistentDevDatabase {
       };
 
       if ((product as any).stockQuantity !== undefined) {
-        (updated as any).stockQuantity = Math.max(0, Number((product as any).stockQuantity) || 0);
+        const nextStock = Math.max(0, Number((product as any).stockQuantity) || 0);
+        (updated as any).stockQuantity = nextStock;
+        (updated as any).stock = nextStock;
+        (updated as any).availableQty = nextStock;
+        (updated as any).maxOrderQty = nextStock;
       }
+
+      const rawMinStock =
+        (product as any).minStockQuantity ??
+        (product as any).lowStockQuantity ??
+        (product as any).minOrderQty ??
+        (product as any).minCartQty ??
+        (prev as any).minStockQuantity ??
+        1;
+      const nextMinStock = Math.max(1, Number(rawMinStock) || 1);
+      (updated as any).minStockQuantity = nextMinStock;
+      (updated as any).lowStockQuantity = nextMinStock;
+      (updated as any).minOrderQty = nextMinStock;
+      (updated as any).minCartQty = nextMinStock;
 
       this.data.products[existingIndex] = updated;
 
@@ -2998,12 +3048,22 @@ class PersistentDevDatabase {
         });
       }
 
-      if ((product as any).stockQuantity !== undefined) {
-        const targetStock = Math.max(0, Number((product as any).stockQuantity) || 0);
-        const whStocks = this.data.warehouseStocks.filter((ws) => ws.productId === updated.id);
-        if (whStocks.length > 0) {
-          whStocks[0].quantity = targetStock;
+      const whStocks = this.data.warehouseStocks.filter((ws) => ws.productId === updated.id);
+      if (whStocks.length > 0) {
+        if ((product as any).stockQuantity !== undefined) {
+          whStocks[0].quantity = Math.max(0, Number((product as any).stockQuantity) || 0);
         }
+        whStocks[0].reorderThreshold = nextMinStock;
+      } else {
+        this.data.warehouseStocks.push({
+          id: `ws-${updated.id}`,
+          warehouseId: 'wh-hubballi',
+          productId: updated.id,
+          variantId: pVars[0]?.id || `var-${updated.id}-1`,
+          quantity: (updated as any).stockQuantity ?? 25,
+          reservedQuantity: 0,
+          reorderThreshold: nextMinStock,
+        });
       }
 
       // Synchronize images with media collection
@@ -3095,6 +3155,30 @@ class PersistentDevDatabase {
         isRental: product.isRental,
         rentalPeriodLength: product.rentalPeriodLength,
         rentalPeriod: product.rentalPeriod,
+        stockQuantity:
+          (product as any).stockQuantity !== undefined
+            ? Math.max(0, Number((product as any).stockQuantity) || 0)
+            : 25,
+        minStockQuantity: Math.max(
+          1,
+          Number(
+            (product as any).minStockQuantity ??
+              (product as any).lowStockQuantity ??
+              (product as any).minOrderQty ??
+              (product as any).minCartQty ??
+              1
+          ) || 1
+        ),
+        lowStockQuantity: Math.max(
+          1,
+          Number(
+            (product as any).minStockQuantity ??
+              (product as any).lowStockQuantity ??
+              (product as any).minOrderQty ??
+              (product as any).minCartQty ??
+              1
+          ) || 1
+        ),
         createdAt: now,
         updatedAt: now,
       };
@@ -3110,7 +3194,7 @@ class PersistentDevDatabase {
         price: created.price,
         comparePrice: created.comparePrice,
         isDefault: true,
-        stockQuantity: 25,
+        stockQuantity: created.stockQuantity ?? 25,
         createdAt: now,
         updatedAt: now,
       };
@@ -3122,9 +3206,9 @@ class PersistentDevDatabase {
         warehouseId: 'wh-hubballi',
         productId: created.id,
         variantId: defaultVar.id,
-        quantity: 25,
+        quantity: created.stockQuantity ?? 25,
         reservedQuantity: 0,
-        reorderThreshold: 5,
+        reorderThreshold: created.minStockQuantity ?? 1,
       });
 
       // Synchronize images with media collection

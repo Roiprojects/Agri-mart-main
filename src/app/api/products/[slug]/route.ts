@@ -64,7 +64,29 @@ export async function GET(
       isPublished: product.isPublished !== undefined ? Boolean(product.isPublished) : true,
       isFeatured: Boolean(product.isFeatured),
       isBestSeller: Boolean(product.isBestSeller),
-      stockQuantity: (detailed?.variants?.[0]?.stockQuantity ?? product.stockQuantity ?? 25),
+      stockQuantity:
+        product.stockQuantity !== undefined
+          ? Number(product.stockQuantity)
+          : detailed?.variants?.[0]?.stockQuantity ?? 25,
+      stock:
+        product.stockQuantity !== undefined
+          ? Number(product.stockQuantity)
+          : detailed?.variants?.[0]?.stockQuantity ?? 25,
+      minStockQuantity:
+        (product as any).minStockQuantity ??
+        (product as any).lowStockQuantity ??
+        (product as any).minOrderQty ??
+        1,
+      lowStockQuantity:
+        (product as any).minStockQuantity ??
+        (product as any).lowStockQuantity ??
+        (product as any).minOrderQty ??
+        1,
+      minOrderQty:
+        (product as any).minStockQuantity ??
+        (product as any).lowStockQuantity ??
+        (product as any).minOrderQty ??
+        1,
     },
   });
 }

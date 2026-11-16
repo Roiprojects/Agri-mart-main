@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { ProductForm, ProductFormData } from '../ProductForm';
 import { saveProductOverride } from '@/lib/admin-product-overrides';
+import { mergeCategoriesWithOverrides } from '@/lib/admin-category-overrides';
+import { mergeBrandsWithOverrides } from '@/lib/admin-brand-overrides';
 
 export default function NewProductPage() {
   const router = useRouter();
@@ -18,8 +20,8 @@ export default function NewProductPage() {
       fetch('/api/admin/brands', { cache: 'no-store' }).then((r) => r.json()),
     ])
       .then(([catRes, brandRes]) => {
-        if (catRes.success) setCategories(catRes.data || []);
-        if (brandRes.success) setBrands(brandRes.data || []);
+        if (catRes.success) setCategories(mergeCategoriesWithOverrides(catRes.data || []));
+        if (brandRes.success) setBrands(mergeBrandsWithOverrides(brandRes.data || []));
       })
       .finally(() => setLoading(false));
   }, []);
@@ -42,6 +44,14 @@ export default function NewProductPage() {
           price: Number(data.price) || 0,
           comparePrice: data.comparePrice !== undefined ? Number(data.comparePrice) : 0,
           stockQuantity: data.stockQuantity !== undefined ? Number(data.stockQuantity) : 0,
+          minStockQuantity:
+            data.minStockQuantity !== undefined
+              ? Math.max(1, Number(data.minStockQuantity) || 1)
+              : 1,
+          lowStockQuantity:
+            data.minStockQuantity !== undefined
+              ? Math.max(1, Number(data.minStockQuantity) || 1)
+              : 1,
           isPublished: Boolean(data.isPublished),
         });
         if (continueEditing && createdId) {

@@ -104,8 +104,12 @@ export function mergeProductsWithOverrides<T extends { id: string }>(
     if (next.subCategoryId && catMap.has(next.subCategoryId)) {
       next.subCategory = catMap.get(next.subCategoryId);
     }
-    if (next.stockQuantity !== undefined) {
-      const stockNum = Number(next.stockQuantity) || 0;
+    if (next.stockQuantity !== undefined || next.stock !== undefined) {
+      const stockNum = Math.max(0, Number(next.stockQuantity ?? next.stock) || 0);
+      next.stockQuantity = stockNum;
+      next.stock = stockNum;
+      next.availableQty = stockNum;
+      next.maxOrderQty = stockNum;
       if (Array.isArray(next.variants) && next.variants.length > 0) {
         next.variants = next.variants.map((v: any, idx: number) =>
           idx === 0
@@ -116,6 +120,20 @@ export function mergeProductsWithOverrides<T extends { id: string }>(
         next.variants = [{ stockQuantity: stockNum, sku: next.sku, price: next.price }];
       }
     }
+    const minStockNum = Math.max(
+      1,
+      Number(
+        next.minStockQuantity ??
+          next.lowStockQuantity ??
+          next.minOrderQty ??
+          next.minCartQty ??
+          1
+      ) || 1
+    );
+    next.minStockQuantity = minStockNum;
+    next.lowStockQuantity = minStockNum;
+    next.minOrderQty = minStockNum;
+    next.minCartQty = minStockNum;
     return next;
   };
 

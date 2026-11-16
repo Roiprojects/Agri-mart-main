@@ -68,6 +68,8 @@ export interface ProductFormData {
   canonicalUrl?: string;
   images?: string[];
   stockQuantity?: number;
+  minStockQuantity?: number;
+  lowStockQuantity?: number;
   cost?: number;
   disableBuyButton?: boolean;
   callForPrice?: boolean;
@@ -213,6 +215,24 @@ export function ProductForm({
         : (initialValues as any)?.variants?.[0]?.stockQuantity !== undefined
         ? (initialValues as any).variants[0].stockQuantity
         : 25,
+    minStockQuantity:
+      initialValues?.minStockQuantity !== undefined
+        ? Number(initialValues.minStockQuantity)
+        : (initialValues as any)?.lowStockQuantity !== undefined
+        ? Number((initialValues as any).lowStockQuantity)
+        : (initialValues as any)?.minOrderQty !== undefined
+        ? Number((initialValues as any).minOrderQty)
+        : initialValues?.minCartQty !== undefined
+        ? Number(initialValues.minCartQty)
+        : 1,
+    lowStockQuantity:
+      initialValues?.lowStockQuantity !== undefined
+        ? Number(initialValues.lowStockQuantity)
+        : initialValues?.minStockQuantity !== undefined
+        ? Number(initialValues.minStockQuantity)
+        : (initialValues as any)?.minOrderQty !== undefined
+        ? Number((initialValues as any).minOrderQty)
+        : 1,
     cost: initialValues?.cost ?? Math.round((initialValues?.price || 0) * 0.78),
     disableBuyButton: Boolean(initialValues?.disableBuyButton),
     disableWishlistButton: Boolean(initialValues?.disableWishlistButton),
@@ -336,6 +356,22 @@ export function ProductForm({
           : (initialValues as any)?.variants?.[0]?.stockQuantity !== undefined
           ? Number((initialValues as any).variants[0].stockQuantity)
           : prev.stockQuantity,
+      minStockQuantity:
+        initialValues.minStockQuantity !== undefined
+          ? Number(initialValues.minStockQuantity)
+          : (initialValues as any)?.lowStockQuantity !== undefined
+          ? Number((initialValues as any).lowStockQuantity)
+          : (initialValues as any)?.minOrderQty !== undefined
+          ? Number((initialValues as any).minOrderQty)
+          : prev.minStockQuantity ?? 1,
+      lowStockQuantity:
+        initialValues.lowStockQuantity !== undefined
+          ? Number(initialValues.lowStockQuantity)
+          : initialValues.minStockQuantity !== undefined
+          ? Number(initialValues.minStockQuantity)
+          : (initialValues as any)?.minOrderQty !== undefined
+          ? Number((initialValues as any).minOrderQty)
+          : prev.lowStockQuantity ?? 1,
       cost:
         initialValues.cost !== undefined
           ? Number(initialValues.cost)
@@ -1171,21 +1207,44 @@ export function ProductForm({
                 </div>
               </div>
 
-              {/* Stock quantity */}
+              {/* Stock quantity & Minimum stock quantity */}
               <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
                 <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
                   <span>Stock quantity</span>
                   <Tooltip text="Current available inventory stock quantity across dark warehouses." />
                 </div>
-                <div className="sm:col-span-9">
+                <div className="sm:col-span-9 flex flex-wrap items-center gap-4 sm:gap-6">
                   <input
                     type="number"
+                    min={0}
                     value={formData.stockQuantity ?? 25}
                     onChange={(e) =>
-                      handleChange('stockQuantity', parseInt(e.target.value, 10) || 0)
+                      handleChange('stockQuantity', Math.max(0, parseInt(e.target.value, 10) || 0))
                     }
                     className="w-full max-w-[200px] text-xs px-2.5 py-2 rounded border border-[#d2d6de] focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none"
                   />
+
+                  <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1 font-medium text-slate-700 whitespace-nowrap">
+                      <span>Minimum stock quantity</span>
+                      <Tooltip text="Minimum stock quantity (mapped to low stock quantity & minimum selectable quantity on the storefront)." />
+                    </div>
+                    <input
+                      type="number"
+                      min={1}
+                      value={formData.minStockQuantity ?? 1}
+                      onChange={(e) => {
+                        const val = Math.max(1, parseInt(e.target.value, 10) || 1);
+                        setFormData((prev) => ({
+                          ...prev,
+                          minStockQuantity: val,
+                          lowStockQuantity: val,
+                          minCartQty: val,
+                        }));
+                      }}
+                      className="w-full max-w-[200px] text-xs px-2.5 py-2 rounded border border-[#d2d6de] focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none"
+                    />
+                  </div>
                 </div>
               </div>
 

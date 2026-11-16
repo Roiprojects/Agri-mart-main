@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { AlertTriangle, PackageX, RefreshCw, ArrowRight } from 'lucide-react';
 import { DataTable, Column } from '@/components/admin/DataTable';
+import { mergeProductsWithOverrides } from '@/lib/admin-product-overrides';
 
 interface LowStockItem {
   id: string;
@@ -25,10 +26,52 @@ export default function LowStockReportPage() {
   const fetchLowStock = async () => {
     try {
       setLoading(true);
-      const res = await fetch('/api/admin/reports/low-stock');
-      const json = await res.json();
-      if (json.success) {
-        setItems(json.data || []);
+      const [lowRes, prodRes] = await Promise.all([
+        fetch('/api/admin/reports/low-stock', { cache: 'no-store' }).then((r) => r.json()),
+        fetch('/api/admin/catalogue/products', { cache: 'no-store' })
+          .then((r) => r.json())
+          .catch(() => ({ success: false, data: [] })),
+      ]);
+
+      const serverLow: LowStockItem[] = lowRes.success ? lowRes.data || [] : [];
+      if (prodRes.success && Array.isArray(prodRes.data)) {
+        const mergedProducts = mergeProductsWithOverrides(prodRes.data);
+        const byProductId = new Map<string, LowStockItem>();
+        serverLow.forEach((item) => byProductId.set(item.productId, item));
+
+        // Ensure client overrides for stockQuantity and minStockQuantity are mapped accurately
+        for (const p of mergedProducts as any[]) {
+          const qty =
+            p.stockQuantity !== undefined
+              ? Number(p.stockQuantity) || 0
+              : p.variants?.[0]?.stockQuantity !== undefined
+              ? Number(p.variants[0].stockQuantity) || 0
+              : 0;
+          const minStock = Math.max(
+            1,
+            Number(p.minStockQuantity ?? p.lowStockQuantity ?? p.minOrderQty ?? 1) || 1
+          );
+          if (qty <= minStock) {
+            const existing = byProductId.get(p.id);
+            byProductId.set(p.id, {
+              id: existing?.id || `ls-${p.id}`,
+              productId: p.id,
+              productName: p.name || existing?.productName || 'Agri Product',
+              productSku: p.sku || existing?.productSku || 'SKU-UNKNOWN',
+              warehouseName: existing?.warehouseName || 'Hubballi Fulfillment Hub',
+              quantity: qty,
+              reservedQuantity: existing?.reservedQuantity || 0,
+              reorderThreshold: minStock,
+              shortage: Math.max(0, minStock - qty),
+              isCritical: qty === 0,
+            });
+          } else {
+            byProductId.delete(p.id);
+          }
+        }
+        setItems(Array.from(byProductId.values()).sort((a, b) => a.quantity - b.quantity));
+      } else if (lowRes.success) {
+        setItems(serverLow);
       }
     } catch (e) {
       console.error(e);
@@ -90,7 +133,7 @@ export default function LowStockReportPage() {
     },
     {
       key: 'reorderThreshold',
-      header: 'Threshold Limit',
+      header: 'Minimum / Low Stock Qty',
       sortable: true,
       render: (row) => (
         <span className="text-xs font-mono text-slate-600">

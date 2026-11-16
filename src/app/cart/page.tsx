@@ -14,6 +14,8 @@ interface CartItem {
   name: string;
   price: number;
   quantity: number;
+  maxStock?: number;
+  minQty?: number;
   image: string;
   category: string;
   variantId?: string;
@@ -129,8 +131,19 @@ export default function CartPage() {
     const updated = items
       .map((item) => {
         if (item.id === id) {
+          const minAllowed = Math.max(1, Number(item.minQty) || 1);
+          const maxAllowed =
+            item.maxStock !== undefined && item.maxStock > 0
+              ? Number(item.maxStock)
+              : Infinity;
           const newQ = item.quantity + delta;
-          return newQ > 0 ? { ...item, quantity: newQ } : null;
+          if (delta > 0 && newQ > maxAllowed) {
+            return { ...item, quantity: maxAllowed };
+          }
+          if (delta < 0 && newQ < minAllowed && item.quantity <= minAllowed) {
+            return null;
+          }
+          return newQ > 0 ? { ...item, quantity: Math.max(minAllowed, newQ) } : null;
         }
         return item;
       })
@@ -251,8 +264,25 @@ export default function CartPage() {
                       <span className="px-3 font-bold text-slate-800 text-xs">{item.quantity}</span>
                       <button
                         onClick={() => updateQuantity(item.id, 1)}
-                        className="p-2 hover:bg-slate-200 text-slate-600 transition cursor-pointer"
-                        title="Increase quantity"
+                        disabled={
+                          item.maxStock !== undefined &&
+                          item.maxStock > 0 &&
+                          item.quantity >= item.maxStock
+                        }
+                        className={`p-2 transition ${
+                          item.maxStock !== undefined &&
+                          item.maxStock > 0 &&
+                          item.quantity >= item.maxStock
+                            ? 'text-slate-300 opacity-45 cursor-not-allowed'
+                            : 'hover:bg-slate-200 text-slate-600 cursor-pointer'
+                        }`}
+                        title={
+                          item.maxStock !== undefined &&
+                          item.maxStock > 0 &&
+                          item.quantity >= item.maxStock
+                            ? `Maximum available stock (${item.maxStock}) reached`
+                            : 'Increase quantity'
+                        }
                       >
                         <Plus className="w-3.5 h-3.5" />
                       </button>

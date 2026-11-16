@@ -39,6 +39,24 @@ export async function GET(request: Request) {
       images: full?.media?.map((m) => m.url) || p.images || [image],
       rating: 4.8,
       reviewsCount: full?.reviews?.length || 12,
+      stockQuantity:
+        p.stockQuantity !== undefined
+          ? Number(p.stockQuantity)
+          : full?.variants?.[0]?.stockQuantity ?? 25,
+      stock:
+        p.stockQuantity !== undefined
+          ? Number(p.stockQuantity)
+          : full?.variants?.[0]?.stockQuantity ?? 25,
+      minStockQuantity:
+        (p as any).minStockQuantity ??
+        (p as any).lowStockQuantity ??
+        (p as any).minOrderQty ??
+        1,
+      lowStockQuantity:
+        (p as any).minStockQuantity ??
+        (p as any).lowStockQuantity ??
+        (p as any).minOrderQty ??
+        1,
       inStock: (p.stockQuantity ?? 0) > 0 || (full?.warehouseStocks?.some((ws) => ws.quantity > 0) ?? true),
       variants: full?.variants || [],
       specifications: full?.specifications || [],

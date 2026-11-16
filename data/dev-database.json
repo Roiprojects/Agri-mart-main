@@ -744,7 +744,11 @@
           "stockQuantity": 50,
           "isDefault": true
         }
-      ]
+      ],
+      "stock": 50,
+      "minStockQuantity": 1,
+      "lowStockQuantity": 1,
+      "minCartQty": 1
     },
     {
       "id": "am-3018",
@@ -773,7 +777,7 @@
       "stockQuantity": 6302,
       "availableQty": 6302,
       "maxOrderQty": 6302,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_3018_1.jpg"
       ],
@@ -832,7 +836,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 6302,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-3337",
@@ -906,7 +914,13 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 0,
+      "availableQty": 0,
+      "maxOrderQty": 0,
+      "minStockQuantity": 1,
+      "lowStockQuantity": 1,
+      "minCartQty": 1
     },
     {
       "id": "am-3267",
@@ -935,7 +949,7 @@
       "stockQuantity": 164,
       "availableQty": 164,
       "maxOrderQty": 164,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_3267_1.jpg",
         "/images/products/agrimart/product_3267_2.jpg"
@@ -983,7 +997,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 164,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-3014",
@@ -1012,7 +1030,7 @@
       "stockQuantity": 7044,
       "availableQty": 7044,
       "maxOrderQty": 7044,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_3014_1.jpg"
       ],
@@ -1071,7 +1089,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 7044,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-3269",
@@ -1100,7 +1122,7 @@
       "stockQuantity": 76,
       "availableQty": 76,
       "maxOrderQty": 76,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_3269_1.jpg",
         "/images/products/agrimart/product_3269_2.jpg"
@@ -1148,7 +1170,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 76,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-1646",
@@ -1230,7 +1256,13 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 0,
+      "availableQty": 0,
+      "maxOrderQty": 0,
+      "minStockQuantity": 1,
+      "lowStockQuantity": 1,
+      "minCartQty": 1
     },
     {
       "id": "am-1157",
@@ -1259,7 +1291,7 @@
       "stockQuantity": 96,
       "availableQty": 96,
       "maxOrderQty": 96,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_1157_1.jpg",
         "/images/products/agrimart/product_1157_2.jpg",
@@ -1322,7 +1354,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 96,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-3295",
@@ -1397,7 +1433,13 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 0,
+      "availableQty": 0,
+      "maxOrderQty": 0,
+      "minStockQuantity": 1,
+      "lowStockQuantity": 1,
+      "minCartQty": 1
     },
     {
       "id": "am-1891",
@@ -1426,7 +1468,7 @@
       "stockQuantity": 7,
       "availableQty": 7,
       "maxOrderQty": 7,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_1891_1.jpg",
         "/images/products/agrimart/product_1891_2.jpg",
@@ -1489,7 +1531,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 7,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-2460",
@@ -1518,7 +1564,7 @@
       "stockQuantity": 5861,
       "availableQty": 5861,
       "maxOrderQty": 5861,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_2460_2.jpg",
         "/images/products/agrimart/product_2460_4.jpg",
@@ -1579,7 +1625,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 5861,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-3446",
@@ -1608,7 +1658,7 @@
       "stockQuantity": 8,
       "availableQty": 8,
       "maxOrderQty": 8,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_3446_2.jpg"
       ],
@@ -1655,7 +1705,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 8,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-3341",
@@ -1736,7 +1790,13 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 0,
+      "availableQty": 0,
+      "maxOrderQty": 0,
+      "minStockQuantity": 1,
+      "lowStockQuantity": 1,
+      "minCartQty": 1
     },
     {
       "id": "am-2112",
@@ -1820,7 +1880,13 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 0,
+      "availableQty": 0,
+      "maxOrderQty": 0,
+      "minStockQuantity": 1,
+      "lowStockQuantity": 1,
+      "minCartQty": 1
     },
     {
       "id": "am-3343",
@@ -1849,7 +1915,7 @@
       "stockQuantity": 22,
       "availableQty": 22,
       "maxOrderQty": 22,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_3343_1.jpg",
         "/images/products/agrimart/product_3343_2.jpg",
@@ -1918,7 +1984,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 22,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-2961",
@@ -1947,7 +2017,7 @@
       "stockQuantity": 8,
       "availableQty": 8,
       "maxOrderQty": 8,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_2961_1.jpg",
         "/images/products/agrimart/product_2961_2.jpg",
@@ -2004,7 +2074,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 8,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-3492",
@@ -2033,7 +2107,7 @@
       "stockQuantity": 253,
       "availableQty": 253,
       "maxOrderQty": 253,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_3492_1.jpg",
         "/images/products/agrimart/product_3492_2.jpg",
@@ -2084,7 +2158,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 253,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-3299",
@@ -2162,7 +2240,13 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 0,
+      "availableQty": 0,
+      "maxOrderQty": 0,
+      "minStockQuantity": 1,
+      "lowStockQuantity": 1,
+      "minCartQty": 1
     },
     {
       "id": "am-3456",
@@ -2238,7 +2322,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 1,
+      "minStockQuantity": 1,
+      "lowStockQuantity": 1,
+      "minCartQty": 1
     },
     {
       "id": "am-1645",
@@ -2267,7 +2355,7 @@
       "stockQuantity": 911,
       "availableQty": 911,
       "maxOrderQty": 911,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_1645_1.jpg",
         "/images/products/agrimart/product_1645_3.jpg",
@@ -2332,7 +2420,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 911,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-3506",
@@ -2408,7 +2500,13 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 0,
+      "availableQty": 0,
+      "maxOrderQty": 0,
+      "minStockQuantity": 1,
+      "lowStockQuantity": 1,
+      "minCartQty": 1
     },
     {
       "id": "am-3570",
@@ -2483,7 +2581,13 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 0,
+      "availableQty": 0,
+      "maxOrderQty": 0,
+      "minStockQuantity": 1,
+      "lowStockQuantity": 1,
+      "minCartQty": 1
     },
     {
       "id": "am-3510",
@@ -2512,7 +2616,7 @@
       "stockQuantity": 400,
       "availableQty": 400,
       "maxOrderQty": 400,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_3510_3.jpg",
         "/images/products/agrimart/product_3510_4.jpg"
@@ -2566,7 +2670,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 400,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-3436",
@@ -2595,7 +2703,7 @@
       "stockQuantity": 170,
       "availableQty": 170,
       "maxOrderQty": 170,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_3436_1.jpg",
         "/images/products/agrimart/product_3436_2.jpg"
@@ -2650,7 +2758,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "OLEO MAC"
+      "brand": "OLEO MAC",
+      "stock": 170,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-3586",
@@ -2679,7 +2791,7 @@
       "stockQuantity": 9,
       "availableQty": 9,
       "maxOrderQty": 9,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_3586_1.jpg",
         "/images/products/agrimart/product_3586_2.jpg"
@@ -2720,7 +2832,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 9,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-3512",
@@ -2749,7 +2865,7 @@
       "stockQuantity": 305,
       "availableQty": 305,
       "maxOrderQty": 305,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_3512_3.jpg",
         "/images/products/agrimart/product_3512_4.jpg"
@@ -2803,7 +2919,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 305,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-3524",
@@ -2832,7 +2952,7 @@
       "stockQuantity": 234,
       "availableQty": 234,
       "maxOrderQty": 234,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_3524_1.jpg"
       ],
@@ -2885,7 +3005,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 234,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-3582",
@@ -2914,7 +3038,7 @@
       "stockQuantity": 2,
       "availableQty": 2,
       "maxOrderQty": 2,
-      "minOrderQty": 1,
+      "minOrderQty": 2,
       "images": [
         "/images/products/agrimart/product_3582_1.jpg",
         "/images/products/agrimart/product_3582_2.jpg"
@@ -2955,7 +3079,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 2,
+      "minStockQuantity": 2,
+      "lowStockQuantity": 2,
+      "minCartQty": 2
     },
     {
       "id": "am-3347",
@@ -2984,7 +3112,7 @@
       "stockQuantity": 237,
       "availableQty": 237,
       "maxOrderQty": 237,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_3347_1.jpg",
         "/images/products/agrimart/product_3347_2.jpg",
@@ -3039,7 +3167,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 237,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-3263",
@@ -3068,7 +3200,7 @@
       "stockQuantity": 296,
       "availableQty": 296,
       "maxOrderQty": 296,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_3263_1.jpg"
       ],
@@ -3115,7 +3247,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 296,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-3576",
@@ -3144,7 +3280,7 @@
       "stockQuantity": 54,
       "availableQty": 54,
       "maxOrderQty": 54,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_3576_1.jpg",
         "/images/products/agrimart/product_3576_2.jpg"
@@ -3192,7 +3328,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "OLEO MAC"
+      "brand": "OLEO MAC",
+      "stock": 54,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-3588",
@@ -3221,7 +3361,7 @@
       "stockQuantity": 24,
       "availableQty": 24,
       "maxOrderQty": 24,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_3588_2.jpg",
         "/images/products/agrimart/product_3588_3.jpg"
@@ -3262,7 +3402,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 24,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-3598",
@@ -3291,7 +3435,7 @@
       "stockQuantity": 109,
       "availableQty": 109,
       "maxOrderQty": 109,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_3598_1.jpg"
       ],
@@ -3344,7 +3488,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 109,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-3526",
@@ -3424,7 +3572,13 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 0,
+      "availableQty": 0,
+      "maxOrderQty": 0,
+      "minStockQuantity": 1,
+      "lowStockQuantity": 1,
+      "minCartQty": 1
     },
     {
       "id": "am-3502",
@@ -3453,7 +3607,7 @@
       "stockQuantity": 36,
       "availableQty": 36,
       "maxOrderQty": 36,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_3502_1.jpg"
       ],
@@ -3500,7 +3654,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 36,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-3500",
@@ -3529,7 +3687,7 @@
       "stockQuantity": 454,
       "availableQty": 454,
       "maxOrderQty": 454,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_3500_1.jpg",
         "/images/products/agrimart/product_3500_2.jpg"
@@ -3577,7 +3735,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 454,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-3600",
@@ -3606,7 +3768,7 @@
       "stockQuantity": 124,
       "availableQty": 124,
       "maxOrderQty": 124,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_3600_1.jpg",
         "/images/products/agrimart/product_3600_2.jpg",
@@ -3655,7 +3817,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "OLEO MAC"
+      "brand": "OLEO MAC",
+      "stock": 124,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-3528",
@@ -3684,7 +3850,7 @@
       "stockQuantity": 208,
       "availableQty": 208,
       "maxOrderQty": 208,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_3528_1.jpg"
       ],
@@ -3737,7 +3903,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 208,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-3480",
@@ -3766,7 +3936,7 @@
       "stockQuantity": 251,
       "availableQty": 251,
       "maxOrderQty": 251,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_3480_1.jpg",
         "/images/products/agrimart/product_3480_2.jpg"
@@ -3814,7 +3984,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 251,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-1750",
@@ -3843,7 +4017,7 @@
       "stockQuantity": 308,
       "availableQty": 308,
       "maxOrderQty": 308,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_1750_1.jpg",
         "/images/products/agrimart/product_1750_2.jpg",
@@ -3892,7 +4066,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 308,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-1720",
@@ -3921,7 +4099,7 @@
       "stockQuantity": 571,
       "availableQty": 571,
       "maxOrderQty": 571,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_1720_1.jpg",
         "/images/products/agrimart/product_1720_2.jpg",
@@ -3977,7 +4155,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 571,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-1901",
@@ -4006,7 +4188,7 @@
       "stockQuantity": 122,
       "availableQty": 122,
       "maxOrderQty": 122,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_1901_1.jpg",
         "/images/products/agrimart/product_1901_2.jpg",
@@ -4061,7 +4243,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 122,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-3265",
@@ -4135,7 +4321,13 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 0,
+      "availableQty": 0,
+      "maxOrderQty": 0,
+      "minStockQuantity": 1,
+      "lowStockQuantity": 1,
+      "minCartQty": 1
     },
     {
       "id": "am-2031",
@@ -4164,7 +4356,7 @@
       "stockQuantity": 844,
       "availableQty": 844,
       "maxOrderQty": 844,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_2031_1.jpg",
         "/images/products/agrimart/product_2031_2.jpg",
@@ -4219,7 +4411,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 844,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-3522",
@@ -4248,7 +4444,7 @@
       "stockQuantity": 462,
       "availableQty": 462,
       "maxOrderQty": 462,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_3522_1.jpg"
       ],
@@ -4301,7 +4497,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 462,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-1636",
@@ -4330,7 +4530,7 @@
       "stockQuantity": 456,
       "availableQty": 456,
       "maxOrderQty": 456,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_1636_1.jpg",
         "/images/products/agrimart/product_1636_2.jpg",
@@ -4379,7 +4579,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 456,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-3153",
@@ -4459,7 +4663,13 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 0,
+      "availableQty": 0,
+      "maxOrderQty": 0,
+      "minStockQuantity": 1,
+      "lowStockQuantity": 1,
+      "minCartQty": 1
     },
     {
       "id": "am-2590",
@@ -4488,7 +4698,7 @@
       "stockQuantity": 71,
       "availableQty": 71,
       "maxOrderQty": 71,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_2590_1.jpg"
       ],
@@ -4548,7 +4758,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 71,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-3584",
@@ -4577,7 +4791,7 @@
       "stockQuantity": 21,
       "availableQty": 21,
       "maxOrderQty": 21,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_3584_1.jpg",
         "/images/products/agrimart/product_3584_3.jpg"
@@ -4618,7 +4832,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 21,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-3476",
@@ -4647,7 +4865,7 @@
       "stockQuantity": 174,
       "availableQty": 174,
       "maxOrderQty": 174,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_3476_3.jpg",
         "/images/products/agrimart/product_3476_4.jpg"
@@ -4714,7 +4932,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 174,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-3440",
@@ -4802,7 +5024,13 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 0,
+      "availableQty": 0,
+      "maxOrderQty": 0,
+      "minStockQuantity": 1,
+      "lowStockQuantity": 1,
+      "minCartQty": 1
     },
     {
       "id": "am-1098",
@@ -4831,7 +5059,7 @@
       "stockQuantity": 231,
       "availableQty": 231,
       "maxOrderQty": 231,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_1098_1.jpg"
       ],
@@ -4891,7 +5119,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 231,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-3594",
@@ -4920,7 +5152,7 @@
       "stockQuantity": 46,
       "availableQty": 46,
       "maxOrderQty": 46,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_3594_1.jpg"
       ],
@@ -4973,7 +5205,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 46,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-3516",
@@ -5047,7 +5283,13 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 0,
+      "availableQty": 0,
+      "maxOrderQty": 0,
+      "minStockQuantity": 1,
+      "lowStockQuantity": 1,
+      "minCartQty": 1
     },
     {
       "id": "am-3131",
@@ -5076,7 +5318,7 @@
       "stockQuantity": 52,
       "availableQty": 52,
       "maxOrderQty": 52,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_3131_1.jpg",
         "/images/products/agrimart/product_3131_2.jpg",
@@ -5138,7 +5380,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 52,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-3297",
@@ -5212,7 +5458,13 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 0,
+      "availableQty": 0,
+      "maxOrderQty": 0,
+      "minStockQuantity": 1,
+      "lowStockQuantity": 1,
+      "minCartQty": 1
     },
     {
       "id": "am-3360",
@@ -5241,7 +5493,7 @@
       "stockQuantity": 2,
       "availableQty": 2,
       "maxOrderQty": 2,
-      "minOrderQty": 1,
+      "minOrderQty": 2,
       "images": [
         "/images/products/agrimart/product_3360_1.jpg"
       ],
@@ -5301,7 +5553,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 2,
+      "minStockQuantity": 2,
+      "lowStockQuantity": 2,
+      "minCartQty": 2
     },
     {
       "id": "am-996",
@@ -5330,7 +5586,7 @@
       "stockQuantity": 185,
       "availableQty": 185,
       "maxOrderQty": 185,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_996_1.jpg",
         "/images/products/agrimart/product_996_2.jpg",
@@ -5386,7 +5642,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 185,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-3566",
@@ -5415,7 +5675,7 @@
       "stockQuantity": 17,
       "availableQty": 17,
       "maxOrderQty": 17,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_3566_1.jpg"
       ],
@@ -5468,7 +5728,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "KASEI"
+      "brand": "KASEI",
+      "stock": 17,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-3111",
@@ -5497,7 +5761,7 @@
       "stockQuantity": 560,
       "availableQty": 560,
       "maxOrderQty": 560,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_3111_1.jpg",
         "/images/products/agrimart/product_3111_2.jpg"
@@ -5558,7 +5822,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 560,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-3474",
@@ -5587,7 +5855,7 @@
       "stockQuantity": 47,
       "availableQty": 47,
       "maxOrderQty": 47,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_3474_2.jpg",
         "/images/products/agrimart/product_3474_3.jpg"
@@ -5654,7 +5922,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 47,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-2600",
@@ -5728,7 +6000,13 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 0,
+      "availableQty": 0,
+      "maxOrderQty": 0,
+      "minStockQuantity": 1,
+      "lowStockQuantity": 1,
+      "minCartQty": 1
     },
     {
       "id": "am-3468",
@@ -5809,7 +6087,13 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 0,
+      "availableQty": 0,
+      "maxOrderQty": 0,
+      "minStockQuantity": 1,
+      "lowStockQuantity": 1,
+      "minCartQty": 1
     },
     {
       "id": "am-3149",
@@ -5838,7 +6122,7 @@
       "stockQuantity": 78,
       "availableQty": 78,
       "maxOrderQty": 78,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_3149_1.jpg"
       ],
@@ -5891,7 +6175,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 78,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-1106",
@@ -5980,7 +6268,13 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 0,
+      "availableQty": 0,
+      "maxOrderQty": 0,
+      "minStockQuantity": 1,
+      "lowStockQuantity": 1,
+      "minCartQty": 1
     },
     {
       "id": "am-1644",
@@ -6009,7 +6303,7 @@
       "stockQuantity": 114,
       "availableQty": 114,
       "maxOrderQty": 114,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_1644_1.jpg",
         "/images/products/agrimart/product_1644_2.jpg",
@@ -6064,7 +6358,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 114,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-3009",
@@ -6093,7 +6391,7 @@
       "stockQuantity": 95,
       "availableQty": 95,
       "maxOrderQty": 95,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_3009_1.jpg",
         "/images/products/agrimart/product_3009_2.jpg"
@@ -6141,7 +6439,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 95,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-1923",
@@ -6224,7 +6526,13 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 0,
+      "availableQty": 0,
+      "maxOrderQty": 0,
+      "minStockQuantity": 1,
+      "lowStockQuantity": 1,
+      "minCartQty": 1
     },
     {
       "id": "am-1653",
@@ -6253,7 +6561,7 @@
       "stockQuantity": 3,
       "availableQty": 3,
       "maxOrderQty": 3,
-      "minOrderQty": 1,
+      "minOrderQty": 3,
       "images": [
         "/images/products/agrimart/product_1653_1.jpg",
         "/images/products/agrimart/product_1653_2.jpg"
@@ -6307,7 +6615,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "OLEO MAC"
+      "brand": "OLEO MAC",
+      "stock": 3,
+      "minStockQuantity": 3,
+      "lowStockQuantity": 3,
+      "minCartQty": 3
     },
     {
       "id": "am-3564",
@@ -6381,7 +6693,13 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 0,
+      "availableQty": 0,
+      "maxOrderQty": 0,
+      "minStockQuantity": 1,
+      "lowStockQuantity": 1,
+      "minCartQty": 1
     },
     {
       "id": "am-3090",
@@ -6410,7 +6728,7 @@
       "stockQuantity": 237,
       "availableQty": 237,
       "maxOrderQty": 237,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_3090_1.jpg",
         "/images/products/agrimart/product_3090_2.jpg"
@@ -6464,7 +6782,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 237,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-1757",
@@ -6493,7 +6815,7 @@
       "stockQuantity": 136,
       "availableQty": 136,
       "maxOrderQty": 136,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_1757_1.jpg"
       ],
@@ -6553,7 +6875,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 136,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-1637",
@@ -6582,7 +6908,7 @@
       "stockQuantity": 282,
       "availableQty": 282,
       "maxOrderQty": 282,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_1637_1.jpg",
         "/images/products/agrimart/product_1637_2.jpg",
@@ -6631,7 +6957,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 282,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-2005",
@@ -6660,7 +6990,7 @@
       "stockQuantity": 79,
       "availableQty": 79,
       "maxOrderQty": 79,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_2005_1.jpg",
         "/images/products/agrimart/product_2005_2.jpg",
@@ -6716,7 +7046,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 79,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-3007",
@@ -6745,7 +7079,7 @@
       "stockQuantity": 33,
       "availableQty": 33,
       "maxOrderQty": 33,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_3007_1.jpg",
         "/images/products/agrimart/product_3007_2.jpg"
@@ -6793,7 +7127,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 33,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-3592",
@@ -6822,7 +7160,7 @@
       "stockQuantity": 84,
       "availableQty": 84,
       "maxOrderQty": 84,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_3592_1.jpg"
       ],
@@ -6875,7 +7213,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 84,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-382",
@@ -6957,7 +7299,13 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "KASEI"
+      "brand": "KASEI",
+      "stock": 0,
+      "availableQty": 0,
+      "maxOrderQty": 0,
+      "minStockQuantity": 1,
+      "lowStockQuantity": 1,
+      "minCartQty": 1
     },
     {
       "id": "am-1625",
@@ -6986,7 +7334,7 @@
       "stockQuantity": 11,
       "availableQty": 11,
       "maxOrderQty": 11,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_1625_3.jpg",
         "/images/products/agrimart/product_1625_6.jpg",
@@ -7035,7 +7383,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 11,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-3380",
@@ -7116,7 +7468,13 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 0,
+      "availableQty": 0,
+      "maxOrderQty": 0,
+      "minStockQuantity": 1,
+      "lowStockQuantity": 1,
+      "minCartQty": 1
     },
     {
       "id": "am-3488",
@@ -7145,7 +7503,7 @@
       "stockQuantity": 13,
       "availableQty": 13,
       "maxOrderQty": 13,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_3488_1.jpg"
       ],
@@ -7192,7 +7550,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "OLEO MAC"
+      "brand": "OLEO MAC",
+      "stock": 13,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-3580",
@@ -7221,7 +7583,7 @@
       "stockQuantity": 192,
       "availableQty": 192,
       "maxOrderQty": 192,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_3580_1.jpg",
         "/images/products/agrimart/product_3580_2.jpg"
@@ -7269,7 +7631,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 192,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-3392",
@@ -7298,7 +7664,7 @@
       "stockQuantity": 400,
       "availableQty": 400,
       "maxOrderQty": 400,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_3392_1.jpg",
         "/images/products/agrimart/product_3392_2.jpg",
@@ -7347,7 +7713,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 400,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-3125",
@@ -7376,7 +7746,7 @@
       "stockQuantity": 89,
       "availableQty": 89,
       "maxOrderQty": 89,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_3125_1.jpg",
         "/images/products/agrimart/product_3125_2.jpg",
@@ -7440,7 +7810,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 89,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-3333",
@@ -7514,7 +7888,13 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 0,
+      "availableQty": 0,
+      "maxOrderQty": 0,
+      "minStockQuantity": 1,
+      "lowStockQuantity": 1,
+      "minCartQty": 1
     },
     {
       "id": "am-3214",
@@ -7597,7 +7977,13 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 0,
+      "availableQty": 0,
+      "maxOrderQty": 0,
+      "minStockQuantity": 1,
+      "lowStockQuantity": 1,
+      "minCartQty": 1
     },
     {
       "id": "am-3450",
@@ -7626,7 +8012,7 @@
       "stockQuantity": 99,
       "availableQty": 99,
       "maxOrderQty": 99,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_3450_1.jpg"
       ],
@@ -7679,7 +8065,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "KASEI"
+      "brand": "KASEI",
+      "stock": 99,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-1763",
@@ -7708,7 +8098,7 @@
       "stockQuantity": 755,
       "availableQty": 755,
       "maxOrderQty": 755,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_1763_1.jpg",
         "/images/products/agrimart/product_1763_2.jpg",
@@ -7771,7 +8161,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 755,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-3578",
@@ -7800,7 +8194,7 @@
       "stockQuantity": 28,
       "availableQty": 28,
       "maxOrderQty": 28,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_3578_1.jpg",
         "/images/products/agrimart/product_3578_2.jpg"
@@ -7848,7 +8242,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 28,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-3366",
@@ -7877,7 +8275,7 @@
       "stockQuantity": 21,
       "availableQty": 21,
       "maxOrderQty": 21,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_3366_1.jpg"
       ],
@@ -7917,7 +8315,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "KASEI"
+      "brand": "KASEI",
+      "stock": 21,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-3216",
@@ -7946,7 +8348,7 @@
       "stockQuantity": 80,
       "availableQty": 80,
       "maxOrderQty": 80,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_3216_1.jpg",
         "/images/products/agrimart/product_3216_2.jpg",
@@ -8002,7 +8404,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 80,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-2596",
@@ -8031,7 +8437,7 @@
       "stockQuantity": 168,
       "availableQty": 168,
       "maxOrderQty": 168,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_2596_1.jpg"
       ],
@@ -8091,7 +8497,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "OLEO MAC"
+      "brand": "OLEO MAC",
+      "stock": 168,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-1919",
@@ -8120,7 +8530,7 @@
       "stockQuantity": 2,
       "availableQty": 2,
       "maxOrderQty": 2,
-      "minOrderQty": 1,
+      "minOrderQty": 2,
       "images": [
         "/images/products/agrimart/product_1919_1.jpg",
         "/images/products/agrimart/product_1919_2.jpg",
@@ -8176,7 +8586,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 2,
+      "minStockQuantity": 2,
+      "lowStockQuantity": 2,
+      "minCartQty": 2
     },
     {
       "id": "am-181",
@@ -8205,7 +8619,7 @@
       "stockQuantity": 173,
       "availableQty": 173,
       "maxOrderQty": 173,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_181_1.jpg",
         "/images/products/agrimart/product_181_2.jpg",
@@ -8267,7 +8681,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "KASEI"
+      "brand": "KASEI",
+      "stock": 173,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-3420",
@@ -8296,7 +8714,7 @@
       "stockQuantity": 303,
       "availableQty": 303,
       "maxOrderQty": 303,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_3420_1.jpg",
         "/images/products/agrimart/product_3420_2.jpg",
@@ -8351,7 +8769,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "OLEO MAC"
+      "brand": "OLEO MAC",
+      "stock": 303,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-3113",
@@ -8432,7 +8854,13 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 0,
+      "availableQty": 0,
+      "maxOrderQty": 0,
+      "minStockQuantity": 1,
+      "lowStockQuantity": 1,
+      "minCartQty": 1
     },
     {
       "id": "am-3084",
@@ -8461,7 +8889,7 @@
       "stockQuantity": 136,
       "availableQty": 136,
       "maxOrderQty": 136,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_3084_1.jpg",
         "/images/products/agrimart/product_3084_2.jpg"
@@ -8515,7 +8943,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 136,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-3508",
@@ -8544,7 +8976,7 @@
       "stockQuantity": 55,
       "availableQty": 55,
       "maxOrderQty": 55,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_3508_1.jpg",
         "/images/products/agrimart/product_3508_2.jpg",
@@ -8608,7 +9040,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 55,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-2",
@@ -8637,7 +9073,7 @@
       "stockQuantity": 133,
       "availableQty": 133,
       "maxOrderQty": 133,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_2_1.jpg",
         "/images/products/agrimart/product_2_2.jpg",
@@ -8699,7 +9135,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "KASEI"
+      "brand": "KASEI",
+      "stock": 133,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-138",
@@ -8728,7 +9168,7 @@
       "stockQuantity": 6,
       "availableQty": 6,
       "maxOrderQty": 6,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_138_1.jpg",
         "/images/products/agrimart/product_138_2.jpg",
@@ -8784,7 +9224,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "OLEO MAC"
+      "brand": "OLEO MAC",
+      "stock": 6,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-2053",
@@ -8813,7 +9257,7 @@
       "stockQuantity": 63,
       "availableQty": 63,
       "maxOrderQty": 63,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_2053_1.jpg",
         "/images/products/agrimart/product_2053_2.jpg",
@@ -8875,7 +9319,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "OLEO MAC"
+      "brand": "OLEO MAC",
+      "stock": 63,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-3030",
@@ -8904,7 +9352,7 @@
       "stockQuantity": 93,
       "availableQty": 93,
       "maxOrderQty": 93,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_3030_1.jpg",
         "/images/products/agrimart/product_3030_2.jpg"
@@ -8958,7 +9406,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 93,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-3184",
@@ -9032,7 +9484,13 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 0,
+      "availableQty": 0,
+      "maxOrderQty": 0,
+      "minStockQuantity": 1,
+      "lowStockQuantity": 1,
+      "minCartQty": 1
     },
     {
       "id": "am-2999",
@@ -9061,7 +9519,7 @@
       "stockQuantity": 73,
       "availableQty": 73,
       "maxOrderQty": 73,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_2999_1.jpg",
         "/images/products/agrimart/product_2999_2.jpg"
@@ -9116,7 +9574,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 73,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-66",
@@ -9192,7 +9654,13 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "KASEI"
+      "brand": "KASEI",
+      "stock": 0,
+      "availableQty": 0,
+      "maxOrderQty": 0,
+      "minStockQuantity": 1,
+      "lowStockQuantity": 1,
+      "minCartQty": 1
     },
     {
       "id": "am-3486",
@@ -9221,7 +9689,7 @@
       "stockQuantity": 26,
       "availableQty": 26,
       "maxOrderQty": 26,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_3486_1.jpg"
       ],
@@ -9268,7 +9736,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "OLEO MAC"
+      "brand": "OLEO MAC",
+      "stock": 26,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-2051",
@@ -9297,7 +9769,7 @@
       "stockQuantity": 2,
       "availableQty": 2,
       "maxOrderQty": 2,
-      "minOrderQty": 1,
+      "minOrderQty": 2,
       "images": [
         "/images/products/agrimart/product_2051_1.jpg",
         "/images/products/agrimart/product_2051_2.jpg",
@@ -9358,7 +9830,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "OLEO MAC"
+      "brand": "OLEO MAC",
+      "stock": 2,
+      "minStockQuantity": 2,
+      "lowStockQuantity": 2,
+      "minCartQty": 2
     },
     {
       "id": "am-3309",
@@ -9432,7 +9908,13 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "OLEO MAC"
+      "brand": "OLEO MAC",
+      "stock": 0,
+      "availableQty": 0,
+      "maxOrderQty": 0,
+      "minStockQuantity": 1,
+      "lowStockQuantity": 1,
+      "minCartQty": 1
     },
     {
       "id": "am-2822",
@@ -9460,7 +9942,7 @@
       "stockQuantity": 55,
       "availableQty": 55,
       "maxOrderQty": 55,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_2822_1.jpg",
         "/images/products/agrimart/product_2822_2.jpg",
@@ -9522,7 +10004,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "KASEI"
+      "brand": "KASEI",
+      "stock": 55,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-2692",
@@ -9551,7 +10037,7 @@
       "stockQuantity": 12,
       "availableQty": 12,
       "maxOrderQty": 12,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_2692_1.jpg",
         "/images/products/agrimart/product_2692_2.jpg"
@@ -9606,7 +10092,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "OLEO MAC"
+      "brand": "OLEO MAC",
+      "stock": 12,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-1748",
@@ -9635,7 +10125,7 @@
       "stockQuantity": 143,
       "availableQty": 143,
       "maxOrderQty": 143,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_1748_1.jpg",
         "/images/products/agrimart/product_1748_2.jpg",
@@ -9684,7 +10174,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 143,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-2603",
@@ -9713,7 +10207,7 @@
       "stockQuantity": 9,
       "availableQty": 9,
       "maxOrderQty": 9,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_2603_1.jpg"
       ],
@@ -9760,7 +10254,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 9,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-2824",
@@ -9788,7 +10286,7 @@
       "stockQuantity": 27,
       "availableQty": 27,
       "maxOrderQty": 27,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_2824_1.jpg"
       ],
@@ -9842,7 +10340,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "KASEI"
+      "brand": "KASEI",
+      "stock": 27,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-3289",
@@ -9871,7 +10373,7 @@
       "stockQuantity": 11,
       "availableQty": 11,
       "maxOrderQty": 11,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_3289_1.jpg",
         "/images/products/agrimart/product_3289_2.jpg"
@@ -9932,7 +10434,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 11,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-3358",
@@ -9961,7 +10467,7 @@
       "stockQuantity": 64,
       "availableQty": 64,
       "maxOrderQty": 64,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_3358_1.jpg",
         "/images/products/agrimart/product_3358_2.jpg",
@@ -10016,7 +10522,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "KASEI"
+      "brand": "KASEI",
+      "stock": 64,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-3370",
@@ -10045,7 +10555,7 @@
       "stockQuantity": 77,
       "availableQty": 77,
       "maxOrderQty": 77,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_3370_1.jpg",
         "/images/products/agrimart/product_3370_2.jpg"
@@ -10093,7 +10603,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 77,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-1027",
@@ -10122,7 +10636,7 @@
       "stockQuantity": 7,
       "availableQty": 7,
       "maxOrderQty": 7,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_1027_5.jpg",
         "/images/products/agrimart/product_1027_6.jpg",
@@ -10185,7 +10699,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "OLEO MAC"
+      "brand": "OLEO MAC",
+      "stock": 7,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-70",
@@ -10214,7 +10732,7 @@
       "stockQuantity": 61,
       "availableQty": 61,
       "maxOrderQty": 61,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_70_1.jpg",
         "/images/products/agrimart/product_70_2.jpg",
@@ -10282,7 +10800,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "KASEI"
+      "brand": "KASEI",
+      "stock": 61,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-3372",
@@ -10311,7 +10833,7 @@
       "stockQuantity": 107,
       "availableQty": 107,
       "maxOrderQty": 107,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_3372_1.jpg",
         "/images/products/agrimart/product_3372_2.jpg"
@@ -10359,7 +10881,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 107,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-423",
@@ -10388,7 +10914,7 @@
       "stockQuantity": 46,
       "availableQty": 46,
       "maxOrderQty": 46,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_423_1.jpg",
         "/images/products/agrimart/product_423_2.jpg",
@@ -10443,7 +10969,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "OLEO MAC"
+      "brand": "OLEO MAC",
+      "stock": 46,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-406",
@@ -10472,7 +11002,7 @@
       "stockQuantity": 19,
       "availableQty": 19,
       "maxOrderQty": 19,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_406_1.jpg",
         "/images/products/agrimart/product_406_2.jpg",
@@ -10527,7 +11057,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "OLEO MAC"
+      "brand": "OLEO MAC",
+      "stock": 19,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-1839",
@@ -10556,7 +11090,7 @@
       "stockQuantity": 56,
       "availableQty": 56,
       "maxOrderQty": 56,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_1839_1.jpg"
       ],
@@ -10616,7 +11150,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "KASEI"
+      "brand": "KASEI",
+      "stock": 56,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-3291",
@@ -10704,7 +11242,13 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 0,
+      "availableQty": 0,
+      "maxOrderQty": 0,
+      "minStockQuantity": 1,
+      "lowStockQuantity": 1,
+      "minCartQty": 1
     },
     {
       "id": "am-3424",
@@ -10733,7 +11277,7 @@
       "stockQuantity": 9,
       "availableQty": 9,
       "maxOrderQty": 9,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_3424_1.jpg",
         "/images/products/agrimart/product_3424_2.jpg",
@@ -10788,7 +11332,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "OLEO MAC"
+      "brand": "OLEO MAC",
+      "stock": 9,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-1718",
@@ -10817,7 +11365,7 @@
       "stockQuantity": 9,
       "availableQty": 9,
       "maxOrderQty": 9,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_1718_1.jpg",
         "/images/products/agrimart/product_1718_2.jpg",
@@ -10859,7 +11407,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 9,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-3261",
@@ -10888,7 +11440,7 @@
       "stockQuantity": 245,
       "availableQty": 245,
       "maxOrderQty": 245,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_3261_1.jpg",
         "/images/products/agrimart/product_3261_2.jpg",
@@ -10937,7 +11489,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 245,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-3554",
@@ -10966,7 +11522,7 @@
       "stockQuantity": 126,
       "availableQty": 126,
       "maxOrderQty": 126,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_3554_1.jpg",
         "/images/products/agrimart/product_3554_2.jpg",
@@ -11021,7 +11577,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 126,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-3378",
@@ -11050,7 +11610,7 @@
       "stockQuantity": 544,
       "availableQty": 544,
       "maxOrderQty": 544,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_3378_1.jpg",
         "/images/products/agrimart/product_3378_2.jpg"
@@ -11098,7 +11658,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 544,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-644",
@@ -11127,7 +11691,7 @@
       "stockQuantity": 14,
       "availableQty": 14,
       "maxOrderQty": 14,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_644_1.jpg",
         "/images/products/agrimart/product_644_2.jpg",
@@ -11190,7 +11754,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 14,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-3418",
@@ -11219,7 +11787,7 @@
       "stockQuantity": 7,
       "availableQty": 7,
       "maxOrderQty": 7,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_3418_1.jpg",
         "/images/products/agrimart/product_3418_2.jpg"
@@ -11260,7 +11828,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 7,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-3432",
@@ -11289,7 +11861,7 @@
       "stockQuantity": 198,
       "availableQty": 198,
       "maxOrderQty": 198,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_3432_1.jpg",
         "/images/products/agrimart/product_3432_2.jpg"
@@ -11349,7 +11921,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 198,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-3283",
@@ -11378,7 +11954,7 @@
       "stockQuantity": 26,
       "availableQty": 26,
       "maxOrderQty": 26,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_3283_1.jpg",
         "/images/products/agrimart/product_3283_2.jpg"
@@ -11426,7 +12002,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 26,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-3542",
@@ -11455,7 +12035,7 @@
       "stockQuantity": 81,
       "availableQty": 81,
       "maxOrderQty": 81,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_3542_1.jpg",
         "/images/products/agrimart/product_3542_2.jpg",
@@ -11504,7 +12084,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 81,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-2462",
@@ -11533,7 +12117,7 @@
       "stockQuantity": 60,
       "availableQty": 60,
       "maxOrderQty": 60,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_2462_1.jpg"
       ],
@@ -11592,7 +12176,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "OLEO MAC"
+      "brand": "OLEO MAC",
+      "stock": 60,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-3384",
@@ -11673,7 +12261,13 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 0,
+      "availableQty": 0,
+      "maxOrderQty": 0,
+      "minStockQuantity": 1,
+      "lowStockQuantity": 1,
+      "minCartQty": 1
     },
     {
       "id": "am-247",
@@ -11702,7 +12296,7 @@
       "stockQuantity": 6,
       "availableQty": 6,
       "maxOrderQty": 6,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_247_1.jpg",
         "/images/products/agrimart/product_247_2.jpg",
@@ -11767,7 +12361,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 6,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-3348",
@@ -11796,7 +12394,7 @@
       "stockQuantity": 9,
       "availableQty": 9,
       "maxOrderQty": 9,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_3348_1.jpg"
       ],
@@ -11856,7 +12454,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 9,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-3301",
@@ -11929,7 +12531,13 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 0,
+      "availableQty": 0,
+      "maxOrderQty": 0,
+      "minStockQuantity": 1,
+      "lowStockQuantity": 1,
+      "minCartQty": 1
     },
     {
       "id": "am-3546",
@@ -11958,7 +12566,7 @@
       "stockQuantity": 76,
       "availableQty": 76,
       "maxOrderQty": 76,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_3546_1.jpg",
         "/images/products/agrimart/product_3546_2.jpg"
@@ -12006,7 +12614,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 76,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-380",
@@ -12088,7 +12700,13 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "KASEI"
+      "brand": "KASEI",
+      "stock": 0,
+      "availableQty": 0,
+      "maxOrderQty": 0,
+      "minStockQuantity": 1,
+      "lowStockQuantity": 1,
+      "minCartQty": 1
     },
     {
       "id": "am-249",
@@ -12117,7 +12735,7 @@
       "stockQuantity": 7,
       "availableQty": 7,
       "maxOrderQty": 7,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_249_1.jpg",
         "/images/products/agrimart/product_249_2.jpg",
@@ -12159,7 +12777,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 7,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-1917",
@@ -12243,7 +12865,13 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 0,
+      "availableQty": 0,
+      "maxOrderQty": 0,
+      "minStockQuantity": 1,
+      "lowStockQuantity": 1,
+      "minCartQty": 1
     },
     {
       "id": "am-3430",
@@ -12323,7 +12951,13 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 0,
+      "availableQty": 0,
+      "maxOrderQty": 0,
+      "minStockQuantity": 1,
+      "lowStockQuantity": 1,
+      "minCartQty": 1
     },
     {
       "id": "am-419",
@@ -12352,7 +12986,7 @@
       "stockQuantity": 46,
       "availableQty": 46,
       "maxOrderQty": 46,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_419_1.jpg",
         "/images/products/agrimart/product_419_2.jpg",
@@ -12414,7 +13048,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "OLEO MAC"
+      "brand": "OLEO MAC",
+      "stock": 46,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-3327",
@@ -12488,7 +13126,13 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 0,
+      "availableQty": 0,
+      "maxOrderQty": 0,
+      "minStockQuantity": 1,
+      "lowStockQuantity": 1,
+      "minCartQty": 1
     },
     {
       "id": "am-514",
@@ -12517,7 +13161,7 @@
       "stockQuantity": 4,
       "availableQty": 4,
       "maxOrderQty": 4,
-      "minOrderQty": 1,
+      "minOrderQty": 4,
       "images": [
         "/images/products/agrimart/product_514_1.jpg"
       ],
@@ -12571,7 +13215,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 4,
+      "minStockQuantity": 4,
+      "lowStockQuantity": 4,
+      "minCartQty": 4
     },
     {
       "id": "am-2001",
@@ -12600,7 +13248,7 @@
       "stockQuantity": 10,
       "availableQty": 10,
       "maxOrderQty": 10,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_2001_1.jpg",
         "/images/products/agrimart/product_2001_2.jpg",
@@ -12662,7 +13310,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 10,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-2038",
@@ -12691,7 +13343,7 @@
       "stockQuantity": 38,
       "availableQty": 38,
       "maxOrderQty": 38,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_2038_1.jpg"
       ],
@@ -12744,7 +13396,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "KASEI"
+      "brand": "KASEI",
+      "stock": 38,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-3094",
@@ -12773,7 +13429,7 @@
       "stockQuantity": 58,
       "availableQty": 58,
       "maxOrderQty": 58,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_3094_1.jpg",
         "/images/products/agrimart/product_3094_2.jpg"
@@ -12834,7 +13490,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 58,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-3572",
@@ -12921,7 +13581,13 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 0,
+      "availableQty": 0,
+      "maxOrderQty": 0,
+      "minStockQuantity": 1,
+      "lowStockQuantity": 1,
+      "minCartQty": 1
     },
     {
       "id": "am-2846",
@@ -12995,7 +13661,13 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 0,
+      "availableQty": 0,
+      "maxOrderQty": 0,
+      "minStockQuantity": 1,
+      "lowStockQuantity": 1,
+      "minCartQty": 1
     },
     {
       "id": "am-1069",
@@ -13024,7 +13696,7 @@
       "stockQuantity": 47,
       "availableQty": 47,
       "maxOrderQty": 47,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_1069_1.jpg"
       ],
@@ -13077,7 +13749,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "OLEO MAC"
+      "brand": "OLEO MAC",
+      "stock": 47,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-3548",
@@ -13106,7 +13782,7 @@
       "stockQuantity": 115,
       "availableQty": 115,
       "maxOrderQty": 115,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_3548_1.jpg",
         "/images/products/agrimart/product_3548_2.jpg"
@@ -13154,7 +13830,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 115,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-3313",
@@ -13228,7 +13908,13 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 0,
+      "availableQty": 0,
+      "maxOrderQty": 0,
+      "minStockQuantity": 1,
+      "lowStockQuantity": 1,
+      "minCartQty": 1
     },
     {
       "id": "am-96",
@@ -13257,7 +13943,7 @@
       "stockQuantity": 3,
       "availableQty": 3,
       "maxOrderQty": 3,
-      "minOrderQty": 1,
+      "minOrderQty": 3,
       "images": [
         "/images/products/agrimart/product_96_1.jpg",
         "/images/products/agrimart/product_96_2.jpg"
@@ -13318,7 +14004,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "OLEO MAC"
+      "brand": "OLEO MAC",
+      "stock": 3,
+      "minStockQuantity": 3,
+      "lowStockQuantity": 3,
+      "minCartQty": 3
     },
     {
       "id": "am-3186",
@@ -13347,7 +14037,7 @@
       "stockQuantity": 62,
       "availableQty": 62,
       "maxOrderQty": 62,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_3186_1.jpg"
       ],
@@ -13400,7 +14090,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "OLEO MAC"
+      "brand": "OLEO MAC",
+      "stock": 62,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-3257",
@@ -13493,7 +14187,13 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 0,
+      "availableQty": 0,
+      "maxOrderQty": 0,
+      "minStockQuantity": 1,
+      "lowStockQuantity": 1,
+      "minCartQty": 1
     },
     {
       "id": "am-3315",
@@ -13567,7 +14267,13 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 0,
+      "availableQty": 0,
+      "maxOrderQty": 0,
+      "minStockQuantity": 1,
+      "lowStockQuantity": 1,
+      "minCartQty": 1
     },
     {
       "id": "am-3329",
@@ -13641,7 +14347,13 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 0,
+      "availableQty": 0,
+      "maxOrderQty": 0,
+      "minStockQuantity": 1,
+      "lowStockQuantity": 1,
+      "minCartQty": 1
     },
     {
       "id": "am-161",
@@ -13670,7 +14382,7 @@
       "stockQuantity": 68,
       "availableQty": 68,
       "maxOrderQty": 68,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_161_1.jpg",
         "/images/products/agrimart/product_161_2.jpg"
@@ -13724,7 +14436,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 68,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-3478",
@@ -13753,7 +14469,7 @@
       "stockQuantity": 113,
       "availableQty": 113,
       "maxOrderQty": 113,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_3478_1.jpg",
         "/images/products/agrimart/product_3478_2.jpg"
@@ -13801,7 +14517,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 113,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-3024",
@@ -13830,7 +14550,7 @@
       "stockQuantity": 63,
       "availableQty": 63,
       "maxOrderQty": 63,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_3024_1.jpg",
         "/images/products/agrimart/product_3024_2.jpg",
@@ -13893,7 +14613,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 63,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-3368",
@@ -13922,7 +14646,7 @@
       "stockQuantity": 459,
       "availableQty": 459,
       "maxOrderQty": 459,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_3368_1.jpg",
         "/images/products/agrimart/product_3368_2.jpg",
@@ -13984,7 +14708,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 459,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-2850",
@@ -14058,7 +14786,13 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 0,
+      "availableQty": 0,
+      "maxOrderQty": 0,
+      "minStockQuantity": 1,
+      "lowStockQuantity": 1,
+      "minCartQty": 1
     },
     {
       "id": "am-1861",
@@ -14087,7 +14821,7 @@
       "stockQuantity": 8,
       "availableQty": 8,
       "maxOrderQty": 8,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_1861_1.jpg"
       ],
@@ -14127,7 +14861,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 8,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-3311",
@@ -14201,7 +14939,13 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 0,
+      "availableQty": 0,
+      "maxOrderQty": 0,
+      "minStockQuantity": 1,
+      "lowStockQuantity": 1,
+      "minCartQty": 1
     },
     {
       "id": "am-3560",
@@ -14230,7 +14974,7 @@
       "stockQuantity": 42,
       "availableQty": 42,
       "maxOrderQty": 42,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_3560_1.jpg",
         "/images/products/agrimart/product_3560_2.jpg",
@@ -14273,7 +15017,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 42,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-2633",
@@ -14302,7 +15050,7 @@
       "stockQuantity": 4,
       "availableQty": 4,
       "maxOrderQty": 4,
-      "minOrderQty": 1,
+      "minOrderQty": 4,
       "images": [
         "/images/products/agrimart/product_2633_1.jpg",
         "/images/products/agrimart/product_2633_2.jpg"
@@ -14363,7 +15111,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "OLEO MAC"
+      "brand": "OLEO MAC",
+      "stock": 4,
+      "minStockQuantity": 4,
+      "lowStockQuantity": 4,
+      "minCartQty": 4
     },
     {
       "id": "am-1604",
@@ -14392,7 +15144,7 @@
       "stockQuantity": 2,
       "availableQty": 2,
       "maxOrderQty": 2,
-      "minOrderQty": 1,
+      "minOrderQty": 2,
       "images": [
         "/images/products/agrimart/product_1604_1.jpg",
         "/images/products/agrimart/product_1604_2.jpg"
@@ -14440,7 +15192,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 2,
+      "minStockQuantity": 2,
+      "lowStockQuantity": 2,
+      "minCartQty": 2
     },
     {
       "id": "am-1606",
@@ -14522,7 +15278,13 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "OLEO MAC"
+      "brand": "OLEO MAC",
+      "stock": 0,
+      "availableQty": 0,
+      "maxOrderQty": 0,
+      "minStockQuantity": 1,
+      "lowStockQuantity": 1,
+      "minCartQty": 1
     },
     {
       "id": "am-58",
@@ -14613,7 +15375,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 1,
+      "minStockQuantity": 1,
+      "lowStockQuantity": 1,
+      "minCartQty": 1
     },
     {
       "id": "am-1837",
@@ -14642,7 +15408,7 @@
       "stockQuantity": 10,
       "availableQty": 10,
       "maxOrderQty": 10,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_1837_1.jpg"
       ],
@@ -14695,7 +15461,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "OLEO MAC"
+      "brand": "OLEO MAC",
+      "stock": 10,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-1857",
@@ -14724,7 +15494,7 @@
       "stockQuantity": 20,
       "availableQty": 20,
       "maxOrderQty": 20,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_1857_1.jpg"
       ],
@@ -14771,7 +15541,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 20,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-3034",
@@ -14800,7 +15574,7 @@
       "stockQuantity": 36,
       "availableQty": 36,
       "maxOrderQty": 36,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/default.jpg"
       ],
@@ -14840,7 +15614,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 36,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-421",
@@ -14869,7 +15647,7 @@
       "stockQuantity": 8,
       "availableQty": 8,
       "maxOrderQty": 8,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_421_1.jpg",
         "/images/products/agrimart/product_421_2.jpg"
@@ -14930,7 +15708,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "OLEO MAC"
+      "brand": "OLEO MAC",
+      "stock": 8,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-596",
@@ -14959,7 +15741,7 @@
       "stockQuantity": 432,
       "availableQty": 432,
       "maxOrderQty": 432,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_596_1.jpg",
         "/images/products/agrimart/product_596_2.jpg",
@@ -15021,7 +15803,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "OLEO MAC"
+      "brand": "OLEO MAC",
+      "stock": 432,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-3319",
@@ -15095,7 +15881,13 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "OLEO MAC"
+      "brand": "OLEO MAC",
+      "stock": 0,
+      "availableQty": 0,
+      "maxOrderQty": 0,
+      "minStockQuantity": 1,
+      "lowStockQuantity": 1,
+      "minCartQty": 1
     },
     {
       "id": "am-3354",
@@ -15124,7 +15916,7 @@
       "stockQuantity": 28,
       "availableQty": 28,
       "maxOrderQty": 28,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_3354_2.jpg"
       ],
@@ -15171,7 +15963,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 28,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-3374",
@@ -15200,7 +15996,7 @@
       "stockQuantity": 7,
       "availableQty": 7,
       "maxOrderQty": 7,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_3374_1.jpg",
         "/images/products/agrimart/product_3374_2.jpg"
@@ -15241,7 +16037,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 7,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-108",
@@ -15270,7 +16070,7 @@
       "stockQuantity": 12,
       "availableQty": 12,
       "maxOrderQty": 12,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_108_1.jpg",
         "/images/products/agrimart/product_108_2.jpg",
@@ -15332,7 +16132,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "OLEO MAC"
+      "brand": "OLEO MAC",
+      "stock": 12,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-2989",
@@ -15408,7 +16212,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "OLEO MAC"
+      "brand": "OLEO MAC",
+      "stock": 1,
+      "minStockQuantity": 1,
+      "lowStockQuantity": 1,
+      "minCartQty": 1
     },
     {
       "id": "am-90",
@@ -15437,7 +16245,7 @@
       "stockQuantity": 2,
       "availableQty": 2,
       "maxOrderQty": 2,
-      "minOrderQty": 1,
+      "minOrderQty": 2,
       "images": [
         "/images/products/agrimart/product_90_2.jpg",
         "/images/products/agrimart/product_90_3.jpg",
@@ -15499,7 +16307,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "OLEO MAC"
+      "brand": "OLEO MAC",
+      "stock": 2,
+      "minStockQuantity": 2,
+      "lowStockQuantity": 2,
+      "minCartQty": 2
     },
     {
       "id": "am-604",
@@ -15583,7 +16395,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "OLEO MAC"
+      "brand": "OLEO MAC",
+      "stock": 1,
+      "minStockQuantity": 1,
+      "lowStockQuantity": 1,
+      "minCartQty": 1
     },
     {
       "id": "am-3538",
@@ -15612,7 +16428,7 @@
       "stockQuantity": 69,
       "availableQty": 69,
       "maxOrderQty": 69,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_3538_1.jpg",
         "/images/products/agrimart/product_3538_2.jpg"
@@ -15666,7 +16482,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 69,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-3036",
@@ -15695,7 +16515,7 @@
       "stockQuantity": 6,
       "availableQty": 6,
       "maxOrderQty": 6,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_3036_1.jpg"
       ],
@@ -15735,7 +16555,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 6,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-1706",
@@ -15764,7 +16588,7 @@
       "stockQuantity": 71,
       "availableQty": 71,
       "maxOrderQty": 71,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_1706_1.jpg",
         "/images/products/agrimart/product_1706_2.jpg",
@@ -15826,7 +16650,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 71,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-3321",
@@ -15893,7 +16721,13 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 0,
+      "availableQty": 0,
+      "maxOrderQty": 0,
+      "minStockQuantity": 1,
+      "lowStockQuantity": 1,
+      "minCartQty": 1
     },
     {
       "id": "am-3496",
@@ -15980,7 +16814,13 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 0,
+      "availableQty": 0,
+      "maxOrderQty": 0,
+      "minStockQuantity": 1,
+      "lowStockQuantity": 1,
+      "minCartQty": 1
     },
     {
       "id": "am-3028",
@@ -16009,7 +16849,7 @@
       "stockQuantity": 17,
       "availableQty": 17,
       "maxOrderQty": 17,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_3028_1.jpg"
       ],
@@ -16075,7 +16915,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 17,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-1657",
@@ -16104,7 +16948,7 @@
       "stockQuantity": 163,
       "availableQty": 163,
       "maxOrderQty": 163,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_1657_1.jpg",
         "/images/products/agrimart/product_1657_2.jpg",
@@ -16159,7 +17003,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "OLEO MAC"
+      "brand": "OLEO MAC",
+      "stock": 163,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-3218",
@@ -16188,7 +17036,7 @@
       "stockQuantity": 14,
       "availableQty": 14,
       "maxOrderQty": 14,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_3218_1.jpg"
       ],
@@ -16248,7 +17096,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 14,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-3137",
@@ -16277,7 +17129,7 @@
       "stockQuantity": 208,
       "availableQty": 208,
       "maxOrderQty": 208,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_3137_5.jpg",
         "/images/products/agrimart/product_3137_6.jpg",
@@ -16338,7 +17190,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 208,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-2894",
@@ -16414,7 +17270,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 1,
+      "minStockQuantity": 1,
+      "lowStockQuantity": 1,
+      "minCartQty": 1
     },
     {
       "id": "am-3574",
@@ -16443,7 +17303,7 @@
       "stockQuantity": 24,
       "availableQty": 24,
       "maxOrderQty": 24,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_3574_1.jpg",
         "/images/products/agrimart/product_3574_2.jpg"
@@ -16503,7 +17363,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 24,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-2898",
@@ -16532,7 +17396,7 @@
       "stockQuantity": 2,
       "availableQty": 2,
       "maxOrderQty": 2,
-      "minOrderQty": 1,
+      "minOrderQty": 2,
       "images": [
         "/images/products/agrimart/product_2898_1.jpg"
       ],
@@ -16579,7 +17443,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 2,
+      "minStockQuantity": 2,
+      "lowStockQuantity": 2,
+      "minCartQty": 2
     },
     {
       "id": "am-3458",
@@ -16666,7 +17534,13 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 0,
+      "availableQty": 0,
+      "maxOrderQty": 0,
+      "minStockQuantity": 1,
+      "lowStockQuantity": 1,
+      "minCartQty": 1
     },
     {
       "id": "am-1712",
@@ -16748,7 +17622,13 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "OLEO MAC"
+      "brand": "OLEO MAC",
+      "stock": 0,
+      "availableQty": 0,
+      "maxOrderQty": 0,
+      "minStockQuantity": 1,
+      "lowStockQuantity": 1,
+      "minCartQty": 1
     },
     {
       "id": "am-3208",
@@ -16777,7 +17657,7 @@
       "stockQuantity": 12,
       "availableQty": 12,
       "maxOrderQty": 12,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_3208_1.jpg",
         "/images/products/agrimart/product_3208_2.jpg"
@@ -16838,7 +17718,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 12,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-3038",
@@ -16867,7 +17751,7 @@
       "stockQuantity": 26,
       "availableQty": 26,
       "maxOrderQty": 26,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_3038_1.jpg"
       ],
@@ -16907,7 +17791,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 26,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-3550",
@@ -16936,7 +17824,7 @@
       "stockQuantity": 50,
       "availableQty": 50,
       "maxOrderQty": 50,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_3550_1.jpg",
         "/images/products/agrimart/product_3550_2.jpg"
@@ -16996,7 +17884,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 50,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-1966",
@@ -17025,7 +17917,7 @@
       "stockQuantity": 2,
       "availableQty": 2,
       "maxOrderQty": 2,
-      "minOrderQty": 1,
+      "minOrderQty": 2,
       "images": [
         "/images/products/agrimart/product_1966_1.jpg",
         "/images/products/agrimart/product_1966_2.jpg",
@@ -17087,7 +17979,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 2,
+      "minStockQuantity": 2,
+      "lowStockQuantity": 2,
+      "minCartQty": 2
     },
     {
       "id": "am-3345",
@@ -17169,7 +18065,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 1,
+      "minStockQuantity": 1,
+      "lowStockQuantity": 1,
+      "minCartQty": 1
     },
     {
       "id": "am-3408",
@@ -17198,7 +18098,7 @@
       "stockQuantity": 3,
       "availableQty": 3,
       "maxOrderQty": 3,
-      "minOrderQty": 1,
+      "minOrderQty": 3,
       "images": [
         "/images/products/agrimart/product_3408_1.jpg"
       ],
@@ -17252,7 +18152,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 3,
+      "minStockQuantity": 3,
+      "lowStockQuantity": 3,
+      "minCartQty": 3
     },
     {
       "id": "am-3540",
@@ -17281,7 +18185,7 @@
       "stockQuantity": 9,
       "availableQty": 9,
       "maxOrderQty": 9,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_3540_1.jpg",
         "/images/products/agrimart/product_3540_2.jpg",
@@ -17331,7 +18235,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 9,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-585",
@@ -17360,7 +18268,7 @@
       "stockQuantity": 34,
       "availableQty": 34,
       "maxOrderQty": 34,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_585_1.jpg",
         "/images/products/agrimart/product_585_2.jpg",
@@ -17430,7 +18338,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 34,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-3317",
@@ -17496,7 +18408,13 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 0,
+      "availableQty": 0,
+      "maxOrderQty": 0,
+      "minStockQuantity": 1,
+      "lowStockQuantity": 1,
+      "minCartQty": 1
     },
     {
       "id": "am-3048",
@@ -17525,7 +18443,7 @@
       "stockQuantity": 117,
       "availableQty": 117,
       "maxOrderQty": 117,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_3048_1.jpg",
         "/images/products/agrimart/product_3048_2.jpg",
@@ -17587,7 +18505,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 117,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-3335",
@@ -17656,7 +18578,13 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 0,
+      "availableQty": 0,
+      "maxOrderQty": 0,
+      "minStockQuantity": 1,
+      "lowStockQuantity": 1,
+      "minCartQty": 1
     },
     {
       "id": "am-3323",
@@ -17723,7 +18651,13 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 0,
+      "availableQty": 0,
+      "maxOrderQty": 0,
+      "minStockQuantity": 1,
+      "lowStockQuantity": 1,
+      "minCartQty": 1
     },
     {
       "id": "am-3109",
@@ -17752,7 +18686,7 @@
       "stockQuantity": 42,
       "availableQty": 42,
       "maxOrderQty": 42,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_3109_4.jpg",
         "/images/products/agrimart/product_3109_5.jpg",
@@ -17814,7 +18748,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 42,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-3396",
@@ -17843,7 +18781,7 @@
       "stockQuantity": 3,
       "availableQty": 3,
       "maxOrderQty": 3,
-      "minOrderQty": 1,
+      "minOrderQty": 3,
       "images": [
         "/images/products/agrimart/product_3396_1.jpg",
         "/images/products/agrimart/product_3396_2.jpg"
@@ -17903,7 +18841,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 3,
+      "minStockQuantity": 3,
+      "lowStockQuantity": 3,
+      "minCartQty": 3
     },
     {
       "id": "am-2908",
@@ -17980,7 +18922,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 1,
+      "minStockQuantity": 1,
+      "lowStockQuantity": 1,
+      "minCartQty": 1
     },
     {
       "id": "am-3117",
@@ -18009,7 +18955,7 @@
       "stockQuantity": 6,
       "availableQty": 6,
       "maxOrderQty": 6,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_3117_1.jpg"
       ],
@@ -18069,7 +19015,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 6,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-3412",
@@ -18098,7 +19048,7 @@
       "stockQuantity": 30,
       "availableQty": 30,
       "maxOrderQty": 30,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_3412_1.jpg"
       ],
@@ -18164,7 +19114,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 30,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-1663",
@@ -18193,7 +19147,7 @@
       "stockQuantity": 81,
       "availableQty": 81,
       "maxOrderQty": 81,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_1663_1.jpg",
         "/images/products/agrimart/product_1663_2.jpg",
@@ -18261,7 +19215,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 81,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-3562",
@@ -18290,7 +19248,7 @@
       "stockQuantity": 34,
       "availableQty": 34,
       "maxOrderQty": 34,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_3562_1.jpg"
       ],
@@ -18343,7 +19301,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 34,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-78",
@@ -18372,7 +19334,7 @@
       "stockQuantity": 51,
       "availableQty": 51,
       "maxOrderQty": 51,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_78_4.jpg",
         "/images/products/agrimart/product_78_5.jpg",
@@ -18434,7 +19396,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "OLEO MAC"
+      "brand": "OLEO MAC",
+      "stock": 51,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-510",
@@ -18463,7 +19429,7 @@
       "stockQuantity": 5,
       "availableQty": 5,
       "maxOrderQty": 5,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_510_1.jpg",
         "/images/products/agrimart/product_510_2.jpg",
@@ -18518,7 +19484,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 5,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-2842",
@@ -18547,7 +19517,7 @@
       "stockQuantity": 23,
       "availableQty": 23,
       "maxOrderQty": 23,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_2842_1.jpg"
       ],
@@ -18600,7 +19570,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 23,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-3115",
@@ -18629,7 +19603,7 @@
       "stockQuantity": 12,
       "availableQty": 12,
       "maxOrderQty": 12,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_3115_1.jpg"
       ],
@@ -18689,7 +19663,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 12,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-3482",
@@ -18781,7 +19759,13 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 0,
+      "availableQty": 0,
+      "maxOrderQty": 0,
+      "minStockQuantity": 1,
+      "lowStockQuantity": 1,
+      "minCartQty": 1
     },
     {
       "id": "am-1978",
@@ -18810,7 +19794,7 @@
       "stockQuantity": 1,
       "availableQty": 1,
       "maxOrderQty": 1,
-      "minOrderQty": 2,
+      "minOrderQty": 1,
       "images": [
         "/images/products/agrimart/product_1978_1.jpg",
         "/images/products/agrimart/product_1978_2.jpg",
@@ -18873,7 +19857,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 1,
+      "minStockQuantity": 1,
+      "lowStockQuantity": 1,
+      "minCartQty": 1
     },
     {
       "id": "am-3602",
@@ -18902,7 +19890,7 @@
       "stockQuantity": 68,
       "availableQty": 68,
       "maxOrderQty": 68,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_3602_1.jpg",
         "/images/products/agrimart/product_3602_2.jpg",
@@ -18958,7 +19946,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 68,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-3590",
@@ -18987,7 +19979,7 @@
       "stockQuantity": 6,
       "availableQty": 6,
       "maxOrderQty": 6,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_3590_1.jpg",
         "/images/products/agrimart/product_3590_2.jpg"
@@ -19035,7 +20027,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 6,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-153",
@@ -19064,7 +20060,7 @@
       "stockQuantity": 12,
       "availableQty": 12,
       "maxOrderQty": 12,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_153_1.jpg",
         "/images/products/agrimart/product_153_2.jpg",
@@ -19120,7 +20116,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 12,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     },
     {
       "id": "am-3552",
@@ -19149,7 +20149,7 @@
       "stockQuantity": 15,
       "availableQty": 15,
       "maxOrderQty": 15,
-      "minOrderQty": 1,
+      "minOrderQty": 5,
       "images": [
         "/images/products/agrimart/product_3552_1.jpg",
         "/images/products/agrimart/product_3552_2.jpg"
@@ -19204,7 +20204,11 @@
       "width": 25,
       "height": 20,
       "deliveryDate": "1-2 days (Express Hub)",
-      "brand": "AGRIMATE"
+      "brand": "AGRIMATE",
+      "stock": 15,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minCartQty": 5
     }
   ],
   "variants": [
@@ -40479,6 +41483,22 @@
       "name": "Weight",
       "value": "320kg",
       "displayOrder": 5
+    },
+    {
+      "id": "sp-am-producttest-1",
+      "productId": "am-producttest",
+      "group": "Quality & Certification",
+      "name": "Quality Standard",
+      "value": "ISO & FCO / BIS Certified Agricultural Grade",
+      "displayOrder": 1
+    },
+    {
+      "id": "sp-am-producttest-2",
+      "productId": "am-producttest",
+      "group": "Packaging & Dispatch",
+      "name": "Fulfillment Hub",
+      "value": "Hubballi & Dharwad Central Dark Warehouses",
+      "displayOrder": 2
     }
   ],
   "warehouses": [
@@ -40570,7 +41590,7 @@
       "variantId": "var-am-3337-1",
       "quantity": 0,
       "reservedQuantity": 0,
-      "reorderThreshold": 0
+      "reorderThreshold": 1
     },
     {
       "id": "ws-am-3267",
@@ -40606,7 +41626,7 @@
       "variantId": "var-am-1646-1",
       "quantity": 0,
       "reservedQuantity": 0,
-      "reorderThreshold": 0
+      "reorderThreshold": 1
     },
     {
       "id": "ws-am-1157",
@@ -40624,7 +41644,7 @@
       "variantId": "var-am-3295-1",
       "quantity": 0,
       "reservedQuantity": 0,
-      "reorderThreshold": 0
+      "reorderThreshold": 1
     },
     {
       "id": "ws-am-1891",
@@ -40660,7 +41680,7 @@
       "variantId": "var-am-3341-1",
       "quantity": 0,
       "reservedQuantity": 0,
-      "reorderThreshold": 0
+      "reorderThreshold": 1
     },
     {
       "id": "ws-am-2112",
@@ -40669,7 +41689,7 @@
       "variantId": "var-am-2112-1",
       "quantity": 0,
       "reservedQuantity": 0,
-      "reorderThreshold": 0
+      "reorderThreshold": 1
     },
     {
       "id": "ws-am-3343",
@@ -40705,7 +41725,7 @@
       "variantId": "var-am-3299-1",
       "quantity": 0,
       "reservedQuantity": 0,
-      "reorderThreshold": 0
+      "reorderThreshold": 1
     },
     {
       "id": "ws-am-3456",
@@ -40732,7 +41752,7 @@
       "variantId": "var-am-3506-1",
       "quantity": 0,
       "reservedQuantity": 0,
-      "reorderThreshold": 0
+      "reorderThreshold": 1
     },
     {
       "id": "ws-am-3570",
@@ -40741,7 +41761,7 @@
       "variantId": "var-am-3570-1",
       "quantity": 0,
       "reservedQuantity": 0,
-      "reorderThreshold": 0
+      "reorderThreshold": 1
     },
     {
       "id": "ws-am-3510",
@@ -40849,7 +41869,7 @@
       "variantId": "var-am-3526-1",
       "quantity": 0,
       "reservedQuantity": 0,
-      "reorderThreshold": 0
+      "reorderThreshold": 1
     },
     {
       "id": "ws-am-3502",
@@ -40930,7 +41950,7 @@
       "variantId": "var-am-3265-1",
       "quantity": 0,
       "reservedQuantity": 0,
-      "reorderThreshold": 0
+      "reorderThreshold": 1
     },
     {
       "id": "ws-am-2031",
@@ -40966,7 +41986,7 @@
       "variantId": "var-am-3153-1",
       "quantity": 0,
       "reservedQuantity": 0,
-      "reorderThreshold": 0
+      "reorderThreshold": 1
     },
     {
       "id": "ws-am-2590",
@@ -41002,7 +42022,7 @@
       "variantId": "var-am-3440-1",
       "quantity": 0,
       "reservedQuantity": 0,
-      "reorderThreshold": 0
+      "reorderThreshold": 1
     },
     {
       "id": "ws-am-1098",
@@ -41029,7 +42049,7 @@
       "variantId": "var-am-3516-1",
       "quantity": 0,
       "reservedQuantity": 0,
-      "reorderThreshold": 0
+      "reorderThreshold": 1
     },
     {
       "id": "ws-am-3131",
@@ -41047,7 +42067,7 @@
       "variantId": "var-am-3297-1",
       "quantity": 0,
       "reservedQuantity": 0,
-      "reorderThreshold": 0
+      "reorderThreshold": 1
     },
     {
       "id": "ws-am-3360",
@@ -41101,7 +42121,7 @@
       "variantId": "var-am-2600-1",
       "quantity": 0,
       "reservedQuantity": 0,
-      "reorderThreshold": 0
+      "reorderThreshold": 1
     },
     {
       "id": "ws-am-3468",
@@ -41110,7 +42130,7 @@
       "variantId": "var-am-3468-1",
       "quantity": 0,
       "reservedQuantity": 0,
-      "reorderThreshold": 0
+      "reorderThreshold": 1
     },
     {
       "id": "ws-am-3149",
@@ -41128,7 +42148,7 @@
       "variantId": "var-am-1106-1",
       "quantity": 0,
       "reservedQuantity": 0,
-      "reorderThreshold": 0
+      "reorderThreshold": 1
     },
     {
       "id": "ws-am-1644",
@@ -41155,7 +42175,7 @@
       "variantId": "var-am-1923-1",
       "quantity": 0,
       "reservedQuantity": 0,
-      "reorderThreshold": 0
+      "reorderThreshold": 1
     },
     {
       "id": "ws-am-1653",
@@ -41173,7 +42193,7 @@
       "variantId": "var-am-3564-1",
       "quantity": 0,
       "reservedQuantity": 0,
-      "reorderThreshold": 0
+      "reorderThreshold": 1
     },
     {
       "id": "ws-am-3090",
@@ -41236,7 +42256,7 @@
       "variantId": "var-am-382-1",
       "quantity": 0,
       "reservedQuantity": 0,
-      "reorderThreshold": 0
+      "reorderThreshold": 1
     },
     {
       "id": "ws-am-1625",
@@ -41254,7 +42274,7 @@
       "variantId": "var-am-3380-1",
       "quantity": 0,
       "reservedQuantity": 0,
-      "reorderThreshold": 0
+      "reorderThreshold": 1
     },
     {
       "id": "ws-am-3488",
@@ -41299,7 +42319,7 @@
       "variantId": "var-am-3333-1",
       "quantity": 0,
       "reservedQuantity": 0,
-      "reorderThreshold": 0
+      "reorderThreshold": 1
     },
     {
       "id": "ws-am-3214",
@@ -41308,7 +42328,7 @@
       "variantId": "var-am-3214-1",
       "quantity": 0,
       "reservedQuantity": 0,
-      "reorderThreshold": 0
+      "reorderThreshold": 1
     },
     {
       "id": "ws-am-3450",
@@ -41398,7 +42418,7 @@
       "variantId": "var-am-3113-1",
       "quantity": 0,
       "reservedQuantity": 0,
-      "reorderThreshold": 0
+      "reorderThreshold": 1
     },
     {
       "id": "ws-am-3084",
@@ -41461,7 +42481,7 @@
       "variantId": "var-am-3184-1",
       "quantity": 0,
       "reservedQuantity": 0,
-      "reorderThreshold": 0
+      "reorderThreshold": 1
     },
     {
       "id": "ws-am-2999",
@@ -41479,7 +42499,7 @@
       "variantId": "var-am-66-1",
       "quantity": 0,
       "reservedQuantity": 0,
-      "reorderThreshold": 0
+      "reorderThreshold": 1
     },
     {
       "id": "ws-am-3486",
@@ -41506,7 +42526,7 @@
       "variantId": "var-am-3309-1",
       "quantity": 0,
       "reservedQuantity": 0,
-      "reorderThreshold": 0
+      "reorderThreshold": 1
     },
     {
       "id": "ws-am-2822",
@@ -41641,7 +42661,7 @@
       "variantId": "var-am-3291-1",
       "quantity": 0,
       "reservedQuantity": 0,
-      "reorderThreshold": 0
+      "reorderThreshold": 1
     },
     {
       "id": "ws-am-3424",
@@ -41749,7 +42769,7 @@
       "variantId": "var-am-3384-1",
       "quantity": 0,
       "reservedQuantity": 0,
-      "reorderThreshold": 0
+      "reorderThreshold": 1
     },
     {
       "id": "ws-am-247",
@@ -41776,7 +42796,7 @@
       "variantId": "var-am-3301-1",
       "quantity": 0,
       "reservedQuantity": 0,
-      "reorderThreshold": 0
+      "reorderThreshold": 1
     },
     {
       "id": "ws-am-3546",
@@ -41794,7 +42814,7 @@
       "variantId": "var-am-380-1",
       "quantity": 0,
       "reservedQuantity": 0,
-      "reorderThreshold": 0
+      "reorderThreshold": 1
     },
     {
       "id": "ws-am-249",
@@ -41812,7 +42832,7 @@
       "variantId": "var-am-1917-1",
       "quantity": 0,
       "reservedQuantity": 0,
-      "reorderThreshold": 0
+      "reorderThreshold": 1
     },
     {
       "id": "ws-am-3430",
@@ -41821,7 +42841,7 @@
       "variantId": "var-am-3430-1",
       "quantity": 0,
       "reservedQuantity": 0,
-      "reorderThreshold": 0
+      "reorderThreshold": 1
     },
     {
       "id": "ws-am-419",
@@ -41839,7 +42859,7 @@
       "variantId": "var-am-3327-1",
       "quantity": 0,
       "reservedQuantity": 0,
-      "reorderThreshold": 0
+      "reorderThreshold": 1
     },
     {
       "id": "ws-am-514",
@@ -41884,7 +42904,7 @@
       "variantId": "var-am-3572-1",
       "quantity": 0,
       "reservedQuantity": 0,
-      "reorderThreshold": 0
+      "reorderThreshold": 1
     },
     {
       "id": "ws-am-2846",
@@ -41893,7 +42913,7 @@
       "variantId": "var-am-2846-1",
       "quantity": 0,
       "reservedQuantity": 0,
-      "reorderThreshold": 0
+      "reorderThreshold": 1
     },
     {
       "id": "ws-am-1069",
@@ -41920,7 +42940,7 @@
       "variantId": "var-am-3313-1",
       "quantity": 0,
       "reservedQuantity": 0,
-      "reorderThreshold": 0
+      "reorderThreshold": 1
     },
     {
       "id": "ws-am-96",
@@ -41947,7 +42967,7 @@
       "variantId": "var-am-3257-1",
       "quantity": 0,
       "reservedQuantity": 0,
-      "reorderThreshold": 0
+      "reorderThreshold": 1
     },
     {
       "id": "ws-am-3315",
@@ -41956,7 +42976,7 @@
       "variantId": "var-am-3315-1",
       "quantity": 0,
       "reservedQuantity": 0,
-      "reorderThreshold": 0
+      "reorderThreshold": 1
     },
     {
       "id": "ws-am-3329",
@@ -41965,7 +42985,7 @@
       "variantId": "var-am-3329-1",
       "quantity": 0,
       "reservedQuantity": 0,
-      "reorderThreshold": 0
+      "reorderThreshold": 1
     },
     {
       "id": "ws-am-161",
@@ -42010,7 +43030,7 @@
       "variantId": "var-am-2850-1",
       "quantity": 0,
       "reservedQuantity": 0,
-      "reorderThreshold": 0
+      "reorderThreshold": 1
     },
     {
       "id": "ws-am-1861",
@@ -42028,7 +43048,7 @@
       "variantId": "var-am-3311-1",
       "quantity": 0,
       "reservedQuantity": 0,
-      "reorderThreshold": 0
+      "reorderThreshold": 1
     },
     {
       "id": "ws-am-3560",
@@ -42064,7 +43084,7 @@
       "variantId": "var-am-1606-1",
       "quantity": 0,
       "reservedQuantity": 0,
-      "reorderThreshold": 0
+      "reorderThreshold": 1
     },
     {
       "id": "ws-am-58",
@@ -42127,7 +43147,7 @@
       "variantId": "var-am-3319-1",
       "quantity": 0,
       "reservedQuantity": 0,
-      "reorderThreshold": 0
+      "reorderThreshold": 1
     },
     {
       "id": "ws-am-3354",
@@ -42217,7 +43237,7 @@
       "variantId": "var-am-3321-1",
       "quantity": 0,
       "reservedQuantity": 0,
-      "reorderThreshold": 0
+      "reorderThreshold": 1
     },
     {
       "id": "ws-am-3496",
@@ -42226,7 +43246,7 @@
       "variantId": "var-am-3496-1",
       "quantity": 0,
       "reservedQuantity": 0,
-      "reorderThreshold": 0
+      "reorderThreshold": 1
     },
     {
       "id": "ws-am-3028",
@@ -42298,7 +43318,7 @@
       "variantId": "var-am-3458-1",
       "quantity": 0,
       "reservedQuantity": 0,
-      "reorderThreshold": 0
+      "reorderThreshold": 1
     },
     {
       "id": "ws-am-1712",
@@ -42307,7 +43327,7 @@
       "variantId": "var-am-1712-1",
       "quantity": 0,
       "reservedQuantity": 0,
-      "reorderThreshold": 0
+      "reorderThreshold": 1
     },
     {
       "id": "ws-am-3208",
@@ -42388,7 +43408,7 @@
       "variantId": "var-am-3317-1",
       "quantity": 0,
       "reservedQuantity": 0,
-      "reorderThreshold": 0
+      "reorderThreshold": 1
     },
     {
       "id": "ws-am-3048",
@@ -42406,7 +43426,7 @@
       "variantId": "var-am-3335-1",
       "quantity": 0,
       "reservedQuantity": 0,
-      "reorderThreshold": 0
+      "reorderThreshold": 1
     },
     {
       "id": "ws-am-3323",
@@ -42415,7 +43435,7 @@
       "variantId": "var-am-3323-1",
       "quantity": 0,
       "reservedQuantity": 0,
-      "reorderThreshold": 0
+      "reorderThreshold": 1
     },
     {
       "id": "ws-am-3109",
@@ -42523,7 +43543,7 @@
       "variantId": "var-am-3482-1",
       "quantity": 0,
       "reservedQuantity": 0,
-      "reorderThreshold": 0
+      "reorderThreshold": 1
     },
     {
       "id": "ws-am-1978",

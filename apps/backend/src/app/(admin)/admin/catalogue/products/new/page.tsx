@@ -44,6 +44,14 @@ export default function NewProductPage() {
           price: Number(data.price) || 0,
           comparePrice: data.comparePrice !== undefined ? Number(data.comparePrice) : 0,
           stockQuantity: data.stockQuantity !== undefined ? Number(data.stockQuantity) : 0,
+          minStockQuantity:
+            data.minStockQuantity !== undefined
+              ? Math.max(1, Number(data.minStockQuantity) || 1)
+              : 1,
+          lowStockQuantity:
+            data.minStockQuantity !== undefined
+              ? Math.max(1, Number(data.minStockQuantity) || 1)
+              : 1,
           isPublished: Boolean(data.isPublished),
         });
         if (continueEditing && createdId) {

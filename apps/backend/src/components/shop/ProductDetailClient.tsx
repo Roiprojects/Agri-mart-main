@@ -29,12 +29,23 @@ import {
 import { useAuth, setClientAuthUser } from '@/lib/auth-client';
 import { useShoppingCartSettings } from '@/lib/shopping-cart-settings';
 import { useFilterYmmSettings } from '@/lib/filter-ymm-settings';
+import { getProductOverrideById } from '@/lib/admin-product-overrides';
 
 interface ProductDetailClientProps {
   product: any;
 }
 
-export default function ProductDetailClient({ product }: ProductDetailClientProps) {
+export default function ProductDetailClient({ product: initialProduct }: ProductDetailClientProps) {
+  const [product, setProduct] = useState<any>(initialProduct);
+
+  useEffect(() => {
+    const ov = getProductOverrideById(initialProduct?.id);
+    if (ov) {
+      setProduct((prev: any) => ({ ...prev, ...ov }));
+    } else {
+      setProduct(initialProduct);
+    }
+  }, [initialProduct]);
   const router = useRouter();
   const { user, isLoggedIn } = useAuth();
   const { settings: cartSettings } = useShoppingCartSettings();
@@ -46,9 +57,42 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
   const [selectedVariant, setSelectedVariant] = useState<any>(
     variants.find((v: any) => v.isDefault) || variants[0] || null
   );
-  const [quantity, setQuantity] = useState(1);
+
+  const rawMaxStock =
+    selectedVariant?.stockQuantity !== undefined
+      ? Number(selectedVariant.stockQuantity)
+      : product.stockQuantity !== undefined
+      ? Number(product.stockQuantity)
+      : product.stock !== undefined
+      ? Number(product.stock)
+      : product.availableQty !== undefined
+      ? Number(product.availableQty)
+      : 0;
+  const maxStock = Math.max(0, Number.isFinite(rawMaxStock) ? rawMaxStock : 0);
+
+  const rawMinQty = Number(
+    product.minStockQuantity ??
+      product.lowStockQuantity ??
+      product.minOrderQty ??
+      product.minCartQty ??
+      1
+  );
+  const minQty =
+    maxStock > 0
+      ? Math.min(Math.max(1, Number.isFinite(rawMinQty) ? rawMinQty : 1), maxStock)
+      : 1;
+
+  const [quantity, setQuantity] = useState(minQty);
   const [addedNotice, setAddedNotice] = useState(false);
   const [isWishlisted, setIsWishlisted] = useState(false);
+
+  // Keep quantity clamped between [minQty, maxStock] when variant or product stock changes
+  useEffect(() => {
+    setQuantity((prev) => {
+      if (maxStock <= 0) return 1;
+      return Math.min(Math.max(minQty, prev), maxStock);
+    });
+  }, [minQty, maxStock, selectedVariant?.id]);
 
   // Review Form state
   const [showReviewForm, setShowReviewForm] = useState(false);
@@ -123,13 +167,18 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
           (i: any) => i.id === product.id && i.variantId === selectedVariant?.id
         );
         if (existingIdx >= 0) {
-          cart[existingIdx].quantity += quantity;
+          const nextQty = existingIdx >= 0 ? cart[existingIdx].quantity + quantity : quantity;
+          cart[existingIdx].quantity = maxStock > 0 ? Math.min(nextQty, maxStock) : nextQty;
+          cart[existingIdx].maxStock = maxStock;
+          cart[existingIdx].minQty = minQty;
         } else {
           cart.push({
             id: product.id,
             name: product.name,
             price: currentPrice,
-            quantity,
+            quantity: maxStock > 0 ? Math.min(quantity, maxStock) : quantity,
+            maxStock,
+            minQty,
             image: product.media?.[0]?.url || product.images?.[0],
             category: product.category?.name || product.category,
             variantId: selectedVariant?.id,
@@ -342,23 +391,59 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
 
       {/* Quantity Selector */}
       {!product.disableBuyButton && (
-        <div className="flex items-center gap-4 pt-2">
+        <div className="flex flex-wrap items-center gap-4 pt-2">
           <label className="text-xs font-bold text-slate-800">Quantity:</label>
           <div className="flex items-center border border-slate-200 rounded-xl overflow-hidden bg-slate-50">
             <button
-              onClick={() => setQuantity(Math.max(1, quantity - 1))}
-              className="p-2 hover:bg-slate-200 text-slate-600 transition"
+              type="button"
+              disabled={quantity <= minQty}
+              onClick={() => setQuantity((q) => Math.max(minQty, q - 1))}
+              className={`p-2 transition ${
+                quantity <= minQty
+                  ? 'text-slate-300 opacity-45 cursor-not-allowed'
+                  : 'text-slate-600 hover:bg-slate-200 cursor-pointer'
+              }`}
+              aria-label="Decrease quantity"
             >
               <Minus className="w-3.5 h-3.5" />
             </button>
-            <span className="px-4 font-bold text-slate-900 text-xs">{quantity}</span>
+            <span className="px-4 font-bold text-slate-900 text-xs min-w-[2.5rem] text-center">
+              {quantity}
+            </span>
             <button
-              onClick={() => setQuantity(quantity + 1)}
-              className="p-2 hover:bg-slate-200 text-slate-600 transition"
+              type="button"
+              disabled={maxStock <= 0 || quantity >= maxStock}
+              onClick={() =>
+                setQuantity((q) => (maxStock > 0 ? Math.min(maxStock, q + 1) : q))
+              }
+              className={`p-2 transition ${
+                maxStock <= 0 || quantity >= maxStock
+                  ? 'text-slate-300 opacity-45 cursor-not-allowed'
+                  : 'text-slate-600 hover:bg-slate-200 cursor-pointer'
+              }`}
+              aria-label="Increase quantity"
+              title={
+                maxStock > 0 && quantity >= maxStock
+                  ? `Maximum available stock (${maxStock}) reached`
+                  : 'Increase quantity'
+              }
             >
               <Plus className="w-3.5 h-3.5" />
             </button>
           </div>
+          {maxStock > 0 && (
+            <span className="text-[11px] font-medium text-slate-500">
+              {quantity >= maxStock ? (
+                <span className="text-amber-700 font-semibold">
+                  Max stock reached ({maxStock} available)
+                </span>
+              ) : (
+                <span>
+                  Available: {maxStock} {minQty > 1 ? `• Min order: ${minQty}` : ''}
+                </span>
+              )}
+            </span>
+          )}
         </div>
       )}
 
