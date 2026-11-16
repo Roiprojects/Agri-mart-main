@@ -113,11 +113,26 @@ export function mergeProductsWithOverrides<T extends { id: string }>(
       if (Array.isArray(next.variants) && next.variants.length > 0) {
         next.variants = next.variants.map((v: any, idx: number) =>
           idx === 0
-            ? { ...v, stockQuantity: stockNum, price: next.price ?? v.price }
+            ? {
+                ...v,
+                stockQuantity: stockNum,
+                price: next.price ?? v.price,
+                sku: next.sku ?? v.sku,
+                riplCode: next.riplCode ?? v.riplCode,
+                title: next.modelNumber || v.title,
+              }
             : { ...v, stockQuantity: 0 }
         );
       } else {
-        next.variants = [{ stockQuantity: stockNum, sku: next.sku, price: next.price }];
+        next.variants = [
+          {
+            stockQuantity: stockNum,
+            sku: next.sku,
+            riplCode: next.riplCode,
+            title: next.modelNumber,
+            price: next.price,
+          },
+        ];
       }
     }
     const minStockNum = Math.max(

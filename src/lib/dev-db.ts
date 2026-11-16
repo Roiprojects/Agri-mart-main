@@ -2970,6 +2970,14 @@ class PersistentDevDatabase {
         id: prev.id,
         name: product.name !== undefined ? product.name : prev.name,
         sku: product.sku !== undefined ? product.sku : prev.sku,
+        riplCode:
+          (product as any).riplCode !== undefined
+            ? (product as any).riplCode
+            : (prev as any).riplCode ?? prev.sku,
+        modelNumber:
+          (product as any).modelNumber !== undefined
+            ? (product as any).modelNumber
+            : (prev as any).modelNumber ?? '',
         price: product.price !== undefined ? Number(product.price) || 0 : prev.price,
         comparePrice:
           product.comparePrice !== undefined
@@ -3030,6 +3038,12 @@ class PersistentDevDatabase {
         }
         if (updated.comparePrice !== undefined) {
           pVars[0].comparePrice = updated.comparePrice;
+        }
+        if ((updated as any).riplCode !== undefined) {
+          (pVars[0] as any).riplCode = (updated as any).riplCode;
+        }
+        if ((updated as any).modelNumber !== undefined && (updated as any).modelNumber) {
+          pVars[0].title = (updated as any).modelNumber;
         }
       } else if ((product as any).stockQuantity !== undefined) {
         const targetStock = Math.max(0, Number((product as any).stockQuantity) || 0);

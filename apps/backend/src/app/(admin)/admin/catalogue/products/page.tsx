@@ -41,6 +41,8 @@ interface Product {
   nameKn?: string;
   slug?: string;
   sku: string;
+  riplCode?: string;
+  modelNumber?: string;
   categoryId: string;
   parentCategoryId?: string;
   subCategoryId?: string;
@@ -580,6 +582,8 @@ export default function AdminProductsPage() {
             {
               ...(existingProd?.variants?.[0] || {}),
               sku: payload.sku,
+              riplCode: payload.riplCode,
+              title: payload.modelNumber || existingProd?.variants?.[0]?.title,
               price: payload.price,
               stockQuantity: payload.stockQuantity,
             },
@@ -1665,6 +1669,11 @@ export default function AdminProductsPage() {
                         id: activeProd.id,
                         name: activeProd.name || '',
                         sku: activeProd.sku || '',
+                        riplCode: activeProd.riplCode || activeProd.sku || '',
+                        modelNumber:
+                          activeProd.modelNumber ||
+                          activeProd.variants?.[0]?.title ||
+                          '',
                         brandId: activeProd.brandId || '',
                         categoryId: resolvedCat.parentId || activeProd.categoryId || '',
                         parentCategoryId: resolvedCat.parentId || activeProd.parentCategoryId || '',

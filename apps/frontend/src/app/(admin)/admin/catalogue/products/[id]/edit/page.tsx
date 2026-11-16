@@ -96,6 +96,8 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
             {
               ...(json.data?.variants?.[0] || product?.variants?.[0] || {}),
               sku: data.sku,
+              riplCode: data.riplCode,
+              title: data.modelNumber || json.data?.variants?.[0]?.title || product?.variants?.[0]?.title,
               price: Number(data.price) || 0,
               comparePrice: data.comparePrice !== undefined ? Number(data.comparePrice) : 0,
               stockQuantity: data.stockQuantity !== undefined ? Number(data.stockQuantity) : 0,

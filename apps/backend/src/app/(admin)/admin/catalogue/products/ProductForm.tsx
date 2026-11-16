@@ -47,6 +47,8 @@ export interface ProductFormData {
   id?: string;
   name: string;
   sku: string;
+  riplCode?: string;
+  modelNumber?: string;
   brandId: string;
   categoryId: string;
   parentCategoryId?: string;
@@ -187,6 +189,8 @@ export function ProductForm({
     id: initialValues?.id,
     name: initialValues?.name || '',
     sku: initialValues?.sku || `AGP-${Math.floor(1000 + Math.random() * 9000)}`,
+    riplCode: initialValues?.riplCode || (initialValues as any)?.variants?.[0]?.riplCode || '',
+    modelNumber: initialValues?.modelNumber || (initialValues as any)?.variants?.[0]?.title || '',
     brandId: initialValues?.brandId || (brands[0]?.id || 'br-agripro'),
     categoryId: initialHierarchy.parentCategoryId,
     parentCategoryId: initialHierarchy.parentCategoryId,
@@ -325,6 +329,14 @@ export function ProductForm({
       id: initialValues.id ?? prev.id,
       name: initialValues.name ?? prev.name,
       sku: initialValues.sku ?? prev.sku,
+      riplCode:
+        initialValues.riplCode !== undefined
+          ? initialValues.riplCode
+          : (initialValues as any)?.variants?.[0]?.riplCode ?? prev.riplCode,
+      modelNumber:
+        initialValues.modelNumber !== undefined
+          ? initialValues.modelNumber
+          : (initialValues as any)?.variants?.[0]?.title ?? prev.modelNumber,
       brandId: initialValues.brandId || prev.brandId || brands[0]?.id || 'br-agripro',
       categoryId: resolved.parentCategoryId,
       parentCategoryId: resolved.parentCategoryId,
@@ -1089,6 +1101,38 @@ export function ProductForm({
                   {errors.sku && (
                     <p className="text-[11px] text-red-500 mt-0.5">{errors.sku}</p>
                   )}
+                </div>
+              </div>
+
+              {/* RIPL Code & Model */}
+              <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
+                <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
+                  <span>RIPL Code</span>
+                  <Tooltip text="RIPL product identification code displayed on the storefront." />
+                </div>
+                <div className="sm:col-span-9 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <input
+                      type="text"
+                      value={formData.riplCode || ''}
+                      onChange={(e) => handleChange('riplCode', e.target.value)}
+                      placeholder="e.g. RIPL028696"
+                      className="w-full text-xs px-2.5 py-2 rounded border border-[#d2d6de] focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none font-mono"
+                    />
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1 font-medium text-slate-700 whitespace-nowrap">
+                      <span>Model</span>
+                      <Tooltip text="Product model number/name displayed on the storefront." />
+                    </div>
+                    <input
+                      type="text"
+                      value={formData.modelNumber || ''}
+                      onChange={(e) => handleChange('modelNumber', e.target.value)}
+                      placeholder="e.g. AM-TEST-01"
+                      className="w-full text-xs px-2.5 py-2 rounded border border-[#d2d6de] focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none font-mono"
+                    />
+                  </div>
                 </div>
               </div>
 
