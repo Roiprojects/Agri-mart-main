@@ -37,15 +37,6 @@ interface ProductDetailClientProps {
 
 export default function ProductDetailClient({ product: initialProduct }: ProductDetailClientProps) {
   const [product, setProduct] = useState<any>(initialProduct);
-
-  useEffect(() => {
-    const ov = getProductOverrideById(initialProduct?.id);
-    if (ov) {
-      setProduct((prev: any) => ({ ...prev, ...ov }));
-    } else {
-      setProduct(initialProduct);
-    }
-  }, [initialProduct]);
   const router = useRouter();
   const { user, isLoggedIn } = useAuth();
   const { settings: cartSettings } = useShoppingCartSettings();
@@ -58,16 +49,37 @@ export default function ProductDetailClient({ product: initialProduct }: Product
     variants.find((v: any) => v.isDefault) || variants[0] || null
   );
 
-  const rawMaxStock =
-    selectedVariant?.stockQuantity !== undefined
-      ? Number(selectedVariant.stockQuantity)
-      : product.stockQuantity !== undefined
+  useEffect(() => {
+    const ov = getProductOverrideById(initialProduct?.id);
+    if (ov) {
+      const merged = { ...initialProduct, ...ov };
+      if (ov.stockQuantity !== undefined && Array.isArray(merged.variants) && merged.variants.length > 0) {
+        merged.variants = merged.variants.map((v: any, idx: number) =>
+          idx === 0 ? { ...v, stockQuantity: Number(ov.stockQuantity) } : v
+        );
+      }
+      setProduct(merged);
+      if (Array.isArray(merged.variants) && merged.variants.length > 0) {
+        setSelectedVariant(merged.variants.find((v: any) => v.isDefault) || merged.variants[0]);
+      }
+    } else {
+      setProduct(initialProduct);
+    }
+  }, [initialProduct]);
+
+  const productLevelStock =
+    product.stockQuantity !== undefined
       ? Number(product.stockQuantity)
       : product.stock !== undefined
       ? Number(product.stock)
       : product.availableQty !== undefined
       ? Number(product.availableQty)
-      : 0;
+      : undefined;
+
+  const rawMaxStock =
+    variants.length > 1 && selectedVariant?.stockQuantity !== undefined
+      ? Number(selectedVariant.stockQuantity)
+      : productLevelStock ?? Number(selectedVariant?.stockQuantity ?? 0);
   const maxStock = Math.max(0, Number.isFinite(rawMaxStock) ? rawMaxStock : 0);
   const minQty = 1;
 
