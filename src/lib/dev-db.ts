@@ -2770,7 +2770,7 @@ class PersistentDevDatabase {
     onlyPublished?: boolean;
   }): DbProduct[] {
     return this.data.products.filter((p) => {
-      if (filters?.onlyPublished !== false && p.isDraft) return false;
+      if (filters?.onlyPublished !== false && (p.isDraft || p.visibleIndividually === false)) return false;
       if (filters?.categoryId) {
         const targetCat = filters.categoryId;
         // Match direct categoryId, parentCategoryId, subCategoryId, or any child category of targetCat
@@ -2998,6 +2998,12 @@ class PersistentDevDatabase {
           product.metaKeywords !== undefined ? product.metaKeywords : prev.metaKeywords,
         isPublished:
           product.isPublished !== undefined ? Boolean(product.isPublished) : prev.isPublished,
+        visibleIndividually:
+          product.visibleIndividually !== undefined
+            ? Boolean(product.visibleIndividually)
+            : prev.visibleIndividually !== undefined
+            ? prev.visibleIndividually
+            : true,
         updatedAt: now,
       };
 

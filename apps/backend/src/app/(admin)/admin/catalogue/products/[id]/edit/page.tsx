@@ -93,6 +93,10 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
               : 1,
           isPublished: Boolean(data.isPublished),
           showOnHomePage: Boolean(data.showOnHomePage),
+          visibleIndividually:
+            data.visibleIndividually !== undefined
+              ? Boolean(data.visibleIndividually)
+              : true,
           variants: [
             {
               ...(json.data?.variants?.[0] || product?.variants?.[0] || {}),

@@ -554,6 +554,10 @@ export default function AdminProductsPage() {
             : (existingProd as any)?.lowStockQuantity ?? 1,
         isPublished: Boolean(formData.isPublished),
         showOnHomePage: Boolean(formData.showOnHomePage),
+        visibleIndividually:
+          formData.visibleIndividually !== undefined
+            ? Boolean(formData.visibleIndividually)
+            : true,
       };
 
       const res = await fetch(`/api/admin/catalogue/products/${targetId}`, {

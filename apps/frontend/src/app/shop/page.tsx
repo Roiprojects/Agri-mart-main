@@ -62,7 +62,7 @@ export default function ShopPage() {
 
         if (prodData.success && Array.isArray(prodData.data)) {
           const mergedProds = mergeProductsWithOverrides(prodData.data, mergedCats, mergedBrands)
-            .filter((p: any) => p.isPublished !== false);
+            .filter((p: any) => p.isPublished !== false && p.visibleIndividually !== false);
           globalShopCache.__shopProducts = mergedProds;
           setProducts(mergedProds);
         }

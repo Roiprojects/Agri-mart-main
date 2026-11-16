@@ -12,12 +12,18 @@ interface HomeFeaturedProductsProps {
 
 export default function HomeFeaturedProducts({ initialProducts }: HomeFeaturedProductsProps) {
   const [products, setProducts] = useState<any[]>(() =>
-    (initialProducts || []).filter((p: any) => Boolean(p?.showOnHomePage))
+    (initialProducts || []).filter(
+      (p: any) => Boolean(p?.showOnHomePage) && p?.visibleIndividually !== false
+    )
   );
 
   useEffect(() => {
     const merged = mergeProductsWithOverrides(initialProducts || []);
-    setProducts(merged.filter((p: any) => Boolean(p?.showOnHomePage)));
+    setProducts(
+      merged.filter(
+        (p: any) => Boolean(p?.showOnHomePage) && p?.visibleIndividually !== false
+      )
+    );
   }, [initialProducts]);
 
   // Only display on the home page when at least one product has "Show on home page" checked

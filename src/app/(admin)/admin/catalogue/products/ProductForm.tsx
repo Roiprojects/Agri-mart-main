@@ -418,6 +418,10 @@ export function ProductForm({
         initialValues.showOnHomePage !== undefined
           ? Boolean(initialValues.showOnHomePage)
           : prev.showOnHomePage,
+      visibleIndividually:
+        initialValues.visibleIndividually !== undefined
+          ? Boolean(initialValues.visibleIndividually)
+          : prev.visibleIndividually,
       customerEntersPrice:
         initialValues.customerEntersPrice !== undefined
           ? Boolean(initialValues.customerEntersPrice)

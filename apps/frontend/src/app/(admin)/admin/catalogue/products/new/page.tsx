@@ -54,6 +54,10 @@ export default function NewProductPage() {
               : 1,
           isPublished: Boolean(data.isPublished),
           showOnHomePage: Boolean(data.showOnHomePage),
+          visibleIndividually:
+            data.visibleIndividually !== undefined
+              ? Boolean(data.visibleIndividually)
+              : true,
         });
         if (continueEditing && createdId) {
           router.push(`/admin/catalogue/products/${createdId}/edit`);
