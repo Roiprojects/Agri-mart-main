@@ -194,8 +194,42 @@ export const SEED_CATEGORIES = [
   {"id":"cat-am-wood-chipper","name":"WOOD CHIPPER","slug":"wood-chipper","description":"WOOD CHIPPER — genuine power machinery and agricultural equipment from AGRIMATE, KASEI, OLEO MAC and more.","image":"/images/products/agrimart/product_3208_1.jpg"},
 ];
 
-// Full Agrimart 226 Products Catalogue (Imported from Agrimart-backup)
+// Full Agrimart Products Catalogue + Test Product
 export const SEED_PRODUCTS: ProductType[] = [
+  {
+    "id": "am-producttest",
+    "name": "producttest",
+    "slug": "producttest",
+    "sku": "RIPL-TEST-001",
+    "riplCode": "RIPL-TEST-001",
+    "modelNumber": "AM-TEST-01",
+    "category": "Sprayer",
+    "categoryId": "cat-am-sprayer",
+    "price": 1500,
+    "comparePrice": 1800,
+    "brand": "AGRIMATE",
+    "rating": 4.9,
+    "reviewsCount": 10,
+    "stock": 50,
+    "images": [
+      "/images/products/agrimart/product_1646_2.jpg",
+      "/images/products/agrimart/product_3018_1.jpg"
+    ],
+    "description": "Test product (producttest) added for testing purposes with full product image, pricing, inventory, and category/brand mapping.",
+    "descriptionHtml": "<p>Test product (<b>producttest</b>) added for testing purposes with full product image, pricing, inventory, and category/brand mapping.</p>",
+    "specifications": {
+      "Model": "AM-TEST-01",
+      "RIPL Code": "RIPL-TEST-001",
+      "Brand": "AGRIMATE"
+    },
+    "targetCrops": [],
+    "cropStages": [],
+    "isBestSeller": false,
+    "isFeatured": true,
+    "brochures": [],
+    "videos": [],
+    "accessoriesInfo": ""
+  },
   {
     "id": "am-3018",
     "name": "AM - Deep Drip Irrigation Stakes (1 BOX OF 20 PIECES)",
