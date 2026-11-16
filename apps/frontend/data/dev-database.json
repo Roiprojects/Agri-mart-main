@@ -41483,6 +41483,22 @@
       "name": "Weight",
       "value": "320kg",
       "displayOrder": 5
+    },
+    {
+      "id": "sp-am-producttest-1",
+      "productId": "am-producttest",
+      "group": "Quality & Certification",
+      "name": "Quality Standard",
+      "value": "ISO & FCO / BIS Certified Agricultural Grade",
+      "displayOrder": 1
+    },
+    {
+      "id": "sp-am-producttest-2",
+      "productId": "am-producttest",
+      "group": "Packaging & Dispatch",
+      "name": "Fulfillment Hub",
+      "value": "Hubballi & Dharwad Central Dark Warehouses",
+      "displayOrder": 2
     }
   ],
   "warehouses": [

@@ -431,19 +431,6 @@ export default function ProductDetailClient({ product: initialProduct }: Product
               <Plus className="w-3.5 h-3.5" />
             </button>
           </div>
-          {maxStock > 0 && (
-            <span className="text-[11px] font-medium text-slate-500">
-              {quantity >= maxStock ? (
-                <span className="text-amber-700 font-semibold">
-                  Max stock reached ({maxStock} available)
-                </span>
-              ) : (
-                <span>
-                  Available: {maxStock} {minQty > 1 ? `• Min order: ${minQty}` : ''}
-                </span>
-              )}
-            </span>
-          )}
         </div>
       )}
 
