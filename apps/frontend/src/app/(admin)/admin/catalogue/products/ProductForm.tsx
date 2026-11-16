@@ -414,6 +414,10 @@ export function ProductForm({
         initialValues.callForPrice !== undefined
           ? Boolean(initialValues.callForPrice)
           : prev.callForPrice,
+      showOnHomePage:
+        initialValues.showOnHomePage !== undefined
+          ? Boolean(initialValues.showOnHomePage)
+          : prev.showOnHomePage,
       customerEntersPrice:
         initialValues.customerEntersPrice !== undefined
           ? Boolean(initialValues.customerEntersPrice)

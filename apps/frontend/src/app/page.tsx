@@ -15,6 +15,7 @@ import HeroBannerSlider from '@/components/home/HeroBannerSlider';
 import CropStageFilter from '@/components/home/CropStageFilter';
 import CropJourneyTimeline from '@/components/home/CropJourneyTimeline';
 import ProductCard from '@/components/shop/ProductCard';
+import HomeFeaturedProducts from '@/components/home/HomeFeaturedProducts';
 import YmmFilterWidget from '@/components/shop/YmmFilterWidget';
 import { Accordion, AccordionItemData } from '@/components/ui/Accordion';
 import { Badge } from '@/components/ui/Badge';
@@ -58,7 +59,8 @@ export const metadata: Metadata = {
   },
 };
 
-export const revalidate = 60;
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 export default async function HomePage() {
   const [productsRes, categoriesRes, rentalsRes, servicesRes] = await Promise.all([
@@ -68,9 +70,8 @@ export default async function HomePage() {
     ApiClient.getServicesCatalogue().catch(() => null),
   ]);
 
-  const featuredProducts = productsRes?.data && productsRes.data.length > 0
-    ? productsRes.data.slice(0, 4)
-    : SEED_PRODUCTS.slice(0, 4);
+  const allHomeCandidateProducts =
+    productsRes?.data && productsRes.data.length > 0 ? productsRes.data : SEED_PRODUCTS;
 
   const displayCategories = categoriesRes?.data && categoriesRes.data.length > 0
     ? categoriesRes.data.slice(0, 6).map((c: any) => ({
@@ -215,32 +216,9 @@ export default async function HomePage() {
       </section>
 
       {/* =========================================================================
-          SECTION 3: FEATURED PRODUCTS (Clean Product Grid)
+          SECTION 3: FEATURED PRODUCTS (Only shows products with "Show on home page" checked)
          ========================================================================= */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-3 mb-8">
-          <div>
-            <span className="text-xs font-bold text-agri-green uppercase tracking-wider">
-              Top Selling Inputs
-            </span>
-            <h2 className="text-2xl sm:text-3xl font-black text-slate-900 mt-1">
-              Featured Agricultural Equipment & Care
-            </h2>
-          </div>
-          <Link
-            href="/shop"
-            className="text-xs font-bold text-agri-green hover:underline flex items-center gap-1"
-          >
-            View all products <ArrowRight className="w-3.5 h-3.5" />
-          </Link>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {featuredProducts.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </div>
-      </section>
+      <HomeFeaturedProducts initialProducts={allHomeCandidateProducts} />
 
       {/* =========================================================================
           SECTION 4: SHOP BY CROP OR FARMING STAGE (Interactive Dual Filter)

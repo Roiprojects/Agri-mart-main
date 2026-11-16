@@ -92,6 +92,7 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
               ? Math.max(1, Number(data.minStockQuantity) || 1)
               : 1,
           isPublished: Boolean(data.isPublished),
+          showOnHomePage: Boolean(data.showOnHomePage),
           variants: [
             {
               ...(json.data?.variants?.[0] || product?.variants?.[0] || {}),

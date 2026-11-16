@@ -53,6 +53,7 @@ export default function NewProductPage() {
               ? Math.max(1, Number(data.minStockQuantity) || 1)
               : 1,
           isPublished: Boolean(data.isPublished),
+          showOnHomePage: Boolean(data.showOnHomePage),
         });
         if (continueEditing && createdId) {
           router.push(`/admin/catalogue/products/${createdId}/edit`);

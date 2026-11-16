@@ -553,6 +553,7 @@ export default function AdminProductsPage() {
             ? Math.max(1, Number(formData.minStockQuantity) || 1)
             : (existingProd as any)?.lowStockQuantity ?? 1,
         isPublished: Boolean(formData.isPublished),
+        showOnHomePage: Boolean(formData.showOnHomePage),
       };
 
       const res = await fetch(`/api/admin/catalogue/products/${targetId}`, {
