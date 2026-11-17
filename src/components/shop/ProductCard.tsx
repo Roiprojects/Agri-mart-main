@@ -126,7 +126,7 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
               src="/images/ribbons/gold-ribbon-bow.png"
               alt=""
               aria-hidden="true"
-              className="pointer-events-none absolute inset-0 w-full h-full object-cover z-20 drop-shadow-[0_6px_12px_rgba(0,0,0,0.45)]"
+              className="pointer-events-none absolute top-0 left-0 w-[46%] h-auto z-20 drop-shadow-[0_4px_10px_rgba(0,0,0,0.4)]"
             />
 
             <div className="absolute inset-0 z-10 bg-slate-900/35 flex flex-col items-center justify-center p-3 text-center">
