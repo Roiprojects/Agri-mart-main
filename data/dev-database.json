@@ -697,7 +697,7 @@
       "minOrderQty": 5,
       "minCartQty": 5,
       "images": [
-        "/images/products/agrimart/upcoming-test-product.png"
+        "/images/products/agrimart/product_1646_2.jpg"
       ],
       "brochures": [],
       "videos": [],
@@ -748,7 +748,8 @@
           "stockQuantity": 50,
           "isDefault": true
         }
-      ]
+      ],
+      "markAsNew": true
     },
     {
       "id": "am-producttest",

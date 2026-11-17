@@ -697,7 +697,7 @@
       "minOrderQty": 5,
       "minCartQty": 5,
       "images": [
-        "/images/products/agrimart/upcoming-test-product.png"
+        "/images/products/agrimart/product_1646_2.jpg"
       ],
       "brochures": [],
       "videos": [],
@@ -748,7 +748,8 @@
           "stockQuantity": 50,
           "isDefault": true
         }
-      ]
+      ],
+      "markAsNew": true
     },
     {
       "id": "am-producttest",
@@ -42715,6 +42716,22 @@
     {
       "id": "sp-am-producttest-2",
       "productId": "am-producttest",
+      "group": "Packaging & Dispatch",
+      "name": "Fulfillment Hub",
+      "value": "Hubballi & Dharwad Central Dark Warehouses",
+      "displayOrder": 2
+    },
+    {
+      "id": "sp-am-upcoming-test-1",
+      "productId": "am-upcoming-test",
+      "group": "Quality & Certification",
+      "name": "Quality Standard",
+      "value": "ISO & FCO / BIS Certified Agricultural Grade",
+      "displayOrder": 1
+    },
+    {
+      "id": "sp-am-upcoming-test-2",
+      "productId": "am-upcoming-test",
       "group": "Packaging & Dispatch",
       "name": "Fulfillment Hub",
       "value": "Hubballi & Dharwad Central Dark Warehouses",

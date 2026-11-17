@@ -120,17 +120,85 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
         )}
 
         {availability.isBeforeStart && (
-          <div className="absolute inset-0 z-10 bg-slate-900/35 flex flex-col items-center justify-center p-3 text-center">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-950/80 text-amber-300 font-bold text-[11px] border border-amber-400/40 shadow-md">
-              <Clock className="w-3.5 h-3.5" />
-              <span>Coming Soon</span>
-            </span>
-            {availability.formattedStart && (
-              <span className="mt-1.5 text-[10px] font-semibold text-white bg-black/60 px-2.5 py-0.5 rounded-full">
-                Available: {availability.formattedStart}
+          <>
+            {/* Automatic Gold Satin Ribbon & Bow Overlay (Product Card Only) */}
+            <svg
+              viewBox="0 0 400 300"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              className="pointer-events-none absolute inset-0 w-full h-full z-20 drop-shadow-[0_4px_10px_rgba(0,0,0,0.35)]"
+              preserveAspectRatio="none"
+            >
+              <defs>
+                <linearGradient id="goldRibbonMain" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#FCE366" />
+                  <stop offset="45%" stopColor="#F5B800" />
+                  <stop offset="100%" stopColor="#C88A00" />
+                </linearGradient>
+                <linearGradient id="goldRibbonShade" x1="0%" y1="100%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor="#B87A00" />
+                  <stop offset="50%" stopColor="#FACC15" />
+                  <stop offset="100%" stopColor="#FEF08A" />
+                </linearGradient>
+              </defs>
+
+              {/* Top-left diagonal ribbon */}
+              <polygon points="0,155 155,0 198,0 0,198" fill="url(#goldRibbonMain)" />
+              <line x1="0" y1="157" x2="157" y2="0" stroke="#FEF9C3" strokeWidth="1.5" strokeOpacity="0.7" />
+              <line x1="0" y1="196" x2="196" y2="0" stroke="#92400E" strokeWidth="1.5" strokeOpacity="0.45" />
+
+              {/* Bottom-right diagonal ribbon */}
+              <polygon points="245,300 400,145 400,188 288,300" fill="url(#goldRibbonMain)" />
+              <line x1="247" y1="300" x2="400" y2="147" stroke="#FEF9C3" strokeWidth="1.5" strokeOpacity="0.7" />
+              <line x1="286" y1="300" x2="400" y2="186" stroke="#92400E" strokeWidth="1.5" strokeOpacity="0.45" />
+            </svg>
+
+            {/* Gold Satin Bow at Top-Left */}
+            <svg
+              viewBox="0 0 140 140"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              className="pointer-events-none absolute -top-1 left-2 w-24 h-24 sm:w-28 sm:h-28 z-20 drop-shadow-[0_6px_12px_rgba(0,0,0,0.4)]"
+            >
+              <defs>
+                <linearGradient id="bowLoopGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#FEF08A" />
+                  <stop offset="45%" stopColor="#F5B800" />
+                  <stop offset="100%" stopColor="#B45309" />
+                </linearGradient>
+                <linearGradient id="bowTailGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stopColor="#EAB308" />
+                  <stop offset="100%" stopColor="#A16207" />
+                </linearGradient>
+              </defs>
+              {/* Ribbon Tails */}
+              <path d="M62 72 L36 122 L52 114 L60 126 L70 76 Z" fill="url(#bowTailGrad)" />
+              <path d="M74 72 L106 116 L90 112 L84 126 L68 76 Z" fill="url(#bowTailGrad)" />
+              {/* Left Top Loop */}
+              <path d="M66 66 C42 28, 10 38, 22 66 C30 82, 52 76, 66 68 Z" fill="url(#bowLoopGrad)" stroke="#92400E" strokeWidth="1" strokeOpacity="0.35" />
+              {/* Right Top Loop */}
+              <path d="M72 64 C86 24, 122 30, 114 58 C108 76, 86 74, 72 68 Z" fill="url(#bowLoopGrad)" stroke="#92400E" strokeWidth="1" strokeOpacity="0.35" />
+              {/* Left Lower Fold */}
+              <path d="M64 70 C36 68, 16 86, 30 98 C44 108, 60 88, 66 74 Z" fill="url(#bowLoopGrad)" stroke="#92400E" strokeWidth="1" strokeOpacity="0.35" />
+              {/* Right Lower Fold */}
+              <path d="M74 70 C96 72, 118 88, 104 100 C90 110, 76 88, 70 74 Z" fill="url(#bowLoopGrad)" stroke="#92400E" strokeWidth="1" strokeOpacity="0.35" />
+              {/* Center Knot */}
+              <ellipse cx="69" cy="68" rx="10" ry="9" fill="#FACC15" stroke="#B45309" strokeWidth="1.5" />
+              <ellipse cx="67" cy="66" rx="4" ry="2.5" fill="#FEF9C3" fillOpacity="0.7" />
+            </svg>
+
+            <div className="absolute inset-0 z-10 bg-slate-900/35 flex flex-col items-center justify-center p-3 text-center">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-950/80 text-amber-300 font-bold text-[11px] border border-amber-400/40 shadow-md">
+                <Clock className="w-3.5 h-3.5" />
+                <span>Coming Soon</span>
               </span>
-            )}
-          </div>
+              {availability.formattedStart && (
+                <span className="mt-1.5 text-[10px] font-semibold text-white bg-black/60 px-2.5 py-0.5 rounded-full">
+                  Available: {availability.formattedStart}
+                </span>
+              )}
+            </div>
+          </>
         )}
 
         {availability.isAfterEnd && (
