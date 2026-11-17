@@ -567,6 +567,8 @@ export default function AdminProductsPage() {
           formData.allowCustomerReviews !== undefined
             ? Boolean(formData.allowCustomerReviews)
             : true,
+        availableStartDate: formData.availableStartDate || '',
+        availableEndDate: formData.availableEndDate || '',
       };
 
       const res = await fetch(`/api/admin/catalogue/products/${targetId}`, {

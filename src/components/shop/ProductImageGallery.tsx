@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import {
   ChevronLeft,
@@ -9,19 +9,47 @@ import {
   X,
   Camera,
   ZoomIn,
+  Clock,
 } from 'lucide-react';
+import { getProductAvailability } from '@/lib/product-availability';
+import { getProductOverrideById } from '@/lib/admin-product-overrides';
 
 interface ProductImageGalleryProps {
   images: string[];
   productName: string;
   badge?: string;
+  productId?: string;
+  availableStartDate?: string;
+  availableEndDate?: string;
 }
 
 export default function ProductImageGallery({
   images,
   productName,
   badge,
+  productId,
+  availableStartDate,
+  availableEndDate,
 }: ProductImageGalleryProps) {
+  const [dates, setDates] = useState({ availableStartDate, availableEndDate });
+
+  useEffect(() => {
+    if (productId) {
+      const ov = getProductOverrideById(productId);
+      if (ov) {
+        setDates({
+          availableStartDate:
+            ov.availableStartDate !== undefined ? ov.availableStartDate : availableStartDate,
+          availableEndDate:
+            ov.availableEndDate !== undefined ? ov.availableEndDate : availableEndDate,
+        });
+        return;
+      }
+    }
+    setDates({ availableStartDate, availableEndDate });
+  }, [productId, availableStartDate, availableEndDate]);
+
+  const availability = getProductAvailability(dates);
   const fallbackImage =
     'https://images.unsplash.com/photo-1589923188900-85dae523342b?auto=format&fit=crop&w=800&q=80';
   const validImages = images && images.length > 0 ? images : [fallbackImage];
@@ -52,10 +80,26 @@ export default function ProductImageGallery({
           fill
           unoptimized
           priority
-          className="object-cover transition-transform duration-300 group-hover:scale-105 cursor-zoom-in"
+          className={`object-cover transition-transform duration-300 group-hover:scale-105 cursor-zoom-in ${
+            availability.shouldBlurImage ? 'blur-lg scale-110 brightness-90' : ''
+          }`}
           onClick={() => setLightboxOpen(true)}
           sizes="(max-width: 768px) 100vw, 50vw"
         />
+
+        {availability.isBeforeStart && (
+          <div className="absolute inset-0 z-10 bg-slate-900/35 flex flex-col items-center justify-center p-4 text-center pointer-events-none">
+            <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-950/85 text-amber-300 font-extrabold text-xs border border-amber-400/40 shadow-lg">
+              <Clock className="w-4 h-4" />
+              <span>Coming Soon</span>
+            </span>
+            {availability.formattedStart && (
+              <span className="mt-2 text-xs font-bold text-white bg-black/65 px-3 py-1 rounded-full">
+                Available from: {availability.formattedStart}
+              </span>
+            )}
+          </div>
+        )}
 
         {/* Floating Tag or Badge */}
         {badge && (
@@ -126,7 +170,7 @@ export default function ProductImageGallery({
                   alt={`${productName} thumbnail ${idx + 1}`}
                   fill
                   unoptimized
-                  className="object-cover"
+                  className={`object-cover ${availability.shouldBlurImage ? 'blur-sm scale-110' : ''}`}
                   sizes="80px"
                 />
                 {isActive && (

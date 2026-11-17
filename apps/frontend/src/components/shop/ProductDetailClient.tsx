@@ -30,6 +30,7 @@ import { useAuth, setClientAuthUser } from '@/lib/auth-client';
 import { useShoppingCartSettings } from '@/lib/shopping-cart-settings';
 import { useFilterYmmSettings } from '@/lib/filter-ymm-settings';
 import { getProductOverrideById, mergeProductsWithOverrides } from '@/lib/admin-product-overrides';
+import { getProductAvailability } from '@/lib/product-availability';
 
 interface ProductDetailClientProps {
   product: any;
@@ -106,6 +107,7 @@ export default function ProductDetailClient({ product: initialProduct }: Product
       : productLevelStock ?? Number(selectedVariant?.stockQuantity ?? 0);
   const maxStock = Math.max(0, Number.isFinite(rawMaxStock) ? rawMaxStock : 0);
   const minQty = 1;
+  const availability = getProductAvailability(product);
 
   const [quantity, setQuantity] = useState(1);
   const [addedNotice, setAddedNotice] = useState(false);
@@ -608,8 +610,51 @@ export default function ProductDetailClient({ product: initialProduct }: Product
         </div>
       )}
 
+      {/* Availability Start / End Date Window Banner */}
+      {(availability.hasStartDate || availability.hasEndDate) && (
+        <div
+          className={`p-3.5 rounded-2xl border text-xs space-y-1 ${
+            !availability.isAvailableNow
+              ? 'bg-amber-50 border-amber-300 text-amber-900'
+              : 'bg-slate-50 border-slate-200 text-slate-700'
+          }`}
+        >
+          <div className="font-bold flex items-center gap-1.5">
+            <Clock className="w-4 h-4 text-amber-600" />
+            <span>
+              {availability.isBeforeStart
+                ? 'Upcoming Product — Not Yet Available for Purchase'
+                : availability.isAfterEnd
+                ? 'Availability Window Ended — No Longer Available'
+                : 'Scheduled Product Availability Window'}
+            </span>
+          </div>
+          <div className="flex flex-wrap gap-x-4 gap-y-1 text-[11px]">
+            {availability.formattedStart && (
+              <span>
+                Available Start Date: <strong>{availability.formattedStart}</strong>
+              </span>
+            )}
+            {availability.formattedEnd && (
+              <span>
+                Available End Date: <strong>{availability.formattedEnd}</strong>
+              </span>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Action Buttons */}
-      {product.disableBuyButton ? (
+      {!availability.isAvailableNow ? (
+        <div className="w-full py-3.5 px-6 rounded-2xl bg-amber-50 text-amber-900 font-bold text-xs flex items-center justify-center gap-2 border border-amber-300 shadow-2xs select-none">
+          <Clock className="w-4 h-4 text-amber-600 shrink-0" />
+          <span>
+            {availability.isBeforeStart
+              ? `Coming Soon — Available starting ${availability.formattedStart}`
+              : `Availability ended on ${availability.formattedEnd}`}
+          </span>
+        </div>
+      ) : product.disableBuyButton ? (
         <div className="space-y-3 pt-2">
           {product.callForPrice ? (
             <div className="flex flex-col sm:flex-row gap-3">

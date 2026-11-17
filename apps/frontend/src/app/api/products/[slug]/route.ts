@@ -67,6 +67,8 @@ export async function GET(
       automaticallyAddRequiredProducts: Boolean((product as any).automaticallyAddRequiredProducts),
       allowCustomerReviews:
         product.allowCustomerReviews !== undefined ? Boolean(product.allowCustomerReviews) : true,
+      availableStartDate: product.availableStartDate || '',
+      availableEndDate: product.availableEndDate || '',
       isPublished: product.isPublished !== undefined ? Boolean(product.isPublished) : true,
       isFeatured: Boolean(product.isFeatured),
       isBestSeller: Boolean(product.isBestSeller),

@@ -39,6 +39,8 @@ export async function GET(request: Request) {
       automaticallyAddRequiredProducts: Boolean((p as any).automaticallyAddRequiredProducts),
       allowCustomerReviews:
         p.allowCustomerReviews !== undefined ? Boolean(p.allowCustomerReviews) : true,
+      availableStartDate: p.availableStartDate || '',
+      availableEndDate: p.availableEndDate || '',
       category: categoryObj?.name || (p as any).category || 'General Agri Input',
       categoryKn: categoryObj?.nameKn,
       image,

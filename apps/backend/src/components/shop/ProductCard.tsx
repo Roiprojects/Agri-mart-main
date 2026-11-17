@@ -5,9 +5,10 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { ProductType } from '@/lib/seed-data';
-import { Star, ShoppingCart, CheckCircle2, Lock, Camera } from 'lucide-react';
+import { Star, ShoppingCart, CheckCircle2, Lock, Camera, Clock } from 'lucide-react';
 import { Badge } from '@/components/ui/Badge';
 import { useAuth } from '@/lib/auth-client';
+import { getProductAvailability } from '@/lib/product-availability';
 
 interface ProductCardProps {
   product: ProductType;
@@ -22,6 +23,8 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
   const discountPercent = product.comparePrice
     ? Math.round(((product.comparePrice - product.price) / product.comparePrice) * 100)
     : 0;
+
+  const availability = getProductAvailability(product as any);
 
   const handleAdd = () => {
     setIsAdded(true);
@@ -97,7 +100,9 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
           alt={product.name}
           fill
           unoptimized
-          className={`object-cover img-zoom ${productImages.length > 1 ? 'group-hover:opacity-0 transition-opacity duration-300' : ''}`}
+          className={`object-cover img-zoom ${
+            availability.shouldBlurImage ? 'blur-md scale-110 brightness-90' : ''
+          } ${productImages.length > 1 ? 'group-hover:opacity-0 transition-opacity duration-300' : ''}`}
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
         />
 
@@ -107,9 +112,33 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
             alt={`${product.name} alternate view`}
             fill
             unoptimized
-            className="object-cover img-zoom absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+            className={`object-cover img-zoom absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 ${
+              availability.shouldBlurImage ? 'blur-md scale-110 brightness-90' : ''
+            }`}
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
+        )}
+
+        {availability.isBeforeStart && (
+          <div className="absolute inset-0 z-10 bg-slate-900/35 flex flex-col items-center justify-center p-3 text-center">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-950/80 text-amber-300 font-bold text-[11px] border border-amber-400/40 shadow-md">
+              <Clock className="w-3.5 h-3.5" />
+              <span>Coming Soon</span>
+            </span>
+            {availability.formattedStart && (
+              <span className="mt-1.5 text-[10px] font-semibold text-white bg-black/60 px-2.5 py-0.5 rounded-full">
+                Available: {availability.formattedStart}
+              </span>
+            )}
+          </div>
+        )}
+
+        {availability.isAfterEnd && (
+          <div className="absolute inset-0 z-10 bg-slate-900/45 flex flex-col items-center justify-center p-3 text-center">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-950/90 text-rose-200 font-bold text-[11px] border border-rose-400/40 shadow-md">
+              <span>Availability Ended</span>
+            </span>
+          </div>
         )}
 
         {/* Floating Badges */}
@@ -213,7 +242,14 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
             )}
           </div>
 
-          {product.disableBuyButton ? (
+          {!availability.isAvailableNow ? (
+            <Link
+              href={`/products/${product.slug}`}
+              className="text-[11px] font-bold px-3 py-1.5 rounded-xl bg-amber-50 text-amber-800 hover:bg-amber-100 border border-amber-200 transition"
+            >
+              {availability.isBeforeStart ? 'Coming Soon' : 'Unavailable'}
+            </Link>
+          ) : product.disableBuyButton ? (
             product.callForPrice ? (
               <a
                 href="tel:+918001234567"

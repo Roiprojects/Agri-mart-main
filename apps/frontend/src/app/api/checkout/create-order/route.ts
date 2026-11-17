@@ -1,0 +1,172 @@
+import { NextResponse } from 'next/server';
+import { devDb } from '@/lib/dev-db';
+import { validatePhoneNumber, validateEmailOptional, validatePinCode } from '@/lib/validation';
+import { getProductAvailability } from '@/lib/product-availability';
+import crypto from 'crypto';
+
+export async function POST(request: Request) {
+  try {
+    const body = await request.json();
+    const {
+      userId = 'usr-farmer-01',
+      items = [],
+      shippingAddress,
+      paymentMethod = 'UPI',
+      couponCode,
+      notes,
+    } = body;
+
+    if (!items || items.length === 0) {
+      return NextResponse.json({ success: false, message: 'Cart items cannot be empty.' }, { status: 400 });
+    }
+
+    // Enforce "Require other products" rule across all products
+    const orderedProductIds = new Set(
+      items.map((it: any) => String(it.productId || it.id || '').trim()).filter(Boolean)
+    );
+    for (const it of items) {
+      const prod = devDb.getProductById(it.productId || it.id) || devDb.getProductBySlug(it.productId || it.id);
+      if (prod) {
+        const avail = getProductAvailability(prod as any);
+        if (!avail.isAvailableNow) {
+          return NextResponse.json(
+            {
+              success: false,
+              message: avail.isBeforeStart
+                ? `"${prod.name}" is not available until ${avail.formattedStart}.`
+                : `"${prod.name}" availability ended on ${avail.formattedEnd}.`,
+            },
+            { status: 400 }
+          );
+        }
+      }
+      if (prod && (prod as any).requireOtherProducts) {
+        const reqIds: string[] = Array.isArray((prod as any).requiredProductIds)
+          ? (prod as any).requiredProductIds.filter(Boolean)
+          : [];
+        const missingIds = reqIds.filter((rid) => !orderedProductIds.has(rid));
+        if (missingIds.length > 0) {
+          const missingNames = missingIds.map((rid) => devDb.getProductById(rid)?.name || rid);
+          return NextResponse.json(
+            {
+              success: false,
+              message: `"${prod.name}" requires purchasing the following product(s) together: ${missingNames.join(', ')}.`,
+            },
+            { status: 400 }
+          );
+        }
+      }
+    }
+
+    if (!shippingAddress || !shippingAddress.fullName || !shippingAddress.addressLine) {
+      return NextResponse.json({ success: false, message: 'Complete delivery address and full name are required.' }, { status: 400 });
+    }
+
+    // Collect existing mobile numbers across orders so phone numbers do not repeat
+    const existingOrderMobiles = devDb
+      .getOrders()
+      .map((o) => o.shippingAddress?.mobile || '')
+      .filter(Boolean);
+
+    const phoneValidation = validatePhoneNumber(shippingAddress.mobile, existingOrderMobiles);
+    if (!phoneValidation.valid) {
+      return NextResponse.json({ success: false, message: phoneValidation.error }, { status: 400 });
+    }
+
+    const emailValidation = validateEmailOptional(shippingAddress.email);
+    if (!emailValidation.valid) {
+      return NextResponse.json({ success: false, message: emailValidation.error }, { status: 400 });
+    }
+
+    const pinValidation = validatePinCode(shippingAddress.pincode);
+    if (!pinValidation.valid) {
+      return NextResponse.json({ success: false, message: pinValidation.error }, { status: 400 });
+    }
+
+    shippingAddress.mobile = phoneValidation.cleaned;
+    shippingAddress.email = emailValidation.cleaned || undefined;
+    shippingAddress.pincode = pinValidation.cleaned;
+
+    // Attempt atomic order creation & warehouse stock reservation
+    const orderResult = devDb.createOrder({
+      userId,
+      items,
+      shippingAddress,
+      paymentMethod,
+      couponCode,
+      notes,
+    });
+
+    if (!orderResult.success || !orderResult.order) {
+      return NextResponse.json({ success: false, message: orderResult.message }, { status: 409 });
+    }
+
+    const order = orderResult.order;
+    const updatedStocks = (items || []).map((it: any) => {
+      const prod = devDb.getProductById(it.productId) || devDb.getProductBySlug(it.productId);
+      const remainingStock = prod ? Number((prod as any).stockQuantity ?? 0) : undefined;
+      const minStockQuantity = prod
+        ? Math.max(1, Number((prod as any).minStockQuantity ?? (prod as any).lowStockQuantity ?? 1) || 1)
+        : 1;
+      return {
+        productId: prod?.id || it.productId,
+        orderedQty: Number(it.quantity) || 1,
+        remainingStock,
+        minStockQuantity,
+        isLowStock: remainingStock !== undefined ? remainingStock <= minStockQuantity : false,
+      };
+    });
+    const keyId = process.env.RAZORPAY_KEY_ID || 'rzp_test_placeholder';
+    const isSandboxPayment =
+      !process.env.RAZORPAY_KEY_ID ||
+      keyId.startsWith('rzp_test_') ||
+      keyId.includes('placeholder') ||
+      keyId.includes('mock');
+
+    const razorpayOrderId = `order_sand_${order.orderNumber.replace(/[^a-zA-Z0-9]/g, '')}`;
+    const secret = process.env.RAZORPAY_KEY_SECRET || 'rzp_secret_placeholder';
+    const razorpaySignatureTest = crypto
+      .createHmac('sha256', secret)
+      .update(`${razorpayOrderId}|pay_sand_${order.id}`)
+      .digest('hex');
+
+    if (paymentMethod !== 'COD') {
+      console.log(`\x1b[33m[SANDBOX PAYMENT GATEWAY]\x1b[0m Created Sandbox Order: ${razorpayOrderId} for Order #${order.orderNumber} (Method: ${paymentMethod}, Amount: ₹${order.totalAmount}). NOT A REAL TRANSACTION.`);
+    }
+
+    return NextResponse.json({
+      success: true,
+      orderId: order.id,
+      orderNumber: order.orderNumber,
+      updatedStocks,
+      order: {
+        id: order.id,
+        orderNumber: order.orderNumber,
+        totalAmount: order.totalAmount,
+        subtotalAmount: order.subtotalAmount,
+        discountAmount: order.discountAmount,
+        deliveryFee: order.deliveryFee,
+        taxAmount: order.taxAmount,
+        status: order.status,
+        paymentStatus: order.paymentStatus,
+        assignedWarehouseName: order.assignedWarehouseName,
+      },
+      paymentDetails: {
+        paymentMethod,
+        isSandbox: isSandboxPayment,
+        razorpayOrderId,
+        razorpayKeyId: isSandboxPayment ? 'rzp_test_placeholder' : process.env.RAZORPAY_KEY_ID,
+        testSignature: isSandboxPayment ? razorpaySignatureTest : undefined,
+        devNotice: isSandboxPayment
+          ? '[SANDBOX_MODE: Mock Payment Provider Enabled] Never present simulated success as a real transaction.'
+          : undefined,
+      },
+      message: orderResult.message,
+    });
+  } catch (err: any) {
+    return NextResponse.json(
+      { success: false, message: err.message || 'Failed to place order' },
+      { status: 500 }
+    );
+  }
+}

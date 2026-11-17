@@ -67,6 +67,8 @@ export default function NewProductPage() {
             data.allowCustomerReviews !== undefined
               ? Boolean(data.allowCustomerReviews)
               : true,
+          availableStartDate: data.availableStartDate || '',
+          availableEndDate: data.availableEndDate || '',
         });
         if (continueEditing && createdId) {
           router.push(`/admin/catalogue/products/${createdId}/edit`);

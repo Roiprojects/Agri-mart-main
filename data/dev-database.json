@@ -668,6 +668,89 @@
   ],
   "products": [
     {
+      "id": "am-upcoming-test",
+      "name": "Upcoming Launch Test Product",
+      "nameKn": "Upcoming Launch Test Product",
+      "slug": "upcoming-launch-test-product",
+      "sku": "RIPL-UPCOMING-001",
+      "riplCode": "RIPL-UPCOMING-001",
+      "modelNumber": "AM-LAUNCH-2026",
+      "shortDescription": "Scheduled launch test product demonstrating blurred image preview before Available start date (12/01/2026).",
+      "description": "Scheduled launch test product demonstrating blurred image preview before Available start date (12/01/2026 10:00 AM) and automatic availability window ending on Available end date (12/31/2026 11:59 PM).",
+      "descriptionHtml": "<p>Scheduled launch test product demonstrating <b>blurred image preview</b> before Available start date (12/01/2026 10:00 AM) and automatic availability window ending on Available end date (12/31/2026 11:59 PM).</p>",
+      "brandId": "br-am-agrimate",
+      "brandName": "AGRIMATE",
+      "brand": "AGRIMATE",
+      "categoryId": "cat-am-sprayer",
+      "parentCategoryId": "cat-am-sprayer",
+      "subCategoryId": "subcat-weeders-tillers",
+      "price": 2500,
+      "comparePrice": 3000,
+      "priceNote": "MRP (Inclusive Of All Taxes)",
+      "variantLabel": "Special Edition",
+      "stockQuantity": 50,
+      "stock": 50,
+      "availableQty": 50,
+      "maxOrderQty": 50,
+      "minStockQuantity": 5,
+      "lowStockQuantity": 5,
+      "minOrderQty": 5,
+      "minCartQty": 5,
+      "images": [
+        "/images/products/agrimart/upcoming-test-product.png"
+      ],
+      "brochures": [],
+      "videos": [],
+      "accessoriesInfo": "",
+      "accessoriesAvailable": false,
+      "sparePartsAvailable": false,
+      "isPublished": true,
+      "isDraft": false,
+      "isFeatured": true,
+      "isBestSeller": false,
+      "showOnHomePage": true,
+      "visibleIndividually": true,
+      "requireOtherProducts": false,
+      "requiredProductIds": [],
+      "automaticallyAddRequiredProducts": false,
+      "allowCustomerReviews": true,
+      "availableStartDate": "2026-12-01T10:00",
+      "availableEndDate": "2026-12-31T23:59",
+      "targetCrops": "",
+      "cropStages": "",
+      "vendor": "Agri-Mart Direct",
+      "taxCategory": "MRP – Inclusive Of All Taxes",
+      "gtin": "8901234000099",
+      "manufacturerPartNumber": "AM-LAUNCH-2026",
+      "metaTitle": "Upcoming Launch Test Product | AGRIMATE | Agri Mart",
+      "metaKeywords": "Upcoming Launch Test Product, AGRIMATE, RIPL-UPCOMING-001",
+      "metaDescription": "Upcoming Launch Test Product at Agri Mart.",
+      "seName": "upcoming-launch-test-product",
+      "productType": "Simple",
+      "createdAt": "2026-11-17T04:44:06.352Z",
+      "updatedAt": "2026-11-17T04:44:06.352Z",
+      "cost": 1950,
+      "weight": 5,
+      "length": 35,
+      "width": 25,
+      "height": 20,
+      "deliveryDate": "1-2 days (Express Hub)",
+      "variants": [
+        {
+          "id": "var-am-upcoming-test-1",
+          "productId": "am-upcoming-test",
+          "name": "Special Edition",
+          "sku": "RIPL-UPCOMING-001",
+          "riplCode": "RIPL-UPCOMING-001",
+          "title": "AM-LAUNCH-2026",
+          "price": 2500,
+          "comparePrice": 3000,
+          "stockQuantity": 50,
+          "isDefault": true
+        }
+      ]
+    },
+    {
       "id": "am-producttest",
       "name": "producttest",
       "nameKn": "producttest",
@@ -751,7 +834,9 @@
       "minCartQty": 1,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3018",
@@ -846,7 +931,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3337",
@@ -929,7 +1016,9 @@
       "minCartQty": 1,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3267",
@@ -1013,7 +1102,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3014",
@@ -1108,7 +1199,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3269",
@@ -1192,7 +1285,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-1646",
@@ -1283,7 +1378,9 @@
       "minCartQty": 1,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-1157",
@@ -1382,7 +1479,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3295",
@@ -1466,7 +1565,9 @@
       "minCartQty": 1,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-1891",
@@ -1565,7 +1666,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-2460",
@@ -1662,7 +1765,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3446",
@@ -1745,7 +1850,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3341",
@@ -1835,7 +1942,9 @@
       "minCartQty": 1,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-2112",
@@ -1928,7 +2037,9 @@
       "minCartQty": 1,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3343",
@@ -2033,7 +2144,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-2961",
@@ -2126,7 +2239,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3492",
@@ -2213,7 +2328,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3299",
@@ -2300,7 +2417,9 @@
       "minCartQty": 1,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3456",
@@ -2383,7 +2502,9 @@
       "minCartQty": 1,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-1645",
@@ -2484,7 +2605,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3506",
@@ -2569,7 +2692,9 @@
       "minCartQty": 1,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3570",
@@ -2653,7 +2778,9 @@
       "minCartQty": 1,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3510",
@@ -2743,7 +2870,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3436",
@@ -2834,7 +2963,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3586",
@@ -2911,7 +3042,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3512",
@@ -3001,7 +3134,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3524",
@@ -3090,7 +3225,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3582",
@@ -3167,7 +3304,9 @@
       "minCartQty": 2,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3347",
@@ -3258,7 +3397,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3263",
@@ -3341,7 +3482,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3576",
@@ -3425,7 +3568,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3588",
@@ -3502,7 +3647,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3598",
@@ -3591,7 +3738,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3526",
@@ -3680,7 +3829,9 @@
       "minCartQty": 1,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3502",
@@ -3763,7 +3914,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3500",
@@ -3847,7 +4000,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3600",
@@ -3932,7 +4087,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3528",
@@ -4021,7 +4178,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3480",
@@ -4105,7 +4264,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-1750",
@@ -4190,7 +4351,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-1720",
@@ -4282,7 +4445,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-1901",
@@ -4373,7 +4538,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3265",
@@ -4456,7 +4623,9 @@
       "minCartQty": 1,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-2031",
@@ -4547,7 +4716,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3522",
@@ -4636,7 +4807,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-1636",
@@ -4721,7 +4894,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3153",
@@ -4810,7 +4985,9 @@
       "minCartQty": 1,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-2590",
@@ -4906,7 +5083,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3584",
@@ -4983,7 +5162,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3476",
@@ -5086,7 +5267,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3440",
@@ -5183,7 +5366,9 @@
       "minCartQty": 1,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-1098",
@@ -5279,7 +5464,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3594",
@@ -5368,7 +5555,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3516",
@@ -5451,7 +5640,9 @@
       "minCartQty": 1,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3131",
@@ -5549,7 +5740,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3297",
@@ -5632,7 +5825,9 @@
       "minCartQty": 1,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3360",
@@ -5728,7 +5923,9 @@
       "minCartQty": 2,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-996",
@@ -5820,7 +6017,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3566",
@@ -5909,7 +6108,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3111",
@@ -6006,7 +6207,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3474",
@@ -6109,7 +6312,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-2600",
@@ -6192,7 +6397,9 @@
       "minCartQty": 1,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3468",
@@ -6282,7 +6489,9 @@
       "minCartQty": 1,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3149",
@@ -6371,7 +6580,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-1106",
@@ -6469,7 +6680,9 @@
       "minCartQty": 1,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-1644",
@@ -6560,7 +6773,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3009",
@@ -6644,7 +6859,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-1923",
@@ -6736,7 +6953,9 @@
       "minCartQty": 1,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-1653",
@@ -6826,7 +7045,9 @@
       "minCartQty": 3,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3564",
@@ -6909,7 +7130,9 @@
       "minCartQty": 1,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3090",
@@ -6999,7 +7222,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-1757",
@@ -7095,7 +7320,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-1637",
@@ -7180,7 +7407,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-2005",
@@ -7272,7 +7501,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3007",
@@ -7356,7 +7587,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3592",
@@ -7445,7 +7678,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-382",
@@ -7536,7 +7771,9 @@
       "minCartQty": 1,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-1625",
@@ -7621,7 +7858,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3380",
@@ -7711,7 +7950,9 @@
       "minCartQty": 1,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3488",
@@ -7794,7 +8035,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3580",
@@ -7878,7 +8121,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3392",
@@ -7963,7 +8208,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3125",
@@ -8063,7 +8310,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3333",
@@ -8146,7 +8395,9 @@
       "minCartQty": 1,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3214",
@@ -8238,7 +8489,9 @@
       "minCartQty": 1,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3450",
@@ -8327,7 +8580,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-1763",
@@ -8426,7 +8681,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3578",
@@ -8510,7 +8767,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3366",
@@ -8586,7 +8845,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3216",
@@ -8678,7 +8939,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-2596",
@@ -8774,7 +9037,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-1919",
@@ -8866,7 +9131,9 @@
       "minCartQty": 2,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-181",
@@ -8964,7 +9231,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3420",
@@ -9055,7 +9324,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3113",
@@ -9145,7 +9416,9 @@
       "minCartQty": 1,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3084",
@@ -9235,7 +9508,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3508",
@@ -9335,7 +9610,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-2",
@@ -9433,7 +9710,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-138",
@@ -9525,7 +9804,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-2053",
@@ -9623,7 +9904,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3030",
@@ -9713,7 +9996,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3184",
@@ -9796,7 +10081,9 @@
       "minCartQty": 1,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-2999",
@@ -9887,7 +10174,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-66",
@@ -9972,7 +10261,9 @@
       "minCartQty": 1,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3486",
@@ -10055,7 +10346,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-2051",
@@ -10152,7 +10445,9 @@
       "minCartQty": 2,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3309",
@@ -10235,7 +10530,9 @@
       "minCartQty": 1,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-2822",
@@ -10332,7 +10629,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-2692",
@@ -10423,7 +10722,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-1748",
@@ -10508,7 +10809,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-2603",
@@ -10591,7 +10894,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-2824",
@@ -10680,7 +10985,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3289",
@@ -10777,7 +11084,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3358",
@@ -10868,7 +11177,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3370",
@@ -10952,7 +11263,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-1027",
@@ -11051,7 +11364,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-70",
@@ -11155,7 +11470,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3372",
@@ -11239,7 +11556,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-423",
@@ -11330,7 +11649,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-406",
@@ -11421,7 +11742,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-1839",
@@ -11517,7 +11840,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3291",
@@ -11614,7 +11939,9 @@
       "minCartQty": 1,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3424",
@@ -11705,7 +12032,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-1718",
@@ -11783,7 +12112,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3261",
@@ -11868,7 +12199,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3554",
@@ -11959,7 +12292,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3378",
@@ -12043,7 +12378,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-644",
@@ -12142,7 +12479,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3418",
@@ -12219,7 +12558,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3432",
@@ -12315,7 +12656,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3283",
@@ -12399,7 +12742,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3542",
@@ -12484,7 +12829,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-2462",
@@ -12579,7 +12926,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3384",
@@ -12669,7 +13018,9 @@
       "minCartQty": 1,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-247",
@@ -12770,7 +13121,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3348",
@@ -12866,7 +13219,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3301",
@@ -12948,7 +13303,9 @@
       "minCartQty": 1,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3546",
@@ -13032,7 +13389,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-380",
@@ -13123,7 +13482,9 @@
       "minCartQty": 1,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-249",
@@ -13201,7 +13562,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-1917",
@@ -13294,7 +13657,9 @@
       "minCartQty": 1,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3430",
@@ -13383,7 +13748,9 @@
       "minCartQty": 1,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-419",
@@ -13481,7 +13848,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3327",
@@ -13564,7 +13933,9 @@
       "minCartQty": 1,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-514",
@@ -13654,7 +14025,9 @@
       "minCartQty": 4,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-2001",
@@ -13752,7 +14125,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-2038",
@@ -13841,7 +14216,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3094",
@@ -13938,7 +14315,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3572",
@@ -14034,7 +14413,9 @@
       "minCartQty": 1,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-2846",
@@ -14117,7 +14498,9 @@
       "minCartQty": 1,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-1069",
@@ -14206,7 +14589,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3548",
@@ -14290,7 +14675,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3313",
@@ -14373,7 +14760,9 @@
       "minCartQty": 1,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-96",
@@ -14470,7 +14859,9 @@
       "minCartQty": 3,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3186",
@@ -14559,7 +14950,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3257",
@@ -14661,7 +15054,9 @@
       "minCartQty": 1,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3315",
@@ -14744,7 +15139,9 @@
       "minCartQty": 1,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3329",
@@ -14827,7 +15224,9 @@
       "minCartQty": 1,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-161",
@@ -14917,7 +15316,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3478",
@@ -15001,7 +15402,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3024",
@@ -15100,7 +15503,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3368",
@@ -15198,7 +15603,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-2850",
@@ -15281,7 +15688,9 @@
       "minCartQty": 1,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-1861",
@@ -15357,7 +15766,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3311",
@@ -15440,7 +15851,9 @@
       "minCartQty": 1,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3560",
@@ -15519,7 +15932,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-2633",
@@ -15616,7 +16031,9 @@
       "minCartQty": 4,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-1604",
@@ -15700,7 +16117,9 @@
       "minCartQty": 2,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-1606",
@@ -15791,7 +16210,9 @@
       "minCartQty": 1,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-58",
@@ -15889,7 +16310,9 @@
       "minCartQty": 1,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-1837",
@@ -15978,7 +16401,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-1857",
@@ -16061,7 +16486,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3034",
@@ -16137,7 +16564,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-421",
@@ -16234,7 +16663,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-596",
@@ -16332,7 +16763,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3319",
@@ -16415,7 +16848,9 @@
       "minCartQty": 1,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3354",
@@ -16498,7 +16933,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3374",
@@ -16575,7 +17012,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-108",
@@ -16673,7 +17112,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-2989",
@@ -16756,7 +17197,9 @@
       "minCartQty": 1,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-90",
@@ -16854,7 +17297,9 @@
       "minCartQty": 2,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-604",
@@ -16945,7 +17390,9 @@
       "minCartQty": 1,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3538",
@@ -17035,7 +17482,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3036",
@@ -17111,7 +17560,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-1706",
@@ -17209,7 +17660,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3321",
@@ -17285,7 +17738,9 @@
       "minCartQty": 1,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3496",
@@ -17381,7 +17836,9 @@
       "minCartQty": 1,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3028",
@@ -17483,7 +17940,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-1657",
@@ -17574,7 +18033,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3218",
@@ -17670,7 +18131,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3137",
@@ -17767,7 +18230,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-2894",
@@ -17850,7 +18315,9 @@
       "minCartQty": 1,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3574",
@@ -17946,7 +18413,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-2898",
@@ -18029,7 +18498,9 @@
       "minCartQty": 2,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3458",
@@ -18125,7 +18596,9 @@
       "minCartQty": 1,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-1712",
@@ -18216,7 +18689,9 @@
       "minCartQty": 1,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3208",
@@ -18313,7 +18788,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3038",
@@ -18389,7 +18866,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3550",
@@ -18485,7 +18964,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-1966",
@@ -18583,7 +19064,9 @@
       "minCartQty": 2,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3345",
@@ -18672,7 +19155,9 @@
       "minCartQty": 1,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3408",
@@ -18762,7 +19247,9 @@
       "minCartQty": 3,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3540",
@@ -18848,7 +19335,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-585",
@@ -18954,7 +19443,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3317",
@@ -19029,7 +19520,9 @@
       "minCartQty": 1,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3048",
@@ -19127,7 +19620,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3335",
@@ -19205,7 +19700,9 @@
       "minCartQty": 1,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3323",
@@ -19281,7 +19778,9 @@
       "minCartQty": 1,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3109",
@@ -19379,7 +19878,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3396",
@@ -19475,7 +19976,9 @@
       "minCartQty": 3,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-2908",
@@ -19559,7 +20062,9 @@
       "minCartQty": 1,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3117",
@@ -19655,7 +20160,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3412",
@@ -19757,7 +20264,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-1663",
@@ -19861,7 +20370,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3562",
@@ -19950,7 +20461,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-78",
@@ -20048,7 +20561,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-510",
@@ -20139,7 +20654,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-2842",
@@ -20228,7 +20745,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3115",
@@ -20324,7 +20843,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3482",
@@ -20425,7 +20946,9 @@
       "minCartQty": 1,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-1978",
@@ -20524,7 +21047,9 @@
       "minCartQty": 1,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3602",
@@ -20616,7 +21141,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3590",
@@ -20700,7 +21227,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-153",
@@ -20792,7 +21321,9 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     },
     {
       "id": "am-3552",
@@ -20883,10 +21414,24 @@
       "minCartQty": 5,
       "requireOtherProducts": false,
       "requiredProductIds": [],
-      "automaticallyAddRequiredProducts": false
+      "automaticallyAddRequiredProducts": false,
+      "availableStartDate": "",
+      "availableEndDate": ""
     }
   ],
   "variants": [
+    {
+      "id": "var-am-upcoming-test-1",
+      "productId": "am-upcoming-test",
+      "name": "Special Edition",
+      "sku": "RIPL-UPCOMING-001",
+      "riplCode": "RIPL-UPCOMING-001",
+      "title": "AM-LAUNCH-2026",
+      "price": 2500,
+      "comparePrice": 3000,
+      "stockQuantity": 50,
+      "isDefault": true
+    },
     {
       "id": "var-am-producttest-1",
       "productId": "am-producttest",
@@ -42170,6 +42715,22 @@
     {
       "id": "sp-am-producttest-2",
       "productId": "am-producttest",
+      "group": "Packaging & Dispatch",
+      "name": "Fulfillment Hub",
+      "value": "Hubballi & Dharwad Central Dark Warehouses",
+      "displayOrder": 2
+    },
+    {
+      "id": "sp-am-upcoming-test-1",
+      "productId": "am-upcoming-test",
+      "group": "Quality & Certification",
+      "name": "Quality Standard",
+      "value": "ISO & FCO / BIS Certified Agricultural Grade",
+      "displayOrder": 1
+    },
+    {
+      "id": "sp-am-upcoming-test-2",
+      "productId": "am-upcoming-test",
       "group": "Packaging & Dispatch",
       "name": "Fulfillment Hub",
       "value": "Hubballi & Dharwad Central Dark Warehouses",

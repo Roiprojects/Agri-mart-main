@@ -465,6 +465,14 @@ export function ProductForm({
         initialValues.allowCustomerReviews !== undefined
           ? Boolean(initialValues.allowCustomerReviews)
           : prev.allowCustomerReviews,
+      availableStartDate:
+        initialValues.availableStartDate !== undefined
+          ? initialValues.availableStartDate
+          : prev.availableStartDate,
+      availableEndDate:
+        initialValues.availableEndDate !== undefined
+          ? initialValues.availableEndDate
+          : prev.availableEndDate,
       customerEntersPrice:
         initialValues.customerEntersPrice !== undefined
           ? Boolean(initialValues.customerEntersPrice)

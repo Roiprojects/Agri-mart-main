@@ -228,6 +228,9 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
             images={images}
             productName={product.name}
             badge={product.isBestSeller ? 'Best Seller' : product.isFeatured ? 'Featured Input' : undefined}
+            productId={product.id}
+            availableStartDate={(product as any).availableStartDate}
+            availableEndDate={(product as any).availableEndDate}
           />
 
           {/* Description Box */}

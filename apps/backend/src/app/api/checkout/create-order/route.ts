@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { devDb } from '@/lib/dev-db';
 import { validatePhoneNumber, validateEmailOptional, validatePinCode } from '@/lib/validation';
+import { getProductAvailability } from '@/lib/product-availability';
 import crypto from 'crypto';
 
 export async function POST(request: Request) {
@@ -25,6 +26,20 @@ export async function POST(request: Request) {
     );
     for (const it of items) {
       const prod = devDb.getProductById(it.productId || it.id) || devDb.getProductBySlug(it.productId || it.id);
+      if (prod) {
+        const avail = getProductAvailability(prod as any);
+        if (!avail.isAvailableNow) {
+          return NextResponse.json(
+            {
+              success: false,
+              message: avail.isBeforeStart
+                ? `"${prod.name}" is not available until ${avail.formattedStart}.`
+                : `"${prod.name}" availability ended on ${avail.formattedEnd}.`,
+            },
+            { status: 400 }
+          );
+        }
+      }
       if (prod && (prod as any).requireOtherProducts) {
         const reqIds: string[] = Array.isArray((prod as any).requiredProductIds)
           ? (prod as any).requiredProductIds.filter(Boolean)

@@ -106,6 +106,8 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
             data.allowCustomerReviews !== undefined
               ? Boolean(data.allowCustomerReviews)
               : true,
+          availableStartDate: data.availableStartDate || '',
+          availableEndDate: data.availableEndDate || '',
           variants: [
             {
               ...(json.data?.variants?.[0] || product?.variants?.[0] || {}),
