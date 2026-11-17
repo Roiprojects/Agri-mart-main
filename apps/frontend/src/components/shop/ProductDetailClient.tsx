@@ -344,12 +344,12 @@ export default function ProductDetailClient({ product: initialProduct }: Product
     availability.isBeforeStart && Boolean(product.availableForPreOrder) && !product.disableBuyButton;
 
   const handleAddToCart = () => {
-    if (product.disableBuyButton || (!availability.isAvailableNow && !canPreOrder)) return;
+    if (product.disableBuyButton || product.callForPrice || (!availability.isAvailableNow && !canPreOrder)) return;
     executeAddToCart();
   };
 
   const handleBuyNow = () => {
-    if (product.disableBuyButton || (!availability.isAvailableNow && !canPreOrder)) return;
+    if (product.disableBuyButton || product.callForPrice || (!availability.isAvailableNow && !canPreOrder)) return;
     executeBuyNow();
   };
 
@@ -515,7 +515,9 @@ export default function ProductDetailClient({ product: initialProduct }: Product
                   }`}
                 >
                   <div className="font-bold text-xs">{v.title}</div>
-                  <div className="text-[11px] font-black mt-1">₹{v.price.toLocaleString('en-IN')}</div>
+                  <div className="text-[11px] font-black mt-1">
+                    {product.callForPrice ? 'Call for Price' : `₹${v.price.toLocaleString('en-IN')}`}
+                  </div>
                 </button>
               );
             })}
@@ -524,7 +526,7 @@ export default function ProductDetailClient({ product: initialProduct }: Product
       )}
 
       {/* Quantity Selector */}
-      {!product.disableBuyButton && (
+      {!product.disableBuyButton && !product.callForPrice && (
         <div className="flex flex-wrap items-center gap-4 pt-2">
           <label className="text-xs font-bold text-slate-800">Quantity:</label>
           <div className="flex items-center border border-slate-200 rounded-xl overflow-hidden bg-slate-50">
@@ -706,27 +708,28 @@ export default function ProductDetailClient({ product: initialProduct }: Product
             </span>
           </div>
         )
+      ) : product.callForPrice ? (
+        <div className="space-y-3 pt-2">
+          <div className="flex flex-col sm:flex-row gap-3">
+            <a
+              href="tel:+918001234567"
+              className="flex-1 text-center bg-agri-green hover:bg-agri-green-dark text-white font-extrabold text-xs py-3.5 px-6 rounded-2xl shadow-xs transition flex items-center justify-center gap-2"
+            >
+              <PhoneCall className="w-4 h-4" /> Call for Price &amp; Custom Quote
+            </a>
+            <a
+              href={`https://wa.me/918001234567?text=${encodeURIComponent(`Hello Agri-Mart, I want to inquire about ${product.name} (SKU: ${product.sku || product.id})`)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex-1 text-center bg-[#25D366] hover:bg-[#20ba5a] text-white font-extrabold text-xs py-3.5 px-6 rounded-2xl shadow-xs transition flex items-center justify-center gap-2"
+            >
+              <MessageSquare className="w-4 h-4" /> WhatsApp Agri Expert
+            </a>
+          </div>
+        </div>
       ) : product.disableBuyButton ? (
         <div className="space-y-3 pt-2">
-          {product.callForPrice ? (
-            <div className="flex flex-col sm:flex-row gap-3">
-              <a
-                href="tel:+918001234567"
-                className="flex-1 text-center bg-agri-green hover:bg-agri-green-dark text-white font-extrabold text-xs py-3.5 px-6 rounded-2xl shadow-xs transition flex items-center justify-center gap-2"
-              >
-                <PhoneCall className="w-4 h-4" /> Call for Price &amp; Custom Quote
-              </a>
-              <a
-                href={`https://wa.me/918001234567?text=${encodeURIComponent(`Hello Agri-Mart, I want to inquire about ${product.name} (SKU: ${product.sku || product.id})`)}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex-1 text-center bg-[#25D366] hover:bg-[#20ba5a] text-white font-extrabold text-xs py-3.5 px-6 rounded-2xl shadow-xs transition flex items-center justify-center gap-2"
-              >
-                <MessageSquare className="w-4 h-4" /> WhatsApp Agri Expert
-              </a>
-            </div>
-          ) : (
-            <div className="space-y-2.5">
+          <div className="space-y-2.5">
               <div className="w-full py-3.5 px-6 rounded-2xl bg-slate-100 text-slate-700 font-bold text-xs flex items-center justify-center gap-2 border border-slate-200 shadow-2xs select-none">
                 <Ban className="w-4 h-4 text-rose-500 shrink-0" />
                 <span>Direct Online Purchase Currently Disabled for this Product</span>
@@ -748,7 +751,6 @@ export default function ProductDetailClient({ product: initialProduct }: Product
                 </a>
               </div>
             </div>
-          )}
         </div>
       ) : (
         <div className="flex flex-col sm:flex-row gap-3 pt-2">

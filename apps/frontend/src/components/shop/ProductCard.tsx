@@ -29,7 +29,7 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
     availability.isBeforeStart && Boolean(product.availableForPreOrder) && !product.disableBuyButton;
 
   const handleAdd = () => {
-    if (product.disableBuyButton || (!availability.isAvailableNow && !canPreOrder)) return;
+    if (product.disableBuyButton || product.callForPrice || (!availability.isAvailableNow && !canPreOrder)) return;
     setIsAdded(true);
     if (onAddToCart) {
       onAddToCart(product);
@@ -167,7 +167,7 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
               NEW
             </span>
           )}
-          {discountPercent > 0 && (
+          {discountPercent > 0 && !product.callForPrice && (
             <Badge variant="golden" size="sm">
               {discountPercent}% OFF
             </Badge>
@@ -298,22 +298,20 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
                 {availability.isBeforeStart ? 'Coming Soon' : 'Unavailable'}
               </Link>
             )
+          ) : product.callForPrice ? (
+            <a
+              href="tel:+918001234567"
+              className="text-[11px] font-bold px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-800 hover:bg-emerald-100 border border-emerald-300 transition"
+            >
+              Call
+            </a>
           ) : product.disableBuyButton ? (
-            product.callForPrice ? (
-              <a
-                href="tel:+918001234567"
-                className="text-[11px] font-bold px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-800 hover:bg-emerald-100 border border-emerald-300 transition"
-              >
-                Call
-              </a>
-            ) : (
-              <Link
-                href={`/products/${product.slug}`}
-                className="text-[11px] font-bold px-3 py-1.5 rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200 transition"
-              >
-                Details
-              </Link>
-            )
+            <Link
+              href={`/products/${product.slug}`}
+              className="text-[11px] font-bold px-3 py-1.5 rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200 transition"
+            >
+              Details
+            </Link>
           ) : (
             <button
               type="button"

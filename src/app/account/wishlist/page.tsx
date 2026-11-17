@@ -45,6 +45,7 @@ export default function WishlistPage() {
       disableBuyButton: Boolean(p.disableBuyButton),
       disableWishlistButton: Boolean(p.disableWishlistButton),
       availableForPreOrder: Boolean(p.availableForPreOrder),
+      callForPrice: Boolean(p.callForPrice),
       availableStartDate: p.availableStartDate,
       availableEndDate: p.availableEndDate,
     };

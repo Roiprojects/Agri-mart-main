@@ -21,6 +21,7 @@ export interface WishlistProductItem {
   disableBuyButton?: boolean;
   disableWishlistButton?: boolean;
   availableForPreOrder?: boolean;
+  callForPrice?: boolean;
   availableStartDate?: string;
   availableEndDate?: string;
 }
@@ -137,7 +138,7 @@ export default function WishlistClient({ products, defaultIds }: WishlistClientP
             const canPreOrder =
               availability.isBeforeStart && Boolean(item.availableForPreOrder) && !item.disableBuyButton;
             const isPurchaseDisabled =
-              Boolean(item.disableBuyButton) || (!availability.isAvailableNow && !canPreOrder);
+              Boolean(item.disableBuyButton) || Boolean(item.callForPrice) || (!availability.isAvailableNow && !canPreOrder);
 
             return (
               <div
@@ -172,11 +173,17 @@ export default function WishlistClient({ products, defaultIds }: WishlistClientP
                       </Link>
                     </h3>
                     <div className="mt-2 text-lg font-black text-slate-900">
-                      ₹{item.price.toLocaleString('en-IN')}
-                      {item.comparePrice && (
-                        <span className="text-xs text-slate-400 line-through font-normal ml-2">
-                          ₹{item.comparePrice.toLocaleString('en-IN')}
-                        </span>
+                      {item.callForPrice ? (
+                        <span className="text-sm font-extrabold text-emerald-800">Call for Price</span>
+                      ) : (
+                        <>
+                          ₹{item.price.toLocaleString('en-IN')}
+                          {item.comparePrice && (
+                            <span className="text-xs text-slate-400 line-through font-normal ml-2">
+                              ₹{item.comparePrice.toLocaleString('en-IN')}
+                            </span>
+                          )}
+                        </>
                       )}
                     </div>
                   </div>
