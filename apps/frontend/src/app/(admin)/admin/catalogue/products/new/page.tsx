@@ -69,6 +69,7 @@ export default function NewProductPage() {
               : true,
           availableStartDate: data.availableStartDate || '',
           availableEndDate: data.availableEndDate || '',
+          markAsNew: Boolean(data.markAsNew),
         });
         if (continueEditing && createdId) {
           router.push(`/admin/catalogue/products/${createdId}/edit`);

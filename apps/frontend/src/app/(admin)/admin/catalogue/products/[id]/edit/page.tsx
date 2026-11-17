@@ -108,6 +108,7 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
               : true,
           availableStartDate: data.availableStartDate || '',
           availableEndDate: data.availableEndDate || '',
+          markAsNew: Boolean(data.markAsNew),
           variants: [
             {
               ...(json.data?.variants?.[0] || product?.variants?.[0] || {}),

@@ -41,6 +41,7 @@ export async function GET(request: Request) {
         p.allowCustomerReviews !== undefined ? Boolean(p.allowCustomerReviews) : true,
       availableStartDate: p.availableStartDate || '',
       availableEndDate: p.availableEndDate || '',
+      markAsNew: Boolean(p.markAsNew),
       category: categoryObj?.name || (p as any).category || 'General Agri Input',
       categoryKn: categoryObj?.nameKn,
       image,

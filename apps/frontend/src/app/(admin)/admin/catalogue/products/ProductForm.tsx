@@ -473,6 +473,10 @@ export function ProductForm({
         initialValues.availableEndDate !== undefined
           ? initialValues.availableEndDate
           : prev.availableEndDate,
+      markAsNew:
+        initialValues.markAsNew !== undefined
+          ? Boolean(initialValues.markAsNew)
+          : prev.markAsNew,
       customerEntersPrice:
         initialValues.customerEntersPrice !== undefined
           ? Boolean(initialValues.customerEntersPrice)

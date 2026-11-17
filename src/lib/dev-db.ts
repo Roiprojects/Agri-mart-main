@@ -3054,6 +3054,10 @@ class PersistentDevDatabase {
             : prev.allowCustomerReviews !== undefined
             ? prev.allowCustomerReviews
             : true,
+        markAsNew:
+          product.markAsNew !== undefined
+            ? Boolean(product.markAsNew)
+            : Boolean(prev.markAsNew),
         updatedAt: now,
       };
 

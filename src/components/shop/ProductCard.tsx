@@ -143,6 +143,11 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
 
         {/* Floating Badges */}
         <div className="absolute top-2.5 left-2.5 flex flex-col gap-1.5 z-10">
+          {(product as any).markAsNew && (
+            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-blue-600 text-white shadow-sm">
+              NEW
+            </span>
+          )}
           {discountPercent > 0 && (
             <Badge variant="golden" size="sm">
               {discountPercent}% OFF

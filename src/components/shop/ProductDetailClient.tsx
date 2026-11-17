@@ -369,6 +369,11 @@ export default function ProductDetailClient({ product: initialProduct }: Product
       <div>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
+            {product.markAsNew && (
+              <span className="bg-blue-600 text-white text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full tracking-wider">
+                NEW
+              </span>
+            )}
             <span className="bg-emerald-100 text-emerald-800 text-[10px] font-extrabold uppercase px-2.5 py-0.5 rounded-full">
               {product.category?.name || product.category || 'Agricultural Machinery'}
             </span>

@@ -569,6 +569,7 @@ export default function AdminProductsPage() {
             : true,
         availableStartDate: formData.availableStartDate || '',
         availableEndDate: formData.availableEndDate || '',
+        markAsNew: Boolean(formData.markAsNew),
       };
 
       const res = await fetch(`/api/admin/catalogue/products/${targetId}`, {

@@ -69,6 +69,7 @@ export async function GET(
         product.allowCustomerReviews !== undefined ? Boolean(product.allowCustomerReviews) : true,
       availableStartDate: product.availableStartDate || '',
       availableEndDate: product.availableEndDate || '',
+      markAsNew: Boolean(product.markAsNew),
       isPublished: product.isPublished !== undefined ? Boolean(product.isPublished) : true,
       isFeatured: Boolean(product.isFeatured),
       isBestSeller: Boolean(product.isBestSeller),
