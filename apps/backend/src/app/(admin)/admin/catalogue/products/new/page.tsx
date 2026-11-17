@@ -63,6 +63,10 @@ export default function NewProductPage() {
             ? data.requiredProductIds
             : [],
           automaticallyAddRequiredProducts: Boolean(data.automaticallyAddRequiredProducts),
+          allowCustomerReviews:
+            data.allowCustomerReviews !== undefined
+              ? Boolean(data.allowCustomerReviews)
+              : true,
         });
         if (continueEditing && createdId) {
           router.push(`/admin/catalogue/products/${createdId}/edit`);

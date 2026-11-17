@@ -3048,6 +3048,12 @@ class PersistentDevDatabase {
           (product as any).automaticallyAddRequiredProducts !== undefined
             ? Boolean((product as any).automaticallyAddRequiredProducts)
             : Boolean((prev as any).automaticallyAddRequiredProducts),
+        allowCustomerReviews:
+          product.allowCustomerReviews !== undefined
+            ? Boolean(product.allowCustomerReviews)
+            : prev.allowCustomerReviews !== undefined
+            ? prev.allowCustomerReviews
+            : true,
         updatedAt: now,
       };
 
@@ -3185,7 +3191,10 @@ class PersistentDevDatabase {
           ? (product as any).requiredProductIds.filter(Boolean)
           : [],
         automaticallyAddRequiredProducts: Boolean((product as any).automaticallyAddRequiredProducts),
-        allowCustomerReviews: product.allowCustomerReviews,
+        allowCustomerReviews:
+          product.allowCustomerReviews !== undefined
+            ? Boolean(product.allowCustomerReviews)
+            : true,
         availableStartDate: product.availableStartDate,
         availableEndDate: product.availableEndDate,
         markAsNew: product.markAsNew,

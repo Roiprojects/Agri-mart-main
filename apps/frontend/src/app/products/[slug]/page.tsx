@@ -22,6 +22,7 @@ import {
 import ProductCard from '@/components/shop/ProductCard';
 import ProductDetailClient from '@/components/shop/ProductDetailClient';
 import ProductImageGallery from '@/components/shop/ProductImageGallery';
+import ProductReviewsSection from '@/components/shop/ProductReviewsSection';
 
 interface ProductDetailPageProps {
   params: Promise<{ slug: string }>;
@@ -379,43 +380,18 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
         </div>
       )}
 
-      {/* Customer Reviews Section */}
-      <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6">
-        <div className="flex justify-between items-center border-b border-slate-100 pb-4">
-          <div>
-            <h2 className="text-base font-extrabold text-slate-900 flex items-center gap-2">
-              <MessageSquare className="w-4 h-4 text-agri-green" /> Verified Farmer Reviews &amp; Field Experiences
-            </h2>
-            <p className="text-slate-500 text-xs mt-0.5">Authentic feedback from Karnataka farming clusters.</p>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {product.reviews && product.reviews.length > 0 ? (
-            product.reviews.map((rev: any) => (
-              <div key={rev.id} className="p-4 rounded-2xl bg-slate-50 border border-slate-100 space-y-2">
-                <div className="flex justify-between items-center">
-                  <div className="flex items-center gap-1 text-amber-500">
-                    {Array.from({ length: rev.rating || 5 }).map((_, i) => (
-                      <Star key={i} className="w-3.5 h-3.5 fill-current" />
-                    ))}
-                  </div>
-                  <span className="text-[10px] text-emerald-700 font-bold flex items-center gap-1">
-                    <CheckCircle2 className="w-3 h-3" /> Verified Farmer Purchase
-                  </span>
-                </div>
-                <h4 className="font-extrabold text-slate-900 text-xs">{rev.title}</h4>
-                <p className="text-slate-600 text-xs leading-relaxed">{rev.comment}</p>
-                <div className="text-[10px] text-slate-400 font-medium pt-1">
-                  &mdash; {rev.customerName}
-                </div>
-              </div>
-            ))
-          ) : (
-            <p className="text-slate-500">No reviews yet for this product.</p>
-          )}
-        </div>
-      </div>
+      {/* Customer Reviews Section (Controlled by Allow customer reviews checkbox) */}
+      <ProductReviewsSection
+        productId={product.id}
+        productSlug={product.slug}
+        productName={product.name}
+        initialAllowCustomerReviews={
+          (product as any).allowCustomerReviews !== undefined
+            ? Boolean((product as any).allowCustomerReviews)
+            : true
+        }
+        initialReviews={product.reviews || []}
+      />
 
       {/* Related Products */}
       {relatedProducts.length > 0 && (

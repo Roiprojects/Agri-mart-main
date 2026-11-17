@@ -461,6 +461,10 @@ export function ProductForm({
         initialValues.automaticallyAddRequiredProducts !== undefined
           ? Boolean(initialValues.automaticallyAddRequiredProducts)
           : prev.automaticallyAddRequiredProducts,
+      allowCustomerReviews:
+        initialValues.allowCustomerReviews !== undefined
+          ? Boolean(initialValues.allowCustomerReviews)
+          : prev.allowCustomerReviews,
       customerEntersPrice:
         initialValues.customerEntersPrice !== undefined
           ? Boolean(initialValues.customerEntersPrice)

@@ -563,6 +563,10 @@ export default function AdminProductsPage() {
           ? formData.requiredProductIds
           : [],
         automaticallyAddRequiredProducts: Boolean(formData.automaticallyAddRequiredProducts),
+        allowCustomerReviews:
+          formData.allowCustomerReviews !== undefined
+            ? Boolean(formData.allowCustomerReviews)
+            : true,
       };
 
       const res = await fetch(`/api/admin/catalogue/products/${targetId}`, {

@@ -65,6 +65,8 @@ export async function GET(
       requiredProductIds: detailed?.requiredProductIds || [],
       requiredProducts: detailed?.requiredProducts || [],
       automaticallyAddRequiredProducts: Boolean((product as any).automaticallyAddRequiredProducts),
+      allowCustomerReviews:
+        product.allowCustomerReviews !== undefined ? Boolean(product.allowCustomerReviews) : true,
       isPublished: product.isPublished !== undefined ? Boolean(product.isPublished) : true,
       isFeatured: Boolean(product.isFeatured),
       isBestSeller: Boolean(product.isBestSeller),

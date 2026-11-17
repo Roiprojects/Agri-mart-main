@@ -37,6 +37,8 @@ export async function GET(request: Request) {
       requiredProductIds: full?.requiredProductIds || [],
       requiredProducts: full?.requiredProducts || [],
       automaticallyAddRequiredProducts: Boolean((p as any).automaticallyAddRequiredProducts),
+      allowCustomerReviews:
+        p.allowCustomerReviews !== undefined ? Boolean(p.allowCustomerReviews) : true,
       category: categoryObj?.name || (p as any).category || 'General Agri Input',
       categoryKn: categoryObj?.nameKn,
       image,

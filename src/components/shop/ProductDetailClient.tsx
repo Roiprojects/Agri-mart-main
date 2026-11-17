@@ -420,15 +420,19 @@ export default function ProductDetailClient({ product: initialProduct }: Product
 
         {/* Rating & Stock */}
         <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-3 text-xs">
-          <div className="flex items-center text-amber-500">
-            <Star className="w-4 h-4 fill-current" />
-            <span className="font-extrabold ml-1 text-slate-900 text-sm">4.9</span>
-          </div>
-          <span className="text-slate-300">|</span>
-          <span className="text-slate-600 font-medium">
-            {product.reviews?.length || 18} Verified Farmer Reviews
-          </span>
-          <span className="text-slate-300">|</span>
+          {product.allowCustomerReviews !== false && (
+            <>
+              <div className="flex items-center text-amber-500">
+                <Star className="w-4 h-4 fill-current" />
+                <span className="font-extrabold ml-1 text-slate-900 text-sm">4.9</span>
+              </div>
+              <span className="text-slate-300">|</span>
+              <span className="text-slate-600 font-medium">
+                {product.reviews?.length || 18} Verified Farmer Reviews
+              </span>
+              <span className="text-slate-300">|</span>
+            </>
+          )}
           <span className="text-emerald-700 font-bold flex items-center gap-1">
             <CheckCircle className="w-3.5 h-3.5" />
             {product.availableQty !== undefined && product.availableQty > 0

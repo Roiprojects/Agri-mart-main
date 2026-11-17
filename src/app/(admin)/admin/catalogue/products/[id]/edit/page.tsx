@@ -102,6 +102,10 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
             ? data.requiredProductIds
             : [],
           automaticallyAddRequiredProducts: Boolean(data.automaticallyAddRequiredProducts),
+          allowCustomerReviews:
+            data.allowCustomerReviews !== undefined
+              ? Boolean(data.allowCustomerReviews)
+              : true,
           variants: [
             {
               ...(json.data?.variants?.[0] || product?.variants?.[0] || {}),
