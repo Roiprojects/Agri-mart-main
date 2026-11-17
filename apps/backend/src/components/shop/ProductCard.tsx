@@ -45,8 +45,15 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
               name: product.name,
               price: product.price,
               quantity: 1,
-              image: (product.images && product.images[0]) || (product as any).image,
-              category: product.category,
+              image:
+                (product.images && product.images[0]) ||
+                (product as any).image ||
+                (product as any).media?.[0]?.url ||
+                'https://images.unsplash.com/photo-1589923188900-85dae523342b?auto=format&fit=crop&w=800&q=80',
+              category:
+                typeof product.category === 'object'
+                  ? (product.category as any)?.name || 'Agricultural Input'
+                  : product.category,
             });
           }
           localStorage.setItem('agri_cart_items', JSON.stringify(cart));

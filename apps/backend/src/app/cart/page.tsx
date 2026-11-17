@@ -103,6 +103,30 @@ export default function CartPage() {
     }
   };
 
+  const normalizeCartItems = (rawItems: any[]): CartItem[] =>
+    rawItems
+      .filter((item) => item && typeof item === 'object')
+      .map((item) => ({
+        ...item,
+        id: String(item.id || item.productId || ''),
+        name: String(item.name || 'Agricultural Product'),
+        price: Number(item.price) || 0,
+        quantity: Math.max(1, Number(item.quantity) || 1),
+        image:
+          typeof item.image === 'string' && item.image.trim()
+            ? item.image
+            : 'https://images.unsplash.com/photo-1589923188900-85dae523342b?auto=format&fit=crop&w=600&q=80',
+        category:
+          typeof item.category === 'object'
+            ? item.category?.name || 'Agricultural Input'
+            : String(item.category || 'Agricultural Input'),
+        variantTitle:
+          typeof item.variantTitle === 'object'
+            ? item.variantTitle?.title || item.variantTitle?.name || ''
+            : item.variantTitle,
+      }))
+      .filter((item) => item.id);
+
   useEffect(() => {
     let initialItems = items;
     if (typeof window !== 'undefined') {
@@ -111,8 +135,8 @@ export default function CartPage() {
         if (stored) {
           const parsed = JSON.parse(stored);
           if (Array.isArray(parsed) && parsed.length > 0) {
-            initialItems = parsed;
-            setItems(parsed);
+            initialItems = normalizeCartItems(parsed);
+            setItems(initialItems);
           }
         }
       } catch (e) {}
@@ -321,16 +345,24 @@ export default function CartPage() {
                 <div className="flex gap-4 items-center">
                   {settings.showProductImagesOnShoppingCart && (
                     <div className="relative w-20 h-20 rounded-2xl bg-slate-100 overflow-hidden flex-shrink-0 border border-slate-200">
-                      <Image src={item.image} alt={item.name} fill className="object-cover" />
+                      <Image
+                        src={item.image || 'https://images.unsplash.com/photo-1589923188900-85dae523342b?auto=format&fit=crop&w=600&q=80'}
+                        alt={item.name || 'Product'}
+                        fill
+                        unoptimized
+                        className="object-cover"
+                      />
                     </div>
                   )}
                   <div>
-                    <div className="text-[10px] font-bold text-agri-green uppercase tracking-wider">{item.category}</div>
+                    <div className="text-[10px] font-bold text-agri-green uppercase tracking-wider">
+                      {typeof item.category === 'object' ? (item.category as any)?.name || 'Agricultural Input' : item.category}
+                    </div>
                     <div className="font-extrabold text-sm text-slate-900 line-clamp-1">{item.name}</div>
                     {item.variantTitle && (
                       <div className="text-[11px] text-slate-500">Variant: {item.variantTitle}</div>
                     )}
-                    <div className="text-xs font-black text-slate-900 mt-1">₹{item.price.toLocaleString('en-IN')} each</div>
+                    <div className="text-xs font-black text-slate-900 mt-1">₹{Number(item.price || 0).toLocaleString('en-IN')} each</div>
                   </div>
                 </div>
 
@@ -378,7 +410,7 @@ export default function CartPage() {
 
                   <div className="text-right min-w-[80px]">
                     <div className="font-black text-sm text-slate-900">
-                      ₹{(item.price * item.quantity).toLocaleString('en-IN')}
+                      ₹{(Number(item.price || 0) * Number(item.quantity || 1)).toLocaleString('en-IN')}
                     </div>
                   </div>
 
@@ -399,7 +431,7 @@ export default function CartPage() {
           {/* Cart Summary & Warehouse Routing Card */}
           <div className="lg:col-span-4 space-y-4">
             {/* Warehouse Routing Box */}
-            {serverCalculation?.warehouseRouting && (
+            {serverCalculation?.warehouseRouting?.assignedWarehouse && (
               <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-4 text-[11px] space-y-1">
                 <div className="font-bold text-emerald-900 flex items-center gap-1.5">
                   <Truck className="w-4 h-4 text-agri-green" /> Nearest Fulfillment Hub
@@ -531,13 +563,19 @@ export default function CartPage() {
                   >
                     <div>
                       <div className="relative aspect-video w-full rounded-xl bg-slate-100 overflow-hidden mb-2.5">
-                        <Image src={prod.images[0]} alt={prod.name} fill className="object-cover" />
+                        <Image
+                          src={prod.images?.[0] || 'https://images.unsplash.com/photo-1589923188900-85dae523342b?auto=format&fit=crop&w=600&q=80'}
+                          alt={prod.name}
+                          fill
+                          unoptimized
+                          className="object-cover"
+                        />
                       </div>
                       <div className="text-[10px] font-bold text-agri-green uppercase tracking-wider">
-                        {prod.category}
+                        {typeof prod.category === 'object' ? (prod.category as any)?.name || 'Agricultural Input' : prod.category}
                       </div>
                       <div className="font-bold text-xs text-slate-900 line-clamp-1">{prod.name}</div>
-                      <div className="font-black text-xs text-slate-900 mt-1">₹{prod.price.toLocaleString('en-IN')}</div>
+                      <div className="font-black text-xs text-slate-900 mt-1">₹{Number(prod.price || 0).toLocaleString('en-IN')}</div>
                     </div>
                     <button
                       onClick={() => addCrossSellItem(prod)}
