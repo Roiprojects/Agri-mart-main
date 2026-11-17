@@ -153,7 +153,6 @@ export interface DbProduct {
   availableForPreOrder?: boolean;
   callForPrice?: boolean;
   customerEntersPrice?: boolean;
-  pangvBasePriceEnabled?: boolean;
   taxExempt?: boolean;
   taxCategory?: string;
   isShippingEnabled?: boolean;
@@ -3218,7 +3217,6 @@ class PersistentDevDatabase {
         availableForPreOrder: product.availableForPreOrder,
         callForPrice: product.callForPrice,
         customerEntersPrice: product.customerEntersPrice,
-        pangvBasePriceEnabled: product.pangvBasePriceEnabled,
         taxExempt: product.taxExempt,
         taxCategory: product.taxCategory,
         isShippingEnabled: product.isShippingEnabled,

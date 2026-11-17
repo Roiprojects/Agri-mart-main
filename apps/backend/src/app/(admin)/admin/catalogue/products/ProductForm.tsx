@@ -99,7 +99,6 @@ export interface ProductFormData {
   disableWishlistButton?: boolean;
   availableForPreOrder?: boolean;
   customerEntersPrice?: boolean;
-  pangvBasePriceEnabled?: boolean;
   taxExempt?: boolean;
   taxCategory?: string;
   isShippingEnabled?: boolean;
@@ -245,7 +244,6 @@ export function ProductForm({
     availableForPreOrder: Boolean(initialValues?.availableForPreOrder),
     callForPrice: Boolean(initialValues?.callForPrice),
     customerEntersPrice: Boolean(initialValues?.customerEntersPrice),
-    pangvBasePriceEnabled: Boolean(initialValues?.pangvBasePriceEnabled),
     taxExempt: Boolean(initialValues?.taxExempt),
     taxCategory: initialValues?.taxCategory || 'Agricultural Essentials (5% GST)',
     isShippingEnabled: initialValues?.isShippingEnabled !== undefined ? Boolean(initialValues.isShippingEnabled) : true,
@@ -481,10 +479,6 @@ export function ProductForm({
         initialValues.customerEntersPrice !== undefined
           ? Boolean(initialValues.customerEntersPrice)
           : prev.customerEntersPrice,
-      pangvBasePriceEnabled:
-        initialValues.pangvBasePriceEnabled !== undefined
-          ? Boolean(initialValues.pangvBasePriceEnabled)
-          : prev.pangvBasePriceEnabled,
       taxExempt:
         initialValues.taxExempt !== undefined
           ? Boolean(initialValues.taxExempt)
@@ -1952,22 +1946,6 @@ export function ProductForm({
                       type="checkbox"
                       checked={formData.customerEntersPrice}
                       onChange={(e) => handleChange('customerEntersPrice', e.target.checked)}
-                      className="h-4 w-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
-                    />
-                  </div>
-                </div>
-
-                {/* PAngV (base price) enabled */}
-                <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
-                  <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
-                    <span>PAngV (base price) enabled</span>
-                    <Tooltip text="Check if product base price (PAngV) is enabled for display according to German Price Indication Directive." />
-                  </div>
-                  <div className="sm:col-span-9 flex items-center">
-                    <input
-                      type="checkbox"
-                      checked={formData.pangvBasePriceEnabled}
-                      onChange={(e) => handleChange('pangvBasePriceEnabled', e.target.checked)}
                       className="h-4 w-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
                     />
                   </div>
