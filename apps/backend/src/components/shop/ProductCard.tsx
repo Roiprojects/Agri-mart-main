@@ -27,7 +27,7 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
   const availability = getProductAvailability(product as any);
 
   const handleAdd = () => {
-    if (product.disableWishlistButton) return;
+    if (!availability.isAvailableNow || product.disableBuyButton) return;
     setIsAdded(true);
     if (onAddToCart) {
       onAddToCart(product);
@@ -45,15 +45,8 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
               name: product.name,
               price: product.price,
               quantity: 1,
-              image:
-                (product.images && product.images[0]) ||
-                (product as any).image ||
-                (product as any).media?.[0]?.url ||
-                'https://images.unsplash.com/photo-1589923188900-85dae523342b?auto=format&fit=crop&w=800&q=80',
-              category:
-                typeof product.category === 'object'
-                  ? (product.category as any)?.name || 'Agricultural Input'
-                  : product.category,
+              image: (product.images && product.images[0]) || (product as any).image,
+              category: product.category,
             });
           }
           localStorage.setItem('agri_cart_items', JSON.stringify(cart));
@@ -272,27 +265,31 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
             >
               {availability.isBeforeStart ? 'Coming Soon' : 'Unavailable'}
             </Link>
-          ) : product.callForPrice ? (
-            <a
-              href="tel:+918001234567"
-              className="text-[11px] font-bold px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-800 hover:bg-emerald-100 border border-emerald-300 transition"
-            >
-              Call
-            </a>
+          ) : product.disableBuyButton ? (
+            product.callForPrice ? (
+              <a
+                href="tel:+918001234567"
+                className="text-[11px] font-bold px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-800 hover:bg-emerald-100 border border-emerald-300 transition"
+              >
+                Call
+              </a>
+            ) : (
+              <Link
+                href={`/products/${product.slug}`}
+                className="text-[11px] font-bold px-3 py-1.5 rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200 transition"
+              >
+                Details
+              </Link>
+            )
           ) : (
             <button
               type="button"
               onClick={handleAdd}
-              disabled={Boolean(product.disableWishlistButton)}
-              aria-disabled={Boolean(product.disableWishlistButton)}
               aria-label={`Add ${product.name} to cart`}
-              title={product.disableWishlistButton ? 'Add to Cart is disabled for this product' : undefined}
-              className={`text-xs font-bold px-3.5 py-2 rounded-xl transition-all duration-200 flex items-center gap-1.5 shadow-xs ${
-                product.disableWishlistButton
-                  ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
-                  : isAdded
-                  ? 'bg-emerald-600 text-white shadow-sm active:scale-95'
-                  : 'bg-agri-green hover:bg-agri-green-dark text-white active:scale-95'
+              className={`text-xs font-bold px-3.5 py-2 rounded-xl transition-all duration-200 flex items-center gap-1.5 active:scale-95 shadow-xs ${
+                isAdded
+                  ? 'bg-emerald-600 text-white shadow-sm'
+                  : 'bg-agri-green hover:bg-agri-green-dark text-white'
               }`}
             >
               {isAdded ? (
