@@ -97,6 +97,11 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
             data.visibleIndividually !== undefined
               ? Boolean(data.visibleIndividually)
               : true,
+          requireOtherProducts: Boolean(data.requireOtherProducts),
+          requiredProductIds: Array.isArray(data.requiredProductIds)
+            ? data.requiredProductIds
+            : [],
+          automaticallyAddRequiredProducts: Boolean(data.automaticallyAddRequiredProducts),
           variants: [
             {
               ...(json.data?.variants?.[0] || product?.variants?.[0] || {}),

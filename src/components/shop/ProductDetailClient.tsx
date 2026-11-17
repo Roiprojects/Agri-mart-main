@@ -29,7 +29,7 @@ import {
 import { useAuth, setClientAuthUser } from '@/lib/auth-client';
 import { useShoppingCartSettings } from '@/lib/shopping-cart-settings';
 import { useFilterYmmSettings } from '@/lib/filter-ymm-settings';
-import { getProductOverrideById } from '@/lib/admin-product-overrides';
+import { getProductOverrideById, mergeProductsWithOverrides } from '@/lib/admin-product-overrides';
 
 interface ProductDetailClientProps {
   product: any;
@@ -37,6 +37,10 @@ interface ProductDetailClientProps {
 
 export default function ProductDetailClient({ product: initialProduct }: ProductDetailClientProps) {
   const [product, setProduct] = useState<any>(initialProduct);
+  const [resolvedRequiredProducts, setResolvedRequiredProducts] = useState<any[]>(
+    Array.isArray(initialProduct?.requiredProducts) ? initialProduct.requiredProducts : []
+  );
+  const [requiredWarning, setRequiredWarning] = useState<string | null>(null);
   const router = useRouter();
   const { user, isLoggedIn } = useAuth();
   const { settings: cartSettings } = useShoppingCartSettings();
@@ -62,8 +66,28 @@ export default function ProductDetailClient({ product: initialProduct }: Product
       if (Array.isArray(merged.variants) && merged.variants.length > 0) {
         setSelectedVariant(merged.variants.find((v: any) => v.isDefault) || merged.variants[0]);
       }
+
+      if (merged.requireOtherProducts && Array.isArray(merged.requiredProductIds) && merged.requiredProductIds.length > 0) {
+        fetch('/api/products', { cache: 'no-store' })
+          .then((r) => r.json())
+          .then((json) => {
+            if (json.success && Array.isArray(json.data)) {
+              const allProds = mergeProductsWithOverrides(json.data);
+              const reqs = merged.requiredProductIds
+                .map((id: string) => allProds.find((p: any) => p.id === id || p.sku === id))
+                .filter(Boolean);
+              setResolvedRequiredProducts(reqs);
+            }
+          })
+          .catch(() => {});
+      } else {
+        setResolvedRequiredProducts([]);
+      }
     } else {
       setProduct(initialProduct);
+      setResolvedRequiredProducts(
+        Array.isArray(initialProduct?.requiredProducts) ? initialProduct.requiredProducts : []
+      );
     }
   }, [initialProduct]);
 
@@ -158,12 +182,66 @@ export default function ProductDetailClient({ product: initialProduct }: Product
     }
   };
 
+  const addRequiredProductsToCart = () => {
+    if (typeof window === 'undefined' || resolvedRequiredProducts.length === 0) return;
+    try {
+      const stored = localStorage.getItem('agri_cart_items');
+      const cart = stored ? JSON.parse(stored) : [];
+      for (const reqProd of resolvedRequiredProducts) {
+        if (!cart.some((c: any) => c.id === reqProd.id)) {
+          cart.push({
+            id: reqProd.id,
+            name: reqProd.name,
+            price: reqProd.price || 0,
+            quantity: 1,
+            maxStock: reqProd.stockQuantity ?? 25,
+            minQty: 1,
+            image: reqProd.images?.[0] || reqProd.image,
+            category: reqProd.category?.name || reqProd.category || 'Agricultural Input',
+          });
+        }
+      }
+      localStorage.setItem('agri_cart_items', JSON.stringify(cart));
+      window.dispatchEvent(new Event('cartUpdated'));
+      setRequiredWarning(null);
+    } catch {}
+  };
+
   const executeAddToCart = () => {
-    setAddedNotice(true);
+    setRequiredWarning(null);
     if (typeof window !== 'undefined') {
       try {
         const stored = localStorage.getItem('agri_cart_items');
         let cart = stored ? JSON.parse(stored) : [];
+
+        if (product.requireOtherProducts && resolvedRequiredProducts.length > 0) {
+          const missing = resolvedRequiredProducts.filter(
+            (rp: any) => !cart.some((c: any) => c.id === rp.id)
+          );
+          if (missing.length > 0) {
+            if (product.automaticallyAddRequiredProducts) {
+              for (const reqProd of missing) {
+                cart.push({
+                  id: reqProd.id,
+                  name: reqProd.name,
+                  price: reqProd.price || 0,
+                  quantity: 1,
+                  maxStock: reqProd.stockQuantity ?? 25,
+                  minQty: 1,
+                  image: reqProd.images?.[0] || reqProd.image,
+                  category: reqProd.category?.name || reqProd.category || 'Agricultural Input',
+                });
+              }
+            } else {
+              setRequiredWarning(
+                `This product requires buying: ${missing.map((m: any) => m.name).join(', ')}. Please add the required product(s) to your cart first.`
+              );
+              return;
+            }
+          }
+        }
+
+        setAddedNotice(true);
         const existingIdx = cart.findIndex(
           (i: any) => i.id === product.id && i.variantId === selectedVariant?.id
         );
@@ -199,22 +277,54 @@ export default function ProductDetailClient({ product: initialProduct }: Product
   };
 
   const executeBuyNow = () => {
+    setRequiredWarning(null);
     if (typeof window !== 'undefined') {
-      sessionStorage.setItem(
-        'agri_checkout_items',
-        JSON.stringify([
-          {
-            id: product.id,
-            name: product.name,
-            price: currentPrice,
-            quantity,
-            image: product.media?.[0]?.url || product.images?.[0],
-            category: product.category?.name || product.category,
-            variantId: selectedVariant?.id,
-            variantTitle: selectedVariant?.title,
-          },
-        ])
-      );
+      const checkoutList: any[] = [
+        {
+          id: product.id,
+          name: product.name,
+          price: currentPrice,
+          quantity,
+          image: product.media?.[0]?.url || product.images?.[0],
+          category: product.category?.name || product.category,
+          variantId: selectedVariant?.id,
+          variantTitle: selectedVariant?.title,
+        },
+      ];
+
+      if (product.requireOtherProducts && resolvedRequiredProducts.length > 0) {
+        const stored = localStorage.getItem('agri_cart_items');
+        const cart = stored ? JSON.parse(stored) : [];
+        const missing = resolvedRequiredProducts.filter(
+          (rp: any) => !cart.some((c: any) => c.id === rp.id)
+        );
+        if (missing.length > 0) {
+          if (product.automaticallyAddRequiredProducts) {
+            for (const reqProd of missing) {
+              checkoutList.push({
+                id: reqProd.id,
+                name: reqProd.name,
+                price: reqProd.price || 0,
+                quantity: 1,
+                image: reqProd.images?.[0] || reqProd.image,
+                category: reqProd.category?.name || reqProd.category || 'Agricultural Input',
+              });
+            }
+          } else {
+            setRequiredWarning(
+              `This product requires buying: ${missing.map((m: any) => m.name).join(', ')}. Click "Add Required Products to Cart" below to proceed.`
+            );
+            return;
+          }
+        } else {
+          for (const reqProd of resolvedRequiredProducts) {
+            const inCart = cart.find((c: any) => c.id === reqProd.id);
+            if (inCart) checkoutList.push(inCart);
+          }
+        }
+      }
+
+      sessionStorage.setItem('agri_checkout_items', JSON.stringify(checkoutList));
     }
     router.push('/checkout');
   };
@@ -432,6 +542,42 @@ export default function ProductDetailClient({ product: initialProduct }: Product
               <Plus className="w-3.5 h-3.5" />
             </button>
           </div>
+        </div>
+      )}
+
+      {/* Required Other Products Notice */}
+      {product.requireOtherProducts && resolvedRequiredProducts.length > 0 && (
+        <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200 space-y-2.5 text-xs">
+          <div className="font-bold text-amber-900">
+            Required Companion Product{resolvedRequiredProducts.length > 1 ? 's' : ''}:
+          </div>
+          <p className="text-[11px] text-amber-800">
+            This product requires purchasing the following item(s) together:
+          </p>
+          <ul className="space-y-1">
+            {resolvedRequiredProducts.map((rp: any) => (
+              <li key={rp.id} className="flex items-center justify-between text-[11px] bg-white px-3 py-1.5 rounded-lg border border-amber-200/80">
+                <Link href={`/products/${rp.slug}`} className="font-bold text-slate-900 hover:text-agri-green underline">
+                  {rp.name}
+                </Link>
+                <span className="font-bold text-emerald-700">₹{(rp.price || 0).toLocaleString('en-IN')}</span>
+              </li>
+            ))}
+          </ul>
+          {!product.automaticallyAddRequiredProducts && (
+            <button
+              type="button"
+              onClick={addRequiredProductsToCart}
+              className="px-3.5 py-1.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-[11px] transition cursor-pointer"
+            >
+              Add Required Products to Cart
+            </button>
+          )}
+          {requiredWarning && (
+            <div className="text-[11px] font-semibold text-rose-700 bg-rose-50 border border-rose-200 rounded-lg px-3 py-2">
+              {requiredWarning}
+            </div>
+          )}
         </div>
       )}
 

@@ -558,6 +558,11 @@ export default function AdminProductsPage() {
           formData.visibleIndividually !== undefined
             ? Boolean(formData.visibleIndividually)
             : true,
+        requireOtherProducts: Boolean(formData.requireOtherProducts),
+        requiredProductIds: Array.isArray(formData.requiredProductIds)
+          ? formData.requiredProductIds
+          : [],
+        automaticallyAddRequiredProducts: Boolean(formData.automaticallyAddRequiredProducts),
       };
 
       const res = await fetch(`/api/admin/catalogue/products/${targetId}`, {

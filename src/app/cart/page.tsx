@@ -8,6 +8,7 @@ import { Trash2, Plus, Minus, ArrowRight, ShieldCheck, Tag, Truck, CheckCircle2,
 import { useAuth } from '@/lib/auth-client';
 import { useShoppingCartSettings } from '@/lib/shopping-cart-settings';
 import { SEED_PRODUCTS } from '@/lib/seed-data';
+import { mergeProductsWithOverrides } from '@/lib/admin-product-overrides';
 
 interface CartItem {
   id: string;
@@ -57,6 +58,8 @@ export default function CartPage() {
   const [serverCalculation, setServerCalculation] = useState<any>(null);
   const [isCalculating, setIsCalculating] = useState(false);
   const [deliveryPincode, setDeliveryPincode] = useState('580026');
+  const [requiredProductsError, setRequiredProductsError] = useState<string | null>(null);
+  const [missingRequiredProducts, setMissingRequiredProducts] = useState<any[]>([]);
 
   const syncCartToStorage = (updatedItems: CartItem[]) => {
     if (typeof window !== 'undefined') {
@@ -166,13 +169,75 @@ export default function CartPage() {
     recalculateCart(items, couponCode, deliveryPincode);
   };
 
-  const handleProceedCheckout = () => {
+  const handleProceedCheckout = async () => {
+    setRequiredProductsError(null);
+    setMissingRequiredProducts([]);
+
+    try {
+      const res = await fetch('/api/products', { cache: 'no-store' });
+      const json = await res.json();
+      const allProds = mergeProductsWithOverrides(
+        json.success && Array.isArray(json.data) ? json.data : SEED_PRODUCTS
+      );
+      const cartIds = new Set(items.map((i) => i.id));
+      const missingList: any[] = [];
+      const errorMessages: string[] = [];
+
+      for (const item of items) {
+        const prod: any = allProds.find((p: any) => p.id === item.id);
+        if (prod && prod.requireOtherProducts && Array.isArray(prod.requiredProductIds) && prod.requiredProductIds.length > 0) {
+          const missingIds = prod.requiredProductIds.filter((rid: string) => !cartIds.has(rid));
+          if (missingIds.length > 0) {
+            const missingObjs = missingIds
+              .map((rid: string) => allProds.find((p: any) => p.id === rid || p.sku === rid))
+              .filter(Boolean);
+            missingObjs.forEach((m: any) => {
+              if (!missingList.some((x) => x.id === m.id)) missingList.push(m);
+            });
+            errorMessages.push(
+              `"${item.name}" requires: ${missingObjs.map((m: any) => m.name).join(', ') || missingIds.join(', ')}`
+            );
+          }
+        }
+      }
+
+      if (errorMessages.length > 0) {
+        setMissingRequiredProducts(missingList);
+        setRequiredProductsError(errorMessages.join(' | '));
+        return;
+      }
+    } catch {}
+
     // Store cart items for checkout session — open to everyone
     if (typeof window !== 'undefined') {
       sessionStorage.setItem('agri_checkout_items', JSON.stringify(items));
       sessionStorage.setItem('agri_checkout_coupon', couponCode);
     }
     router.push('/checkout');
+  };
+
+  const handleAddMissingRequired = () => {
+    if (missingRequiredProducts.length === 0) return;
+    const updated = [...items];
+    for (const m of missingRequiredProducts) {
+      if (!updated.some((i) => i.id === m.id)) {
+        updated.push({
+          id: m.id,
+          name: m.name,
+          price: m.price || 0,
+          quantity: 1,
+          maxStock: m.stockQuantity ?? 25,
+          minQty: 1,
+          image: (m.images && m.images[0]) || m.image || '',
+          category: typeof m.category === 'object' ? m.category?.name : m.category || 'Agricultural Input',
+        });
+      }
+    }
+    setItems(updated);
+    syncCartToStorage(updated);
+    recalculateCart(updated, couponCode, deliveryPincode);
+    setRequiredProductsError(null);
+    setMissingRequiredProducts([]);
   };
 
   const crossSells = React.useMemo(() => {
@@ -228,6 +293,24 @@ export default function CartPage() {
         <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900">Your Agricultural Shopping Cart</h1>
         <p className="text-xs text-slate-500 mt-1">Review farm equipment, fertilizers, and seed quantities before dark warehouse dispatch.</p>
       </div>
+
+      {requiredProductsError && (
+        <div className="p-4 rounded-2xl bg-amber-50 border border-amber-300 text-amber-900 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-start gap-2 text-xs font-semibold">
+            <AlertCircle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+            <span>{requiredProductsError}</span>
+          </div>
+          {missingRequiredProducts.length > 0 && (
+            <button
+              type="button"
+              onClick={handleAddMissingRequired}
+              className="px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs shrink-0 cursor-pointer"
+            >
+              Add Missing Required Products
+            </button>
+          )}
+        </div>
+      )}
 
       {items.length > 0 ? (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">

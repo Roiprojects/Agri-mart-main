@@ -19,6 +19,30 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: false, message: 'Cart items cannot be empty.' }, { status: 400 });
     }
 
+    // Enforce "Require other products" rule across all products
+    const orderedProductIds = new Set(
+      items.map((it: any) => String(it.productId || it.id || '').trim()).filter(Boolean)
+    );
+    for (const it of items) {
+      const prod = devDb.getProductById(it.productId || it.id) || devDb.getProductBySlug(it.productId || it.id);
+      if (prod && (prod as any).requireOtherProducts) {
+        const reqIds: string[] = Array.isArray((prod as any).requiredProductIds)
+          ? (prod as any).requiredProductIds.filter(Boolean)
+          : [];
+        const missingIds = reqIds.filter((rid) => !orderedProductIds.has(rid));
+        if (missingIds.length > 0) {
+          const missingNames = missingIds.map((rid) => devDb.getProductById(rid)?.name || rid);
+          return NextResponse.json(
+            {
+              success: false,
+              message: `"${prod.name}" requires purchasing the following product(s) together: ${missingNames.join(', ')}.`,
+            },
+            { status: 400 }
+          );
+        }
+      }
+    }
+
     if (!shippingAddress || !shippingAddress.fullName || !shippingAddress.addressLine) {
       return NextResponse.json({ success: false, message: 'Complete delivery address and full name are required.' }, { status: 400 });
     }

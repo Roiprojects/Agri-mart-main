@@ -89,6 +89,8 @@ export interface ProductFormData {
   limitedToStores?: string;
   vendor?: string;
   requireOtherProducts?: boolean;
+  requiredProductIds?: string[];
+  automaticallyAddRequiredProducts?: boolean;
   allowCustomerReviews?: boolean;
   availableStartDate?: string;
   availableEndDate?: string;
@@ -275,6 +277,10 @@ export function ProductForm({
     limitedToStores: initialValues?.limitedToStores || '',
     vendor: initialValues?.vendor || 'Agri-Mart Direct',
     requireOtherProducts: Boolean(initialValues?.requireOtherProducts),
+    requiredProductIds: Array.isArray(initialValues?.requiredProductIds)
+      ? initialValues.requiredProductIds
+      : [],
+    automaticallyAddRequiredProducts: Boolean(initialValues?.automaticallyAddRequiredProducts),
     allowCustomerReviews: initialValues?.allowCustomerReviews !== undefined ? Boolean(initialValues.allowCustomerReviews) : true,
     availableStartDate: initialValues?.availableStartDate || '',
     availableEndDate: initialValues?.availableEndDate || '',
@@ -303,6 +309,28 @@ export function ProductForm({
   const [fontSize, setFontSize] = useState('16');
   const [textColor, setTextColor] = useState('#000000');
   const [newImageUrl, setNewImageUrl] = useState('');
+  const [catalogueProducts, setCatalogueProducts] = useState<{ id: string; name: string; sku: string; price?: number; images?: string[] }[]>([]);
+  const [reqProductSearch, setReqProductSearch] = useState('');
+
+  useEffect(() => {
+    if (!formData.requireOtherProducts || catalogueProducts.length > 0) return;
+    fetch('/api/admin/catalogue/products', { cache: 'no-store' })
+      .then((r) => r.json())
+      .then((json) => {
+        if (json.success && Array.isArray(json.data)) {
+          setCatalogueProducts(
+            json.data.map((p: any) => ({
+              id: p.id,
+              name: p.name,
+              sku: p.sku,
+              price: p.price,
+              images: p.images,
+            }))
+          );
+        }
+      })
+      .catch(() => {});
+  }, [formData.requireOtherProducts, catalogueProducts.length]);
 
   // Rich text editor ref
   const richTextRef = useRef<HTMLDivElement>(null);
@@ -422,6 +450,17 @@ export function ProductForm({
         initialValues.visibleIndividually !== undefined
           ? Boolean(initialValues.visibleIndividually)
           : prev.visibleIndividually,
+      requireOtherProducts:
+        initialValues.requireOtherProducts !== undefined
+          ? Boolean(initialValues.requireOtherProducts)
+          : prev.requireOtherProducts,
+      requiredProductIds: Array.isArray(initialValues.requiredProductIds)
+        ? initialValues.requiredProductIds
+        : prev.requiredProductIds || [],
+      automaticallyAddRequiredProducts:
+        initialValues.automaticallyAddRequiredProducts !== undefined
+          ? Boolean(initialValues.automaticallyAddRequiredProducts)
+          : prev.automaticallyAddRequiredProducts,
       customerEntersPrice:
         initialValues.customerEntersPrice !== undefined
           ? Boolean(initialValues.customerEntersPrice)
@@ -1497,7 +1536,7 @@ export function ProductForm({
                   <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
                     <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
                       <span>Require other products</span>
-                      <Tooltip text="Check if this product requires other products to be added to the cart." />
+                      <Tooltip text="Check if this product requires other specified products to be purchased along with it." />
                     </div>
                     <div className="sm:col-span-9 flex items-center">
                       <input
@@ -1508,6 +1547,137 @@ export function ProductForm({
                       />
                     </div>
                   </div>
+
+                  {formData.requireOtherProducts && (
+                    <div className="space-y-4 pt-1">
+                      {/* Required product IDs / Selector */}
+                      <div className="grid grid-cols-1 sm:grid-cols-12 items-start gap-2">
+                        <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700 pt-2">
+                          <span>Required products</span>
+                          <Tooltip text="Select the products that customers must also buy along with this product." />
+                        </div>
+                        <div className="sm:col-span-9 relative pl-6 space-y-2.5">
+                          <div className="absolute left-[7px] -top-4 bottom-0 w-px bg-[#d2d6de]" />
+                          <div className="absolute left-[7px] top-4 w-4 h-px bg-[#d2d6de]" />
+
+                          {/* Selected required products */}
+                          {formData.requiredProductIds && formData.requiredProductIds.length > 0 ? (
+                            <div className="flex flex-wrap gap-1.5">
+                              {formData.requiredProductIds.map((reqId) => {
+                                const matched = catalogueProducts.find((cp) => cp.id === reqId);
+                                return (
+                                  <span
+                                    key={reqId}
+                                    className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-blue-50 border border-blue-200 text-blue-800 text-[11px] font-medium"
+                                  >
+                                    <span>
+                                      {matched ? `${matched.name} (${matched.sku})` : reqId}
+                                    </span>
+                                    <button
+                                      type="button"
+                                      onClick={() =>
+                                        handleChange(
+                                          'requiredProductIds',
+                                          (formData.requiredProductIds || []).filter((id) => id !== reqId)
+                                        )
+                                      }
+                                      className="text-blue-600 hover:text-red-600 font-bold cursor-pointer"
+                                      title="Remove required product"
+                                    >
+                                      ×
+                                    </button>
+                                  </span>
+                                );
+                              })}
+                            </div>
+                          ) : (
+                            <p className="text-[11px] text-amber-700 bg-amber-50 border border-amber-200 rounded px-2.5 py-1.5">
+                              Select one or more required products below.
+                            </p>
+                          )}
+
+                          {/* Search & Add from catalogue */}
+                          <div className="border border-[#d2d6de] rounded bg-white p-2 space-y-2">
+                            <input
+                              type="text"
+                              value={reqProductSearch}
+                              onChange={(e) => setReqProductSearch(e.target.value)}
+                              placeholder="Search products by name or SKU to require..."
+                              className="w-full text-xs px-2.5 py-1.5 rounded border border-[#d2d6de] focus:border-[#3c8dbc] outline-none"
+                            />
+                            <div className="max-h-40 overflow-y-auto divide-y divide-slate-100">
+                              {catalogueProducts
+                                .filter((cp) => {
+                                  if (cp.id === formData.id) return false;
+                                  if (!reqProductSearch.trim()) return true;
+                                  const q = reqProductSearch.toLowerCase();
+                                  return (
+                                    cp.name.toLowerCase().includes(q) ||
+                                    cp.sku.toLowerCase().includes(q) ||
+                                    cp.id.toLowerCase().includes(q)
+                                  );
+                                })
+                                .slice(0, 25)
+                                .map((cp) => {
+                                  const isSelected = (formData.requiredProductIds || []).includes(cp.id);
+                                  return (
+                                    <label
+                                      key={cp.id}
+                                      className="flex items-center justify-between gap-2 px-2 py-1.5 hover:bg-slate-50 cursor-pointer text-xs"
+                                    >
+                                      <div className="flex items-center gap-2 min-w-0">
+                                        <input
+                                          type="checkbox"
+                                          checked={isSelected}
+                                          onChange={(e) => {
+                                            const current = formData.requiredProductIds || [];
+                                            if (e.target.checked) {
+                                              handleChange('requiredProductIds', [...current, cp.id]);
+                                            } else {
+                                              handleChange(
+                                                'requiredProductIds',
+                                                current.filter((id) => id !== cp.id)
+                                              );
+                                            }
+                                          }}
+                                          className="h-3.5 w-3.5 rounded border-slate-300 text-[#3c8dbc]"
+                                        />
+                                        <span className="truncate font-medium text-slate-800">
+                                          {cp.name}
+                                        </span>
+                                      </div>
+                                      <span className="text-[10px] font-mono text-slate-500 shrink-0">
+                                        {cp.sku}
+                                      </span>
+                                    </label>
+                                  );
+                                })}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Automatically add required products to cart */}
+                      <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
+                        <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
+                          <span>Automatically add these products to the cart</span>
+                          <Tooltip text="Check to automatically add the required products to the customer's cart when this product is added." />
+                        </div>
+                        <div className="sm:col-span-9 relative flex items-center pl-6">
+                          <div className="absolute left-[7px] -top-4 top-1/2 w-px bg-[#d2d6de]" />
+                          <div className="absolute left-[7px] top-1/2 w-4 h-px bg-[#d2d6de]" />
+                          <input
+                            type="checkbox"
+                            checked={Boolean(formData.automaticallyAddRequiredProducts)}
+                            onChange={(e) =>
+                              handleChange('automaticallyAddRequiredProducts', e.target.checked)
+                            }
+                            className="h-4 w-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  )}
 
                   {/* Allow customer reviews */}
                   <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">

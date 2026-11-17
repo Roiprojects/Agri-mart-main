@@ -58,6 +58,11 @@ export default function NewProductPage() {
             data.visibleIndividually !== undefined
               ? Boolean(data.visibleIndividually)
               : true,
+          requireOtherProducts: Boolean(data.requireOtherProducts),
+          requiredProductIds: Array.isArray(data.requiredProductIds)
+            ? data.requiredProductIds
+            : [],
+          automaticallyAddRequiredProducts: Boolean(data.automaticallyAddRequiredProducts),
         });
         if (continueEditing && createdId) {
           router.push(`/admin/catalogue/products/${createdId}/edit`);

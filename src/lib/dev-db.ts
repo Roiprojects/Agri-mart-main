@@ -131,6 +131,8 @@ export interface DbProduct {
   canonicalUrl?: string;
   vendor?: string;
   requireOtherProducts?: boolean;
+  requiredProductIds?: string[];
+  automaticallyAddRequiredProducts?: boolean;
   allowCustomerReviews?: boolean;
   availableStartDate?: string;
   availableEndDate?: string;
@@ -2908,8 +2910,39 @@ class PersistentDevDatabase {
         ? Math.max(1, Number((product as any).minOrderQty) || 1)
         : 1;
 
+    const requiredProductIds: string[] = Array.isArray((product as any).requiredProductIds)
+      ? (product as any).requiredProductIds.filter(Boolean)
+      : typeof (product as any).requiredProductIds === 'string'
+      ? (product as any).requiredProductIds
+          .split(',')
+          .map((s: string) => s.trim())
+          .filter(Boolean)
+      : [];
+
+    const requiredProducts = requiredProductIds
+      .map((reqId) => {
+        const rp = this.data.products.find((p) => p.id === reqId || p.sku === reqId || p.slug === reqId);
+        if (!rp) return null;
+        const rpMedia = this.data.media.filter((m) => m.productId === rp.id).sort((a, b) => a.displayOrder - b.displayOrder);
+        const rpImages = rpMedia.length > 0 ? rpMedia.map((m) => m.url) : (rp as any).images || [];
+        return {
+          id: rp.id,
+          name: rp.name,
+          slug: rp.slug,
+          sku: rp.sku,
+          price: rp.price,
+          images: rpImages,
+          stockQuantity: (rp as any).stockQuantity ?? 25,
+        };
+      })
+      .filter(Boolean);
+
     return {
       ...product,
+      requireOtherProducts: Boolean(product.requireOtherProducts),
+      requiredProductIds,
+      automaticallyAddRequiredProducts: Boolean((product as any).automaticallyAddRequiredProducts),
+      requiredProducts,
       stockQuantity,
       stock: stockQuantity,
       availableQty: stockQuantity,
@@ -3004,6 +3037,17 @@ class PersistentDevDatabase {
             : prev.visibleIndividually !== undefined
             ? prev.visibleIndividually
             : true,
+        requireOtherProducts:
+          product.requireOtherProducts !== undefined
+            ? Boolean(product.requireOtherProducts)
+            : Boolean(prev.requireOtherProducts),
+        requiredProductIds: Array.isArray((product as any).requiredProductIds)
+          ? (product as any).requiredProductIds.filter(Boolean)
+          : (prev as any).requiredProductIds || [],
+        automaticallyAddRequiredProducts:
+          (product as any).automaticallyAddRequiredProducts !== undefined
+            ? Boolean((product as any).automaticallyAddRequiredProducts)
+            : Boolean((prev as any).automaticallyAddRequiredProducts),
         updatedAt: now,
       };
 
@@ -3136,7 +3180,11 @@ class PersistentDevDatabase {
         ogImage: product.ogImage,
         canonicalUrl: product.canonicalUrl,
         vendor: product.vendor,
-        requireOtherProducts: product.requireOtherProducts,
+        requireOtherProducts: Boolean(product.requireOtherProducts),
+        requiredProductIds: Array.isArray((product as any).requiredProductIds)
+          ? (product as any).requiredProductIds.filter(Boolean)
+          : [],
+        automaticallyAddRequiredProducts: Boolean((product as any).automaticallyAddRequiredProducts),
         allowCustomerReviews: product.allowCustomerReviews,
         availableStartDate: product.availableStartDate,
         availableEndDate: product.availableEndDate,
