@@ -29,7 +29,13 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
     availability.isBeforeStart && Boolean(product.availableForPreOrder) && !product.disableBuyButton;
 
   const handleAdd = () => {
-    if (product.disableBuyButton || product.callForPrice || (!availability.isAvailableNow && !canPreOrder)) return;
+    if (
+      product.disableBuyButton ||
+      product.callForPrice ||
+      product.customerEntersPrice ||
+      (!availability.isAvailableNow && !canPreOrder)
+    )
+      return;
     setIsAdded(true);
     if (onAddToCart) {
       onAddToCart(product);
@@ -249,6 +255,15 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
               <div className="text-sm font-extrabold text-emerald-800">
                 Call for Price
               </div>
+            ) : product.customerEntersPrice ? (
+              <>
+                <div className="text-sm font-extrabold text-agri-green-dark">
+                  Enter Your Price
+                </div>
+                <div className="text-[9px] text-slate-400 font-medium">
+                  Suggested: ₹{product.price.toLocaleString('en-IN')}
+                </div>
+              </>
             ) : (
               <>
                 <div className="text-base font-extrabold text-agri-dark tracking-tight">
@@ -305,6 +320,13 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
             >
               Call
             </a>
+          ) : product.customerEntersPrice ? (
+            <Link
+              href={`/products/${product.slug}`}
+              className="text-[11px] font-bold px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-800 hover:bg-emerald-100 border border-emerald-300 transition"
+            >
+              Enter Price
+            </Link>
           ) : product.disableBuyButton ? (
             <Link
               href={`/products/${product.slug}`}

@@ -5,6 +5,7 @@ interface CartCalculateItem {
   productId: string;
   variantId?: string;
   quantity: number;
+  customPrice?: number;
 }
 
 export async function POST(request: Request) {
@@ -38,7 +39,16 @@ export async function POST(request: Request) {
 
       const variants = devDb.getVariantsByProductId(product.id);
       const variant = item.variantId ? variants.find((v) => v.id === item.variantId) : variants.find((v) => v.isDefault) || variants[0];
-      const unitPrice = variant ? variant.price : product.price;
+      const hasValidCustomPrice =
+        Boolean(product.customerEntersPrice) &&
+        typeof item.customPrice === 'number' &&
+        Number.isFinite(item.customPrice) &&
+        item.customPrice > 0;
+      const unitPrice = hasValidCustomPrice
+        ? Number(item.customPrice)
+        : variant
+        ? variant.price
+        : product.price;
       const itemTotal = unitPrice * item.quantity;
       const itemTax = Math.round(itemTotal * 0.05); // 5% Agri GST
 

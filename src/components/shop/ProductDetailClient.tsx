@@ -135,6 +135,24 @@ export default function ProductDetailClient({ product: initialProduct }: Product
     ? Math.round(((currentComparePrice - currentPrice) / currentComparePrice) * 100)
     : 0;
 
+  const isCustomPriceEnabled = Boolean(product.customerEntersPrice) && !product.callForPrice;
+  const [customPriceInput, setCustomPriceInput] = useState<string>(() =>
+    currentPrice > 0 ? String(currentPrice) : ''
+  );
+  const [customPriceError, setCustomPriceError] = useState<string | null>(null);
+
+  useEffect(() => {
+    setCustomPriceInput(currentPrice > 0 ? String(currentPrice) : '');
+    setCustomPriceError(null);
+  }, [product.id, currentPrice]);
+
+  const parsedCustomPrice = Number(customPriceInput);
+  const effectivePrice = isCustomPriceEnabled
+    ? Number.isFinite(parsedCustomPrice) && parsedCustomPrice > 0
+      ? parsedCustomPrice
+      : 0
+    : currentPrice;
+
   // Track recently viewed products
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -220,6 +238,11 @@ export default function ProductDetailClient({ product: initialProduct }: Product
 
   const executeAddToCart = () => {
     setRequiredWarning(null);
+    setCustomPriceError(null);
+    if (isCustomPriceEnabled && effectivePrice <= 0) {
+      setCustomPriceError('Please enter a valid price greater than ₹0.');
+      return;
+    }
     if (typeof window !== 'undefined') {
       try {
         const stored = localStorage.getItem('agri_cart_items');
@@ -254,7 +277,10 @@ export default function ProductDetailClient({ product: initialProduct }: Product
 
         setAddedNotice(true);
         const existingIdx = cart.findIndex(
-          (i: any) => i.id === product.id && i.variantId === selectedVariant?.id
+          (i: any) =>
+            i.id === product.id &&
+            i.variantId === selectedVariant?.id &&
+            (!isCustomPriceEnabled || Number(i.price) === effectivePrice)
         );
         if (existingIdx >= 0) {
           const nextQty = existingIdx >= 0 ? cart[existingIdx].quantity + quantity : quantity;
@@ -265,7 +291,8 @@ export default function ProductDetailClient({ product: initialProduct }: Product
           cart.push({
             id: product.id,
             name: product.name,
-            price: currentPrice,
+            price: effectivePrice,
+            customPrice: isCustomPriceEnabled ? effectivePrice : undefined,
             quantity: maxStock > 0 ? Math.min(quantity, maxStock) : quantity,
             maxStock,
             minQty,
@@ -289,12 +316,18 @@ export default function ProductDetailClient({ product: initialProduct }: Product
 
   const executeBuyNow = () => {
     setRequiredWarning(null);
+    setCustomPriceError(null);
+    if (isCustomPriceEnabled && effectivePrice <= 0) {
+      setCustomPriceError('Please enter a valid price greater than ₹0.');
+      return;
+    }
     if (typeof window !== 'undefined') {
       const checkoutList: any[] = [
         {
           id: product.id,
           name: product.name,
-          price: currentPrice,
+          price: effectivePrice,
+          customPrice: isCustomPriceEnabled ? effectivePrice : undefined,
           quantity,
           image: product.media?.[0]?.url || product.images?.[0],
           category: product.category?.name || product.category,
@@ -462,7 +495,7 @@ export default function ProductDetailClient({ product: initialProduct }: Product
       </div>
 
       {/* Pricing with GST notice */}
-      <div className="p-5 bg-agri-pale/60 rounded-2xl border border-emerald-200/80 flex items-baseline gap-3">
+      <div className="p-5 bg-agri-pale/60 rounded-2xl border border-emerald-200/80 flex flex-wrap items-baseline gap-3">
         {product.callForPrice ? (
           <div>
             <div className="text-2xl font-black text-emerald-800">
@@ -471,6 +504,36 @@ export default function ProductDetailClient({ product: initialProduct }: Product
             <div className="text-[11px] text-emerald-700 font-semibold mt-0.5">
               Customized agricultural quotas &amp; institutional pricing available
             </div>
+          </div>
+        ) : isCustomPriceEnabled ? (
+          <div className="w-full space-y-2">
+            <div className="flex items-center justify-between gap-2">
+              <label htmlFor="customer-entered-price" className="text-xs font-extrabold text-slate-900">
+                Enter Your Price (₹)
+              </label>
+              <span className="text-[11px] text-emerald-800 font-semibold">
+                Flexible pricing enabled
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-lg font-black text-slate-700">₹</span>
+              <input
+                id="customer-entered-price"
+                type="number"
+                min="1"
+                step="1"
+                value={customPriceInput}
+                onChange={(e) => {
+                  setCustomPriceInput(e.target.value);
+                  setCustomPriceError(null);
+                }}
+                placeholder="Enter amount in ₹"
+                className="w-full max-w-[220px] px-3.5 py-2 rounded-xl border border-emerald-300 bg-white text-lg font-black text-slate-950 focus:outline-none focus:ring-2 focus:ring-agri-green"
+              />
+            </div>
+            {customPriceError && (
+              <div className="text-xs font-bold text-rose-600">{customPriceError}</div>
+            )}
           </div>
         ) : (
           <>

@@ -21,6 +21,7 @@ interface CartItem {
   category: string;
   variantId?: string;
   variantTitle?: string;
+  customPrice?: number;
 }
 
 export default function CartPage() {
@@ -81,7 +82,12 @@ export default function CartPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          items: cartItems.map((i) => ({ productId: i.id, variantId: i.variantId, quantity: i.quantity })),
+          items: cartItems.map((i) => ({
+            productId: i.id,
+            variantId: i.variantId,
+            quantity: i.quantity,
+            customPrice: i.customPrice,
+          })),
           couponCode: code || undefined,
           pincode: pin || deliveryPincode,
         }),

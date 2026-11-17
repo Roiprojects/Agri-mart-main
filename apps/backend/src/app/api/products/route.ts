@@ -32,6 +32,7 @@ export async function GET(request: Request) {
       disableBuyButton: Boolean(p.disableBuyButton),
       disableWishlistButton: Boolean(p.disableWishlistButton),
       callForPrice: Boolean(p.callForPrice),
+      customerEntersPrice: Boolean(p.customerEntersPrice),
       availableForPreOrder: Boolean(p.availableForPreOrder),
       requireOtherProducts: Boolean(p.requireOtherProducts),
       requiredProductIds: full?.requiredProductIds || [],

@@ -21,6 +21,7 @@ export interface ProductType {
   disableBuyButton?: boolean;
   disableWishlistButton?: boolean;
   callForPrice?: boolean;
+  customerEntersPrice?: boolean;
   availableForPreOrder?: boolean;
   dosage?: string;
   warranty?: string;
