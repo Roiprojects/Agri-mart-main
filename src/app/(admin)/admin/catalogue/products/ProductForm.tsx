@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
+import { fetchMergedDiscounts, AdminDiscountRecord } from '@/lib/admin-discounts-storage';
 import {
   Save,
   ArrowLeft,
@@ -309,6 +310,13 @@ export function ProductForm({
   const [newImageUrl, setNewImageUrl] = useState('');
   const [catalogueProducts, setCatalogueProducts] = useState<{ id: string; name: string; sku: string; price?: number; images?: string[] }[]>([]);
   const [reqProductSearch, setReqProductSearch] = useState('');
+  const [availableDiscounts, setAvailableDiscounts] = useState<AdminDiscountRecord[]>([]);
+
+  useEffect(() => {
+    fetchMergedDiscounts()
+      .then((list) => setAvailableDiscounts(list))
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     if (!formData.requireOtherProducts || catalogueProducts.length > 0) return;
@@ -1952,15 +1960,73 @@ export function ProductForm({
                 </div>
 
                 {/* Discounts */}
-                <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
-                  <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
+                <div className="grid grid-cols-1 sm:grid-cols-12 items-start gap-2">
+                  <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700 pt-1.5">
                     <span>Discounts</span>
                     <Tooltip text="Check discounts applied to this product." />
                   </div>
                   <div className="sm:col-span-9">
-                    <div className="w-full border border-[#d2d6de] bg-[#f4f4f4] text-slate-600 px-3 py-2 rounded text-xs leading-snug">
-                      No discounts available. Create at least one discount before mapping.
-                    </div>
+                    {availableDiscounts.length === 0 ? (
+                      <div className="w-full border border-[#d2d6de] bg-[#f4f4f4] text-slate-600 px-3 py-2 rounded text-xs leading-snug flex items-center justify-between gap-2">
+                        <span>No discounts available. Create at least one discount before mapping.</span>
+                        <Link
+                          href="/admin/promotions/discounts/new"
+                          className="text-[#2489c5] font-semibold hover:underline shrink-0"
+                        >
+                          + Create Discount
+                        </Link>
+                      </div>
+                    ) : (
+                      <div className="border border-[#d2d6de] rounded bg-white max-h-48 overflow-y-auto divide-y divide-slate-100">
+                        {availableDiscounts.map((disc) => {
+                          const selectedIds = Array.isArray(formData.discountIds) ? formData.discountIds : [];
+                          const isChecked = selectedIds.includes(disc.id);
+                          const valueLabel = disc.usePercentage
+                            ? `${disc.discountPercentage}%`
+                            : `₹${disc.discountAmount}`;
+                          return (
+                            <label
+                              key={disc.id}
+                              className="flex items-center justify-between gap-3 px-3 py-2 hover:bg-slate-50 cursor-pointer text-xs"
+                            >
+                              <div className="flex items-center gap-2.5 min-w-0">
+                                <input
+                                  type="checkbox"
+                                  checked={isChecked}
+                                  onChange={(e) => {
+                                    const nextIds = e.target.checked
+                                      ? Array.from(new Set([...selectedIds, disc.id]))
+                                      : selectedIds.filter((id) => id !== disc.id);
+                                    handleChange('discountIds', nextIds);
+                                  }}
+                                  className="h-4 w-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer shrink-0"
+                                />
+                                <div className="truncate">
+                                  <span className="font-semibold text-slate-800">{disc.name}</span>
+                                  <span className="ml-2 text-[11px] text-slate-500">
+                                    ({valueLabel} • {disc.discountType})
+                                  </span>
+                                  {disc.couponCode && (
+                                    <span className="ml-2 px-1.5 py-0.5 rounded bg-amber-50 border border-amber-200 text-amber-800 font-mono text-[10px]">
+                                      {disc.couponCode}
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+                              <span
+                                className={`px-1.5 py-0.5 rounded text-[10px] font-semibold shrink-0 ${
+                                  disc.isActive
+                                    ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                                    : 'bg-slate-100 text-slate-500 border border-slate-200'
+                                }`}
+                              >
+                                {disc.isActive ? 'Active' : 'Inactive'}
+                              </span>
+                            </label>
+                          );
+                        })}
+                      </div>
+                    )}
                   </div>
                 </div>
 

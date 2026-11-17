@@ -11,6 +11,7 @@ import {
   AlertCircle,
   Calendar,
 } from 'lucide-react';
+import { saveAdminDiscount } from '@/lib/admin-discounts-storage';
 
 function HelpTooltip({ text }: { text: string }) {
   return (
@@ -93,7 +94,8 @@ export default function AddNewDiscountPage() {
       });
 
       const json = await res.json();
-      if (json.success) {
+      if (json.success && json.data) {
+        saveAdminDiscount(json.data);
         showToast('Discount has been added successfully.', 'success');
         if (!continueEditing) {
           router.push('/admin/promotions/discounts');

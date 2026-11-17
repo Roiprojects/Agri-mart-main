@@ -13,6 +13,7 @@ import {
   Check,
   Edit,
 } from 'lucide-react';
+import { fetchMergedDiscounts } from '@/lib/admin-discounts-storage';
 
 interface DiscountRecord {
   id: string;
@@ -61,11 +62,8 @@ export default function DiscountsPage() {
 
   const fetchDiscounts = async () => {
     try {
-      const res = await fetch('/api/admin/promotions/discounts');
-      const json = await res.json();
-      if (json.success && Array.isArray(json.data)) {
-        setDiscounts(json.data);
-      }
+      const merged = await fetchMergedDiscounts();
+      setDiscounts(merged);
     } catch (err) {
       console.error(err);
     }
