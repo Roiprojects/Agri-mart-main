@@ -287,6 +287,7 @@ export default function CartPage() {
       ];
     }
     setItems(updated);
+    syncCartToStorage(updated);
     recalculateCart(updated, couponCode, deliveryPincode);
   };
 
@@ -535,8 +536,8 @@ export default function CartPage() {
 
           {/* Cross-Sells Recommendations Box (nopCommerce CrossSellsNumber setting) */}
           {settings.crossSellsNumber > 0 && crossSells.length > 0 && (
-            <div className="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm space-y-4">
-              <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+            <div className="lg:col-span-12 bg-white rounded-3xl border border-slate-200 p-6 shadow-sm space-y-4">
+              <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
                 <div>
                   <h3 className="font-black text-sm text-slate-900">
                     Recommended Supplies for Your Farm (Cross-Sells)
@@ -558,7 +559,13 @@ export default function CartPage() {
                   >
                     <div>
                       <div className="relative aspect-video w-full rounded-xl bg-slate-100 overflow-hidden mb-2.5">
-                        <Image src={prod.images[0]} alt={prod.name} fill className="object-cover" />
+                        <Image
+                          src={prod.images[0] || '/images/products/agrimart/product_1646_2.jpg'}
+                          alt={prod.name}
+                          fill
+                          unoptimized
+                          className="object-cover"
+                        />
                       </div>
                       <div className="text-[10px] font-bold text-agri-green uppercase tracking-wider">
                         {prod.category}
