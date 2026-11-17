@@ -20,6 +20,7 @@ export interface WishlistProductItem {
   images: string[];
   disableBuyButton?: boolean;
   disableWishlistButton?: boolean;
+  availableForPreOrder?: boolean;
   availableStartDate?: string;
   availableEndDate?: string;
 }
@@ -69,7 +70,9 @@ export default function WishlistClient({ products, defaultIds }: WishlistClientP
 
   const handleMoveToCart = (item: WishlistProductItem) => {
     const availability = getProductAvailability(item as any);
-    if (item.disableBuyButton || !availability.isAvailableNow) return;
+    const canPreOrder =
+      availability.isBeforeStart && Boolean(item.availableForPreOrder) && !item.disableBuyButton;
+    if (item.disableBuyButton || (!availability.isAvailableNow && !canPreOrder)) return;
 
     try {
       const stored = localStorage.getItem('agri_cart_items');
@@ -131,7 +134,10 @@ export default function WishlistClient({ products, defaultIds }: WishlistClientP
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {wishlistItems.map((item) => {
             const availability = getProductAvailability(item as any);
-            const isPurchaseDisabled = Boolean(item.disableBuyButton) || !availability.isAvailableNow;
+            const canPreOrder =
+              availability.isBeforeStart && Boolean(item.availableForPreOrder) && !item.disableBuyButton;
+            const isPurchaseDisabled =
+              Boolean(item.disableBuyButton) || (!availability.isAvailableNow && !canPreOrder);
 
             return (
               <div

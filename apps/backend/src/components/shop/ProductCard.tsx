@@ -25,9 +25,11 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
     : 0;
 
   const availability = getProductAvailability(product as any);
+  const canPreOrder =
+    availability.isBeforeStart && Boolean(product.availableForPreOrder) && !product.disableBuyButton;
 
   const handleAdd = () => {
-    if (!availability.isAvailableNow || product.disableBuyButton) return;
+    if (product.disableBuyButton || (!availability.isAvailableNow && !canPreOrder)) return;
     setIsAdded(true);
     if (onAddToCart) {
       onAddToCart(product);
@@ -259,12 +261,37 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
           </div>
 
           {!availability.isAvailableNow ? (
-            <Link
-              href={`/products/${product.slug}`}
-              className="text-[11px] font-bold px-3 py-1.5 rounded-xl bg-amber-50 text-amber-800 hover:bg-amber-100 border border-amber-200 transition"
-            >
-              {availability.isBeforeStart ? 'Coming Soon' : 'Unavailable'}
-            </Link>
+            canPreOrder ? (
+              <button
+                type="button"
+                onClick={handleAdd}
+                aria-label={`Pre-order ${product.name}`}
+                className={`text-xs font-bold px-3.5 py-2 rounded-xl transition-all duration-200 flex items-center gap-1.5 active:scale-95 shadow-xs ${
+                  isAdded
+                    ? 'bg-emerald-600 text-white shadow-sm'
+                    : 'bg-amber-500 hover:bg-amber-600 text-white'
+                }`}
+              >
+                {isAdded ? (
+                  <>
+                    <CheckCircle2 className="w-3.5 h-3.5 text-white animate-scaleIn" />
+                    <span>Added!</span>
+                  </>
+                ) : (
+                  <>
+                    <Clock className="w-3.5 h-3.5" />
+                    <span>Pre-Order</span>
+                  </>
+                )}
+              </button>
+            ) : (
+              <Link
+                href={`/products/${product.slug}`}
+                className="text-[11px] font-bold px-3 py-1.5 rounded-xl bg-amber-50 text-amber-800 hover:bg-amber-100 border border-amber-200 transition"
+              >
+                {availability.isBeforeStart ? 'Coming Soon' : 'Unavailable'}
+              </Link>
+            )
           ) : product.disableBuyButton ? (
             product.callForPrice ? (
               <a

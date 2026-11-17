@@ -340,13 +340,16 @@ export default function ProductDetailClient({ product: initialProduct }: Product
     router.push('/checkout');
   };
 
+  const canPreOrder =
+    availability.isBeforeStart && Boolean(product.availableForPreOrder) && !product.disableBuyButton;
+
   const handleAddToCart = () => {
-    if (product.disableBuyButton) return;
+    if (product.disableBuyButton || (!availability.isAvailableNow && !canPreOrder)) return;
     executeAddToCart();
   };
 
   const handleBuyNow = () => {
-    if (product.disableBuyButton) return;
+    if (product.disableBuyButton || (!availability.isAvailableNow && !canPreOrder)) return;
     executeBuyNow();
   };
 
@@ -660,14 +663,49 @@ export default function ProductDetailClient({ product: initialProduct }: Product
 
       {/* Action Buttons */}
       {!availability.isAvailableNow ? (
-        <div className="w-full py-3.5 px-6 rounded-2xl bg-amber-50 text-amber-900 font-bold text-xs flex items-center justify-center gap-2 border border-amber-300 shadow-2xs select-none">
-          <Clock className="w-4 h-4 text-amber-600 shrink-0" />
-          <span>
-            {availability.isBeforeStart
-              ? `Coming Soon — Available starting ${availability.formattedStart}`
-              : `Availability ended on ${availability.formattedEnd}`}
-          </span>
-        </div>
+        canPreOrder ? (
+          <div className="space-y-3 pt-2">
+            <div className="w-full py-2.5 px-4 rounded-xl bg-amber-50 text-amber-900 font-bold text-xs flex items-center justify-center gap-2 border border-amber-300 shadow-2xs">
+              <Clock className="w-4 h-4 text-amber-600 shrink-0" />
+              <span>Pre-Order Open — Releases {availability.formattedStart}</span>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <button
+                onClick={handleBuyNow}
+                className="flex-1 text-center bg-amber-500 hover:bg-amber-600 text-white font-extrabold text-xs py-3.5 px-6 rounded-2xl shadow-xs transition flex items-center justify-center gap-2"
+              >
+                <Clock className="w-4 h-4" /> Pre-Order Now
+              </button>
+              <button
+                onClick={handleAddToCart}
+                className={`flex-1 text-center font-bold text-xs py-3.5 px-6 rounded-2xl shadow-xs transition flex items-center justify-center gap-2 ${
+                  addedNotice
+                    ? 'bg-emerald-600 text-white'
+                    : 'bg-agri-green hover:bg-agri-green-dark text-white'
+                }`}
+              >
+                {addedNotice ? (
+                  <>
+                    <CheckCircle2 className="w-4 h-4" /> Added to Cart!
+                  </>
+                ) : (
+                  <>
+                    <ShoppingCart className="w-4 h-4" /> Add Pre-Order to Cart
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="w-full py-3.5 px-6 rounded-2xl bg-amber-50 text-amber-900 font-bold text-xs flex items-center justify-center gap-2 border border-amber-300 shadow-2xs select-none">
+            <Clock className="w-4 h-4 text-amber-600 shrink-0" />
+            <span>
+              {availability.isBeforeStart
+                ? `Coming Soon — Available starting ${availability.formattedStart}`
+                : `Availability ended on ${availability.formattedEnd}`}
+            </span>
+          </div>
+        )
       ) : product.disableBuyButton ? (
         <div className="space-y-3 pt-2">
           {product.callForPrice ? (
