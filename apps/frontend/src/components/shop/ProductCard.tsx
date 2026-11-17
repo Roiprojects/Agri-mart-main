@@ -27,6 +27,7 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
   const availability = getProductAvailability(product as any);
 
   const handleAdd = () => {
+    if (product.disableWishlistButton) return;
     setIsAdded(true);
     if (onAddToCart) {
       onAddToCart(product);
@@ -264,31 +265,27 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
             >
               {availability.isBeforeStart ? 'Coming Soon' : 'Unavailable'}
             </Link>
-          ) : product.disableBuyButton ? (
-            product.callForPrice ? (
-              <a
-                href="tel:+918001234567"
-                className="text-[11px] font-bold px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-800 hover:bg-emerald-100 border border-emerald-300 transition"
-              >
-                Call
-              </a>
-            ) : (
-              <Link
-                href={`/products/${product.slug}`}
-                className="text-[11px] font-bold px-3 py-1.5 rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200 transition"
-              >
-                Details
-              </Link>
-            )
+          ) : product.callForPrice ? (
+            <a
+              href="tel:+918001234567"
+              className="text-[11px] font-bold px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-800 hover:bg-emerald-100 border border-emerald-300 transition"
+            >
+              Call
+            </a>
           ) : (
             <button
               type="button"
               onClick={handleAdd}
+              disabled={Boolean(product.disableWishlistButton)}
+              aria-disabled={Boolean(product.disableWishlistButton)}
               aria-label={`Add ${product.name} to cart`}
-              className={`text-xs font-bold px-3.5 py-2 rounded-xl transition-all duration-200 flex items-center gap-1.5 active:scale-95 shadow-xs ${
-                isAdded
-                  ? 'bg-emerald-600 text-white shadow-sm'
-                  : 'bg-agri-green hover:bg-agri-green-dark text-white'
+              title={product.disableWishlistButton ? 'Add to Cart is disabled for this product' : undefined}
+              className={`text-xs font-bold px-3.5 py-2 rounded-xl transition-all duration-200 flex items-center gap-1.5 shadow-xs ${
+                product.disableWishlistButton
+                  ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
+                  : isAdded
+                  ? 'bg-emerald-600 text-white shadow-sm active:scale-95'
+                  : 'bg-agri-green hover:bg-agri-green-dark text-white active:scale-95'
               }`}
             >
               {isAdded ? (
