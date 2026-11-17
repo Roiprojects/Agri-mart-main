@@ -103,30 +103,6 @@ export default function CartPage() {
     }
   };
 
-  const normalizeCartItems = (rawItems: any[]): CartItem[] =>
-    rawItems
-      .filter((item) => item && typeof item === 'object')
-      .map((item) => ({
-        ...item,
-        id: String(item.id || item.productId || ''),
-        name: String(item.name || 'Agricultural Product'),
-        price: Number(item.price) || 0,
-        quantity: Math.max(1, Number(item.quantity) || 1),
-        image:
-          typeof item.image === 'string' && item.image.trim()
-            ? item.image
-            : 'https://images.unsplash.com/photo-1589923188900-85dae523342b?auto=format&fit=crop&w=600&q=80',
-        category:
-          typeof item.category === 'object'
-            ? item.category?.name || 'Agricultural Input'
-            : String(item.category || 'Agricultural Input'),
-        variantTitle:
-          typeof item.variantTitle === 'object'
-            ? item.variantTitle?.title || item.variantTitle?.name || ''
-            : item.variantTitle,
-      }))
-      .filter((item) => item.id);
-
   useEffect(() => {
     let initialItems = items;
     if (typeof window !== 'undefined') {
@@ -135,8 +111,25 @@ export default function CartPage() {
         if (stored) {
           const parsed = JSON.parse(stored);
           if (Array.isArray(parsed) && parsed.length > 0) {
-            initialItems = normalizeCartItems(parsed);
-            setItems(initialItems);
+            const normalized: CartItem[] = parsed
+              .filter((i: any) => i && typeof i === 'object' && i.id)
+              .map((i: any) => ({
+                ...i,
+                name: String(i.name || 'Product'),
+                price: Number(i.price) || 0,
+                quantity: Math.max(1, Number(i.quantity) || 1),
+                image:
+                  (typeof i.image === 'string' && i.image.trim()) ||
+                  '/images/products/agrimart/product_1646_2.jpg',
+                category:
+                  typeof i.category === 'object' && i.category !== null
+                    ? String(i.category.name || 'Agricultural Input')
+                    : String(i.category || 'Agricultural Input'),
+              }));
+            if (normalized.length > 0) {
+              initialItems = normalized;
+              setItems(normalized);
+            }
           }
         }
       } catch (e) {}
@@ -297,7 +290,7 @@ export default function CartPage() {
     recalculateCart(updated, couponCode, deliveryPincode);
   };
 
-  let subtotal = serverCalculation?.subtotal ?? items.reduce((s, i) => s + i.price * i.quantity, 0);
+  let subtotal = serverCalculation?.subtotal ?? items.reduce((s, i) => s + (Number(i.price) || 0) * (Number(i.quantity) || 1), 0);
   let discount = serverCalculation?.discount ?? (couponFeedback?.valid && settings.showDiscountBox ? 1000 : 0);
   let deliveryFee = serverCalculation?.deliveryFee ?? 0;
   let tax = serverCalculation?.tax ?? Math.round(subtotal * 0.05);
@@ -346,7 +339,7 @@ export default function CartPage() {
                   {settings.showProductImagesOnShoppingCart && (
                     <div className="relative w-20 h-20 rounded-2xl bg-slate-100 overflow-hidden flex-shrink-0 border border-slate-200">
                       <Image
-                        src={item.image || 'https://images.unsplash.com/photo-1589923188900-85dae523342b?auto=format&fit=crop&w=600&q=80'}
+                        src={item.image || '/images/products/agrimart/product_1646_2.jpg'}
                         alt={item.name || 'Product'}
                         fill
                         unoptimized
@@ -356,13 +349,15 @@ export default function CartPage() {
                   )}
                   <div>
                     <div className="text-[10px] font-bold text-agri-green uppercase tracking-wider">
-                      {typeof item.category === 'object' ? (item.category as any)?.name || 'Agricultural Input' : item.category}
+                      {typeof item.category === 'object' && item.category !== null
+                        ? (item.category as any)?.name || 'Agricultural Input'
+                        : item.category || 'Agricultural Input'}
                     </div>
                     <div className="font-extrabold text-sm text-slate-900 line-clamp-1">{item.name}</div>
                     {item.variantTitle && (
                       <div className="text-[11px] text-slate-500">Variant: {item.variantTitle}</div>
                     )}
-                    <div className="text-xs font-black text-slate-900 mt-1">₹{Number(item.price || 0).toLocaleString('en-IN')} each</div>
+                    <div className="text-xs font-black text-slate-900 mt-1">₹{(Number(item.price) || 0).toLocaleString('en-IN')} each</div>
                   </div>
                 </div>
 
@@ -410,7 +405,7 @@ export default function CartPage() {
 
                   <div className="text-right min-w-[80px]">
                     <div className="font-black text-sm text-slate-900">
-                      ₹{(Number(item.price || 0) * Number(item.quantity || 1)).toLocaleString('en-IN')}
+                      ₹{((Number(item.price) || 0) * (Number(item.quantity) || 1)).toLocaleString('en-IN')}
                     </div>
                   </div>
 
@@ -563,19 +558,13 @@ export default function CartPage() {
                   >
                     <div>
                       <div className="relative aspect-video w-full rounded-xl bg-slate-100 overflow-hidden mb-2.5">
-                        <Image
-                          src={prod.images?.[0] || 'https://images.unsplash.com/photo-1589923188900-85dae523342b?auto=format&fit=crop&w=600&q=80'}
-                          alt={prod.name}
-                          fill
-                          unoptimized
-                          className="object-cover"
-                        />
+                        <Image src={prod.images[0]} alt={prod.name} fill className="object-cover" />
                       </div>
                       <div className="text-[10px] font-bold text-agri-green uppercase tracking-wider">
-                        {typeof prod.category === 'object' ? (prod.category as any)?.name || 'Agricultural Input' : prod.category}
+                        {prod.category}
                       </div>
                       <div className="font-bold text-xs text-slate-900 line-clamp-1">{prod.name}</div>
-                      <div className="font-black text-xs text-slate-900 mt-1">₹{Number(prod.price || 0).toLocaleString('en-IN')}</div>
+                      <div className="font-black text-xs text-slate-900 mt-1">₹{prod.price.toLocaleString('en-IN')}</div>
                     </div>
                     <button
                       onClick={() => addCrossSellItem(prod)}

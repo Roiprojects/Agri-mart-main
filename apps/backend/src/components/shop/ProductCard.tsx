@@ -47,8 +47,14 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
               name: product.name,
               price: product.price,
               quantity: 1,
-              image: (product.images && product.images[0]) || (product as any).image,
-              category: product.category,
+              image:
+                (product.images && product.images[0]) ||
+                (product as any).image ||
+                '/images/products/agrimart/product_1646_2.jpg',
+              category:
+                typeof product.category === 'object' && product.category !== null
+                  ? (product.category as any)?.name || 'Agricultural Input'
+                  : product.category || 'Agricultural Input',
             });
           }
           localStorage.setItem('agri_cart_items', JSON.stringify(cart));

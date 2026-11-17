@@ -111,8 +111,25 @@ export default function CartPage() {
         if (stored) {
           const parsed = JSON.parse(stored);
           if (Array.isArray(parsed) && parsed.length > 0) {
-            initialItems = parsed;
-            setItems(parsed);
+            const normalized: CartItem[] = parsed
+              .filter((i: any) => i && typeof i === 'object' && i.id)
+              .map((i: any) => ({
+                ...i,
+                name: String(i.name || 'Product'),
+                price: Number(i.price) || 0,
+                quantity: Math.max(1, Number(i.quantity) || 1),
+                image:
+                  (typeof i.image === 'string' && i.image.trim()) ||
+                  '/images/products/agrimart/product_1646_2.jpg',
+                category:
+                  typeof i.category === 'object' && i.category !== null
+                    ? String(i.category.name || 'Agricultural Input')
+                    : String(i.category || 'Agricultural Input'),
+              }));
+            if (normalized.length > 0) {
+              initialItems = normalized;
+              setItems(normalized);
+            }
           }
         }
       } catch (e) {}
@@ -273,7 +290,7 @@ export default function CartPage() {
     recalculateCart(updated, couponCode, deliveryPincode);
   };
 
-  let subtotal = serverCalculation?.subtotal ?? items.reduce((s, i) => s + i.price * i.quantity, 0);
+  let subtotal = serverCalculation?.subtotal ?? items.reduce((s, i) => s + (Number(i.price) || 0) * (Number(i.quantity) || 1), 0);
   let discount = serverCalculation?.discount ?? (couponFeedback?.valid && settings.showDiscountBox ? 1000 : 0);
   let deliveryFee = serverCalculation?.deliveryFee ?? 0;
   let tax = serverCalculation?.tax ?? Math.round(subtotal * 0.05);
@@ -321,16 +338,26 @@ export default function CartPage() {
                 <div className="flex gap-4 items-center">
                   {settings.showProductImagesOnShoppingCart && (
                     <div className="relative w-20 h-20 rounded-2xl bg-slate-100 overflow-hidden flex-shrink-0 border border-slate-200">
-                      <Image src={item.image} alt={item.name} fill className="object-cover" />
+                      <Image
+                        src={item.image || '/images/products/agrimart/product_1646_2.jpg'}
+                        alt={item.name || 'Product'}
+                        fill
+                        unoptimized
+                        className="object-cover"
+                      />
                     </div>
                   )}
                   <div>
-                    <div className="text-[10px] font-bold text-agri-green uppercase tracking-wider">{item.category}</div>
+                    <div className="text-[10px] font-bold text-agri-green uppercase tracking-wider">
+                      {typeof item.category === 'object' && item.category !== null
+                        ? (item.category as any)?.name || 'Agricultural Input'
+                        : item.category || 'Agricultural Input'}
+                    </div>
                     <div className="font-extrabold text-sm text-slate-900 line-clamp-1">{item.name}</div>
                     {item.variantTitle && (
                       <div className="text-[11px] text-slate-500">Variant: {item.variantTitle}</div>
                     )}
-                    <div className="text-xs font-black text-slate-900 mt-1">₹{item.price.toLocaleString('en-IN')} each</div>
+                    <div className="text-xs font-black text-slate-900 mt-1">₹{(Number(item.price) || 0).toLocaleString('en-IN')} each</div>
                   </div>
                 </div>
 
@@ -378,7 +405,7 @@ export default function CartPage() {
 
                   <div className="text-right min-w-[80px]">
                     <div className="font-black text-sm text-slate-900">
-                      ₹{(item.price * item.quantity).toLocaleString('en-IN')}
+                      ₹{((Number(item.price) || 0) * (Number(item.quantity) || 1)).toLocaleString('en-IN')}
                     </div>
                   </div>
 
@@ -399,7 +426,7 @@ export default function CartPage() {
           {/* Cart Summary & Warehouse Routing Card */}
           <div className="lg:col-span-4 space-y-4">
             {/* Warehouse Routing Box */}
-            {serverCalculation?.warehouseRouting && (
+            {serverCalculation?.warehouseRouting?.assignedWarehouse && (
               <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-4 text-[11px] space-y-1">
                 <div className="font-bold text-emerald-900 flex items-center gap-1.5">
                   <Truck className="w-4 h-4 text-agri-green" /> Nearest Fulfillment Hub
