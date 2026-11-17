@@ -297,8 +297,9 @@ export default function Header() {
                               <div className="relative w-12 h-12 rounded-xl bg-slate-100 overflow-hidden shrink-0 border border-slate-200">
                                 <Image
                                   src={item.image || 'https://images.unsplash.com/photo-1589923188900-85dae523342b?auto=format&fit=crop&w=600&q=80'}
-                                  alt={item.name}
+                                  alt={item.name || 'Product'}
                                   fill
+                                  unoptimized
                                   className="object-cover"
                                 />
                               </div>
