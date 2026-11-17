@@ -109,3 +109,74 @@ export async function fetchMergedDiscounts(): Promise<AdminDiscountRecord[]> {
   } catch {}
   return mergeDiscountsWithLocalStorage(serverDiscounts);
 }
+
+export interface ResolvedProductDiscounts {
+  activeDiscounts: AdminDiscountRecord[];
+  primaryDiscount: AdminDiscountRecord | null;
+  discountedPrice: number;
+  hasAutomaticDiscount: boolean;
+}
+
+export function resolveProductDiscounts(
+  product: { discountIds?: string[]; appliedDiscounts?: AdminDiscountRecord[] } | null | undefined,
+  basePrice: number
+): ResolvedProductDiscounts {
+  if (!product) {
+    return { activeDiscounts: [], primaryDiscount: null, discountedPrice: basePrice, hasAutomaticDiscount: false };
+  }
+
+  const discountIds = Array.isArray(product.discountIds) ? product.discountIds : [];
+  const embedded = Array.isArray(product.appliedDiscounts) ? product.appliedDiscounts : [];
+  const local = getSavedAdminDiscounts();
+  const deletedIds = new Set(getDeletedDiscountIds());
+
+  const byId = new Map<string, AdminDiscountRecord>();
+  for (const d of embedded) {
+    if (d && d.id && !deletedIds.has(d.id)) byId.set(d.id, d);
+  }
+  for (const d of local) {
+    if (d && d.id && !deletedIds.has(d.id)) byId.set(d.id, d);
+  }
+
+  const now = new Date();
+  const activeDiscounts = discountIds
+    .map((id) => byId.get(id))
+    .filter((d): d is AdminDiscountRecord => {
+      if (!d || !d.isActive) return false;
+      if (d.startDate) {
+        const s = new Date(d.startDate);
+        if (!Number.isNaN(s.getTime()) && now < s) return false;
+      }
+      if (d.endDate) {
+        const e = new Date(d.endDate);
+        if (!Number.isNaN(e.getTime()) && now > e) return false;
+      }
+      return true;
+    });
+
+  // Also include any embedded active discounts if discountIds wasn't populated
+  if (activeDiscounts.length === 0 && embedded.length > 0 && discountIds.length === 0) {
+    for (const d of embedded) {
+      if (d && d.isActive && !deletedIds.has(d.id)) activeDiscounts.push(d);
+    }
+  }
+
+  const primaryDiscount = activeDiscounts[0] || null;
+  const autoDiscount = activeDiscounts.find((d) => !d.requiresCouponCode) || null;
+
+  let discountedPrice = basePrice;
+  if (autoDiscount && basePrice > 0) {
+    if (autoDiscount.usePercentage && autoDiscount.discountPercentage > 0) {
+      discountedPrice = Math.max(0, Math.round(basePrice * (1 - autoDiscount.discountPercentage / 100)));
+    } else if (!autoDiscount.usePercentage && autoDiscount.discountAmount > 0) {
+      discountedPrice = Math.max(0, Math.round(basePrice - autoDiscount.discountAmount));
+    }
+  }
+
+  return {
+    activeDiscounts,
+    primaryDiscount,
+    discountedPrice,
+    hasAutomaticDiscount: Boolean(autoDiscount && discountedPrice < basePrice),
+  };
+}

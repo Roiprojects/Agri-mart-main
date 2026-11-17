@@ -1,14 +1,15 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { ProductType } from '@/lib/seed-data';
-import { Star, ShoppingCart, CheckCircle2, Lock, Camera, Clock } from 'lucide-react';
+import { Star, ShoppingCart, CheckCircle2, Lock, Camera, Clock, Tag } from 'lucide-react';
 import { Badge } from '@/components/ui/Badge';
 import { useAuth } from '@/lib/auth-client';
 import { getProductAvailability } from '@/lib/product-availability';
+import { resolveProductDiscounts, ResolvedProductDiscounts } from '@/lib/admin-discounts-storage';
 
 interface ProductCardProps {
   product: ProductType;
@@ -19,6 +20,11 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
   const router = useRouter();
   const { isLoggedIn } = useAuth();
   const [isAdded, setIsAdded] = useState(false);
+  const [resolvedDiscount, setResolvedDiscount] = useState<ResolvedProductDiscounts | null>(null);
+
+  useEffect(() => {
+    setResolvedDiscount(resolveProductDiscounts(product as any, Number(product.price) || 0));
+  }, [product]);
 
   const discountPercent = product.comparePrice
     ? Math.round(((product.comparePrice - product.price) / product.comparePrice) * 100)
@@ -178,6 +184,14 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
               {discountPercent}% OFF
             </Badge>
           )}
+          {resolvedDiscount?.primaryDiscount && !product.callForPrice && (
+            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-emerald-600 text-white shadow-sm">
+              <Tag className="w-2.5 h-2.5" />
+              {resolvedDiscount.primaryDiscount.usePercentage
+                ? `${resolvedDiscount.primaryDiscount.discountPercentage}% OFF`
+                : `₹${resolvedDiscount.primaryDiscount.discountAmount} OFF`}
+            </span>
+          )}
           {product.isBestSeller && (
             <Badge variant="brand" size="sm">
               Best Seller
@@ -266,12 +280,33 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
               </>
             ) : (
               <>
-                <div className="text-base font-extrabold text-agri-dark tracking-tight">
-                  ₹{product.price.toLocaleString('en-IN')}
-                </div>
-                {product.comparePrice > product.price && (
-                  <div className="text-xs text-slate-400 line-through">
-                    ₹{product.comparePrice.toLocaleString('en-IN')}
+                {resolvedDiscount?.hasAutomaticDiscount ? (
+                  <>
+                    <div className="text-base font-extrabold text-emerald-700 tracking-tight">
+                      ₹{resolvedDiscount.discountedPrice.toLocaleString('en-IN')}
+                    </div>
+                    <div className="text-xs text-slate-400 line-through">
+                      ₹{product.price.toLocaleString('en-IN')}
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="text-base font-extrabold text-agri-dark tracking-tight">
+                      ₹{product.price.toLocaleString('en-IN')}
+                    </div>
+                    {product.comparePrice > product.price && (
+                      <div className="text-xs text-slate-400 line-through">
+                        ₹{product.comparePrice.toLocaleString('en-IN')}
+                      </div>
+                    )}
+                  </>
+                )}
+                {resolvedDiscount?.primaryDiscount && (
+                  <div className="text-[10px] font-bold text-emerald-700 mt-0.5">
+                    {resolvedDiscount.primaryDiscount.name}
+                    {resolvedDiscount.primaryDiscount.requiresCouponCode &&
+                      resolvedDiscount.primaryDiscount.couponCode &&
+                      ` • Code: ${resolvedDiscount.primaryDiscount.couponCode}`}
                   </div>
                 )}
                 <div className="text-[9px] text-slate-400 font-medium">

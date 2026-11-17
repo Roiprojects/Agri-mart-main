@@ -487,6 +487,9 @@ export function ProductForm({
         initialValues.customerEntersPrice !== undefined
           ? Boolean(initialValues.customerEntersPrice)
           : prev.customerEntersPrice,
+      discountIds: Array.isArray(initialValues.discountIds)
+        ? initialValues.discountIds
+        : prev.discountIds,
       taxExempt:
         initialValues.taxExempt !== undefined
           ? Boolean(initialValues.taxExempt)
@@ -643,8 +646,13 @@ export function ProductForm({
         ? formData.description
         : richTextHtml;
 
-    const payload: ProductFormData = {
+    const selectedDiscountIds = Array.isArray(formData.discountIds) ? formData.discountIds : [];
+    const appliedDiscounts = availableDiscounts.filter((d) => selectedDiscountIds.includes(d.id));
+
+    const payload: ProductFormData & { appliedDiscounts?: AdminDiscountRecord[] } = {
       ...formData,
+      discountIds: selectedDiscountIds,
+      appliedDiscounts,
       price: Number(formData.price) || 0,
       comparePrice: formData.comparePrice !== undefined ? Number(formData.comparePrice) : 0,
       cost: formData.cost !== undefined ? Number(formData.cost) : 0,

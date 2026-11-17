@@ -43,6 +43,8 @@ export async function GET(request: Request) {
       availableStartDate: p.availableStartDate || '',
       availableEndDate: p.availableEndDate || '',
       markAsNew: Boolean(p.markAsNew),
+      discountIds: Array.isArray((p as any).discountIds) ? (p as any).discountIds : [],
+      appliedDiscounts: Array.isArray((p as any).appliedDiscounts) ? (p as any).appliedDiscounts : [],
       category: categoryObj?.name || (p as any).category || 'General Agri Input',
       categoryKn: categoryObj?.nameKn,
       image,

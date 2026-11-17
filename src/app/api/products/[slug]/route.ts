@@ -58,6 +58,8 @@ export async function GET(
       warehouseStocks: detailed?.warehouseStocks || [],
       disableBuyButton: Boolean(product.disableBuyButton),
       disableWishlistButton: Boolean(product.disableWishlistButton),
+      discountIds: Array.isArray((product as any).discountIds) ? (product as any).discountIds : [],
+      appliedDiscounts: Array.isArray((product as any).appliedDiscounts) ? (product as any).appliedDiscounts : [],
       availableForPreOrder: Boolean(product.availableForPreOrder),
       callForPrice: Boolean(product.callForPrice),
       customerEntersPrice: Boolean(product.customerEntersPrice),

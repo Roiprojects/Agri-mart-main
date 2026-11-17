@@ -31,6 +31,8 @@ import { useShoppingCartSettings } from '@/lib/shopping-cart-settings';
 import { useFilterYmmSettings } from '@/lib/filter-ymm-settings';
 import { getProductOverrideById, mergeProductsWithOverrides } from '@/lib/admin-product-overrides';
 import { getProductAvailability } from '@/lib/product-availability';
+import { resolveProductDiscounts, ResolvedProductDiscounts } from '@/lib/admin-discounts-storage';
+import { Tag } from 'lucide-react';
 
 interface ProductDetailClientProps {
   product: any;
@@ -140,11 +142,13 @@ export default function ProductDetailClient({ product: initialProduct }: Product
     currentPrice > 0 ? String(currentPrice) : ''
   );
   const [customPriceError, setCustomPriceError] = useState<string | null>(null);
+  const [resolvedDiscount, setResolvedDiscount] = useState<ResolvedProductDiscounts | null>(null);
 
   useEffect(() => {
     setCustomPriceInput(currentPrice > 0 ? String(currentPrice) : '');
     setCustomPriceError(null);
-  }, [product.id, currentPrice]);
+    setResolvedDiscount(resolveProductDiscounts(product, currentPrice));
+  }, [product, currentPrice]);
 
   const parsedCustomPrice = Number(customPriceInput);
   const effectivePrice = isCustomPriceEnabled
@@ -537,13 +541,26 @@ export default function ProductDetailClient({ product: initialProduct }: Product
           </div>
         ) : (
           <>
-            <div className="text-3xl font-black text-slate-950">
-              ₹{currentPrice.toLocaleString('en-IN')}
-            </div>
-            {currentComparePrice && (
-              <div className="text-base text-slate-400 line-through">
-                ₹{currentComparePrice.toLocaleString('en-IN')}
-              </div>
+            {resolvedDiscount?.hasAutomaticDiscount ? (
+              <>
+                <div className="text-3xl font-black text-emerald-700">
+                  ₹{resolvedDiscount.discountedPrice.toLocaleString('en-IN')}
+                </div>
+                <div className="text-base text-slate-400 line-through">
+                  ₹{currentPrice.toLocaleString('en-IN')}
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="text-3xl font-black text-slate-950">
+                  ₹{currentPrice.toLocaleString('en-IN')}
+                </div>
+                {currentComparePrice && (
+                  <div className="text-base text-slate-400 line-through">
+                    ₹{currentComparePrice.toLocaleString('en-IN')}
+                  </div>
+                )}
+              </>
             )}
             {discountPercent > 0 && (
               <span className="bg-agri-yellow text-slate-950 font-black text-xs px-2.5 py-0.5 rounded-full">
@@ -556,6 +573,44 @@ export default function ProductDetailClient({ product: initialProduct }: Product
           </>
         )}
       </div>
+
+      {/* Applied Storefront Discounts & Coupon Offers */}
+      {resolvedDiscount && resolvedDiscount.activeDiscounts.length > 0 && !product.callForPrice && (
+        <div className="p-3.5 rounded-2xl bg-emerald-50/90 border border-emerald-200 space-y-2">
+          <div className="text-xs font-extrabold text-emerald-900 flex items-center gap-1.5">
+            <Tag className="w-4 h-4 text-emerald-600 shrink-0" />
+            <span>Available Discount Offers</span>
+          </div>
+          <div className="space-y-1.5">
+            {resolvedDiscount.activeDiscounts.map((disc) => {
+              const valueLabel = disc.usePercentage
+                ? `${disc.discountPercentage}% OFF`
+                : `₹${disc.discountAmount.toLocaleString('en-IN')} OFF`;
+              return (
+                <div
+                  key={disc.id}
+                  className="flex flex-wrap items-center justify-between gap-2 text-xs bg-white px-3 py-2 rounded-xl border border-emerald-200/80"
+                >
+                  <div className="flex items-center gap-2">
+                    <span className="font-black text-emerald-700">{disc.name}</span>
+                    <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold text-[10px]">
+                      {valueLabel}
+                    </span>
+                    <span className="text-[11px] text-slate-500">{disc.discountType}</span>
+                  </div>
+                  {disc.requiresCouponCode && disc.couponCode ? (
+                    <span className="px-2.5 py-0.5 rounded-lg bg-amber-50 border border-amber-300 text-amber-900 font-mono font-bold text-[11px]">
+                      Use Code: {disc.couponCode}
+                    </span>
+                  ) : (
+                    <span className="text-[11px] font-bold text-emerald-700">Applied</span>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* Variant Selector (if available) */}
       {variants.length > 1 && (
