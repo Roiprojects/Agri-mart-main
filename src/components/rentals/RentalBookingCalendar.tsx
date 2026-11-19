@@ -20,7 +20,7 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { useAuth } from '@/lib/auth-client';
 import { validatePhoneNumber, validateEmailOptional, validatePinCode } from '@/lib/validation';
-import { saveRentalBookingOverride } from '@/lib/admin-rentals-services-storage';
+import { saveRentalBookingOverride, mergeRentalBookingsWithOverrides } from '@/lib/admin-rentals-services-storage';
 
 const INDIAN_BANKS = [
   'State Bank of India (SBI)',
@@ -136,24 +136,56 @@ export default function RentalBookingCalendar({ machine }: RentalBookingCalendar
     setCheckingAvailability(true);
     setBookingError(null);
 
-    fetch(`/api/rentals/availability?productId=${machine.id}&startDate=${startDate}&endDate=${effectiveEndDate}`)
+    const fallbackTotal = Math.max(1, Number(machine.totalUnits) || 3);
+    const localActiveCount = mergeRentalBookingsWithOverrides<any>([]).filter((b: any) => {
+      if (b.rentalProductId !== machine.id) return false;
+      if (!['PENDING_APPROVAL', 'APPROVED', 'ACTIVE'].includes(b.status)) return false;
+      const bStart = new Date(b.startDate).getTime();
+      const bEnd = new Date(b.endDate).getTime();
+      const sMs = new Date(startDate).getTime();
+      const eMs = new Date(effectiveEndDate).getTime();
+      return sMs <= bEnd && eMs >= bStart;
+    }).length;
+
+    fetch(
+      `/api/rentals/availability?productId=${encodeURIComponent(machine.id)}&startDate=${startDate}&endDate=${effectiveEndDate}&totalUnits=${fallbackTotal}`
+    )
       .then((res) => res.json())
       .then((data) => {
         setCheckingAvailability(false);
         if (data.success) {
+          const totalUnits = Math.max(1, Number(data.data.totalUnits) || fallbackTotal);
+          const serverActive = Number(data.data.activeBookingsCount) || 0;
+          const activeCount = Math.max(serverActive, localActiveCount);
+          const remaining = Math.max(0, totalUnits - activeCount);
           setAvailabilityData({
-            isAvailable: data.data.isAvailable,
-            remainingUnits: data.data.remainingUnits,
-            totalUnits: data.data.totalUnits,
-            activeBookingsCount: data.data.activeBookingsCount,
+            isAvailable: remaining > 0,
+            remainingUnits: remaining,
+            totalUnits,
+            activeBookingsCount: activeCount,
+          });
+        } else {
+          const remaining = Math.max(0, fallbackTotal - localActiveCount);
+          setAvailabilityData({
+            isAvailable: remaining > 0,
+            remainingUnits: remaining,
+            totalUnits: fallbackTotal,
+            activeBookingsCount: localActiveCount,
           });
         }
       })
       .catch((err) => {
         setCheckingAvailability(false);
         console.error(err);
+        const remaining = Math.max(0, fallbackTotal - localActiveCount);
+        setAvailabilityData({
+          isAvailable: remaining > 0,
+          remainingUnits: remaining,
+          totalUnits: fallbackTotal,
+          activeBookingsCount: localActiveCount,
+        });
       });
-  }, [machine.id, startDate, effectiveEndDate]);
+  }, [machine.id, machine.totalUnits, startDate, effectiveEndDate]);
 
   const handleOpenPaymentModal = (e: React.FormEvent) => {
     e.preventDefault();

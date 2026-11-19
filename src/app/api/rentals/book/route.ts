@@ -97,13 +97,27 @@ export async function POST(request: NextRequest) {
         id: machineData.id || rentalProductId,
         slug: machineData.slug || rentalProductId,
         title: machineData.title || 'Rental Equipment',
+        category: machineData.category || 'Power Equipment',
+        description: machineData.description || '',
         hourlyRate: Number(machineData.hourlyRate) || 200,
         dailyRate: Number(machineData.dailyRate) || 1200,
         weeklyRate: Number(machineData.weeklyRate) || 7000,
         monthlyRate: Number(machineData.monthlyRate) || 24000,
         securityDeposit: Number(machineData.securityDeposit) || 3000,
-        totalUnits: Number(machineData.totalUnits) || 3,
+        images: Array.isArray(machineData.images) ? machineData.images : [],
+        powerRating: machineData.powerRating || 'Standard',
+        suitableFor: machineData.suitableFor || 'All Crops',
+        fuelType: machineData.fuelType || 'Standard',
+        weightKg: Number(machineData.weightKg) || 50,
+        totalUnits: Math.max(1, Number(machineData.totalUnits) || 3),
+        availableUnits: Math.max(1, Number(machineData.availableUnits) || Number(machineData.totalUnits) || 3),
+        specifications: machineData.specifications || {},
       };
+      // Register on this serverless instance so devDb.createRentalBooking availability check succeeds
+      if (!(devDb as any).data.rentalProducts) (devDb as any).data.rentalProducts = [];
+      if (!(devDb as any).data.rentalProducts.some((r: any) => r.id === product.id)) {
+        (devDb as any).data.rentalProducts.push(product);
+      }
     }
     if (!product) {
       return NextResponse.json(
