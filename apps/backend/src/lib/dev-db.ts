@@ -171,6 +171,9 @@ export interface DbProduct {
   isRental?: boolean;
   rentalPeriodLength?: number | string;
   rentalPeriod?: string;
+  isRentService?: boolean;
+  servicePeriodLength?: number | string;
+  servicePeriod?: string;
   // Imported Agrimart catalogue details
   riplCode?: string;
   sourceProductId?: string;
@@ -3236,6 +3239,9 @@ class PersistentDevDatabase {
         isRental: product.isRental,
         rentalPeriodLength: product.rentalPeriodLength,
         rentalPeriod: product.rentalPeriod,
+        isRentService: product.isRentService,
+        servicePeriodLength: product.servicePeriodLength,
+        servicePeriod: product.servicePeriod,
         stockQuantity:
           (product as any).stockQuantity !== undefined
             ? Math.max(0, Number((product as any).stockQuantity) || 0)

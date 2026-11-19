@@ -70,6 +70,12 @@ export default function NewProductPage() {
           availableStartDate: data.availableStartDate || '',
           availableEndDate: data.availableEndDate || '',
           markAsNew: Boolean(data.markAsNew),
+          isRental: Boolean(data.isRental),
+          rentalPeriodLength: data.rentalPeriodLength || '',
+          rentalPeriod: data.rentalPeriod || 'Days',
+          isRentService: Boolean(data.isRentService),
+          servicePeriodLength: data.servicePeriodLength || '',
+          servicePeriod: data.servicePeriod || 'Days',
         });
         if (continueEditing && createdId) {
           router.push(`/admin/catalogue/products/${createdId}/edit`);

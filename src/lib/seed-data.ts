@@ -23,6 +23,12 @@ export interface ProductType {
   callForPrice?: boolean;
   customerEntersPrice?: boolean;
   availableForPreOrder?: boolean;
+  isRental?: boolean;
+  rentalPeriodLength?: number | string;
+  rentalPeriod?: string;
+  isRentService?: boolean;
+  servicePeriodLength?: number | string;
+  servicePeriod?: string;
   dosage?: string;
   warranty?: string;
   riplCode?: string;

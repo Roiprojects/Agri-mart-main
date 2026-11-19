@@ -109,6 +109,12 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
           availableStartDate: data.availableStartDate || '',
           availableEndDate: data.availableEndDate || '',
           markAsNew: Boolean(data.markAsNew),
+          isRental: Boolean(data.isRental),
+          rentalPeriodLength: data.rentalPeriodLength || '',
+          rentalPeriod: data.rentalPeriod || 'Days',
+          isRentService: Boolean(data.isRentService),
+          servicePeriodLength: data.servicePeriodLength || '',
+          servicePeriod: data.servicePeriod || 'Days',
           discountIds: Array.isArray(data.discountIds) ? data.discountIds : [],
           appliedDiscounts: Array.isArray((data as any).appliedDiscounts) ? (data as any).appliedDiscounts : [],
           variants: [

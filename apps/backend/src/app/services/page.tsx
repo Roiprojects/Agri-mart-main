@@ -4,6 +4,8 @@ import Link from 'next/link';
 import { SITE_CONFIG } from '@/lib/config';
 import { SERVICES_CATALOGUE, ServiceDefinition } from '@/lib/services-data';
 import { ApiClient } from '@/lib/api-client';
+import { devDb } from '@/lib/dev-db';
+import ServicesProductList from '@/components/shop/ServicesProductList';
 import { Wrench, MapPin, ArrowRight, ShieldCheck, Tractor, Layers, CheckCircle2 } from 'lucide-react';
 import { Badge } from '@/components/ui/Badge';
 import { Breadcrumbs } from '@/components/ui/Breadcrumbs';
@@ -26,7 +28,8 @@ export const metadata: Metadata = {
   },
 };
 
-export const revalidate = 60;
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 export default async function ServicesPage() {
   let services: ServiceDefinition[] = SERVICES_CATALOGUE;
@@ -38,6 +41,25 @@ export default async function ServicesPage() {
   } catch (err) {
     // Fall back to seed catalog
   }
+
+  let catalogProducts: any[] = [];
+  let categories: { id: string; name: string; parentId?: string | null }[] = [];
+  let brands: { id: string; name: string }[] = [];
+  try {
+    const rawProducts = devDb.getProducts({ onlyPublished: true });
+    catalogProducts = rawProducts.map((p) => {
+      const detailed = devDb.getProductWithDetails(p.id);
+      const mediaUrls = detailed?.media?.map((m) => m.url).filter(Boolean) || [];
+      return {
+        ...p,
+        category: detailed?.category?.name || (p as any).category || 'Rent a Service',
+        brand: detailed?.brand?.name || (p as any).brandName || 'AgriPro',
+        images: mediaUrls.length > 0 ? mediaUrls : (p as any).images || [],
+      };
+    });
+    categories = devDb.getCategories().map((c: any) => ({ id: c.id, name: c.name, parentId: c.parentId || null }));
+    brands = devDb.getBrands().map((b: any) => ({ id: b.id, name: b.name }));
+  } catch {}
 
   const breadcrumbItems = [{ label: 'Home', href: '/' }, { label: 'Services' }];
 
@@ -71,6 +93,13 @@ export default async function ServicesPage() {
           </div>
         </div>
       </div>
+
+      {/* Rent a Service Products (from Admin Product "Is rent service") */}
+      <ServicesProductList
+        catalogProducts={catalogProducts}
+        categories={categories}
+        brands={brands}
+      />
 
       {/* 10 Services Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

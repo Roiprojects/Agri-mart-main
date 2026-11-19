@@ -117,6 +117,9 @@ export interface ProductFormData {
   isRental?: boolean;
   rentalPeriodLength?: number | string;
   rentalPeriod?: 'Days' | 'Weeks' | 'Months' | 'Years';
+  isRentService?: boolean;
+  servicePeriodLength?: number | string;
+  servicePeriod?: 'Hours' | 'Days' | 'Weeks' | 'Months' | 'Acres';
 }
 
 interface ProductFormProps {
@@ -262,6 +265,9 @@ export function ProductForm({
     isRental: Boolean(initialValues?.isRental),
     rentalPeriodLength: initialValues?.rentalPeriodLength || '',
     rentalPeriod: (initialValues?.rentalPeriod as any) || 'Days',
+    isRentService: Boolean(initialValues?.isRentService),
+    servicePeriodLength: initialValues?.servicePeriodLength || '',
+    servicePeriod: (initialValues?.servicePeriod as any) || 'Days',
     minCartQty: initialValues?.minCartQty || 1,
     maxCartQty: initialValues?.maxCartQty || 100,
     productTags: initialValues?.productTags || 'agriculture, certified, farming',
@@ -301,6 +307,7 @@ export function ProductForm({
   const [shippingCollapsed, setShippingCollapsed] = useState(false);
   const [giftCardCollapsed, setGiftCardCollapsed] = useState(false);
   const [rentalCollapsed, setRentalCollapsed] = useState(false);
+  const [rentServiceCollapsed, setRentServiceCollapsed] = useState(false);
   const [seoCollapsed, setSeoCollapsed] = useState(false);
   const [seoActiveTab, setSeoActiveTab] = useState<'standard' | 'en' | 'rtl'>('standard');
   const [activeLangTab, setActiveLangTab] = useState<'standard' | 'en' | 'rtl'>('standard');
@@ -522,6 +529,12 @@ export function ProductForm({
           : prev.isRental,
       rentalPeriodLength: initialValues.rentalPeriodLength || prev.rentalPeriodLength,
       rentalPeriod: (initialValues.rentalPeriod as any) || prev.rentalPeriod,
+      isRentService:
+        initialValues.isRentService !== undefined
+          ? Boolean(initialValues.isRentService)
+          : prev.isRentService,
+      servicePeriodLength: initialValues.servicePeriodLength || prev.servicePeriodLength,
+      servicePeriod: (initialValues.servicePeriod as any) || prev.servicePeriod,
       minCartQty: initialValues.minCartQty !== undefined ? Number(initialValues.minCartQty) : prev.minCartQty,
       maxCartQty: initialValues.maxCartQty !== undefined ? Number(initialValues.maxCartQty) : prev.maxCartQty,
       productTags: initialValues.productTags ?? prev.productTags,
@@ -2311,7 +2324,7 @@ export function ProductForm({
             )}
           </div>
 
-          {/* RENTAL CARD */}
+          {/* RENT A PRODUCT CARD */}
           <div className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden">
             {/* Card Header */}
             <div
@@ -2320,7 +2333,7 @@ export function ProductForm({
             >
               <div className="flex items-center gap-2 text-slate-800 font-semibold text-xs sm:text-sm">
                 <Calendar className="w-4 h-4 text-slate-800" />
-                <span>Rental</span>
+                <span>Rent a Product</span>
               </div>
               <button
                 type="button"
@@ -2337,11 +2350,11 @@ export function ProductForm({
             {/* Card Body */}
             {!rentalCollapsed && (
               <div className="p-4 sm:p-6 space-y-4 text-xs text-slate-700">
-                {/* Is rental */}
+                {/* Is rent product */}
                 <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
                   <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
-                    <span>Is rental</span>
-                    <Tooltip text="Check if this product is available for rental instead of outright purchase." />
+                    <span>Is rent product</span>
+                    <Tooltip text="Check if this product is available on the Rent a Product page." />
                   </div>
                   <div className="sm:col-span-9 flex items-center">
                     <input
@@ -2398,6 +2411,100 @@ export function ProductForm({
                           <option value="Weeks">Weeks</option>
                           <option value="Months">Months</option>
                           <option value="Years">Years</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* RENT A SERVICE CARD */}
+          <div className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden">
+            {/* Card Header */}
+            <div
+              onClick={() => setRentServiceCollapsed(!rentServiceCollapsed)}
+              className="border-b border-[#f4f4f4] px-4 py-2.5 flex items-center justify-between cursor-pointer select-none bg-white hover:bg-slate-50/50 transition"
+            >
+              <div className="flex items-center gap-2 text-slate-800 font-semibold text-xs sm:text-sm">
+                <Calendar className="w-4 h-4 text-slate-800" />
+                <span>Rent a Service</span>
+              </div>
+              <button
+                type="button"
+                className="p-1 text-slate-500 hover:text-slate-700 focus:outline-none"
+              >
+                {rentServiceCollapsed ? (
+                  <Plus className="w-3.5 h-3.5" />
+                ) : (
+                  <Minus className="w-3.5 h-3.5" />
+                )}
+              </button>
+            </div>
+
+            {/* Card Body */}
+            {!rentServiceCollapsed && (
+              <div className="p-4 sm:p-6 space-y-4 text-xs text-slate-700">
+                {/* Is rent service */}
+                <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
+                  <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
+                    <span>Is rent service</span>
+                    <Tooltip text="Check if this product is available on the Rent a Service page." />
+                  </div>
+                  <div className="sm:col-span-9 flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={Boolean(formData.isRentService)}
+                      onChange={(e) => handleChange('isRentService', e.target.checked)}
+                      className="h-4 w-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                    />
+                  </div>
+                </div>
+
+                {formData.isRentService && (
+                  <div className="space-y-4 pt-1">
+                    {/* Service period length */}
+                    <div className="grid grid-cols-1 sm:grid-cols-12 items-start gap-2">
+                      <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700 pt-1.5">
+                        <span>Service period length</span>
+                        <Tooltip text="Specify the cycle length for this service (e.g. 1, 3, 7)." />
+                      </div>
+                      <div className="sm:col-span-9 relative pl-6">
+                        <div className="absolute left-[7px] -top-4 bottom-0 w-px bg-[#d2d6de]" />
+                        <div className="absolute left-[7px] top-4 w-4 h-px bg-[#d2d6de]" />
+                        <input
+                          type="number"
+                          min="1"
+                          placeholder=""
+                          value={formData.servicePeriodLength || ''}
+                          onChange={(e) =>
+                            handleChange('servicePeriodLength', e.target.value ? parseInt(e.target.value, 10) : '')
+                          }
+                          className="w-full text-xs px-2.5 py-1.5 rounded border border-[#d2d6de] focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Service period */}
+                    <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
+                      <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
+                        <span>Service period</span>
+                        <Tooltip text="Choose the service cycle unit: Hours, Days, Weeks, Months, or Acres." />
+                      </div>
+                      <div className="sm:col-span-9 relative flex items-center pl-6">
+                        <div className="absolute left-[7px] -top-4 top-1/2 w-px bg-[#d2d6de]" />
+                        <div className="absolute left-[7px] top-1/2 w-4 h-px bg-[#d2d6de]" />
+                        <select
+                          value={formData.servicePeriod || 'Days'}
+                          onChange={(e) => handleChange('servicePeriod', e.target.value as any)}
+                          className="w-full text-xs px-2.5 py-2 rounded border border-[#d2d6de] bg-white focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none text-slate-700 cursor-pointer"
+                        >
+                          <option value="Hours">Hours</option>
+                          <option value="Days">Days</option>
+                          <option value="Weeks">Weeks</option>
+                          <option value="Months">Months</option>
+                          <option value="Acres">Acres</option>
                         </select>
                       </div>
                     </div>
