@@ -1490,7 +1490,7 @@ export function ProductForm({
                   <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
                     <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
                       <span>Product template</span>
-                      <Tooltip text="The template that will be used to display this product on the public storefront." />
+                      <Tooltip text="1. Simple product: Choose this when you're adding one individual product with its own specifications, images, description, and price (e.g., AgriPro 7HP Multi-Speed Heavy-Duty Power Weeder). 2. Grouped product: Choose this when you want to display multiple related products or models together (e.g., a group containing 5HP, 7HP, and 9HP Power Weeders)." />
                     </div>
                     <div className="sm:col-span-9">
                       <select
