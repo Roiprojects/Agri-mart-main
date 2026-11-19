@@ -4,6 +4,11 @@ import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { fetchMergedDiscounts, AdminDiscountRecord } from '@/lib/admin-discounts-storage';
 import {
+  buildRentalFromProduct,
+  saveRentalOverride,
+  deleteRentalOverride,
+} from '@/lib/admin-rentals-services-storage';
+import {
   Save,
   ArrowLeft,
   Settings,
@@ -2360,7 +2365,24 @@ export function ProductForm({
                     <input
                       type="checkbox"
                       checked={formData.isRental}
-                      onChange={(e) => handleChange('isRental', e.target.checked)}
+                      onChange={(e) => {
+                        const checked = e.target.checked;
+                        handleChange('isRental', checked);
+                        const prodId = formData.id || initialValues?.id;
+                        if (prodId) {
+                          if (checked) {
+                            const rentalObj = buildRentalFromProduct({ ...formData, id: prodId, isRental: true });
+                            saveRentalOverride(rentalObj);
+                            fetch('/api/rentals', {
+                              method: 'POST',
+                              headers: { 'Content-Type': 'application/json' },
+                              body: JSON.stringify(rentalObj),
+                            }).catch(() => {});
+                          } else {
+                            deleteRentalOverride(`rnt-${prodId}`);
+                          }
+                        }
+                      }}
                       className="h-4 w-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
                     />
                   </div>
@@ -2372,7 +2394,7 @@ export function ProductForm({
                     <div className="grid grid-cols-1 sm:grid-cols-12 items-start gap-2">
                       <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700 pt-1.5">
                         <span>Rental period length</span>
-                        <Tooltip text="Specify the cycle length for rental (e.g. 1, 3, 7)." />
+                        <Tooltip text="Enter the rental availability period length in days (e.g. 7, 30, 365)." />
                       </div>
                       <div className="sm:col-span-9 relative pl-6">
                         <div className="absolute left-[7px] -top-4 bottom-0 w-px bg-[#d2d6de]" />
@@ -2380,7 +2402,7 @@ export function ProductForm({
                         <input
                           type="number"
                           min="1"
-                          placeholder=""
+                          placeholder="Enter days (e.g. 30)"
                           value={formData.rentalPeriodLength || ''}
                           onChange={(e) => handleChange('rentalPeriodLength', e.target.value ? parseInt(e.target.value, 10) : '')}
                           className="w-full text-xs px-2.5 py-1.5 rounded border border-[#d2d6de] focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none"
@@ -2390,28 +2412,6 @@ export function ProductForm({
                             The Rental period length field is required.
                           </span>
                         )}
-                      </div>
-                    </div>
-
-                    {/* Rental period */}
-                    <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
-                      <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
-                        <span>Rental period</span>
-                        <Tooltip text="Choose the rental cycle period: Days, Weeks, Months, or Years." />
-                      </div>
-                      <div className="sm:col-span-9 relative flex items-center pl-6">
-                        <div className="absolute left-[7px] -top-4 top-1/2 w-px bg-[#d2d6de]" />
-                        <div className="absolute left-[7px] top-1/2 w-4 h-px bg-[#d2d6de]" />
-                        <select
-                          value={formData.rentalPeriod}
-                          onChange={(e) => handleChange('rentalPeriod', e.target.value as any)}
-                          className="w-full text-xs px-2.5 py-2 rounded border border-[#d2d6de] bg-white focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none text-slate-700 cursor-pointer"
-                        >
-                          <option value="Days">Days</option>
-                          <option value="Weeks">Weeks</option>
-                          <option value="Months">Months</option>
-                          <option value="Years">Years</option>
-                        </select>
                       </div>
                     </div>
                   </div>

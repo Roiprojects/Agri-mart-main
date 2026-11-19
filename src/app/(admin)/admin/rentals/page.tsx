@@ -36,6 +36,8 @@ import {
   saveRentalOverride,
   deleteRentalOverride,
   mergeRentalsWithOverrides,
+  buildRentalFromProduct,
+  isRentalDeleted,
 } from '@/lib/admin-rentals-services-storage';
 
 // ─── Image Presets & Categories ────────────────────────────────────────────────
@@ -1315,11 +1317,18 @@ export default function RentalsAdminPage() {
   };
 
   const handleUpdateEquipment = async (updatedData: Partial<RentalEquipmentItem>) => {
-    const res = await fetch('/api/rentals', {
+    let res = await fetch('/api/rentals', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(updatedData),
     });
+    if (res.status === 404) {
+      res = await fetch('/api/rentals', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updatedData),
+      });
+    }
     const json = await res.json();
     if (!json.success) throw new Error(json.message || 'Failed to update rent equipment');
     const saved = json.data || json.equipment || updatedData;
@@ -1349,8 +1358,17 @@ export default function RentalsAdminPage() {
   const filteredBookings =
     activeTab === 'All' ? bookings : bookings.filter((b) => b.status === activeTab);
 
+  // Merge any catalog products that have "Is rent product" (isRental) checked directly into the card list
+  const allCatalogueCards = (() => {
+    const existingIds = new Set(catalogue.map((c) => c.id));
+    const syncedFromProducts = catalogProducts
+      .filter((p) => Boolean(p?.isRental) && !existingIds.has(`rnt-${p.id}`) && !isRentalDeleted(`rnt-${p.id}`))
+      .map((p) => buildRentalFromProduct(p) as RentalEquipmentItem);
+    return [...syncedFromProducts, ...catalogue];
+  })();
+
   // Filtered equipment catalogue
-  const filteredCatalogue = catalogue.filter((item) => {
+  const filteredCatalogue = allCatalogueCards.filter((item) => {
     const matchesCat =
       catalogueCategory === 'All' ||
       (item.category || '').toLowerCase() === catalogueCategory.toLowerCase();

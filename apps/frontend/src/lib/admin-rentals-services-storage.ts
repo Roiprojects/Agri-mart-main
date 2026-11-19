@@ -47,6 +47,64 @@ export function deleteRentalOverride(id: string): void {
   );
 }
 
+export function isRentalDeleted(id: string): boolean {
+  return readList<string>(DELETED_RENTALS_KEY).includes(id);
+}
+
+export function buildRentalFromProduct(product: any) {
+  const basePrice = Number(product.price) || 15000;
+  const dailyRate = Math.max(250, Math.round(basePrice * 0.025));
+  const hourlyRate = Math.max(50, Math.round(dailyRate / 6));
+  const weeklyRate = Math.round(dailyRate * 6);
+  const monthlyRate = Math.round(dailyRate * 22);
+  const securityDeposit = Math.max(500, Math.round(dailyRate * 3.5));
+  const units = Math.max(1, Math.min(10, Number(product.stockQuantity) || 3));
+  const catName =
+    typeof product.category === 'object'
+      ? product.category?.name || 'Power Equipment'
+      : product.category || 'Power Equipment';
+  const img =
+    (Array.isArray(product.images) && product.images[0]) ||
+    product.image ||
+    '/images/gallery/01-hero-tractor-sunrise.jpg';
+  const crops =
+    Array.isArray(product.targetCrops) && product.targetCrops.length > 0
+      ? product.targetCrops.join(', ')
+      : typeof product.targetCrops === 'string' && product.targetCrops.trim()
+      ? product.targetCrops
+      : 'Sugarcane, Cotton, Maize, Vegetables';
+  const periodLen = Number(product.rentalPeriodLength) || 1;
+
+  return {
+    id: `rnt-${product.id}`,
+    title: product.name || 'Rent Equipment',
+    slug: `${product.slug || product.seName || product.id}-rental`,
+    category: catName,
+    description:
+      product.shortDescription ||
+      product.description ||
+      `${product.name || 'Equipment'} available for farm equipment rental.`,
+    hourlyRate,
+    dailyRate,
+    weeklyRate,
+    monthlyRate,
+    securityDeposit,
+    images: [img],
+    image: img,
+    imageUrl: img,
+    powerRating: product.modelNumber || product.riplCode || 'Standard Agricultural Grade',
+    suitableFor: crops,
+    fuelType: 'Standard / Petrol / Electric',
+    weightKg: Number(product.weight) || 25,
+    totalUnits: units,
+    availableUnits: units,
+    specifications: {
+      SKU: product.sku || product.id,
+      'Rental Availability': `${periodLen} Days`,
+    },
+  };
+}
+
 export function mergeRentalsWithOverrides<T extends { id: string }>(serverList: T[]): T[] {
   if (typeof window === 'undefined') return serverList;
   const overrides = readList<any>(RENTALS_KEY);

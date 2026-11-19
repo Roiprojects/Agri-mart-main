@@ -10,6 +10,11 @@ import {
 } from '@/lib/admin-product-overrides';
 import { mergeCategoriesWithOverrides } from '@/lib/admin-category-overrides';
 import { mergeBrandsWithOverrides } from '@/lib/admin-brand-overrides';
+import {
+  buildRentalFromProduct,
+  saveRentalOverride,
+  deleteRentalOverride,
+} from '@/lib/admin-rentals-services-storage';
 
 export default function EditProductPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = use(params);
@@ -130,6 +135,17 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
           ],
         };
         saveProductOverride(savedObj);
+        if (savedObj.isRental) {
+          const rentalObj = buildRentalFromProduct(savedObj);
+          saveRentalOverride(rentalObj);
+          fetch('/api/rentals', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(rentalObj),
+          }).catch(() => {});
+        } else {
+          deleteRentalOverride(`rnt-${resolvedParams.id}`);
+        }
 
         if (!continueEditing) {
           router.push('/admin/catalogue/products');

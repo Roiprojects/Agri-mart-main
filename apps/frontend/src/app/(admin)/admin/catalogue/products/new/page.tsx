@@ -6,6 +6,7 @@ import { ProductForm, ProductFormData } from '../ProductForm';
 import { saveProductOverride } from '@/lib/admin-product-overrides';
 import { mergeCategoriesWithOverrides } from '@/lib/admin-category-overrides';
 import { mergeBrandsWithOverrides } from '@/lib/admin-brand-overrides';
+import { buildRentalFromProduct, saveRentalOverride } from '@/lib/admin-rentals-services-storage';
 
 export default function NewProductPage() {
   const router = useRouter();
@@ -37,7 +38,7 @@ export default function NewProductPage() {
       const json = await res.json();
       if (json.success) {
         const createdId = json.data?.id || data.id || `prod-${Date.now()}`;
-        saveProductOverride({
+        const savedNewObj = {
           ...data,
           ...(json.data || {}),
           id: createdId,
@@ -76,7 +77,17 @@ export default function NewProductPage() {
           isRentService: Boolean(data.isRentService),
           servicePeriodLength: data.servicePeriodLength || '',
           servicePeriod: data.servicePeriod || 'Days',
-        });
+        };
+        saveProductOverride(savedNewObj);
+        if (savedNewObj.isRental) {
+          const rentalObj = buildRentalFromProduct(savedNewObj);
+          saveRentalOverride(rentalObj);
+          fetch('/api/rentals', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(rentalObj),
+          }).catch(() => {});
+        }
         if (continueEditing && createdId) {
           router.push(`/admin/catalogue/products/${createdId}/edit`);
         } else {
