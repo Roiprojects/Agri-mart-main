@@ -4,6 +4,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { ArrowRight, Calendar, Eye } from 'lucide-react';
 import { mergeProductsWithOverrides } from '@/lib/admin-product-overrides';
+import { mergeRentalsWithOverrides } from '@/lib/admin-rentals-services-storage';
 
 interface RentalsProductListProps {
   rentalProducts: any[];
@@ -19,15 +20,17 @@ export default function RentalsProductList({
   brands,
 }: RentalsProductListProps) {
   const [mergedCatalog, setMergedCatalog] = useState<any[]>(catalogProducts);
+  const [mergedRentals, setMergedRentals] = useState<any[]>(rentalProducts);
 
   useEffect(() => {
     setMergedCatalog(mergeProductsWithOverrides(catalogProducts, categories, brands));
-  }, [catalogProducts, categories, brands]);
+    setMergedRentals(mergeRentalsWithOverrides(rentalProducts));
+  }, [catalogProducts, rentalProducts, categories, brands]);
 
   const rentFlaggedProducts = useMemo(() => {
-    const rentalIds = new Set(rentalProducts.map((r) => r.id));
+    const rentalIds = new Set(mergedRentals.map((r) => r.id));
     return mergedCatalog.filter((p) => Boolean(p?.isRental) && !p?.isDraft && !rentalIds.has(p.id));
-  }, [mergedCatalog, rentalProducts]);
+  }, [mergedCatalog, mergedRentals]);
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -104,7 +107,7 @@ export default function RentalsProductList({
         );
       })}
 
-      {rentalProducts.map((machine) => {
+      {mergedRentals.map((machine) => {
         const hourlyRate =
           (machine as any).hourlyRate || Math.max(50, Math.round((machine.dailyRate || 1200) / 6));
         const equipImg =

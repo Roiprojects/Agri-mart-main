@@ -37,6 +37,14 @@ import {
   SERVICE_DEFAULT_IMAGES,
   getServiceDefaultImage,
 } from '@/lib/services-data';
+import { mergeProductsWithOverrides } from '@/lib/admin-product-overrides';
+import { mergeCategoriesWithOverrides } from '@/lib/admin-category-overrides';
+import { mergeBrandsWithOverrides } from '@/lib/admin-brand-overrides';
+import {
+  saveServiceOverride,
+  deleteServiceOverride,
+  mergeServicesWithOverrides,
+} from '@/lib/admin-rentals-services-storage';
 
 // ─── Image Presets & Categories ────────────────────────────────────────────────
 
@@ -967,6 +975,12 @@ export default function ServicesAdminPage() {
   const [catalogueSearch, setCatalogueSearch] = useState('');
   const [catalogueCategory, setCatalogueCategory] = useState('All');
 
+  // Product Catalog Picker Dropdown state
+  const [catalogProducts, setCatalogProducts] = useState<any[]>([]);
+  const [productPickerQuery, setProductPickerQuery] = useState('');
+  const [productDropdownOpen, setProductDropdownOpen] = useState(false);
+  const [addingFromProduct, setAddingFromProduct] = useState(false);
+
   // Modal states for full CRUD
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [editingService, setEditingService] = useState<ServiceDefinition | null>(null);
@@ -992,23 +1006,39 @@ export default function ServicesAdminPage() {
   const fetchCatalogue = useCallback(async () => {
     try {
       setLoadingCatalogue(true);
-      const res = await fetch('/api/services');
+      const res = await fetch('/api/services', { cache: 'no-store' });
       if (!res.ok) throw new Error(`Server error: ${res.status}`);
       const json = await res.json();
       if (json.success) {
-        setCatalogue(json.services ?? []);
+        setCatalogue(mergeServicesWithOverrides(json.services ?? []));
       }
     } catch (err) {
       console.error('Failed to load services catalogue:', err);
+      setCatalogue((prev) => mergeServicesWithOverrides(prev));
     } finally {
       setLoadingCatalogue(false);
     }
   }, []);
 
+  const fetchCatalogProducts = useCallback(async () => {
+    try {
+      const [prodRes, catRes, brandRes] = await Promise.all([
+        fetch('/api/admin/catalogue/products', { cache: 'no-store' }).then((r) => r.json()).catch(() => ({ success: false, data: [] })),
+        fetch('/api/admin/catalogue/categories', { cache: 'no-store' }).then((r) => r.json()).catch(() => ({ success: false, data: [] })),
+        fetch('/api/admin/brands', { cache: 'no-store' }).then((r) => r.json()).catch(() => ({ success: false, data: [] })),
+      ]);
+      const cats = mergeCategoriesWithOverrides(catRes.success && Array.isArray(catRes.data) ? catRes.data : []);
+      const brs = mergeBrandsWithOverrides(brandRes.success && Array.isArray(brandRes.data) ? brandRes.data : []);
+      const serverProds = prodRes.success && Array.isArray(prodRes.data) ? prodRes.data : [];
+      setCatalogProducts(mergeProductsWithOverrides(serverProds, cats, brs));
+    } catch {}
+  }, []);
+
   useEffect(() => {
     fetchRequests();
     fetchCatalogue();
-  }, [fetchRequests, fetchCatalogue]);
+    fetchCatalogProducts();
+  }, [fetchRequests, fetchCatalogue, fetchCatalogProducts]);
 
   const handleStatusChange = async (requestId: string, status: string) => {
     setActionLoading(requestId);
@@ -1039,7 +1069,66 @@ export default function ServicesAdminPage() {
     });
     const json = await res.json();
     if (!json.success) throw new Error(json.message || 'Failed to create service');
+    const created = json.service || { ...serviceData, id: `srv-${Date.now()}` };
+    saveServiceOverride(created);
     await fetchCatalogue();
+  };
+
+  const handleAddFromCatalogProduct = async (product: any) => {
+    try {
+      setAddingFromProduct(true);
+      const basePrice = Number(product.price) || 20000;
+      const baseRatePerAcre = Math.max(400, Math.round(basePrice * 0.03));
+      const ratePerHour = Math.max(250, Math.round(baseRatePerAcre * 0.65));
+      const catName =
+        typeof product.category === 'object'
+          ? product.category?.name || 'Agricultural Mechanization'
+          : product.category || 'Agricultural Mechanization';
+      const img =
+        (Array.isArray(product.images) && product.images[0]) ||
+        product.image ||
+        '/images/gallery/03-tractor-soil.jpg';
+      const periodText = `${product.servicePeriodLength || 1} ${product.servicePeriod || 'Days'}`;
+
+      await handleCreateService({
+        id: `srv-${product.id}`,
+        slug: `${product.slug || product.id}-service`,
+        name: product.name,
+        category: catName,
+        badge: 'New',
+        iconName: 'Wrench',
+        image: img,
+        imageUrl: img,
+        baseRatePerAcre,
+        equipmentUsed: product.modelNumber
+          ? `${product.name} (${product.modelNumber})`
+          : product.name,
+        timeEstimate: `1.5 to 2.5 hours / acre (${periodText} cycle)`,
+        shortDescription:
+          product.shortDescription ||
+          product.description ||
+          `${product.name} available as a mechanized Rent a Service package.`,
+        description:
+          product.description ||
+          product.shortDescription ||
+          `${product.name} dispatched with certified operator for on-field agricultural service.`,
+        jobWorkTypes: [
+          {
+            id: `jw-${product.id}-1`,
+            name: `${product.name} Field Operation`,
+            ratePerAcre: baseRatePerAcre,
+            ratePerHour,
+          },
+        ],
+        faq: [],
+      });
+      setProductPickerQuery('');
+      setProductDropdownOpen(false);
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Failed to add product to rent services');
+    } finally {
+      setAddingFromProduct(false);
+    }
   };
 
   // Update Service Handler (PUT)
@@ -1051,6 +1140,8 @@ export default function ServicesAdminPage() {
     });
     const json = await res.json();
     if (!json.success) throw new Error(json.message || 'Failed to update service');
+    const saved = json.service || updated;
+    saveServiceOverride(saved);
     await fetchCatalogue();
   };
 
@@ -1061,6 +1152,7 @@ export default function ServicesAdminPage() {
     });
     const json = await res.json();
     if (!json.success) throw new Error(json.message || 'Failed to delete service');
+    deleteServiceOverride(id);
     await fetchCatalogue();
   };
 
@@ -1277,6 +1369,101 @@ export default function ServicesAdminPage() {
       {/* ── VIEW 1: SERVICES CATALOGUE (Full CRUD) ── */}
       {mainView === 'CATALOGUE' && (
         <div className="space-y-6">
+          {/* Import Existing Product from Product Catalog Dropdown */}
+          <div className="bg-emerald-50/70 border border-emerald-200 rounded-2xl p-4 shadow-2xs space-y-2">
+            <div className="flex items-center justify-between gap-2">
+              <label className="text-xs font-bold text-emerald-900 flex items-center gap-1.5">
+                <Plus className="w-3.5 h-3.5 text-emerald-700" />
+                <span>Add Existing Product from Catalog to Rent Services</span>
+              </label>
+              <span className="text-[10px] font-semibold text-emerald-700">
+                Auto-fills rates &amp; cycle — click Edit on card to customize everything
+              </span>
+            </div>
+            <div className="relative">
+              <Search className="absolute left-3.5 top-2.5 h-4 w-4 text-slate-400" />
+              <input
+                type="text"
+                placeholder="Search existing product by name, SKU, or category to add..."
+                value={productPickerQuery}
+                onFocus={() => setProductDropdownOpen(true)}
+                onChange={(e) => {
+                  setProductPickerQuery(e.target.value);
+                  setProductDropdownOpen(true);
+                }}
+                disabled={addingFromProduct}
+                className="w-full pl-9 pr-8 py-2 text-xs rounded-xl border border-emerald-300 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              />
+              {productDropdownOpen && (
+                <button
+                  type="button"
+                  onClick={() => setProductDropdownOpen(false)}
+                  className="absolute right-2.5 top-2 text-slate-400 hover:text-slate-600"
+                  title="Close dropdown"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              )}
+
+              {productDropdownOpen && (
+                <div className="absolute left-0 right-0 mt-1.5 bg-white border border-slate-200 rounded-xl shadow-xl z-30 max-h-64 overflow-y-auto divide-y divide-slate-100">
+                  {catalogProducts
+                    .filter((p) => {
+                      const q = productPickerQuery.trim().toLowerCase();
+                      if (!q) return true;
+                      const catName =
+                        typeof p.category === 'object' ? p.category?.name || '' : p.category || '';
+                      return (
+                        (p.name || '').toLowerCase().includes(q) ||
+                        (p.sku || '').toLowerCase().includes(q) ||
+                        (p.riplCode || '').toLowerCase().includes(q) ||
+                        catName.toLowerCase().includes(q)
+                      );
+                    })
+                    .slice(0, 25)
+                    .map((p) => {
+                      const img =
+                        (Array.isArray(p.images) && p.images[0]) ||
+                        p.image ||
+                        '/images/products/agrimart/product_1646_2.jpg';
+                      const catName =
+                        typeof p.category === 'object' ? p.category?.name || '' : p.category || '';
+                      const alreadyAdded = catalogue.some(
+                        (c) => c.id === `srv-${p.id}` || c.name === p.name
+                      );
+                      return (
+                        <button
+                          key={p.id}
+                          type="button"
+                          disabled={addingFromProduct || alreadyAdded}
+                          onClick={() => handleAddFromCatalogProduct(p)}
+                          className="w-full px-3 py-2.5 text-left flex items-center justify-between gap-3 hover:bg-emerald-50 transition disabled:opacity-50 cursor-pointer"
+                        >
+                          <div className="flex items-center gap-2.5 min-w-0">
+                            <img
+                              src={img}
+                              alt={p.name}
+                              className="w-9 h-9 rounded-lg object-cover border border-slate-200 shrink-0"
+                            />
+                            <div className="min-w-0">
+                              <div className="text-xs font-bold text-slate-900 truncate">{p.name}</div>
+                              <div className="text-[10px] text-slate-500 truncate">
+                                {catName} {p.sku ? `• SKU: ${p.sku}` : ''} • ₹
+                                {(Number(p.price) || 0).toLocaleString('en-IN')}
+                              </div>
+                            </div>
+                          </div>
+                          <span className="text-[10px] font-bold px-2.5 py-1 rounded-lg bg-emerald-100 text-emerald-800 shrink-0">
+                            {alreadyAdded ? 'Added' : '+ Add Card'}
+                          </span>
+                        </button>
+                      );
+                    })}
+                </div>
+              )}
+            </div>
+          </div>
+
           {/* Controls: Search, Category filter & Add button */}
           <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between bg-white p-4 rounded-2xl border border-slate-200 shadow-xs">
             <div className="relative flex-1 max-w-md">

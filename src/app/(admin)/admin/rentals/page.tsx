@@ -29,6 +29,14 @@ import {
 import { StatusBadge } from '@/components/admin/StatusBadge';
 import { StatsCard } from '@/components/admin/StatsCard';
 import { DataTable, Column } from '@/components/admin/DataTable';
+import { mergeProductsWithOverrides } from '@/lib/admin-product-overrides';
+import { mergeCategoriesWithOverrides } from '@/lib/admin-category-overrides';
+import { mergeBrandsWithOverrides } from '@/lib/admin-brand-overrides';
+import {
+  saveRentalOverride,
+  deleteRentalOverride,
+  mergeRentalsWithOverrides,
+} from '@/lib/admin-rentals-services-storage';
 
 // ─── Image Presets & Categories ────────────────────────────────────────────────
 
@@ -1147,6 +1155,12 @@ export default function RentalsAdminPage() {
   const [catalogueSearch, setCatalogueSearch] = useState('');
   const [catalogueCategory, setCatalogueCategory] = useState('All');
 
+  // Product Catalog Picker Dropdown state
+  const [catalogProducts, setCatalogProducts] = useState<any[]>([]);
+  const [productPickerQuery, setProductPickerQuery] = useState('');
+  const [productDropdownOpen, setProductDropdownOpen] = useState(false);
+  const [addingFromProduct, setAddingFromProduct] = useState(false);
+
   // CRUD Modal states
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [editingEquipment, setEditingEquipment] = useState<RentalEquipmentItem | null>(null);
@@ -1173,23 +1187,40 @@ export default function RentalsAdminPage() {
   const fetchCatalogue = useCallback(async () => {
     try {
       setLoadingCatalogue(true);
-      const res = await fetch('/api/rentals');
+      const res = await fetch('/api/rentals', { cache: 'no-store' });
       if (!res.ok) throw new Error(`Server error: ${res.status}`);
       const json = await res.json();
       if (json.success) {
-        setCatalogue(json.data ?? json.equipment ?? []);
+        const serverItems = json.data ?? json.equipment ?? [];
+        setCatalogue(mergeRentalsWithOverrides(serverItems));
       }
     } catch (err) {
       console.error('Failed to load rent equipment catalogue:', err);
+      setCatalogue((prev) => mergeRentalsWithOverrides(prev));
     } finally {
       setLoadingCatalogue(false);
     }
   }, []);
 
+  const fetchCatalogProducts = useCallback(async () => {
+    try {
+      const [prodRes, catRes, brandRes] = await Promise.all([
+        fetch('/api/admin/catalogue/products', { cache: 'no-store' }).then((r) => r.json()).catch(() => ({ success: false, data: [] })),
+        fetch('/api/admin/catalogue/categories', { cache: 'no-store' }).then((r) => r.json()).catch(() => ({ success: false, data: [] })),
+        fetch('/api/admin/brands', { cache: 'no-store' }).then((r) => r.json()).catch(() => ({ success: false, data: [] })),
+      ]);
+      const cats = mergeCategoriesWithOverrides(catRes.success && Array.isArray(catRes.data) ? catRes.data : []);
+      const brs = mergeBrandsWithOverrides(brandRes.success && Array.isArray(brandRes.data) ? brandRes.data : []);
+      const serverProds = prodRes.success && Array.isArray(prodRes.data) ? prodRes.data : [];
+      setCatalogProducts(mergeProductsWithOverrides(serverProds, cats, brs));
+    } catch {}
+  }, []);
+
   useEffect(() => {
     fetchBookings();
     fetchCatalogue();
-  }, [fetchBookings, fetchCatalogue]);
+    fetchCatalogProducts();
+  }, [fetchBookings, fetchCatalogue, fetchCatalogProducts]);
 
   const handleStatusChange = async (bookingId: string, status: string) => {
     setActionLoading(bookingId);
@@ -1219,7 +1250,68 @@ export default function RentalsAdminPage() {
     });
     const json = await res.json();
     if (!json.success) throw new Error(json.message || 'Failed to create rent equipment');
+    const created = json.data || json.equipment || { ...equipmentData, id: `rnt-${Date.now()}` };
+    saveRentalOverride(created);
     await fetchCatalogue();
+  };
+
+  const handleAddFromCatalogProduct = async (product: any) => {
+    try {
+      setAddingFromProduct(true);
+      const basePrice = Number(product.price) || 15000;
+      const dailyRate = Math.max(250, Math.round(basePrice * 0.025));
+      const hourlyRate = Math.max(50, Math.round(dailyRate / 6));
+      const weeklyRate = Math.round(dailyRate * 6);
+      const monthlyRate = Math.round(dailyRate * 22);
+      const securityDeposit = Math.max(500, Math.round(dailyRate * 3.5));
+      const units = Math.max(1, Math.min(10, Number(product.stockQuantity) || 3));
+      const catName =
+        typeof product.category === 'object'
+          ? product.category?.name || 'Power Equipment'
+          : product.category || 'Power Equipment';
+      const img =
+        (Array.isArray(product.images) && product.images[0]) ||
+        product.image ||
+        '/images/gallery/01-hero-tractor-sunrise.jpg';
+      const crops = Array.isArray(product.targetCrops) && product.targetCrops.length > 0
+        ? product.targetCrops.join(', ')
+        : 'Sugarcane, Cotton, Maize, Vegetables';
+
+      await handleCreateEquipment({
+        id: `rnt-${product.id}`,
+        title: product.name,
+        slug: `${product.slug || product.id}-rental`,
+        category: catName,
+        description:
+          product.shortDescription ||
+          product.description ||
+          `${product.name} available for hourly, daily, and weekly farm equipment rental.`,
+        hourlyRate,
+        dailyRate,
+        weeklyRate,
+        monthlyRate,
+        securityDeposit,
+        images: [img],
+        image: img,
+        imageUrl: img,
+        powerRating: product.modelNumber || product.riplCode || 'Standard Agricultural Grade',
+        suitableFor: crops,
+        fuelType: 'Standard / Petrol / Electric',
+        weightKg: Number(product.weight) || 25,
+        totalUnits: units,
+        availableUnits: units,
+        specifications: {
+          SKU: product.sku || product.id,
+          'Rental Cycle': `${product.rentalPeriodLength || 1} ${product.rentalPeriod || 'Days'}`,
+        },
+      });
+      setProductPickerQuery('');
+      setProductDropdownOpen(false);
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Failed to add product to rent equipment');
+    } finally {
+      setAddingFromProduct(false);
+    }
   };
 
   const handleUpdateEquipment = async (updatedData: Partial<RentalEquipmentItem>) => {
@@ -1230,6 +1322,8 @@ export default function RentalsAdminPage() {
     });
     const json = await res.json();
     if (!json.success) throw new Error(json.message || 'Failed to update rent equipment');
+    const saved = json.data || json.equipment || updatedData;
+    saveRentalOverride(saved);
     await fetchCatalogue();
   };
 
@@ -1239,6 +1333,7 @@ export default function RentalsAdminPage() {
     });
     const json = await res.json();
     if (!json.success) throw new Error(json.message || 'Failed to delete rent equipment');
+    deleteRentalOverride(id);
     await fetchCatalogue();
   };
 
@@ -1449,6 +1544,101 @@ export default function RentalsAdminPage() {
       {/* ── VIEW 1: RENT EQUIPMENT CATALOGUE (Add / View / Edit / Delete) ── */}
       {mainView === 'CATALOGUE' && (
         <div className="space-y-6">
+          {/* Import Existing Product from Product Catalog Dropdown */}
+          <div className="bg-emerald-50/70 border border-emerald-200 rounded-2xl p-4 shadow-2xs space-y-2">
+            <div className="flex items-center justify-between gap-2">
+              <label className="text-xs font-bold text-emerald-900 flex items-center gap-1.5">
+                <Plus className="w-3.5 h-3.5 text-emerald-700" />
+                <span>Add Existing Product from Catalog to Rent Equipment</span>
+              </label>
+              <span className="text-[10px] font-semibold text-emerald-700">
+                Auto-fills rates, deposit &amp; days — click Edit on card to customize everything
+              </span>
+            </div>
+            <div className="relative">
+              <Search className="absolute left-3.5 top-2.5 h-4 w-4 text-slate-400" />
+              <input
+                type="text"
+                placeholder="Search existing product by name, SKU, or category to add..."
+                value={productPickerQuery}
+                onFocus={() => setProductDropdownOpen(true)}
+                onChange={(e) => {
+                  setProductPickerQuery(e.target.value);
+                  setProductDropdownOpen(true);
+                }}
+                disabled={addingFromProduct}
+                className="w-full pl-9 pr-8 py-2 text-xs rounded-xl border border-emerald-300 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              />
+              {productDropdownOpen && (
+                <button
+                  type="button"
+                  onClick={() => setProductDropdownOpen(false)}
+                  className="absolute right-2.5 top-2 text-slate-400 hover:text-slate-600"
+                  title="Close dropdown"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              )}
+
+              {productDropdownOpen && (
+                <div className="absolute left-0 right-0 mt-1.5 bg-white border border-slate-200 rounded-xl shadow-xl z-30 max-h-64 overflow-y-auto divide-y divide-slate-100">
+                  {catalogProducts
+                    .filter((p) => {
+                      const q = productPickerQuery.trim().toLowerCase();
+                      if (!q) return true;
+                      const catName =
+                        typeof p.category === 'object' ? p.category?.name || '' : p.category || '';
+                      return (
+                        (p.name || '').toLowerCase().includes(q) ||
+                        (p.sku || '').toLowerCase().includes(q) ||
+                        (p.riplCode || '').toLowerCase().includes(q) ||
+                        catName.toLowerCase().includes(q)
+                      );
+                    })
+                    .slice(0, 25)
+                    .map((p) => {
+                      const img =
+                        (Array.isArray(p.images) && p.images[0]) ||
+                        p.image ||
+                        '/images/products/agrimart/product_1646_2.jpg';
+                      const catName =
+                        typeof p.category === 'object' ? p.category?.name || '' : p.category || '';
+                      const alreadyAdded = catalogue.some(
+                        (c) => c.id === `rnt-${p.id}` || c.title === p.name
+                      );
+                      return (
+                        <button
+                          key={p.id}
+                          type="button"
+                          disabled={addingFromProduct || alreadyAdded}
+                          onClick={() => handleAddFromCatalogProduct(p)}
+                          className="w-full px-3 py-2.5 text-left flex items-center justify-between gap-3 hover:bg-emerald-50 transition disabled:opacity-50 cursor-pointer"
+                        >
+                          <div className="flex items-center gap-2.5 min-w-0">
+                            <img
+                              src={img}
+                              alt={p.name}
+                              className="w-9 h-9 rounded-lg object-cover border border-slate-200 shrink-0"
+                            />
+                            <div className="min-w-0">
+                              <div className="text-xs font-bold text-slate-900 truncate">{p.name}</div>
+                              <div className="text-[10px] text-slate-500 truncate">
+                                {catName} {p.sku ? `• SKU: ${p.sku}` : ''} • ₹
+                                {(Number(p.price) || 0).toLocaleString('en-IN')}
+                              </div>
+                            </div>
+                          </div>
+                          <span className="text-[10px] font-bold px-2.5 py-1 rounded-lg bg-emerald-100 text-emerald-800 shrink-0">
+                            {alreadyAdded ? 'Added' : '+ Add Card'}
+                          </span>
+                        </button>
+                      );
+                    })}
+                </div>
+              )}
+            </div>
+          </div>
+
           {/* Search & Category Filter */}
           <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between bg-white p-4 rounded-2xl border border-slate-200 shadow-xs">
             <div className="relative flex-1 max-w-md">
