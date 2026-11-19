@@ -533,28 +533,6 @@ function ServiceFormModal({ service, isOpen, onClose, onSave }: ServiceFormModal
                     className="w-full rounded-xl bg-white border border-slate-300 px-3 py-2 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500"
                   />
                 </div>
-
-                <div>
-                  <span className="text-[10px] font-semibold text-slate-500 block mb-1">
-                    Quick Select Preset Image:
-                  </span>
-                  <div className="flex flex-wrap gap-1.5 max-h-24 overflow-y-auto p-1 bg-slate-50 rounded-lg border border-slate-200">
-                    {SERVICE_IMAGE_PRESETS.map((p) => (
-                      <button
-                        key={p.label}
-                        type="button"
-                        onClick={() => setFormData({ ...formData, image: p.url })}
-                        className={`text-[10px] px-2 py-0.5 rounded-md font-medium transition cursor-pointer border ${
-                          formData.image === p.url
-                            ? 'bg-emerald-700 text-white border-emerald-800'
-                            : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-100'
-                        }`}
-                      >
-                        {p.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
               </div>
             </div>
           </div>
