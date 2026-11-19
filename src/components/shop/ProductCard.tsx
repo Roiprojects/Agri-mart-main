@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/Badge';
 import { useAuth } from '@/lib/auth-client';
 import { getProductAvailability } from '@/lib/product-availability';
 import { resolveProductDiscounts, ResolvedProductDiscounts } from '@/lib/admin-discounts-storage';
+import { getProductOverrideById } from '@/lib/admin-product-overrides';
 
 interface ProductCardProps {
   product: ProductType;
@@ -21,9 +22,30 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
   const { isLoggedIn } = useAuth();
   const [isAdded, setIsAdded] = useState(false);
   const [resolvedDiscount, setResolvedDiscount] = useState<ResolvedProductDiscounts | null>(null);
+  const [overrideImages, setOverrideImages] = useState<string[] | null>(null);
 
   useEffect(() => {
     setResolvedDiscount(resolveProductDiscounts(product as any, Number(product.price) || 0));
+    if (product?.id) {
+      const ov = getProductOverrideById(product.id);
+      if (ov) {
+        const ovImgs: string[] = [];
+        if (Array.isArray(ov.images) && ov.images.length > 0) {
+          ov.images.forEach((u: any) => {
+            if (u && typeof u === 'string') ovImgs.push(u);
+          });
+        } else if (Array.isArray(ov.media) && ov.media.length > 0) {
+          ov.media.forEach((m: any) => {
+            if (m?.url) ovImgs.push(m.url);
+          });
+        } else if (ov.image && typeof ov.image === 'string') {
+          ovImgs.push(ov.image);
+        }
+        setOverrideImages(ovImgs.length > 0 ? ovImgs : null);
+        return;
+      }
+    }
+    setOverrideImages(null);
   }, [product]);
 
   const discountPercent = product.comparePrice
@@ -105,7 +127,12 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
 
   const defaultImage =
     'https://images.unsplash.com/photo-1589923188900-85dae523342b?auto=format&fit=crop&w=800&q=80';
-  const productImages = rawImages.length > 0 ? rawImages : [defaultImage];
+  const productImages =
+    overrideImages && overrideImages.length > 0
+      ? overrideImages
+      : rawImages.length > 0
+      ? rawImages
+      : [defaultImage];
   const primaryImage = productImages[0] || defaultImage;
   const secondaryImage = productImages[1] || primaryImage;
 

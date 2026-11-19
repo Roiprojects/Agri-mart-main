@@ -84,6 +84,14 @@ export function mergeProductsWithOverrides<T extends { id: string }>(
 
   const enrichProduct = (item: any) => {
     const next = { ...item };
+    if (Array.isArray(next.images) && next.images.length > 0) {
+      const cleanImgs = next.images.filter((u: any) => typeof u === 'string' && u.trim());
+      if (cleanImgs.length > 0) {
+        next.images = cleanImgs;
+        next.image = cleanImgs[0];
+        next.media = cleanImgs.map((url: string, idx: number) => ({ url, displayOrder: idx }));
+      }
+    }
     if (next.brandId && brandMap.has(next.brandId)) {
       next.brand = brandMap.get(next.brandId);
     }

@@ -32,6 +32,7 @@ export default function ProductImageGallery({
   availableEndDate,
 }: ProductImageGalleryProps) {
   const [dates, setDates] = useState({ availableStartDate, availableEndDate });
+  const [overrideImages, setOverrideImages] = useState<string[] | null>(null);
 
   useEffect(() => {
     if (productId) {
@@ -43,16 +44,35 @@ export default function ProductImageGallery({
           availableEndDate:
             ov.availableEndDate !== undefined ? ov.availableEndDate : availableEndDate,
         });
+        const ovImgs: string[] = [];
+        if (Array.isArray(ov.images) && ov.images.length > 0) {
+          ov.images.forEach((u: any) => {
+            if (u && typeof u === 'string') ovImgs.push(u);
+          });
+        } else if (Array.isArray(ov.media) && ov.media.length > 0) {
+          ov.media.forEach((m: any) => {
+            if (m?.url) ovImgs.push(m.url);
+          });
+        } else if (ov.image && typeof ov.image === 'string') {
+          ovImgs.push(ov.image);
+        }
+        if (ovImgs.length > 0) {
+          setOverrideImages(ovImgs);
+        } else {
+          setOverrideImages(null);
+        }
         return;
       }
     }
     setDates({ availableStartDate, availableEndDate });
+    setOverrideImages(null);
   }, [productId, availableStartDate, availableEndDate]);
 
   const availability = getProductAvailability(dates);
   const fallbackImage =
     'https://images.unsplash.com/photo-1589923188900-85dae523342b?auto=format&fit=crop&w=800&q=80';
-  const validImages = images && images.length > 0 ? images : [fallbackImage];
+  const effectiveImages = overrideImages && overrideImages.length > 0 ? overrideImages : images;
+  const validImages = effectiveImages && effectiveImages.length > 0 ? effectiveImages : [fallbackImage];
 
   const [activeIndex, setActiveIndex] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);

@@ -114,6 +114,11 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
           availableStartDate: data.availableStartDate || '',
           availableEndDate: data.availableEndDate || '',
           markAsNew: Boolean(data.markAsNew),
+          images: Array.isArray(data.images) ? data.images.filter(Boolean) : [],
+          image: (Array.isArray(data.images) && data.images.filter(Boolean)[0]) || '',
+          media: (Array.isArray(data.images) ? data.images.filter(Boolean) : []).map(
+            (url: string, idx: number) => ({ url, displayOrder: idx })
+          ),
           isRental: Boolean(data.isRental),
           rentalPeriodLength: data.rentalPeriodLength || '',
           rentalPeriod: data.rentalPeriod || 'Days',
