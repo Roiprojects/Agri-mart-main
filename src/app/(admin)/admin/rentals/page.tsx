@@ -38,6 +38,8 @@ import {
   mergeRentalsWithOverrides,
   buildRentalFromProduct,
   isRentalDeleted,
+  getSavedRentalBrands,
+  saveRentalBrand,
 } from '@/lib/admin-rentals-services-storage';
 
 // ─── Image Presets & Categories ────────────────────────────────────────────────
@@ -74,6 +76,7 @@ export interface RentalEquipmentItem {
   title: string;
   slug: string;
   category: string;
+  brand?: string;
   description: string;
   hourlyRate?: number;
   dailyRate: number;
@@ -304,7 +307,9 @@ function RentalEquipmentFormModal({
     title: '',
     slug: '',
     category: 'Power Equipment',
+    brand: 'AgriPro',
     image: '/images/products/prod_weeder_7hp.jpg',
+    images: ['/images/products/prod_weeder_7hp.jpg'] as string[],
     hourlyRate: 250,
     dailyRate: 1200,
     weeklyRate: 7000,
@@ -323,18 +328,50 @@ function RentalEquipmentFormModal({
   const [newSpecKey, setNewSpecKey] = useState('');
   const [newSpecValue, setNewSpecValue] = useState('');
 
+  const [brandOptions, setBrandOptions] = useState<string[]>(() => getSavedRentalBrands());
+  const [customBrandInput, setCustomBrandInput] = useState('');
+
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    if (!isOpen) return;
+    fetch('/api/admin/brands', { cache: 'no-store' })
+      .then((r) => r.json())
+      .then((json) => {
+        const serverBrands =
+          json.success && Array.isArray(json.data) ? json.data.map((b: any) => b.name).filter(Boolean) : [];
+        const localBrands = getSavedRentalBrands();
+        const combined = new Set<string>([...localBrands, ...serverBrands]);
+        if (equipment?.brand) combined.add(equipment.brand);
+        setBrandOptions(Array.from(combined));
+      })
+      .catch(() => {
+        const localBrands = getSavedRentalBrands();
+        if (equipment?.brand && !localBrands.includes(equipment.brand)) {
+          setBrandOptions([equipment.brand, ...localBrands]);
+        } else {
+          setBrandOptions(localBrands);
+        }
+      });
+  }, [isOpen, equipment?.brand]);
+
+  useEffect(() => {
     if (equipment) {
+      const equipImages =
+        Array.isArray(equipment.images) && equipment.images.length > 0
+          ? equipment.images.filter(Boolean)
+          : ['/images/products/prod_weeder_7hp.jpg'];
+      const initialBrand = equipment.brand || 'AgriPro';
+      if (initialBrand) saveRentalBrand(initialBrand);
+
       setFormData({
         title: equipment.title || '',
         slug: equipment.slug || '',
         category: equipment.category || 'Power Equipment',
-        image:
-          (Array.isArray(equipment.images) && equipment.images[0]) ||
-          '/images/products/prod_weeder_7hp.jpg',
+        brand: initialBrand,
+        image: equipImages[0] || '/images/products/prod_weeder_7hp.jpg',
+        images: equipImages,
         hourlyRate: equipment.hourlyRate || Math.round((equipment.dailyRate || 1200) / 6),
         dailyRate: equipment.dailyRate || 1200,
         weeklyRate: equipment.weeklyRate || 7000,
@@ -355,7 +392,9 @@ function RentalEquipmentFormModal({
         title: '',
         slug: '',
         category: 'Power Equipment',
+        brand: 'AgriPro',
         image: '/images/products/prod_weeder_7hp.jpg',
+        images: ['/images/products/prod_weeder_7hp.jpg'],
         hourlyRate: 250,
         dailyRate: 1200,
         weeklyRate: 7000,
@@ -429,13 +468,28 @@ function RentalEquipmentFormModal({
       }
     }
 
+    const finalBrand = (customBrandInput.trim() || formData.brand || 'AgriPro').trim();
+    if (finalBrand) {
+      const updatedBrands = saveRentalBrand(finalBrand);
+      setBrandOptions(updatedBrands);
+    }
+
+    const finalImages =
+      formData.images.length > 0
+        ? formData.images.filter(Boolean)
+        : [formData.image || '/images/products/prod_weeder_7hp.jpg'];
+    if (formData.image && formData.image.trim() && finalImages[0] !== formData.image.trim()) {
+      finalImages[0] = formData.image.trim();
+    }
+
     try {
       await onSave({
         ...(equipment?.id ? { id: equipment.id } : {}),
         ...formData,
+        brand: finalBrand,
         slug: generatedSlug,
-        images: [formData.image || '/images/products/prod_weeder_7hp.jpg'],
-        imageUrl: formData.image || '/images/products/prod_weeder_7hp.jpg',
+        images: finalImages,
+        imageUrl: finalImages[0] || '/images/products/prod_weeder_7hp.jpg',
         hourlyRate: Number(formData.hourlyRate) || 250,
         dailyRate: Number(formData.dailyRate) || 1200,
         weeklyRate: Number(formData.weeklyRate) || 7000,
@@ -507,6 +561,17 @@ function RentalEquipmentFormModal({
               />
             </div>
 
+            <div>
+              <label className="block text-xs font-semibold text-slate-700 mb-1">URL Slug</label>
+              <input
+                type="text"
+                value={formData.slug}
+                onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
+                placeholder="power-weeder-7hp"
+                className="w-full rounded-xl bg-white border border-slate-300 px-3 py-2 text-xs text-slate-900 font-mono focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              />
+            </div>
+
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label className="block text-xs font-semibold text-slate-700 mb-1">Category</label>
@@ -520,27 +585,103 @@ function RentalEquipmentFormModal({
                       {cat}
                     </option>
                   ))}
+                  {formData.category && !RENTAL_CATEGORY_PRESETS.includes(formData.category) && (
+                    <option value={formData.category}>{formData.category}</option>
+                  )}
                 </select>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">URL Slug</label>
-                <input
-                  type="text"
-                  value={formData.slug}
-                  onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
-                  placeholder="power-weeder-7hp"
-                  className="w-full rounded-xl bg-white border border-slate-300 px-3 py-2 text-xs text-slate-900 font-mono focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                />
+                <label className="block text-xs font-semibold text-slate-700 mb-1">Brand Name</label>
+                <select
+                  value={formData.brand}
+                  onChange={(e) => setFormData({ ...formData, brand: e.target.value })}
+                  className="w-full rounded-xl bg-white border border-slate-300 px-3 py-2 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                >
+                  {brandOptions.map((b) => (
+                    <option key={b} value={b}>
+                      {b}
+                    </option>
+                  ))}
+                </select>
+                <div className="mt-1.5 flex items-center gap-1.5">
+                  <input
+                    type="text"
+                    value={customBrandInput}
+                    onChange={(e) => setCustomBrandInput(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && customBrandInput.trim()) {
+                        e.preventDefault();
+                        const newBrand = customBrandInput.trim();
+                        const updated = saveRentalBrand(newBrand);
+                        setBrandOptions(updated);
+                        setFormData((prev) => ({ ...prev, brand: newBrand }));
+                        setCustomBrandInput('');
+                      }
+                    }}
+                    placeholder="Or enter new brand name..."
+                    className="flex-1 rounded-lg bg-white border border-slate-200 px-2.5 py-1 text-[11px] text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (!customBrandInput.trim()) return;
+                      const newBrand = customBrandInput.trim();
+                      const updated = saveRentalBrand(newBrand);
+                      setBrandOptions(updated);
+                      setFormData((prev) => ({ ...prev, brand: newBrand }));
+                      setCustomBrandInput('');
+                    }}
+                    className="px-2.5 py-1 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white text-[11px] font-bold transition cursor-pointer shrink-0"
+                  >
+                    + Add
+                  </button>
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Section 2: Equipment Image & Presets */}
+          {/* Section 2: Equipment Photos (Multiple Local Upload + URL) */}
           <div className="space-y-3 pt-3 border-t border-slate-100">
-            <h3 className="text-xs font-extrabold uppercase tracking-wider text-emerald-800">
-              2. Equipment Photo
-            </h3>
+            <div className="flex items-center justify-between gap-2">
+              <h3 className="text-xs font-extrabold uppercase tracking-wider text-emerald-800">
+                2. Equipment Photos ({formData.images.length} added)
+              </h3>
+              <label className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-[11px] font-bold cursor-pointer transition shadow-2xs">
+                <Plus className="w-3.5 h-3.5" />
+                <span>Upload Local Photos (4–5+ images)</span>
+                <input
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  className="hidden"
+                  onChange={async (e) => {
+                    const files = Array.from(e.target.files || []);
+                    if (files.length === 0) return;
+                    const readAsDataUrl = (file: File) =>
+                      new Promise<string>((resolve) => {
+                        const reader = new FileReader();
+                        reader.onload = () => resolve(typeof reader.result === 'string' ? reader.result : '');
+                        reader.onerror = () => resolve('');
+                        reader.readAsDataURL(file);
+                      });
+                    const urls = (await Promise.all(files.map(readAsDataUrl))).filter(Boolean);
+                    if (urls.length > 0) {
+                      setFormData((prev) => {
+                        const existing = prev.images.filter(Boolean);
+                        const nextImages = [...existing, ...urls];
+                        return {
+                          ...prev,
+                          images: nextImages,
+                          image: nextImages[0] || prev.image,
+                        };
+                      });
+                    }
+                    e.target.value = '';
+                  }}
+                />
+              </label>
+            </div>
 
             <div className="flex flex-col sm:flex-row gap-4 items-start">
               <div className="w-full sm:w-44 h-28 rounded-xl border border-slate-200 overflow-hidden bg-slate-100 shrink-0 relative group shadow-xs">
@@ -567,17 +708,85 @@ function RentalEquipmentFormModal({
               <div className="flex-1 space-y-2 w-full">
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 mb-1">
-                    Image URL or File Path <span className="text-rose-500">*</span>
+                    Primary Image URL or File Path <span className="text-rose-500">*</span>
                   </label>
-                  <input
-                    type="text"
-                    required
-                    value={formData.image}
-                    onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-                    placeholder="/images/products/prod_weeder_7hp.jpg or https://..."
-                    className="w-full rounded-xl bg-white border border-slate-300 px-3 py-2 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                  />
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      required={formData.images.length === 0}
+                      value={formData.image}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setFormData((prev) => {
+                          const next = [...prev.images];
+                          if (next.length === 0) next.push(val);
+                          else next[0] = val;
+                          return { ...prev, image: val, images: next };
+                        });
+                      }}
+                      placeholder="/images/products/prod_weeder_7hp.jpg or https://..."
+                      className="flex-1 rounded-xl bg-white border border-slate-300 px-3 py-2 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (!formData.image.trim()) return;
+                        setFormData((prev) => ({
+                          ...prev,
+                          images: prev.images.includes(prev.image.trim())
+                            ? prev.images
+                            : [...prev.images, prev.image.trim()],
+                        }));
+                      }}
+                      className="px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold border border-slate-200 transition cursor-pointer shrink-0"
+                    >
+                      + Add URL
+                    </button>
+                  </div>
                 </div>
+
+                {formData.images.length > 0 && (
+                  <div className="flex flex-wrap gap-2 pt-1">
+                    {formData.images.map((imgUrl, idx) => (
+                      <div
+                        key={`${idx}-${imgUrl.slice(0, 24)}`}
+                        className={`relative w-14 h-14 rounded-lg overflow-hidden border-2 cursor-pointer group ${
+                          formData.image === imgUrl ? 'border-emerald-600' : 'border-slate-200'
+                        }`}
+                        onClick={() => setFormData((prev) => ({ ...prev, image: imgUrl }))}
+                        title={`Photo ${idx + 1} (click to preview)`}
+                      >
+                        <img
+                          src={imgUrl}
+                          alt={`Photo ${idx + 1}`}
+                          className="w-full h-full object-cover"
+                        />
+                        <span className="absolute bottom-0.5 left-0.5 bg-black/70 text-white text-[9px] px-1 rounded">
+                          {idx + 1}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setFormData((prev) => {
+                              const next = prev.images.filter((_, i) => i !== idx);
+                              return {
+                                ...prev,
+                                images: next,
+                                image:
+                                  prev.image === imgUrl ? next[0] || '' : prev.image,
+                              };
+                            });
+                          }}
+                          className="absolute top-0.5 right-0.5 w-4 h-4 rounded-full bg-rose-600 text-white flex items-center justify-center opacity-90 hover:opacity-100"
+                          title="Remove photo"
+                        >
+                          <X className="w-2.5 h-2.5" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           </div>

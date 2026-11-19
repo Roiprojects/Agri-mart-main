@@ -107,11 +107,12 @@ export async function POST(request: Request) {
     const monthlyRate = Number(body.monthlyRate) || dailyRate * 22;
     const securityDeposit = Number(body.securityDeposit) || 3000;
 
-    const newEquipment: DbRentalProduct = {
+    const newEquipment: DbRentalProduct & { brand?: string } = {
       id: body.id || `rnt-${Date.now()}`,
       title,
       slug,
       category: body.category || 'Power Equipment',
+      brand: body.brand || '',
       description: body.description || '',
       hourlyRate,
       dailyRate,

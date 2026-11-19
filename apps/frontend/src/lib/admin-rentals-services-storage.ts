@@ -1,7 +1,40 @@
 const RENTALS_KEY = 'agrimart_admin_rentals_v1';
 const DELETED_RENTALS_KEY = 'agrimart_admin_rentals_deleted_v1';
+const RENTAL_BRANDS_KEY = 'agrimart_admin_rental_brands_v1';
 const SERVICES_KEY = 'agrimart_admin_services_v1';
 const DELETED_SERVICES_KEY = 'agrimart_admin_services_deleted_v1';
+
+const DEFAULT_RENTAL_BRANDS = [
+  'AgriPro',
+  'Kisankraft',
+  'Stihl',
+  'Honda',
+  'Mahindra',
+  'John Deere',
+  'Kubota',
+  'VST Shakti',
+  'Neptune',
+  'Aspee',
+];
+
+export function getSavedRentalBrands(): string[] {
+  const saved = readList<string>(RENTAL_BRANDS_KEY);
+  const merged = new Set<string>(DEFAULT_RENTAL_BRANDS);
+  for (const b of saved) {
+    if (b && typeof b === 'string' && b.trim()) merged.add(b.trim());
+  }
+  return Array.from(merged);
+}
+
+export function saveRentalBrand(brandName: string): string[] {
+  const clean = (brandName || '').trim();
+  if (!clean) return getSavedRentalBrands();
+  const saved = readList<string>(RENTAL_BRANDS_KEY);
+  if (!saved.some((b) => b.toLowerCase() === clean.toLowerCase())) {
+    writeList(RENTAL_BRANDS_KEY, [clean, ...saved]);
+  }
+  return getSavedRentalBrands();
+}
 
 function readList<T>(key: string): T[] {
   if (typeof window === 'undefined') return [];
@@ -63,6 +96,10 @@ export function buildRentalFromProduct(product: any) {
     typeof product.category === 'object'
       ? product.category?.name || 'Power Equipment'
       : product.category || 'Power Equipment';
+  const brandName =
+    typeof product.brand === 'object'
+      ? product.brand?.name || product.brandName || 'AgriPro'
+      : product.brand || product.brandName || 'AgriPro';
   const img =
     (Array.isArray(product.images) && product.images[0]) ||
     product.image ||
@@ -80,6 +117,7 @@ export function buildRentalFromProduct(product: any) {
     title: product.name || 'Rent Equipment',
     slug: `${product.slug || product.seName || product.id}-rental`,
     category: catName,
+    brand: brandName,
     description:
       product.shortDescription ||
       product.description ||
