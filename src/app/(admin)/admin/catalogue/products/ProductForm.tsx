@@ -1469,12 +1469,12 @@ export function ProductForm({
                   </div>
 
                   {/* Product type */}
-                  <div className="grid grid-cols-1 sm:grid-cols-12 items-start gap-2">
-                    <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700 sm:pt-2">
+                  <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
+                    <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
                       <span>Product type</span>
                       <Tooltip text="Simple: one product with fixed specifications. Grouped: one parent listing with multiple model versions or variants." />
                     </div>
-                    <div className="sm:col-span-9 space-y-2">
+                    <div className="sm:col-span-9">
                       <select
                         value={formData.productType}
                         onChange={(e) => handleChange('productType', e.target.value as any)}
@@ -1483,26 +1483,6 @@ export function ProductForm({
                         <option value="Simple">Simple</option>
                         <option value="Grouped">Grouped (product with variants)</option>
                       </select>
-                      <div className="rounded border border-slate-200 bg-slate-50 p-2.5 text-[11px] text-slate-600 space-y-2">
-                        <div>
-                          <p className="font-semibold text-slate-700">1. Simple</p>
-                          <p>Choose <strong>Simple</strong> when you are adding one product with one set of specifications.</p>
-                          <ul className="list-disc pl-4 mt-0.5 text-slate-500">
-                            <li>AgriPro 7HP Multi-Speed Heavy-Duty Power Weeder</li>
-                            <li>One model with fixed specifications</li>
-                            <li>One product listing</li>
-                          </ul>
-                        </div>
-                        <div>
-                          <p className="font-semibold text-slate-700">2. Grouped (product with variants)</p>
-                          <p>Choose <strong>Grouped</strong> when your product has multiple versions or options presented together as a group.</p>
-                          <ul className="list-disc pl-4 mt-0.5 text-slate-500">
-                            <li>AgriPro 5HP Power Weeder</li>
-                            <li>AgriPro 7HP Power Weeder</li>
-                            <li>AgriPro 9HP Power Weeder</li>
-                          </ul>
-                        </div>
-                      </div>
                     </div>
                   </div>
 
