@@ -40,6 +40,8 @@ import {
   isRentalDeleted,
   getSavedRentalBrands,
   saveRentalBrand,
+  saveRentalBookingOverride,
+  mergeRentalBookingsWithOverrides,
 } from '@/lib/admin-rentals-services-storage';
 
 // ─── Image Presets & Categories ────────────────────────────────────────────────
@@ -164,6 +166,19 @@ function ReturnModal({ booking, onClose, onSuccess }: ReturnModalProps) {
       });
       const json = await res.json();
       if (!json.success) throw new Error(json.message ?? 'Return processing failed');
+      const returnedStatus =
+        form.condition === 'ON_TIME'
+          ? 'RETURNED_ON_TIME'
+          : form.condition === 'LATE'
+          ? 'RETURNED_LATE'
+          : 'RETURNED_DAMAGED';
+      saveRentalBookingOverride(
+        json.data || {
+          ...booking,
+          status: returnedStatus,
+          depositRefundStatus: 'REFUNDED',
+        }
+      );
       onSuccess();
       onClose();
     } catch (err) {
@@ -1395,12 +1410,13 @@ export default function RentalsAdminPage() {
     try {
       setLoading(true);
       setError(null);
-      const res = await fetch('/api/rentals/admin');
+      const res = await fetch('/api/rentals/admin', { cache: 'no-store' });
       if (!res.ok) throw new Error(`Server error: ${res.status}`);
       const json = await res.json();
       if (!json.success) throw new Error(json.message ?? 'Failed to load rentals');
-      setBookings(json.data.bookings ?? []);
+      setBookings(mergeRentalBookingsWithOverrides(json.data.bookings ?? []));
     } catch (err) {
+      setBookings(mergeRentalBookingsWithOverrides([]));
       setError(err instanceof Error ? err.message : 'Unknown error');
     } finally {
       setLoading(false);
@@ -1454,7 +1470,17 @@ export default function RentalsAdminPage() {
         body: JSON.stringify({ bookingId, status }),
       });
       const json = await res.json();
-      if (!json.success) throw new Error(json.message ?? 'Action failed');
+      if (!json.success) {
+        // Fallback: if booking only existed in localStorage (e.g. Vercel serverless cold start), update locally
+        const existing = bookings.find((b) => b.id === bookingId);
+        if (existing) {
+          saveRentalBookingOverride({ ...existing, status });
+          await fetchBookings();
+          return;
+        }
+        throw new Error(json.message ?? 'Action failed');
+      }
+      saveRentalBookingOverride(json.data || { id: bookingId, status });
       await fetchBookings();
     } catch (err) {
       alert(err instanceof Error ? err.message : 'Action failed');

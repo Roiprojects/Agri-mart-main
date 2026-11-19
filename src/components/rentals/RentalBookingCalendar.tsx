@@ -20,6 +20,7 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { useAuth } from '@/lib/auth-client';
 import { validatePhoneNumber, validateEmailOptional, validatePinCode } from '@/lib/validation';
+import { saveRentalBookingOverride } from '@/lib/admin-rentals-services-storage';
 
 const INDIAN_BANKS = [
   'State Bank of India (SBI)',
@@ -219,6 +220,7 @@ export default function RentalBookingCalendar({ machine }: RentalBookingCalendar
           deliveryAddress: deliveryAddress.trim(),
           pincode: cleanPin,
           paymentMethod,
+          machineData: machine,
         }),
       });
 
@@ -231,6 +233,9 @@ export default function RentalBookingCalendar({ machine }: RentalBookingCalendar
         return;
       }
 
+      if (result.data) {
+        saveRentalBookingOverride(result.data);
+      }
       setShowPaymentModal(false);
       setBookingSuccess(result.data);
     } catch (err: any) {

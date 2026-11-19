@@ -1,6 +1,7 @@
 const RENTALS_KEY = 'agrimart_admin_rentals_v1';
 const DELETED_RENTALS_KEY = 'agrimart_admin_rentals_deleted_v1';
 const RENTAL_BRANDS_KEY = 'agrimart_admin_rental_brands_v1';
+const RENTAL_BOOKINGS_KEY = 'agrimart_admin_rental_bookings_v1';
 const SERVICES_KEY = 'agrimart_admin_services_v1';
 const DELETED_SERVICES_KEY = 'agrimart_admin_services_deleted_v1';
 
@@ -169,6 +170,36 @@ export function deleteServiceOverride(id: string): void {
     DELETED_SERVICES_KEY,
     Array.from(new Set([...readList<string>(DELETED_SERVICES_KEY), id]))
   );
+}
+
+export function saveRentalBookingOverride(booking: any): void {
+  if (!booking?.id && !booking?.bookingNumber) return;
+  const list = readList<any>(RENTAL_BOOKINGS_KEY);
+  const idx = list.findIndex(
+    (x) => (booking.id && x.id === booking.id) || (booking.bookingNumber && x.bookingNumber === booking.bookingNumber)
+  );
+  if (idx >= 0) list[idx] = { ...list[idx], ...booking };
+  else list.unshift(booking);
+  writeList(RENTAL_BOOKINGS_KEY, list);
+}
+
+export function mergeRentalBookingsWithOverrides<T extends { id: string }>(serverList: T[]): T[] {
+  if (typeof window === 'undefined') return serverList;
+  const overrides = readList<any>(RENTAL_BOOKINGS_KEY);
+  const map = new Map<string, any>();
+  for (const ov of overrides) {
+    if (ov?.id) map.set(ov.id, ov);
+  }
+  for (const item of serverList || []) {
+    if (item?.id) {
+      map.set(item.id, { ...item, ...(map.get(item.id) || {}) });
+    }
+  }
+  return Array.from(map.values()).sort((a, b) => {
+    const ta = new Date(a.createdAt || 0).getTime();
+    const tb = new Date(b.createdAt || 0).getTime();
+    return tb - ta;
+  });
 }
 
 export function mergeServicesWithOverrides<T extends { id: string }>(serverList: T[]): T[] {

@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { devDb } from '@/lib/dev-db';
 import { validatePhoneNumber, validateEmailOptional, validatePinCode } from '@/lib/validation';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
@@ -36,6 +38,7 @@ export async function POST(request: NextRequest) {
       pincode,
       paymentMethod = 'ONLINE_UPI',
       warehouseId = 'wh-hubballi',
+      machineData,
     } = body;
 
     if (!rentalProductId || !startDate || !endDate || !customerName || !customerMobile) {
@@ -87,7 +90,21 @@ export async function POST(request: NextRequest) {
     });
     const resolvedUserId = userId || savedUser.id;
 
-    const product = devDb.getRentalProductById(rentalProductId) || devDb.getRentalProductBySlug(rentalProductId);
+    let product: any =
+      devDb.getRentalProductById(rentalProductId) || devDb.getRentalProductBySlug(rentalProductId);
+    if (!product && machineData && typeof machineData === 'object') {
+      product = {
+        id: machineData.id || rentalProductId,
+        slug: machineData.slug || rentalProductId,
+        title: machineData.title || 'Rental Equipment',
+        hourlyRate: Number(machineData.hourlyRate) || 200,
+        dailyRate: Number(machineData.dailyRate) || 1200,
+        weeklyRate: Number(machineData.weeklyRate) || 7000,
+        monthlyRate: Number(machineData.monthlyRate) || 24000,
+        securityDeposit: Number(machineData.securityDeposit) || 3000,
+        totalUnits: Number(machineData.totalUnits) || 3,
+      };
+    }
     if (!product) {
       return NextResponse.json(
         { success: false, error: 'Selected rental equipment not found.' },

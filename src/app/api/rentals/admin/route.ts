@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { devDb } from '@/lib/dev-db';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   try {
     const bookings = devDb.getRentalBookings();
