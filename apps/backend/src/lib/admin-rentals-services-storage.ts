@@ -4,18 +4,7 @@ const RENTAL_BRANDS_KEY = 'agrimart_admin_rental_brands_v1';
 const SERVICES_KEY = 'agrimart_admin_services_v1';
 const DELETED_SERVICES_KEY = 'agrimart_admin_services_deleted_v1';
 
-const DEFAULT_RENTAL_BRANDS = [
-  'AgriPro',
-  'Kisankraft',
-  'Stihl',
-  'Honda',
-  'Mahindra',
-  'John Deere',
-  'Kubota',
-  'VST Shakti',
-  'Neptune',
-  'Aspee',
-];
+const DEFAULT_RENTAL_BRANDS = ['AgriPro', 'Kashi'];
 
 export function getSavedRentalBrands(): string[] {
   const saved = readList<string>(RENTAL_BRANDS_KEY);

@@ -9,6 +9,7 @@ import { ApiClient } from '@/lib/api-client';
 import { Breadcrumbs } from '@/components/ui/Breadcrumbs';
 import { Badge } from '@/components/ui/Badge';
 import RentalBookingCalendar from '@/components/rentals/RentalBookingCalendar';
+import RentalDetailClientFallback from '@/components/rentals/RentalDetailClientFallback';
 import {
   Wrench,
   Fuel,
@@ -87,8 +88,16 @@ export default async function RentalDetailPage({ params }: RentalDetailPageProps
   const seedProduct = SEED_RENTAL_PRODUCTS.find((r) => r.slug === resolvedParams.slug);
   const machine = (dbProduct || seedProduct) as any;
 
+  const allRentals = devDb.getRentalProducts().length > 0 ? devDb.getRentalProducts() : SEED_RENTAL_PRODUCTS;
+
   if (!machine) {
-    notFound();
+    return (
+      <RentalDetailClientFallback
+        slug={resolvedParams.slug}
+        initialMachine={null}
+        allRentals={allRentals}
+      />
+    );
   }
 
   const isAvailable =
@@ -157,7 +166,6 @@ export default async function RentalDetailPage({ params }: RentalDetailPageProps
     ],
   };
 
-  const allRentals = devDb.getRentalProducts().length > 0 ? devDb.getRentalProducts() : SEED_RENTAL_PRODUCTS;
   const otherRentals = allRentals.filter((r) => r.id !== machine.id);
 
   return (

@@ -330,30 +330,19 @@ function RentalEquipmentFormModal({
 
   const [brandOptions, setBrandOptions] = useState<string[]>(() => getSavedRentalBrands());
   const [customBrandInput, setCustomBrandInput] = useState('');
+  const [specError, setSpecError] = useState<string | null>(null);
 
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!isOpen) return;
-    fetch('/api/admin/brands', { cache: 'no-store' })
-      .then((r) => r.json())
-      .then((json) => {
-        const serverBrands =
-          json.success && Array.isArray(json.data) ? json.data.map((b: any) => b.name).filter(Boolean) : [];
-        const localBrands = getSavedRentalBrands();
-        const combined = new Set<string>([...localBrands, ...serverBrands]);
-        if (equipment?.brand) combined.add(equipment.brand);
-        setBrandOptions(Array.from(combined));
-      })
-      .catch(() => {
-        const localBrands = getSavedRentalBrands();
-        if (equipment?.brand && !localBrands.includes(equipment.brand)) {
-          setBrandOptions([equipment.brand, ...localBrands]);
-        } else {
-          setBrandOptions(localBrands);
-        }
-      });
+    const localBrands = getSavedRentalBrands();
+    if (equipment?.brand && !localBrands.includes(equipment.brand)) {
+      setBrandOptions([equipment.brand, ...localBrands]);
+    } else {
+      setBrandOptions(localBrands);
+    }
   }, [isOpen, equipment?.brand]);
 
   useEffect(() => {
@@ -421,7 +410,11 @@ function RentalEquipmentFormModal({
   if (!isOpen) return null;
 
   const handleAddSpec = () => {
-    if (!newSpecKey.trim() || !newSpecValue.trim()) return;
+    if (!newSpecKey.trim() || !newSpecValue.trim()) {
+      setSpecError('Please enter both Spec Name and Value.');
+      return;
+    }
+    setSpecError(null);
     setSpecEntries((prev) => [
       ...prev.filter((s) => s.key.toLowerCase() !== newSpecKey.trim().toLowerCase()),
       { key: newSpecKey.trim(), value: newSpecValue.trim() },
@@ -430,8 +423,14 @@ function RentalEquipmentFormModal({
     setNewSpecValue('');
   };
 
-  const handleRemoveSpec = (key: string) => {
-    setSpecEntries((prev) => prev.filter((s) => s.key !== key));
+  const handleUpdateSpecRow = (index: number, field: 'key' | 'value', val: string) => {
+    setSpecEntries((prev) =>
+      prev.map((row, i) => (i === index ? { ...row, [field]: val } : row))
+    );
+  };
+
+  const handleRemoveSpec = (index: number) => {
+    setSpecEntries((prev) => prev.filter((_, i) => i !== index));
   };
 
   const handleDailyRateChange = (val: number) => {
@@ -466,6 +465,9 @@ function RentalEquipmentFormModal({
       if (entry.key.trim()) {
         specifications[entry.key.trim()] = entry.value.trim();
       }
+    }
+    if (newSpecKey.trim() && newSpecValue.trim()) {
+      specifications[newSpecKey.trim()] = newSpecValue.trim();
     }
 
     const finalBrand = (customBrandInput.trim() || formData.brand || 'AgriPro').trim();
@@ -1002,19 +1004,30 @@ function RentalEquipmentFormModal({
             </div>
 
             <div className="space-y-1.5">
-              {specEntries.map((spec) => (
+              {specEntries.map((spec, idx) => (
                 <div
-                  key={spec.key}
-                  className="flex items-center justify-between px-3 py-2 bg-slate-50 rounded-xl border border-slate-200 text-xs"
+                  key={idx}
+                  className="flex items-center gap-2 px-2.5 py-2 bg-slate-50 rounded-xl border border-slate-200 text-xs"
                 >
-                  <div>
-                    <span className="font-bold text-slate-800">{spec.key}:</span>{' '}
-                    <span className="text-slate-600">{spec.value}</span>
-                  </div>
+                  <input
+                    type="text"
+                    value={spec.key}
+                    onChange={(e) => handleUpdateSpecRow(idx, 'key', e.target.value)}
+                    placeholder="Spec Name"
+                    className="w-2/5 rounded-lg bg-white border border-slate-200 px-2.5 py-1 text-xs font-bold text-slate-800 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                  />
+                  <input
+                    type="text"
+                    value={spec.value}
+                    onChange={(e) => handleUpdateSpecRow(idx, 'value', e.target.value)}
+                    placeholder="Value"
+                    className="flex-1 rounded-lg bg-white border border-slate-200 px-2.5 py-1 text-xs text-slate-700 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                  />
                   <button
                     type="button"
-                    onClick={() => handleRemoveSpec(spec.key)}
-                    className="p-1 rounded-md text-rose-500 hover:bg-rose-100 transition cursor-pointer"
+                    onClick={() => handleRemoveSpec(idx)}
+                    className="p-1.5 rounded-md text-rose-500 hover:bg-rose-100 transition cursor-pointer shrink-0"
+                    title="Remove specification"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
                   </button>
@@ -1031,14 +1044,32 @@ function RentalEquipmentFormModal({
                   type="text"
                   placeholder="Spec Name (e.g. Working Width)"
                   value={newSpecKey}
-                  onChange={(e) => setNewSpecKey(e.target.value)}
+                  onChange={(e) => {
+                    setNewSpecKey(e.target.value);
+                    setSpecError(null);
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      handleAddSpec();
+                    }
+                  }}
                   className="rounded-lg bg-white border border-slate-300 px-2.5 py-1.5 text-xs text-slate-900"
                 />
                 <input
                   type="text"
                   placeholder="Value (e.g. 900 mm Adjustable)"
                   value={newSpecValue}
-                  onChange={(e) => setNewSpecValue(e.target.value)}
+                  onChange={(e) => {
+                    setNewSpecValue(e.target.value);
+                    setSpecError(null);
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      handleAddSpec();
+                    }
+                  }}
                   className="rounded-lg bg-white border border-slate-300 px-2.5 py-1.5 text-xs text-slate-900"
                 />
                 <button
@@ -1049,6 +1080,9 @@ function RentalEquipmentFormModal({
                   Add Spec
                 </button>
               </div>
+              {specError && (
+                <div className="text-[11px] font-semibold text-rose-600">{specError}</div>
+              )}
             </div>
           </div>
 
