@@ -1383,36 +1383,6 @@ export function ProductForm({
                 </div>
               </div>
 
-              {/* Target Crops & Crop Stages (Advanced only) */}
-              {advancedMode && (
-                <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
-                  <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
-                    <span>Target crops &amp; stages</span>
-                    <Tooltip text="Target agricultural crops and growth stages for this product." />
-                  </div>
-                  <div className="sm:col-span-9 grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                      <input
-                        type="text"
-                        value={formData.targetCrops || ''}
-                        onChange={(e) => handleChange('targetCrops', e.target.value)}
-                        placeholder="Target Crops (e.g. Paddy, Cotton, Sugarcane)"
-                        className="w-full text-xs px-2.5 py-2 rounded border border-[#d2d6de] focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none"
-                      />
-                    </div>
-                    <div>
-                      <input
-                        type="text"
-                        value={formData.cropStages || ''}
-                        onChange={(e) => handleChange('cropStages', e.target.value)}
-                        placeholder="Crop Stages (e.g. 1, 2, 3)"
-                        className="w-full text-xs px-2.5 py-2 rounded border border-[#d2d6de] focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none"
-                      />
-                    </div>
-                  </div>
-                </div>
-              )}
-
               {/* Published Checkbox */}
               <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
                 <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
