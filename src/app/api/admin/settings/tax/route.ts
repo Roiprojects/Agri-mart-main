@@ -30,14 +30,6 @@ export interface TaxSettingsData {
   // Default tax address (media_1791347304431.png)
   defaultTaxAddress: DefaultTaxAddressData;
 
-  // Tax displaying (media_1791347306285.png)
-  allowCustomersToSelectTaxDisplayType: boolean;
-  taxDisplayType: string;
-  displayTaxSuffix: boolean;
-  displayAllAppliedTaxRates: boolean;
-  hideZeroTax: boolean;
-  hideTaxInOrderSummary: boolean;
-  forceTaxExclusionFromOrderSubtotal: boolean;
 
   // Shipping (media_1791347455279.png)
   shippingIsTaxable: boolean;
@@ -88,14 +80,6 @@ const DEFAULT_TAX_SETTINGS: TaxSettingsData = {
     certificateImage: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=400&q=80',
   },
 
-  // Tax displaying defaults
-  allowCustomersToSelectTaxDisplayType: false,
-  taxDisplayType: 'Excluding tax',
-  displayTaxSuffix: false,
-  displayAllAppliedTaxRates: false,
-  hideZeroTax: false,
-  hideTaxInOrderSummary: false,
-  forceTaxExclusionFromOrderSubtotal: false,
 
   // Shipping tax defaults
   shippingIsTaxable: true,

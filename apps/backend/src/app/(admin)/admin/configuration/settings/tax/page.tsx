@@ -7,7 +7,6 @@ import {
   Plus,
   CheckCircle2,
   AlertCircle,
-  Monitor,
   Truck,
   CreditCard,
   Percent,
@@ -35,7 +34,6 @@ export default function TaxSettingsPage() {
   // Collapsible cards state
   const [commonOpen, setCommonOpen] = useState(true);
   const [defaultAddressOpen, setDefaultAddressOpen] = useState(true);
-  const [taxDisplayingOpen, setTaxDisplayingOpen] = useState(true);
   const [shippingTaxOpen, setShippingTaxOpen] = useState(true);
   const [paymentTaxOpen, setPaymentTaxOpen] = useState(true);
   const [vatOpen, setVatOpen] = useState(true);
@@ -65,17 +63,6 @@ export default function TaxSettingsPage() {
   const [certificateImage, setCertificateImage] = useState(
     'https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=400&q=80'
   );
-
-  // 3. Tax displaying fields (media_1791347306285.png)
-  const [allowCustomersToSelectTaxDisplayType, setAllowCustomersToSelectTaxDisplayType] =
-    useState(false);
-  const [taxDisplayType, setTaxDisplayType] = useState('Excluding tax');
-  const [displayTaxSuffix, setDisplayTaxSuffix] = useState(false);
-  const [displayAllAppliedTaxRates, setDisplayAllAppliedTaxRates] = useState(false);
-  const [hideZeroTax, setHideZeroTax] = useState(false);
-  const [hideTaxInOrderSummary, setHideTaxInOrderSummary] = useState(false);
-  const [forceTaxExclusionFromOrderSubtotal, setForceTaxExclusionFromOrderSubtotal] =
-    useState(false);
 
   // 4. Shipping fields (media_1791347455279.png)
   const [shippingIsTaxable, setShippingIsTaxable] = useState(true);
@@ -167,17 +154,6 @@ export default function TaxSettingsPage() {
       if (a.certificateImage) setCertificateImage(a.certificateImage);
     }
 
-    if (s.allowCustomersToSelectTaxDisplayType !== undefined)
-      setAllowCustomersToSelectTaxDisplayType(s.allowCustomersToSelectTaxDisplayType);
-    if (s.taxDisplayType) setTaxDisplayType(s.taxDisplayType);
-    if (s.displayTaxSuffix !== undefined) setDisplayTaxSuffix(s.displayTaxSuffix);
-    if (s.displayAllAppliedTaxRates !== undefined)
-      setDisplayAllAppliedTaxRates(s.displayAllAppliedTaxRates);
-    if (s.hideZeroTax !== undefined) setHideZeroTax(s.hideZeroTax);
-    if (s.hideTaxInOrderSummary !== undefined) setHideTaxInOrderSummary(s.hideTaxInOrderSummary);
-    if (s.forceTaxExclusionFromOrderSubtotal !== undefined)
-      setForceTaxExclusionFromOrderSubtotal(s.forceTaxExclusionFromOrderSubtotal);
-
     if (s.shippingIsTaxable !== undefined) setShippingIsTaxable(s.shippingIsTaxable);
     if (s.shippingPriceIncludesTax !== undefined)
       setShippingPriceIncludesTax(s.shippingPriceIncludesTax);
@@ -231,14 +207,6 @@ export default function TaxSettingsPage() {
         faxNumber: taxFaxNumber,
         certificateImage,
       },
-
-      allowCustomersToSelectTaxDisplayType,
-      taxDisplayType,
-      displayTaxSuffix,
-      displayAllAppliedTaxRates,
-      hideZeroTax,
-      hideTaxInOrderSummary,
-      forceTaxExclusionFromOrderSubtotal,
 
       shippingIsTaxable,
       shippingPriceIncludesTax,
@@ -300,14 +268,6 @@ export default function TaxSettingsPage() {
     setTaxZipPostalCode('');
     setTaxPhoneNumber('');
     setTaxFaxNumber('');
-
-    setAllowCustomersToSelectTaxDisplayType(false);
-    setTaxDisplayType('Excluding tax');
-    setDisplayTaxSuffix(false);
-    setDisplayAllAppliedTaxRates(false);
-    setHideZeroTax(false);
-    setHideTaxInOrderSummary(false);
-    setForceTaxExclusionFromOrderSubtotal(false);
 
     setShippingIsTaxable(true);
     setShippingPriceIncludesTax(false);
@@ -779,166 +739,6 @@ export default function TaxSettingsPage() {
                 </div>
               </div>
             </div>
-          </div>
-        )}
-      </div>
-
-      {/* ── CARD 3: TAX DISPLAYING (Matching media_1791347306285.png) ── */}
-      <div className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden border-t-3 border-t-[#00c0ef]">
-        <div
-          onClick={() => setTaxDisplayingOpen(!taxDisplayingOpen)}
-          className="px-4 py-2.5 bg-white border-b border-[#f4f4f4] flex items-center justify-between cursor-pointer select-none text-xs font-semibold text-slate-700 hover:bg-slate-50/70 transition"
-        >
-          <div className="flex items-center gap-2">
-            <Monitor className="w-4 h-4 text-slate-700 stroke-[1.8]" />
-            <span className="text-sm font-normal text-slate-800">Tax displaying</span>
-          </div>
-          <button type="button" className="text-slate-400 hover:text-slate-600">
-            {taxDisplayingOpen ? (
-              <Minus className="w-4 h-4 stroke-[2]" />
-            ) : (
-              <Plus className="w-4 h-4 stroke-[2]" />
-            )}
-          </button>
-        </div>
-
-        {taxDisplayingOpen && (
-          <div className="p-5 space-y-4 text-xs text-slate-700">
-            {/* Allow customers to select tax display type */}
-            {isAdvanced && (
-              <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
-                <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
-                  <span className="text-right">
-                    Allow customers to select tax display
-                    <br className="hidden md:inline" /> type
-                  </span>
-                  <HelpTooltip text="Allow shoppers to toggle between prices inclusive or exclusive of sales tax on the storefront." />
-                </label>
-                <div className="md:col-span-8 flex items-center">
-                  <input
-                    type="checkbox"
-                    checked={allowCustomersToSelectTaxDisplayType}
-                    onChange={(e) =>
-                      setAllowCustomersToSelectTaxDisplayType(e.target.checked)
-                    }
-                    className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
-                  />
-                </div>
-              </div>
-            )}
-
-            {/* Tax display type */}
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
-              <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
-                <span>Tax display type</span>
-                <HelpTooltip text="Default format for product pricing presentation throughout catalog." />
-              </label>
-              <div className="md:col-span-8 max-w-xl">
-                <select
-                  value={taxDisplayType}
-                  onChange={(e) => setTaxDisplayType(e.target.value)}
-                  className="w-full border border-[#d2d6de] focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none rounded px-3 py-1.5 text-xs text-slate-800 bg-white"
-                >
-                  <option value="Excluding tax">Excluding tax</option>
-                  <option value="Including tax">Including tax</option>
-                </select>
-              </div>
-            </div>
-
-            {/* Display tax suffix */}
-            {isAdvanced && (
-              <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
-                <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
-                  <span>Display tax suffix</span>
-                  <HelpTooltip text="Append '(incl. tax)' or '(excl. tax)' text next to every price on catalog pages." />
-                </label>
-                <div className="md:col-span-8 flex items-center">
-                  <input
-                    type="checkbox"
-                    checked={displayTaxSuffix}
-                    onChange={(e) => setDisplayTaxSuffix(e.target.checked)}
-                    className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
-                  />
-                </div>
-              </div>
-            )}
-
-            {/* Display all applied tax rates */}
-            {isAdvanced && (
-              <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
-                <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
-                  <span>Display all applied tax rates</span>
-                  <HelpTooltip text="Itemize distinct tax components (e.g. CGST, SGST, IGST) separately in checkout totals." />
-                </label>
-                <div className="md:col-span-8 flex items-center">
-                  <input
-                    type="checkbox"
-                    checked={displayAllAppliedTaxRates}
-                    onChange={(e) => setDisplayAllAppliedTaxRates(e.target.checked)}
-                    className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
-                  />
-                </div>
-              </div>
-            )}
-
-            {/* Hide zero tax */}
-            {isAdvanced && (
-              <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
-                <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
-                  <span>Hide zero tax</span>
-                  <HelpTooltip text="Hide the tax summary row completely when order tax evaluates to zero." />
-                </label>
-                <div className="md:col-span-8 flex items-center">
-                  <input
-                    type="checkbox"
-                    checked={hideZeroTax}
-                    onChange={(e) => setHideZeroTax(e.target.checked)}
-                    className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
-                  />
-                </div>
-              </div>
-            )}
-
-            {/* Hide tax in order summary */}
-            {isAdvanced && (
-              <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
-                <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
-                  <span>Hide tax in order summary</span>
-                  <HelpTooltip text="Do not display a separate tax row in the shopping cart and checkout order summary box." />
-                </label>
-                <div className="md:col-span-8 flex items-center">
-                  <input
-                    type="checkbox"
-                    checked={hideTaxInOrderSummary}
-                    onChange={(e) => setHideTaxInOrderSummary(e.target.checked)}
-                    className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
-                  />
-                </div>
-              </div>
-            )}
-
-            {/* Force tax exclusion from order subtotal */}
-            {isAdvanced && (
-              <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
-                <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
-                  <span className="text-right">
-                    Force tax exclusion from order
-                    <br className="hidden md:inline" /> subtotal
-                  </span>
-                  <HelpTooltip text="Always calculate cart subtotal exclusive of tax, regardless of catalog gross pricing settings." />
-                </label>
-                <div className="md:col-span-8 flex items-center">
-                  <input
-                    type="checkbox"
-                    checked={forceTaxExclusionFromOrderSubtotal}
-                    onChange={(e) =>
-                      setForceTaxExclusionFromOrderSubtotal(e.target.checked)
-                    }
-                    className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
-                  />
-                </div>
-              </div>
-            )}
           </div>
         )}
       </div>
