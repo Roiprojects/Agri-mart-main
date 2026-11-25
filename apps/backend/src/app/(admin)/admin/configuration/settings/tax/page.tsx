@@ -60,6 +60,7 @@ export default function TaxSettingsPage() {
   const [taxZipPostalCode, setTaxZipPostalCode] = useState('');
   const [taxPhoneNumber, setTaxPhoneNumber] = useState('');
   const [taxFaxNumber, setTaxFaxNumber] = useState('');
+  const [taxId, setTaxId] = useState('');
   const [certificateImage, setCertificateImage] = useState(
     'https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=400&q=80'
   );
@@ -151,6 +152,7 @@ export default function TaxSettingsPage() {
       if (a.zipPostalCode !== undefined) setTaxZipPostalCode(a.zipPostalCode);
       if (a.phoneNumber !== undefined) setTaxPhoneNumber(a.phoneNumber);
       if (a.faxNumber !== undefined) setTaxFaxNumber(a.faxNumber);
+      if (a.taxId !== undefined) setTaxId(a.taxId);
       if (a.certificateImage) setCertificateImage(a.certificateImage);
     }
 
@@ -205,6 +207,7 @@ export default function TaxSettingsPage() {
         zipPostalCode: taxZipPostalCode,
         phoneNumber: taxPhoneNumber,
         faxNumber: taxFaxNumber,
+        taxId,
         certificateImage,
       },
 
@@ -268,6 +271,7 @@ export default function TaxSettingsPage() {
     setTaxZipPostalCode('');
     setTaxPhoneNumber('');
     setTaxFaxNumber('');
+    setTaxId('');
 
     setShippingIsTaxable(true);
     setShippingPriceIncludesTax(false);
@@ -714,6 +718,23 @@ export default function TaxSettingsPage() {
                   type="text"
                   value={taxFaxNumber}
                   onChange={(e) => setTaxFaxNumber(e.target.value)}
+                  className="w-full border border-[#d2d6de] focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none rounded px-3 py-1.5 text-xs text-slate-800 bg-white"
+                />
+              </div>
+            </div>
+
+            {/* Tax ID */}
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+              <label className="md:col-span-4 text-xs font-normal text-slate-800 md:text-right flex items-center md:justify-end gap-1.5">
+                <span>Tax ID</span>
+                <HelpTooltip text="Tax identification number (e.g., GSTIN / PAN / TIN) associated with the default tax address." />
+              </label>
+              <div className="md:col-span-8 max-w-xl">
+                <input
+                  type="text"
+                  value={taxId}
+                  onChange={(e) => setTaxId(e.target.value)}
+                  placeholder="e.g. 29AABCU9603R1ZM"
                   className="w-full border border-[#d2d6de] focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none rounded px-3 py-1.5 text-xs text-slate-800 bg-white"
                 />
               </div>

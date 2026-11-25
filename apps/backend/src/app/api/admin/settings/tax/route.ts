@@ -15,7 +15,7 @@ export interface DefaultTaxAddressData {
   address2: string;
   zipPostalCode: string;
   phoneNumber: string;
-  faxNumber: string;
+    taxId?: string;
   certificateImage?: string;
 }
 
@@ -76,7 +76,7 @@ const DEFAULT_TAX_SETTINGS: TaxSettingsData = {
     address2: '',
     zipPostalCode: '',
     phoneNumber: '',
-    faxNumber: '',
+        taxId: '',
     certificateImage: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=400&q=80',
   },
 
