@@ -16,6 +16,7 @@ interface TaxCategoryItem {
   id: string;
   name: string;
   displayOrder: number;
+  taxSettings?: Record<string, any>;
 }
 
 function HelpTooltip({ text }: { text: string }) {
@@ -48,6 +49,10 @@ export default function TaxCategoriesPage() {
   // Delete modal state
   const [deletingCat, setDeletingCat] = useState<TaxCategoryItem | null>(null);
   const [deleting, setDeleting] = useState(false);
+
+  // Expanded details & applying state
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [applyingId, setApplyingId] = useState<string | null>(null);
 
   // Toast notification
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
@@ -189,6 +194,32 @@ export default function TaxCategoriesPage() {
     }
   };
 
+  // Apply saved tax settings from a category to global Tax Settings
+  const handleApplyToTaxSettings = async (cat: TaxCategoryItem) => {
+    setApplyingId(cat.id);
+    try {
+      const payload = {
+        ...(cat.taxSettings || {}),
+        defaultTaxCategory: cat.name,
+      };
+      const res = await fetch('/api/admin/settings/tax', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      const json = await res.json();
+      if (res.ok && json.success) {
+        showToast(`"${cat.name}" has been applied to Tax Settings.`);
+      } else {
+        showToast(json.error || 'Failed to apply tax to Tax Settings.', 'error');
+      }
+    } catch {
+      showToast('Error applying tax to Tax Settings.', 'error');
+    } finally {
+      setApplyingId(null);
+    }
+  };
+
   return (
     <div className="space-y-5 pb-16 bg-[#f4f6f9] min-h-[calc(100vh-60px)] -m-6 p-6">
       {/* Toast Notification */}
@@ -298,8 +329,11 @@ export default function TaxCategoriesPage() {
               ) : (
                 categories.map((cat) => {
                   const isEditing = editingId === cat.id;
+                  const ts = cat.taxSettings;
+                  const isExpanded = expandedId === cat.id;
                   return (
-                    <tr key={cat.id} className="hover:bg-slate-50 transition-colors">
+                    <React.Fragment key={cat.id}>
+                    <tr className="hover:bg-slate-50 transition-colors">
                       {/* Name Column */}
                       <td className="py-3 px-4 text-slate-800 font-normal">
                         {isEditing ? (
@@ -311,7 +345,42 @@ export default function TaxCategoriesPage() {
                             autoFocus
                           />
                         ) : (
-                          <span>{cat.name}</span>
+                          <div className="space-y-1.5">
+                            <div className="flex flex-wrap items-center gap-2">
+                              <span className="font-medium text-slate-800">{cat.name}</span>
+                              {ts && (
+                                <span className="inline-flex items-center px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-medium">
+                                  Configured Tax
+                                </span>
+                              )}
+                            </div>
+                            {ts && (
+                              <div className="flex flex-wrap items-center gap-2 text-[11px] text-slate-500">
+                                {ts.taxBasedOn && <span>Basis: {ts.taxBasedOn}</span>}
+                                {ts.defaultTaxAddress?.taxId && (
+                                  <span>• Tax ID: {ts.defaultTaxAddress.taxId}</span>
+                                )}
+                                {ts.defaultTaxAddress?.country && (
+                                  <span>• {ts.defaultTaxAddress.country}</span>
+                                )}
+                                <button
+                                  type="button"
+                                  onClick={() => setExpandedId(isExpanded ? null : cat.id)}
+                                  className="text-[#2489c5] hover:underline font-medium cursor-pointer"
+                                >
+                                  {isExpanded ? 'Hide details' : 'View details'}
+                                </button>
+                                <button
+                                  type="button"
+                                  disabled={applyingId === cat.id}
+                                  onClick={() => handleApplyToTaxSettings(cat)}
+                                  className="text-emerald-700 hover:underline font-medium cursor-pointer disabled:opacity-50"
+                                >
+                                  {applyingId === cat.id ? 'Applying...' : 'Apply to Tax Settings'}
+                                </button>
+                              </div>
+                            )}
+                          </div>
                         )}
                       </td>
 
@@ -372,6 +441,37 @@ export default function TaxCategoriesPage() {
                         )}
                       </td>
                     </tr>
+                    {isExpanded && ts && (
+                      <tr className="bg-slate-50/80">
+                        <td colSpan={4} className="px-4 py-3 text-[11px] text-slate-600">
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                            <div className="space-y-1">
+                              <p className="font-semibold text-slate-700">Common</p>
+                              <p>Tax based on: {ts.taxBasedOn || '-'}</p>
+                              <p>Detect country by IP: {ts.automaticallyDetectCountryByIpAddress ? 'Yes' : 'No'}</p>
+                              <p>Pickup point address: {ts.taxBasedOnPickupPointAddress ? 'Yes' : 'No'}</p>
+                              <p>Prices include tax: {ts.pricesIncludeTax ? 'Yes' : 'No'}</p>
+                            </div>
+                            <div className="space-y-1">
+                              <p className="font-semibold text-slate-700">Default Tax Address</p>
+                              <p>Company: {ts.defaultTaxAddress?.company || '-'}</p>
+                              <p>Tax ID: {ts.defaultTaxAddress?.taxId || '-'}</p>
+                              <p>
+                                Location: {[ts.defaultTaxAddress?.city, ts.defaultTaxAddress?.stateProvince, ts.defaultTaxAddress?.country, ts.defaultTaxAddress?.zipPostalCode].filter(Boolean).join(', ') || '-'}
+                              </p>
+                              <p>Contact: {ts.defaultTaxAddress?.email || ts.defaultTaxAddress?.phoneNumber || '-'}</p>
+                            </div>
+                            <div className="space-y-1">
+                              <p className="font-semibold text-slate-700">Shipping, Payment & VAT</p>
+                              <p>Shipping taxable: {ts.shippingIsTaxable ? `Yes (${ts.shippingTaxCategory || '[None]'})` : 'No'}</p>
+                              <p>Payment fee taxable: {ts.paymentMethodAdditionalFeeIsTaxable ? `Yes (${ts.paymentMethodAdditionalFeeTaxCategory || '[None]'})` : 'No'}</p>
+                              <p>EU VAT enabled: {ts.euVatEnabled ? `Yes (${ts.yourShopCountry || 'Any'})` : 'No'}</p>
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                    )}
+                    </React.Fragment>
                   );
                 })
               )}

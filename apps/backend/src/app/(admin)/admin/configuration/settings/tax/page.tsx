@@ -14,6 +14,7 @@ import {
   ArrowUp,
   UserCheck,
   ChevronUp,
+  X,
 } from 'lucide-react';
 import { ImageEditorField } from '@/components/admin/ImageEditorField';
 
@@ -98,8 +99,126 @@ export default function TaxSettingsPage() {
     setTimeout(() => setToast(null), 3500);
   };
 
+  // Tax categories list (synced with /api/admin/tax-categories)
+  const [taxCategories, setTaxCategories] = useState<{ id: string; name: string; displayOrder: number; taxSettings?: any }[]>([]);
+  const [showAddTaxModal, setShowAddTaxModal] = useState(false);
+  const [creatingTax, setCreatingTax] = useState(false);
+  const [addTaxForm, setAddTaxForm] = useState<any>(null);
+
+  const loadTaxCategories = async () => {
+    try {
+      const res = await fetch('/api/admin/tax-categories', { cache: 'no-store' });
+      if (res.ok) {
+        const json = await res.json();
+        if (json.success && Array.isArray(json.data)) {
+          setTaxCategories(json.data);
+        }
+      }
+    } catch {
+      // ignore
+    }
+  };
+
+  const openAddTaxModal = () => {
+    setAddTaxForm({
+      name: '',
+      displayOrder: 0,
+      taxBasedOn,
+      automaticallyDetectCountryByIpAddress,
+      defaultTaxCategory,
+      taxBasedOnPickupPointAddress,
+      pricesIncludeTax,
+      defaultTaxAddress: {
+        firstName: taxFirstName,
+        lastName: taxLastName,
+        email: taxEmail,
+        company: taxCompany,
+        country: taxCountry,
+        stateProvince: taxStateProvince,
+        countyRegion: taxCountyRegion,
+        city: taxCity,
+        address1: taxAddress1,
+        address2: taxAddress2,
+        zipPostalCode: taxZipPostalCode,
+        phoneNumber: taxPhoneNumber,
+        faxNumber: taxFaxNumber,
+        taxId,
+        certificateImage,
+      },
+      shippingIsTaxable,
+      shippingPriceIncludesTax,
+      shippingTaxCategory,
+      paymentMethodAdditionalFeeIsTaxable,
+      paymentMethodAdditionalFeeIncludesTax,
+      paymentMethodAdditionalFeeTaxCategory,
+      euVatEnabled,
+      euVatEnabledForGuests,
+      vatNumberRequired,
+      yourShopCountry,
+      allowVatExemption,
+      assumeVatAlwaysValid,
+      notifyAdminWhenNewVatNumberSubmitted,
+      useWebService,
+    });
+    setShowAddTaxModal(true);
+  };
+
+  const handleCreateAndApplyTax = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!addTaxForm?.name?.trim()) {
+      showToast('Please enter a Tax Name.', 'error');
+      return;
+    }
+
+    setCreatingTax(true);
+    try {
+      const taxName = addTaxForm.name.trim();
+      const { name: _n, displayOrder, ...taxSettingsPayload } = addTaxForm;
+      const finalTaxSettings = {
+        ...taxSettingsPayload,
+        defaultTaxCategory: taxName,
+        isAdvanced,
+      };
+
+      // 1. Create the tax in Tax Categories with all collected settings
+      const catRes = await fetch('/api/admin/tax-categories', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: taxName,
+          displayOrder: parseInt(String(displayOrder), 10) || 0,
+          taxSettings: finalTaxSettings,
+        }),
+      });
+      const catJson = await catRes.json();
+      if (!catRes.ok || !catJson.success) {
+        showToast(catJson.message || 'Failed to create tax category.', 'error');
+        setCreatingTax(false);
+        return;
+      }
+
+      // 2. Apply and select the created tax in Tax Settings
+      applySettingsData(finalTaxSettings);
+      await fetch('/api/admin/settings/tax', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(finalTaxSettings),
+      });
+      localStorage.setItem('agri_tax_settings', JSON.stringify(finalTaxSettings));
+
+      await loadTaxCategories();
+      setShowAddTaxModal(false);
+      showToast(`Tax "${taxName}" created in Tax Categories and applied to Tax Settings.`);
+    } catch {
+      showToast('Error creating and applying tax.', 'error');
+    } finally {
+      setCreatingTax(false);
+    }
+  };
+
   // Load initial settings from API or localStorage
   useEffect(() => {
+    loadTaxCategories();
     async function loadSettings() {
       try {
         const res = await fetch('/api/admin/settings/tax', { cache: 'no-store' });
@@ -322,6 +441,14 @@ export default function TaxSettingsPage() {
         <div className="flex items-center gap-2">
           <button
             type="button"
+            onClick={openAddTaxModal}
+            className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold px-4 py-1.5 rounded flex items-center gap-1.5 shadow-2xs transition cursor-pointer"
+          >
+            <Plus className="w-3.5 h-3.5" />
+            <span>Add Tax</span>
+          </button>
+          <button
+            type="button"
             disabled={saving}
             onClick={() => handleSave()}
             className="bg-[#2489c5] hover:bg-[#1f72a3] text-white text-xs font-semibold px-4 py-1.5 rounded flex items-center gap-1.5 shadow-2xs transition cursor-pointer disabled:opacity-60"
@@ -432,6 +559,22 @@ export default function TaxSettingsPage() {
                   <option value="Reduced GST 5%">Reduced GST (5%)</option>
                   <option value="Exempt Agri Inputs 0%">Exempt Agri Inputs (0%)</option>
                   <option value="Seeds & Bio Fertilizers">Seeds & Bio Fertilizers</option>
+                  {taxCategories
+                    .filter(
+                      (c) =>
+                        ![
+                          '[None]',
+                          'Standard GST 18%',
+                          'Reduced GST 5%',
+                          'Exempt Agri Inputs 0%',
+                          'Seeds & Bio Fertilizers',
+                        ].includes(c.name)
+                    )
+                    .map((c) => (
+                      <option key={c.id} value={c.name}>
+                        {c.name}
+                      </option>
+                    ))}
                 </select>
               </div>
             </div>
@@ -1176,6 +1319,552 @@ export default function TaxSettingsPage() {
           </button>
         </div>
       </div>
+
+      {/* ── ADD TAX MODAL (Full Tax Settings fields -> creates & applies in Tax Categories) ── */}
+      {showAddTaxModal && addTaxForm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden">
+            <div className="flex items-center justify-between px-5 py-3.5 border-b border-slate-200 bg-slate-50">
+              <div>
+                <h2 className="text-base font-semibold text-slate-800">Add New Tax</h2>
+                <p className="text-[11px] text-slate-500">
+                  Fill all tax settings details below. Submitting will create the tax in Tax Categories and apply it to Tax Settings.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowAddTaxModal(false)}
+                className="text-slate-400 hover:text-slate-600 cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleCreateAndApplyTax} className="overflow-y-auto p-5 space-y-5 text-xs text-slate-700">
+              {/* Tax Name & Display Order */}
+              <div className="rounded border border-emerald-200 bg-emerald-50/40 p-4 space-y-3">
+                <h3 className="text-xs font-semibold text-emerald-900">Tax Identity (Appears in Tax Categories)</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block font-medium text-slate-700 mb-1">
+                      Tax Name <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={addTaxForm.name}
+                      onChange={(e) => setAddTaxForm({ ...addTaxForm, name: e.target.value })}
+                      placeholder="e.g. Agri GST 12%"
+                      className="w-full border border-[#d2d6de] rounded px-3 py-1.5 text-xs bg-white focus:border-[#3c8dbc] outline-none"
+                    />
+                  </div>
+                  <div>
+                    <label className="block font-medium text-slate-700 mb-1">Display order</label>
+                    <input
+                      type="number"
+                      value={addTaxForm.displayOrder}
+                      onChange={(e) => setAddTaxForm({ ...addTaxForm, displayOrder: e.target.value })}
+                      className="w-full border border-[#d2d6de] rounded px-3 py-1.5 text-xs bg-white focus:border-[#3c8dbc] outline-none"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Section 1: Common */}
+              <div className="rounded border border-slate-200 p-4 space-y-3">
+                <h3 className="text-xs font-semibold text-slate-800 border-b border-slate-100 pb-1.5">1. Common</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block font-medium text-slate-700 mb-1">Tax based on</label>
+                    <select
+                      value={addTaxForm.taxBasedOn}
+                      onChange={(e) => setAddTaxForm({ ...addTaxForm, taxBasedOn: e.target.value })}
+                      className="w-full border border-[#d2d6de] rounded px-3 py-1.5 text-xs bg-white"
+                    >
+                      <option value="Billing address">Billing address</option>
+                      <option value="Shipping address">Shipping address</option>
+                      <option value="Default tax address">Default tax address</option>
+                    </select>
+                  </div>
+                  <div className="flex flex-col justify-end gap-2 pt-2">
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={addTaxForm.automaticallyDetectCountryByIpAddress}
+                        onChange={(e) =>
+                          setAddTaxForm({ ...addTaxForm, automaticallyDetectCountryByIpAddress: e.target.checked })
+                        }
+                        className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc]"
+                      />
+                      <span>Automatically detect country by IP address</span>
+                    </label>
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={addTaxForm.taxBasedOnPickupPointAddress}
+                        onChange={(e) =>
+                          setAddTaxForm({ ...addTaxForm, taxBasedOnPickupPointAddress: e.target.checked })
+                        }
+                        className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc]"
+                      />
+                      <span>Tax based on pickup point address</span>
+                    </label>
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={addTaxForm.pricesIncludeTax}
+                        onChange={(e) => setAddTaxForm({ ...addTaxForm, pricesIncludeTax: e.target.checked })}
+                        className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc]"
+                      />
+                      <span>Prices include tax</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              {/* Section 2: Default tax address (used for tax calculation) */}
+              <div className="rounded border border-slate-200 p-4 space-y-3">
+                <h3 className="text-xs font-semibold text-slate-800 border-b border-slate-100 pb-1.5">
+                  2. Default tax address (used for tax calculation)
+                </h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block font-medium text-slate-700 mb-1">First name</label>
+                    <input
+                      type="text"
+                      value={addTaxForm.defaultTaxAddress.firstName}
+                      onChange={(e) =>
+                        setAddTaxForm({
+                          ...addTaxForm,
+                          defaultTaxAddress: { ...addTaxForm.defaultTaxAddress, firstName: e.target.value },
+                        })
+                      }
+                      className="w-full border border-[#d2d6de] rounded px-3 py-1.5 text-xs bg-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="block font-medium text-slate-700 mb-1">Last name</label>
+                    <input
+                      type="text"
+                      value={addTaxForm.defaultTaxAddress.lastName}
+                      onChange={(e) =>
+                        setAddTaxForm({
+                          ...addTaxForm,
+                          defaultTaxAddress: { ...addTaxForm.defaultTaxAddress, lastName: e.target.value },
+                        })
+                      }
+                      className="w-full border border-[#d2d6de] rounded px-3 py-1.5 text-xs bg-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="block font-medium text-slate-700 mb-1">Email</label>
+                    <input
+                      type="email"
+                      value={addTaxForm.defaultTaxAddress.email}
+                      onChange={(e) =>
+                        setAddTaxForm({
+                          ...addTaxForm,
+                          defaultTaxAddress: { ...addTaxForm.defaultTaxAddress, email: e.target.value },
+                        })
+                      }
+                      className="w-full border border-[#d2d6de] rounded px-3 py-1.5 text-xs bg-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="block font-medium text-slate-700 mb-1">Company</label>
+                    <input
+                      type="text"
+                      value={addTaxForm.defaultTaxAddress.company}
+                      onChange={(e) =>
+                        setAddTaxForm({
+                          ...addTaxForm,
+                          defaultTaxAddress: { ...addTaxForm.defaultTaxAddress, company: e.target.value },
+                        })
+                      }
+                      className="w-full border border-[#d2d6de] rounded px-3 py-1.5 text-xs bg-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="block font-medium text-slate-700 mb-1">Country</label>
+                    <select
+                      value={addTaxForm.defaultTaxAddress.country}
+                      onChange={(e) =>
+                        setAddTaxForm({
+                          ...addTaxForm,
+                          defaultTaxAddress: { ...addTaxForm.defaultTaxAddress, country: e.target.value },
+                        })
+                      }
+                      className="w-full border border-[#d2d6de] rounded px-3 py-1.5 text-xs bg-white"
+                    >
+                      <option value="">Select country</option>
+                      <option value="India">India</option>
+                      <option value="United States">United States</option>
+                      <option value="United Kingdom">United Kingdom</option>
+                      <option value="Germany">Germany</option>
+                      <option value="Canada">Canada</option>
+                      <option value="Australia">Australia</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block font-medium text-slate-700 mb-1">State / province</label>
+                    <select
+                      value={addTaxForm.defaultTaxAddress.stateProvince}
+                      onChange={(e) =>
+                        setAddTaxForm({
+                          ...addTaxForm,
+                          defaultTaxAddress: { ...addTaxForm.defaultTaxAddress, stateProvince: e.target.value },
+                        })
+                      }
+                      className="w-full border border-[#d2d6de] rounded px-3 py-1.5 text-xs bg-white"
+                    >
+                      <option value="Other">Other</option>
+                      <option value="Karnataka">Karnataka</option>
+                      <option value="Maharashtra">Maharashtra</option>
+                      <option value="Gujarat">Gujarat</option>
+                      <option value="Telangana">Telangana</option>
+                      <option value="Tamil Nadu">Tamil Nadu</option>
+                      <option value="Delhi">Delhi</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block font-medium text-slate-700 mb-1">County / region</label>
+                    <input
+                      type="text"
+                      value={addTaxForm.defaultTaxAddress.countyRegion}
+                      onChange={(e) =>
+                        setAddTaxForm({
+                          ...addTaxForm,
+                          defaultTaxAddress: { ...addTaxForm.defaultTaxAddress, countyRegion: e.target.value },
+                        })
+                      }
+                      className="w-full border border-[#d2d6de] rounded px-3 py-1.5 text-xs bg-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="block font-medium text-slate-700 mb-1">City</label>
+                    <input
+                      type="text"
+                      value={addTaxForm.defaultTaxAddress.city}
+                      onChange={(e) =>
+                        setAddTaxForm({
+                          ...addTaxForm,
+                          defaultTaxAddress: { ...addTaxForm.defaultTaxAddress, city: e.target.value },
+                        })
+                      }
+                      className="w-full border border-[#d2d6de] rounded px-3 py-1.5 text-xs bg-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="block font-medium text-slate-700 mb-1">Address 1</label>
+                    <input
+                      type="text"
+                      value={addTaxForm.defaultTaxAddress.address1}
+                      onChange={(e) =>
+                        setAddTaxForm({
+                          ...addTaxForm,
+                          defaultTaxAddress: { ...addTaxForm.defaultTaxAddress, address1: e.target.value },
+                        })
+                      }
+                      className="w-full border border-[#d2d6de] rounded px-3 py-1.5 text-xs bg-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="block font-medium text-slate-700 mb-1">Address 2</label>
+                    <input
+                      type="text"
+                      value={addTaxForm.defaultTaxAddress.address2}
+                      onChange={(e) =>
+                        setAddTaxForm({
+                          ...addTaxForm,
+                          defaultTaxAddress: { ...addTaxForm.defaultTaxAddress, address2: e.target.value },
+                        })
+                      }
+                      className="w-full border border-[#d2d6de] rounded px-3 py-1.5 text-xs bg-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="block font-medium text-slate-700 mb-1">Zip / postal code</label>
+                    <input
+                      type="text"
+                      value={addTaxForm.defaultTaxAddress.zipPostalCode}
+                      onChange={(e) =>
+                        setAddTaxForm({
+                          ...addTaxForm,
+                          defaultTaxAddress: { ...addTaxForm.defaultTaxAddress, zipPostalCode: e.target.value },
+                        })
+                      }
+                      className="w-full border border-[#d2d6de] rounded px-3 py-1.5 text-xs bg-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="block font-medium text-slate-700 mb-1">Phone number</label>
+                    <input
+                      type="text"
+                      value={addTaxForm.defaultTaxAddress.phoneNumber}
+                      onChange={(e) =>
+                        setAddTaxForm({
+                          ...addTaxForm,
+                          defaultTaxAddress: { ...addTaxForm.defaultTaxAddress, phoneNumber: e.target.value },
+                        })
+                      }
+                      className="w-full border border-[#d2d6de] rounded px-3 py-1.5 text-xs bg-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="block font-medium text-slate-700 mb-1">Fax number</label>
+                    <input
+                      type="text"
+                      value={addTaxForm.defaultTaxAddress.faxNumber}
+                      onChange={(e) =>
+                        setAddTaxForm({
+                          ...addTaxForm,
+                          defaultTaxAddress: { ...addTaxForm.defaultTaxAddress, faxNumber: e.target.value },
+                        })
+                      }
+                      className="w-full border border-[#d2d6de] rounded px-3 py-1.5 text-xs bg-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="block font-medium text-slate-700 mb-1">Tax ID</label>
+                    <input
+                      type="text"
+                      value={addTaxForm.defaultTaxAddress.taxId || ''}
+                      onChange={(e) =>
+                        setAddTaxForm({
+                          ...addTaxForm,
+                          defaultTaxAddress: { ...addTaxForm.defaultTaxAddress, taxId: e.target.value },
+                        })
+                      }
+                      placeholder="e.g. 29AABCU9603R1ZM"
+                      className="w-full border border-[#d2d6de] rounded px-3 py-1.5 text-xs bg-white"
+                    />
+                  </div>
+                  <div className="sm:col-span-2">
+                    <label className="block font-medium text-slate-700 mb-1">GST / Tax Certificate</label>
+                    <ImageEditorField
+                      value={addTaxForm.defaultTaxAddress.certificateImage}
+                      onChange={(newVal) =>
+                        setAddTaxForm({
+                          ...addTaxForm,
+                          defaultTaxAddress: { ...addTaxForm.defaultTaxAddress, certificateImage: newVal },
+                        })
+                      }
+                      shape="rectangle"
+                      previewHeight="h-24"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Section 3: Shipping */}
+              <div className="rounded border border-slate-200 p-4 space-y-3">
+                <h3 className="text-xs font-semibold text-slate-800 border-b border-slate-100 pb-1.5">3. Shipping</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="space-y-2">
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={addTaxForm.shippingIsTaxable}
+                        onChange={(e) => setAddTaxForm({ ...addTaxForm, shippingIsTaxable: e.target.checked })}
+                        className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc]"
+                      />
+                      <span>Shipping is taxable</span>
+                    </label>
+                    {addTaxForm.shippingIsTaxable && (
+                      <label className="flex items-center gap-2 cursor-pointer pl-5">
+                        <input
+                          type="checkbox"
+                          checked={addTaxForm.shippingPriceIncludesTax}
+                          onChange={(e) => setAddTaxForm({ ...addTaxForm, shippingPriceIncludesTax: e.target.checked })}
+                          className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc]"
+                        />
+                        <span>Shipping price includes tax</span>
+                      </label>
+                    )}
+                  </div>
+                  {addTaxForm.shippingIsTaxable && (
+                    <div>
+                      <label className="block font-medium text-slate-700 mb-1">Shipping tax category</label>
+                      <select
+                        value={addTaxForm.shippingTaxCategory}
+                        onChange={(e) => setAddTaxForm({ ...addTaxForm, shippingTaxCategory: e.target.value })}
+                        className="w-full border border-[#d2d6de] rounded px-3 py-1.5 text-xs bg-white"
+                      >
+                        <option value="[None]">[None]</option>
+                        <option value="Freight Services 18%">Freight Services (18%)</option>
+                        <option value="Logistics Standard">Logistics Standard</option>
+                        <option value="Reduced Transport 5%">Reduced Transport (5%)</option>
+                      </select>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Section 4: Payment */}
+              <div className="rounded border border-slate-200 p-4 space-y-3">
+                <h3 className="text-xs font-semibold text-slate-800 border-b border-slate-100 pb-1.5">4. Payment</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="space-y-2">
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={addTaxForm.paymentMethodAdditionalFeeIsTaxable}
+                        onChange={(e) =>
+                          setAddTaxForm({ ...addTaxForm, paymentMethodAdditionalFeeIsTaxable: e.target.checked })
+                        }
+                        className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc]"
+                      />
+                      <span>Payment method additional fee is taxable</span>
+                    </label>
+                    {addTaxForm.paymentMethodAdditionalFeeIsTaxable && (
+                      <label className="flex items-center gap-2 cursor-pointer pl-5">
+                        <input
+                          type="checkbox"
+                          checked={addTaxForm.paymentMethodAdditionalFeeIncludesTax}
+                          onChange={(e) =>
+                            setAddTaxForm({ ...addTaxForm, paymentMethodAdditionalFeeIncludesTax: e.target.checked })
+                          }
+                          className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc]"
+                        />
+                        <span>Payment method additional fee includes tax</span>
+                      </label>
+                    )}
+                  </div>
+                  {addTaxForm.paymentMethodAdditionalFeeIsTaxable && (
+                    <div>
+                      <label className="block font-medium text-slate-700 mb-1">
+                        Payment method additional fee tax category
+                      </label>
+                      <select
+                        value={addTaxForm.paymentMethodAdditionalFeeTaxCategory}
+                        onChange={(e) =>
+                          setAddTaxForm({ ...addTaxForm, paymentMethodAdditionalFeeTaxCategory: e.target.value })
+                        }
+                        className="w-full border border-[#d2d6de] rounded px-3 py-1.5 text-xs bg-white"
+                      >
+                        <option value="[None]">[None]</option>
+                        <option value="Financial Services 18%">Financial Services (18%)</option>
+                        <option value="Standard Taxable">Standard Taxable</option>
+                      </select>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Section 5: VAT */}
+              <div className="rounded border border-slate-200 p-4 space-y-3">
+                <h3 className="text-xs font-semibold text-slate-800 border-b border-slate-100 pb-1.5">5. VAT</h3>
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={addTaxForm.euVatEnabled}
+                    onChange={(e) => setAddTaxForm({ ...addTaxForm, euVatEnabled: e.target.checked })}
+                    className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc]"
+                  />
+                  <span>EU VAT enabled</span>
+                </label>
+                {addTaxForm.euVatEnabled && (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pl-5 pt-1">
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={addTaxForm.euVatEnabledForGuests}
+                        onChange={(e) => setAddTaxForm({ ...addTaxForm, euVatEnabledForGuests: e.target.checked })}
+                        className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc]"
+                      />
+                      <span>EU VAT enabled for guests</span>
+                    </label>
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={addTaxForm.vatNumberRequired}
+                        onChange={(e) => setAddTaxForm({ ...addTaxForm, vatNumberRequired: e.target.checked })}
+                        className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc]"
+                      />
+                      <span>VAT number required</span>
+                    </label>
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={addTaxForm.allowVatExemption}
+                        onChange={(e) => setAddTaxForm({ ...addTaxForm, allowVatExemption: e.target.checked })}
+                        className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc]"
+                      />
+                      <span>Allow VAT exemption</span>
+                    </label>
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={addTaxForm.assumeVatAlwaysValid}
+                        onChange={(e) => setAddTaxForm({ ...addTaxForm, assumeVatAlwaysValid: e.target.checked })}
+                        className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc]"
+                      />
+                      <span>Assume VAT always valid</span>
+                    </label>
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={addTaxForm.notifyAdminWhenNewVatNumberSubmitted}
+                        onChange={(e) =>
+                          setAddTaxForm({
+                            ...addTaxForm,
+                            notifyAdminWhenNewVatNumberSubmitted: e.target.checked,
+                          })
+                        }
+                        className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc]"
+                      />
+                      <span>Notify admin when a new VAT number is submitted</span>
+                    </label>
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={addTaxForm.useWebService}
+                        onChange={(e) => setAddTaxForm({ ...addTaxForm, useWebService: e.target.checked })}
+                        className="w-4 h-4 rounded border-slate-300 text-[#3c8dbc]"
+                      />
+                      <span>Use web service</span>
+                    </label>
+                    <div className="sm:col-span-2">
+                      <label className="block font-medium text-slate-700 mb-1">Your shop country</label>
+                      <select
+                        value={addTaxForm.yourShopCountry}
+                        onChange={(e) => setAddTaxForm({ ...addTaxForm, yourShopCountry: e.target.value })}
+                        className="w-full border border-[#d2d6de] rounded px-3 py-1.5 text-xs bg-white"
+                      >
+                        <option value="">Select country</option>
+                        <option value="India">India</option>
+                        <option value="Germany">Germany</option>
+                        <option value="France">France</option>
+                        <option value="Netherlands">Netherlands</option>
+                        <option value="Italy">Italy</option>
+                        <option value="United Kingdom">United Kingdom</option>
+                      </select>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <div className="flex items-center justify-end gap-2.5 pt-2 border-t border-slate-200">
+                <button
+                  type="button"
+                  onClick={() => setShowAddTaxModal(false)}
+                  className="px-4 py-2 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 text-xs font-medium rounded cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={creatingTax}
+                  className="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white text-xs font-semibold rounded shadow-2xs cursor-pointer flex items-center gap-1.5"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>{creatingTax ? 'Creating & Applying...' : 'Create & Apply Tax'}</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       {/* ── FLOATING GREEN SCROLL-TO-TOP BUTTON (Matching media_1791347493535.png) ── */}
       <button

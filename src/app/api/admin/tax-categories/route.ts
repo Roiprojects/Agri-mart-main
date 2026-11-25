@@ -6,6 +6,7 @@ interface TaxCategoryItem {
   id: string;
   name: string;
   displayOrder: number;
+  taxSettings?: Record<string, any>;
 }
 
 export async function GET() {
@@ -31,7 +32,7 @@ export async function GET() {
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { name, displayOrder } = body;
+    const { name, displayOrder, taxSettings } = body;
 
     if (!name || !name.trim()) {
       return NextResponse.json(
@@ -51,6 +52,7 @@ export async function POST(req: Request) {
       id: newId,
       name: name.trim(),
       displayOrder: typeof displayOrder === 'number' ? displayOrder : parseInt(displayOrder, 10) || 0,
+      ...(taxSettings && typeof taxSettings === 'object' ? { taxSettings } : {}),
     };
 
     db.taxCategories.push(newCategory);
@@ -72,7 +74,7 @@ export async function POST(req: Request) {
 export async function PUT(req: Request) {
   try {
     const body = await req.json();
-    const { id, name, displayOrder } = body;
+    const { id, name, displayOrder, taxSettings } = body;
 
     if (!id) {
       return NextResponse.json(
@@ -103,6 +105,7 @@ export async function PUT(req: Request) {
       ...categories[index],
       name: name.trim(),
       displayOrder: typeof displayOrder === 'number' ? displayOrder : parseInt(displayOrder, 10) || 0,
+      ...(taxSettings && typeof taxSettings === 'object' ? { taxSettings } : {}),
     };
 
     db.taxCategories = categories;
