@@ -2030,7 +2030,7 @@ export function ProductForm({
                 <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
                   <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-medium text-slate-700">
                     <span>Tax exempt</span>
-                    <Tooltip text="Check if this product is tax exempt (no tax will be calculated on purchase)." />
+                    <Tooltip text="Tax exempt means that no tax will be calculated on the purchase of that particular product. • Checkbox checked: The product is exempt from tax. No tax will be applied during purchase. • Checkbox unchecked: Tax will be calculated according to the applicable tax rate." />
                   </div>
                   <div className="sm:col-span-9 flex items-center">
                     <input
