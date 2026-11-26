@@ -59,7 +59,6 @@ export interface ProductFormData {
   categoryId: string;
   parentCategoryId?: string;
   subCategoryId?: string;
-  categoryPath?: string[];
   price: number;
   comparePrice?: number;
   shortDescription: string;
@@ -149,57 +148,11 @@ export function ProductForm({
   externalAdvancedMode,
   onToggleAdvancedMode,
 }: ProductFormProps) {
-  const [localCategories, setLocalCategories] = useState<
-    { id: string; name: string; parentId?: string | null }[]
-  >(categories);
+  const parentCategories = categories.filter((c) => !c.parentId);
+  const childCategories = categories.filter((c) => Boolean(c.parentId));
 
-  useEffect(() => {
-    setLocalCategories((prev) => {
-      const map = new Map<string, { id: string; name: string; parentId?: string | null }>();
-      categories.forEach((c) => map.set(c.id, c));
-      prev.forEach((c) => {
-        if (!map.has(c.id)) map.set(c.id, c);
-      });
-      return Array.from(map.values());
-    });
-  }, [categories]);
-
-  const parentCategories = localCategories.filter((c) => !c.parentId);
-  const childCategories = localCategories.filter((c) => Boolean(c.parentId));
-
-  // Build full ancestor-to-leaf path from a category ID
-  const buildPathFromLeaf = (
-    leafId: string,
-    cats: { id: string; name: string; parentId?: string | null }[]
-  ): string[] => {
-    const path: string[] = [];
-    let curId: string | null | undefined = leafId;
-    const seen = new Set<string>();
-    while (curId && !seen.has(curId)) {
-      seen.add(curId);
-      const node = cats.find((c) => c.id === curId);
-      if (!node) break;
-      path.unshift(node.id);
-      curId = node.parentId;
-    }
-    return path;
-  };
-
-  // Resolve initial parentCategoryId, subCategoryId, and full categoryPath
-  const resolveInitialCategoryHierarchy = (
-    cats = localCategories
-  ): { parentCategoryId: string; subCategoryId: string; categoryPath: string[] } => {
-    const explicitPath: string[] | undefined = Array.isArray((initialValues as any)?.categoryPath)
-      ? (initialValues as any).categoryPath.filter(Boolean)
-      : undefined;
-    if (explicitPath && explicitPath.length > 0) {
-      return {
-        parentCategoryId: explicitPath[0],
-        subCategoryId: explicitPath[1] || '',
-        categoryPath: explicitPath,
-      };
-    }
-
+  // Resolve initial parentCategoryId and subCategoryId
+  const resolveInitialCategoryHierarchy = () => {
     const rawCatId = initialValues?.categoryId || '';
     const rawParentId =
       initialValues?.parentCategoryId ||
@@ -210,22 +163,11 @@ export function ProductForm({
       (initialValues as any)?.subCategory?.id ||
       '';
 
-    if (rawCatId) {
-      const deepPath = buildPathFromLeaf(rawCatId, cats);
-      if (deepPath.length > 1) {
-        return {
-          parentCategoryId: deepPath[0],
-          subCategoryId: deepPath[1] || '',
-          categoryPath: deepPath,
-        };
-      }
-    }
-
     let pId = rawParentId;
     let sId = rawSubId;
 
     if (!pId && rawCatId) {
-      const found = cats.find((c) => c.id === rawCatId);
+      const found = categories.find((c) => c.id === rawCatId);
       if (found) {
         if (found.parentId) {
           sId = sId || found.id;
@@ -237,31 +179,20 @@ export function ProductForm({
     }
 
     if (!pId) {
-      pId =
-        cats.find((c) => !c.parentId)?.id ||
-        cats[0]?.id ||
-        'cat-machinery';
+      pId = parentCategories[0]?.id || categories[0]?.id || 'cat-machinery';
     }
 
     if (!sId) {
-      const firstSub = cats.find((c) => c.parentId === pId);
+      const firstSub = childCategories.find((c) => c.parentId === pId);
       if (firstSub) {
         sId = firstSub.id;
       }
     }
 
-    const path = [pId];
-    if (sId) path.push(sId);
-
-    return { parentCategoryId: pId, subCategoryId: sId, categoryPath: path };
+    return { parentCategoryId: pId, subCategoryId: sId };
   };
 
-  const initialHierarchy = resolveInitialCategoryHierarchy(localCategories);
-
-  // Inline multi-level category creation state
-  const [creatingUnderLevel, setCreatingUnderLevel] = useState<number | null>(null);
-  const [newCategoryName, setNewCategoryName] = useState('');
-  const [creatingCategory, setCreatingCategory] = useState(false);
+  const initialHierarchy = resolveInitialCategoryHierarchy();
 
   // Main form state — all checkboxes defaulted to unchecked (false) while preserving full functionality
   const [formData, setFormData] = useState<ProductFormData>({
@@ -271,10 +202,9 @@ export function ProductForm({
     riplCode: initialValues?.riplCode || (initialValues as any)?.variants?.[0]?.riplCode || '',
     modelNumber: initialValues?.modelNumber || (initialValues as any)?.variants?.[0]?.title || '',
     brandId: initialValues?.brandId || (brands[0]?.id || 'br-agripro'),
-    categoryId: initialHierarchy.categoryPath[initialHierarchy.categoryPath.length - 1] || initialHierarchy.parentCategoryId,
+    categoryId: initialHierarchy.parentCategoryId,
     parentCategoryId: initialHierarchy.parentCategoryId,
     subCategoryId: initialHierarchy.subCategoryId,
-    categoryPath: initialHierarchy.categoryPath,
     price: initialValues?.price !== undefined ? initialValues.price : 0,
     comparePrice: initialValues?.comparePrice || 0,
     shortDescription: initialValues?.shortDescription || '',
@@ -434,7 +364,7 @@ export function ProductForm({
     if (initializedSignatureRef.current === signature) return;
     initializedSignatureRef.current = signature;
 
-    const resolved = resolveInitialCategoryHierarchy(localCategories);
+    const resolved = resolveInitialCategoryHierarchy();
     const desc =
       initialValues.description ||
       initialValues.shortDescription ||
@@ -454,10 +384,9 @@ export function ProductForm({
           ? initialValues.modelNumber
           : (initialValues as any)?.variants?.[0]?.title ?? prev.modelNumber,
       brandId: initialValues.brandId || prev.brandId || brands[0]?.id || 'br-agripro',
-      categoryId: resolved.categoryPath[resolved.categoryPath.length - 1] || resolved.parentCategoryId,
+      categoryId: resolved.parentCategoryId,
       parentCategoryId: resolved.parentCategoryId,
       subCategoryId: resolved.subCategoryId,
-      categoryPath: resolved.categoryPath,
       price: initialValues.price !== undefined ? Number(initialValues.price) : prev.price,
       comparePrice: initialValues.comparePrice !== undefined ? Number(initialValues.comparePrice) : prev.comparePrice,
       shortDescription: initialValues.shortDescription ?? prev.shortDescription,
@@ -1298,244 +1227,99 @@ export function ProductForm({
                 </div>
               </div>
 
-              {/* Multi-Level Cascading Categories & Inline Subcategory Creator */}
-              {(() => {
-                const currentPath: string[] =
-                  formData.categoryPath && formData.categoryPath.length > 0
-                    ? formData.categoryPath
-                    : [
-                        formData.parentCategoryId || formData.categoryId,
-                        ...(formData.subCategoryId ? [formData.subCategoryId] : []),
-                      ].filter(Boolean);
-
-                const getLevelLabel = (lvl: number) => {
-                  if (lvl === 0) return 'Parent Category';
-                  if (lvl === 1) return 'Child Category (Subcategory)';
-                  if (lvl === 2) return 'Sub-Subcategory';
-                  if (lvl === 3) return 'Sub-Sub-Subcategory';
-                  return `Level ${lvl + 1} Subcategory`;
-                };
-
-                const updateCategoryPath = (nextPath: string[]) => {
-                  const cleanPath = nextPath.filter(Boolean);
-                  setFormData((prev) => ({
-                    ...prev,
-                    categoryPath: cleanPath,
-                    parentCategoryId: cleanPath[0] || '',
-                    subCategoryId: cleanPath[1] || '',
-                    categoryId: cleanPath[cleanPath.length - 1] || cleanPath[0] || '',
-                  }));
-                };
-
-                const handleSelectLevel = (levelIdx: number, selectedId: string) => {
-                  if (!selectedId) {
-                    updateCategoryPath(currentPath.slice(0, levelIdx));
-                    return;
-                  }
-                  const nextPath = [...currentPath.slice(0, levelIdx), selectedId];
-                  const firstChild = localCategories.find((c) => c.parentId === selectedId);
-                  if (firstChild && levelIdx === 0) {
-                    nextPath.push(firstChild.id);
-                  }
-                  updateCategoryPath(nextPath);
-                };
-
-                const handleCreateCategoryAtLevel = async (levelIdx: number) => {
-                  if (!newCategoryName.trim()) return;
-                  const parentId = levelIdx === 0 ? null : currentPath[levelIdx - 1] || null;
-                  setCreatingCategory(true);
-                  try {
-                    const res = await fetch('/api/admin/catalogue/categories', {
-                      method: 'POST',
-                      headers: { 'Content-Type': 'application/json' },
-                      body: JSON.stringify({
-                        name: newCategoryName.trim(),
-                        parentId,
-                        isPublished: true,
-                      }),
-                    });
-                    const json = await res.json();
-                    if (res.ok && json.success && json.data) {
-                      const created = json.data;
-                      setLocalCategories((prev) => [...prev, created]);
-                      const nextPath = [...currentPath.slice(0, levelIdx), created.id];
-                      updateCategoryPath(nextPath);
-                      setNewCategoryName('');
-                      // Automatically advance inline creator to the next deeper subcategory level
-                      setCreatingUnderLevel(levelIdx + 1);
-                      showToast(`Created "${created.name}" under ${getLevelLabel(levelIdx)}.`);
-                    } else {
-                      showToast(json.message || 'Failed to create category.', 'error');
-                    }
-                  } catch {
-                    showToast('Error creating category.', 'error');
-                  } finally {
-                    setCreatingCategory(false);
-                  }
-                };
-
-                // Build levels to render: always render level 0, plus each selected level's child dropdown if it has children or is actively creating
-                const levelsToRender: { levelIdx: number; parentId: string | null; options: typeof localCategories; selectedId: string }[] = [];
-                levelsToRender.push({
-                  levelIdx: 0,
-                  parentId: null,
-                  options: localCategories.filter((c) => !c.parentId),
-                  selectedId: currentPath[0] || '',
-                });
-
-                for (let i = 0; i < currentPath.length; i++) {
-                  const pId = currentPath[i];
-                  if (!pId) break;
-                  const children = localCategories.filter((c) => c.parentId === pId);
-                  if (children.length > 0 || currentPath[i + 1] || creatingUnderLevel === i + 1) {
-                    levelsToRender.push({
-                      levelIdx: i + 1,
-                      parentId: pId,
-                      options: children,
-                      selectedId: currentPath[i + 1] || '',
-                    });
-                  }
-                }
-
-                const deepestSelectedLevel = currentPath.length; // next level index to add under deepest selected
-
-                return (
-                  <div className="grid grid-cols-1 sm:grid-cols-12 items-start gap-2 bg-slate-50/70 p-3 rounded-md border border-slate-200">
-                    <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-semibold text-slate-800 pt-1.5">
-                      <span>Parent &amp; Child Category</span>
-                      <Tooltip text="Select or create multi-level categories (Parent -> Subcategory -> Sub-Subcategory -> Sub-Sub-Subcategory) for this product." />
-                    </div>
-                    <div className="sm:col-span-9 space-y-3">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        {levelsToRender.map(({ levelIdx, options, selectedId }) => (
-                          <div key={`cat-lvl-${levelIdx}`} className="space-y-1.5">
-                            <div className="flex items-center justify-between gap-2">
-                              <label
-                                className={`block text-[11px] font-bold uppercase tracking-wider ${
-                                  levelIdx === 0
-                                    ? 'text-blue-700'
-                                    : levelIdx === 1
-                                    ? 'text-emerald-700'
-                                    : levelIdx === 2
-                                    ? 'text-purple-700'
-                                    : 'text-amber-700'
-                                }`}
-                              >
-                                {getLevelLabel(levelIdx)}
-                              </label>
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  setCreatingUnderLevel(
-                                    creatingUnderLevel === levelIdx ? null : levelIdx
-                                  );
-                                  setNewCategoryName('');
-                                }}
-                                className="text-[11px] font-semibold text-[#3c8dbc] hover:underline cursor-pointer"
-                              >
-                                {creatingUnderLevel === levelIdx ? 'Cancel' : '+ Create New'}
-                              </button>
-                            </div>
-
-                            <select
-                              value={selectedId}
-                              onChange={(e) => handleSelectLevel(levelIdx, e.target.value)}
-                              className="w-full text-xs px-2.5 py-2 rounded border border-[#d2d6de] bg-white focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none font-medium"
-                            >
-                              {levelIdx > 0 && <option value="">-- Select {getLevelLabel(levelIdx)} --</option>}
-                              {options.map((c) => (
-                                <option key={c.id} value={c.id}>
-                                  {c.name}
-                                </option>
-                              ))}
-                              {options.length === 0 && levelIdx > 0 && (
-                                <option value="">No subcategories yet</option>
-                              )}
-                            </select>
-
-                            {creatingUnderLevel === levelIdx && (
-                              <div className="flex items-center gap-1.5 pt-0.5">
-                                <input
-                                  type="text"
-                                  value={newCategoryName}
-                                  onChange={(e) => setNewCategoryName(e.target.value)}
-                                  onKeyDown={(e) => {
-                                    if (e.key === 'Enter') {
-                                      e.preventDefault();
-                                      handleCreateCategoryAtLevel(levelIdx);
-                                    }
-                                  }}
-                                  placeholder={`New ${getLevelLabel(levelIdx)} name...`}
-                                  className="flex-1 text-xs px-2.5 py-1.5 rounded border border-[#3c8dbc] bg-white outline-none"
-                                  autoFocus
-                                />
-                                <button
-                                  type="button"
-                                  disabled={creatingCategory || !newCategoryName.trim()}
-                                  onClick={() => handleCreateCategoryAtLevel(levelIdx)}
-                                  className="px-2.5 py-1.5 rounded bg-[#3c8dbc] hover:bg-[#357ca5] disabled:opacity-50 text-white text-xs font-semibold cursor-pointer"
-                                >
-                                  {creatingCategory ? '...' : 'Add'}
-                                </button>
-                              </div>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-
-                      {/* Quick button to add a deeper subcategory under the last selected category */}
-                      {currentPath.length > 0 &&
-                        creatingUnderLevel !== deepestSelectedLevel &&
-                        !levelsToRender.some((l) => l.levelIdx === deepestSelectedLevel) && (
-                          <div>
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setCreatingUnderLevel(deepestSelectedLevel);
-                                setNewCategoryName('');
-                              }}
-                              className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-700 hover:text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 px-2.5 py-1 rounded cursor-pointer transition"
-                            >
-                              <span>+ Add {getLevelLabel(deepestSelectedLevel)}</span>
-                            </button>
-                          </div>
-                        )}
-
-                      {/* Active Hierarchy Preview */}
-                      <div className="flex flex-wrap items-center gap-2 text-xs bg-white px-3 py-2 rounded border border-slate-200">
-                        <span className="text-slate-500 font-medium">
-                          Selected Hierarchy:
-                        </span>
-                        {currentPath.map((catId, idx) => {
-                          const catName =
-                            localCategories.find((c) => c.id === catId)?.name ||
-                            (idx === 0 ? 'Farm Equipment & Machinery' : 'Subcategory');
-                          const badgeColors =
-                            idx === 0
-                              ? 'bg-blue-50 text-blue-800 border-blue-200'
-                              : idx === 1
-                              ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
-                              : idx === 2
-                              ? 'bg-purple-50 text-purple-800 border-purple-200'
-                              : 'bg-amber-50 text-amber-800 border-amber-200';
-                          return (
-                            <React.Fragment key={`${catId}-${idx}`}>
-                              {idx > 0 && (
-                                <span className="text-slate-400 font-bold">&gt;&gt;</span>
-                              )}
-                              <span
-                                className={`px-2 py-0.5 rounded border font-semibold ${badgeColors}`}
-                              >
-                                {catName}
-                              </span>
-                            </React.Fragment>
+              {/* Parent Category & Child Category (Subcategory) */}
+              <div className="grid grid-cols-1 sm:grid-cols-12 items-start gap-2 bg-slate-50/70 p-3 rounded-md border border-slate-200">
+                <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-semibold text-slate-800 pt-1.5">
+                  <span>Parent &amp; Child Category</span>
+                  <Tooltip text="Select both the Parent Category and the Child Subcategory for this product." />
+                </div>
+                <div className="sm:col-span-9 space-y-3">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {/* Parent Category */}
+                    <div>
+                      <label className="block text-[11px] font-bold text-blue-700 uppercase tracking-wider mb-1">
+                        Parent Category
+                      </label>
+                      <select
+                        value={formData.parentCategoryId || formData.categoryId}
+                        onChange={(e) => {
+                          const newParentId = e.target.value;
+                          const firstChild = childCategories.find(
+                            (c) => c.parentId === newParentId
                           );
-                        })}
-                      </div>
+                          setFormData((prev) => ({
+                            ...prev,
+                            categoryId: newParentId,
+                            parentCategoryId: newParentId,
+                            subCategoryId: firstChild ? firstChild.id : '',
+                          }));
+                        }}
+                        className="w-full text-xs px-2.5 py-2 rounded border border-[#d2d6de] bg-white focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none font-medium"
+                      >
+                        {(parentCategories.length > 0 ? parentCategories : categories).map(
+                          (c) => (
+                            <option key={c.id} value={c.id}>
+                              {c.name}
+                            </option>
+                          )
+                        )}
+                      </select>
+                    </div>
+
+                    {/* Child Category (Subcategory) */}
+                    <div>
+                      <label className="block text-[11px] font-bold text-emerald-700 uppercase tracking-wider mb-1">
+                        Child Category (Subcategory)
+                      </label>
+                      <select
+                        value={formData.subCategoryId || ''}
+                        onChange={(e) =>
+                          handleChange('subCategoryId', e.target.value)
+                        }
+                        className="w-full text-xs px-2.5 py-2 rounded border border-[#d2d6de] bg-white focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none font-medium"
+                      >
+                        {childCategories
+                          .filter(
+                            (c) =>
+                              c.parentId ===
+                              (formData.parentCategoryId || formData.categoryId)
+                          )
+                          .map((sub) => (
+                            <option key={sub.id} value={sub.id}>
+                              {sub.name}
+                            </option>
+                          ))}
+                        {childCategories.filter(
+                          (c) =>
+                            c.parentId ===
+                            (formData.parentCategoryId || formData.categoryId)
+                        ).length === 0 && (
+                          <option value="">General Subcategory</option>
+                        )}
+                      </select>
                     </div>
                   </div>
-                );
-              })()}
+
+                  {/* Active Hierarchy Preview */}
+                  <div className="flex flex-wrap items-center gap-2 text-xs bg-white px-3 py-2 rounded border border-slate-200">
+                    <span className="text-slate-500 font-medium">
+                      Selected Hierarchy:
+                    </span>
+                    <span className="px-2 py-0.5 rounded bg-blue-50 text-blue-800 border border-blue-200 font-semibold">
+                      {categories.find(
+                        (c) =>
+                          c.id ===
+                          (formData.parentCategoryId || formData.categoryId)
+                      )?.name || 'Farm Equipment & Machinery'}
+                    </span>
+                    <span className="text-slate-400 font-bold">&gt;&gt;</span>
+                    <span className="px-2 py-0.5 rounded bg-emerald-50 text-emerald-800 border border-emerald-200 font-semibold">
+                      {categories.find((c) => c.id === formData.subCategoryId)
+                        ?.name || 'General Subcategory'}
+                    </span>
+                  </div>
+                </div>
+              </div>
 
               {/* Manufacturers */}
               <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
