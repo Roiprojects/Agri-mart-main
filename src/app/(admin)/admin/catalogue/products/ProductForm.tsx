@@ -43,6 +43,11 @@ import {
   Search,
   ChevronUp,
   DollarSign,
+  Check,
+  Ban,
+  Trash2,
+  Pencil,
+  RefreshCw,
   Truck,
   Gift,
   Calendar,
@@ -75,6 +80,8 @@ export interface ProductFormData {
   metaDescription?: string;
   canonicalUrl?: string;
   images?: string[];
+  pictureMeta?: { url: string; displayOrder: number; alt: string; title: string }[];
+  videos?: { id: string; embedUrl: string; displayOrder: number }[];
   stockQuantity?: number;
   minStockQuantity?: number;
   lowStockQuantity?: number;
@@ -218,6 +225,20 @@ export function ProductForm({
     images: initialValues?.images || [
       'https://images.unsplash.com/photo-1590874103328-eac38a683ce7?auto=format&fit=crop&w=400&q=80',
     ],
+    pictureMeta:
+      initialValues?.pictureMeta && initialValues.pictureMeta.length > 0
+        ? initialValues.pictureMeta
+        : (
+            initialValues?.images || [
+              'https://images.unsplash.com/photo-1590874103328-eac38a683ce7?auto=format&fit=crop&w=400&q=80',
+            ]
+          ).map((url, idx) => ({
+            url,
+            displayOrder: idx,
+            alt: '',
+            title: '',
+          })),
+    videos: initialValues?.videos || [],
     stockQuantity:
       initialValues?.stockQuantity !== undefined
         ? initialValues.stockQuantity
@@ -309,6 +330,28 @@ export function ProductForm({
   const [rentalCollapsed, setRentalCollapsed] = useState(false);
   const [rentServiceCollapsed, setRentServiceCollapsed] = useState(false);
   const [seoCollapsed, setSeoCollapsed] = useState(false);
+
+  // Multimedia (Pictures & Videos) state
+  const [multimediaTab, setMultimediaTab] = useState<'pictures' | 'videos'>('pictures');
+  const [editingPicIdx, setEditingPicIdx] = useState<number | null>(null);
+  const [picDraft, setPicDraft] = useState<{
+    url: string;
+    displayOrder: number;
+    alt: string;
+    title: string;
+  }>({ url: '', displayOrder: 0, alt: '', title: '' });
+  const [newPicOrder, setNewPicOrder] = useState<number>(0);
+  const [newPicAlt, setNewPicAlt] = useState<string>('');
+  const [newPicTitle, setNewPicTitle] = useState<string>('');
+
+  const [newVideoUrl, setNewVideoUrl] = useState<string>('');
+  const [newVideoOrder, setNewVideoOrder] = useState<number>(0);
+  const [editingVideoId, setEditingVideoId] = useState<string | null>(null);
+  const [videoDraft, setVideoDraft] = useState<{ embedUrl: string; displayOrder: number }>({
+    embedUrl: '',
+    displayOrder: 0,
+  });
+  const [videoPageSize, setVideoPageSize] = useState<number>(15);
   const [sourceCodeMode, setSourceCodeMode] = useState(false);
   const [fontSize, setFontSize] = useState('16');
   const [textColor, setTextColor] = useState('#000000');
@@ -401,6 +444,18 @@ export function ProductForm({
         initialValues.images && initialValues.images.length > 0
           ? initialValues.images
           : prev.images,
+      pictureMeta:
+        initialValues.pictureMeta && initialValues.pictureMeta.length > 0
+          ? initialValues.pictureMeta
+          : initialValues.images && initialValues.images.length > 0
+          ? initialValues.images.map((url, idx) => ({
+              url,
+              displayOrder: idx,
+              alt: '',
+              title: '',
+            }))
+          : prev.pictureMeta,
+      videos: Array.isArray(initialValues.videos) ? initialValues.videos : prev.videos,
       stockQuantity:
         initialValues.stockQuantity !== undefined
           ? Number(initialValues.stockQuantity)
@@ -2486,81 +2541,609 @@ export function ProductForm({
         </>
       )}
 
-      {/* PICTURES & MEDIA CARD (Always visible so all product details are shown properly) */}
-      <div className="bg-white rounded border border-[#d2d6de] shadow-2xs p-4 sm:p-6 space-y-4">
-        <div className="flex items-center justify-between border-b pb-2">
-          <h3 className="font-semibold text-slate-800 text-sm flex items-center gap-2">
-            <ImageIcon className="w-4 h-4 text-purple-600" /> Product Pictures &amp; Gallery
+      {/* MULTIMEDIA CARD (Pictures & Videos Tabs) */}
+      <div className="bg-white rounded border border-[#d2d6de] border-t-2 border-t-[#00c0ef] shadow-2xs overflow-hidden">
+        {/* Card Header */}
+        <div className="px-4 py-2.5 border-b border-[#f4f4f4] flex items-center justify-between bg-white">
+          <h3 className="font-normal text-slate-800 text-sm flex items-center gap-2">
+            <ImageIcon className="w-4 h-4 text-slate-700" />
+            <span>Multimedia</span>
           </h3>
           <span className="text-xs text-slate-500 font-medium">
-            {formData.images?.length || 0} picture(s)
+            {formData.images?.length || 0} picture(s) &bull; {formData.videos?.length || 0} video(s)
           </span>
         </div>
 
-        {/* Add New Picture with ImageEditorField */}
-        <div className="border border-dashed border-slate-300 rounded-lg p-3 bg-slate-50/60 space-y-2">
-          <span className="text-xs font-semibold text-slate-700 block">
-            Add New Picture (From Local Device or Website URL):
-          </span>
-          <ImageEditorField
-            value=""
-            onChange={(url) => {
-              if (url) {
-                setFormData((prev) => ({
-                  ...prev,
-                  images: [...(prev.images || []), url],
+        {/* Tabs Bar */}
+        <div className="px-4 pt-3 border-b border-[#d2d6de] flex items-center gap-1 bg-white">
+          <button
+            type="button"
+            onClick={() => setMultimediaTab('pictures')}
+            className={`px-4 py-2 text-xs transition rounded-t cursor-pointer ${
+              multimediaTab === 'pictures'
+                ? 'border-t-2 border-t-[#3c8dbc] border-x border-[#d2d6de] bg-white text-slate-800 font-semibold -mb-px border-b border-b-white'
+                : 'text-slate-600 hover:text-slate-800 border-t-2 border-t-transparent'
+            }`}
+          >
+            Pictures
+          </button>
+          <button
+            type="button"
+            onClick={() => setMultimediaTab('videos')}
+            className={`px-4 py-2 text-xs transition rounded-t cursor-pointer ${
+              multimediaTab === 'videos'
+                ? 'border-t-2 border-t-[#3c8dbc] border-x border-[#d2d6de] bg-white text-slate-800 font-semibold -mb-px border-b border-b-white'
+                : 'text-slate-600 hover:text-slate-800 border-t-2 border-t-transparent'
+            }`}
+          >
+            Videos
+          </button>
+        </div>
+
+        {/* Tab 1: Pictures */}
+        {multimediaTab === 'pictures' && (() => {
+          const currentPictures =
+            formData.pictureMeta && formData.pictureMeta.length === (formData.images?.length || 0)
+              ? formData.pictureMeta
+              : (formData.images || []).map((url, idx) => ({
+                  url,
+                  displayOrder: formData.pictureMeta?.[idx]?.displayOrder ?? idx,
+                  alt: formData.pictureMeta?.[idx]?.alt ?? '',
+                  title: formData.pictureMeta?.[idx]?.title ?? '',
                 }));
-              }
-            }}
-          />
-        </div>
 
-        {/* List of Existing Product Images with Edit / Crop / Change / Remove */}
-        <div className="space-y-2 pt-2">
-          <span className="text-xs font-semibold text-slate-700 block">
-            Current Gallery Pictures (Click Edit to crop, rotate, or adjust):
-          </span>
-          {!formData.images || formData.images.length === 0 ? (
-            <p className="text-xs text-slate-400 italic">
-              No pictures uploaded yet for this product.
-            </p>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {formData.images.map((img, i) => (
-                <div
-                  key={i}
-                  className="border border-slate-200 rounded-lg p-3 bg-white shadow-2xs space-y-2"
-                >
-                  <div className="flex items-center justify-between text-[11px] font-semibold text-slate-500">
-                    <span>
-                      Picture #{i + 1}{' '}
-                      {i === 0 && <strong className="text-[#3c8dbc]">(Main)</strong>}
-                    </span>
+          const commitPictures = (
+            nextMeta: { url: string; displayOrder: number; alt: string; title: string }[]
+          ) => {
+            setFormData((prev) => ({
+              ...prev,
+              pictureMeta: nextMeta,
+              images: nextMeta.map((m) => m.url),
+            }));
+          };
+
+          return (
+            <div className="p-4 sm:p-5 space-y-5 text-xs text-slate-700">
+              {/* Pictures Table */}
+              <div className="overflow-x-auto border border-[#d2d6de] rounded-xs">
+                <table className="w-full text-left border-collapse text-xs">
+                  <thead>
+                    <tr className="bg-[#f9f9f9] border-b border-[#d2d6de] text-slate-700 font-semibold">
+                      <th className="py-2.5 px-3 border-r border-[#d2d6de] w-[30%]">Picture</th>
+                      <th className="py-2.5 px-3 border-r border-[#d2d6de] text-center w-[15%]">
+                        Display order
+                      </th>
+                      <th className="py-2.5 px-3 border-r border-[#d2d6de] text-center w-[16%]">
+                        Alt
+                      </th>
+                      <th className="py-2.5 px-3 border-r border-[#d2d6de] text-center w-[16%]">
+                        Title
+                      </th>
+                      <th className="py-2.5 px-3 border-r border-[#d2d6de] text-center w-[12%]">
+                        Edit
+                      </th>
+                      <th className="py-2.5 px-3 text-center w-[11%]">Delete</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-[#d2d6de]">
+                    {currentPictures.length === 0 ? (
+                      <tr>
+                        <td colSpan={6} className="py-6 text-center text-slate-400">
+                          No data available in table
+                        </td>
+                      </tr>
+                    ) : (
+                      currentPictures.map((pic, i) => {
+                        const isEditingRow = editingPicIdx === i;
+                        return (
+                          <tr key={`${i}-${pic.url.slice(0, 24)}`} className="bg-white hover:bg-slate-50/50">
+                            {/* Picture Cell */}
+                            <td className="p-3 border-r border-[#d2d6de] align-middle">
+                              {isEditingRow ? (
+                                <div className="space-y-2 max-w-[260px]">
+                                  <ImageEditorField
+                                    value={picDraft.url}
+                                    onChange={(newUrl) => {
+                                      if (newUrl) {
+                                        setPicDraft((d) => ({ ...d, url: newUrl }));
+                                      }
+                                    }}
+                                    previewHeight="h-32"
+                                  />
+                                </div>
+                              ) : (
+                                <div className="relative inline-block">
+                                  <img
+                                    src={pic.url}
+                                    alt={pic.alt || `${formData.name || 'Product'} ${i + 1}`}
+                                    title={pic.title || ''}
+                                    className="w-44 h-44 object-contain border border-slate-200 rounded bg-white p-1"
+                                  />
+                                  {i === 0 && (
+                                    <span className="mt-1 inline-block text-[10px] font-semibold text-[#3c8dbc]">
+                                      Main Picture
+                                    </span>
+                                  )}
+                                </div>
+                              )}
+                            </td>
+
+                            {/* Display order Cell */}
+                            <td className="p-3 border-r border-[#d2d6de] text-center align-middle">
+                              {isEditingRow ? (
+                                <input
+                                  type="number"
+                                  value={picDraft.displayOrder}
+                                  onChange={(e) =>
+                                    setPicDraft((d) => ({
+                                      ...d,
+                                      displayOrder: parseInt(e.target.value, 10) || 0,
+                                    }))
+                                  }
+                                  className="w-24 border border-[#d2d6de] focus:border-[#3c8dbc] outline-none rounded px-2 py-1 text-xs text-slate-800 bg-white mx-auto"
+                                />
+                              ) : (
+                                <span className="text-slate-700">{pic.displayOrder}</span>
+                              )}
+                            </td>
+
+                            {/* Alt Cell */}
+                            <td className="p-3 border-r border-[#d2d6de] text-center align-middle">
+                              {isEditingRow ? (
+                                <input
+                                  type="text"
+                                  value={picDraft.alt}
+                                  onChange={(e) =>
+                                    setPicDraft((d) => ({ ...d, alt: e.target.value }))
+                                  }
+                                  placeholder="Alt text"
+                                  className="w-full border border-[#d2d6de] focus:border-[#3c8dbc] outline-none rounded px-2 py-1 text-xs text-slate-800 bg-white"
+                                />
+                              ) : (
+                                <span className="text-slate-700">{pic.alt || '-'}</span>
+                              )}
+                            </td>
+
+                            {/* Title Cell */}
+                            <td className="p-3 border-r border-[#d2d6de] text-center align-middle">
+                              {isEditingRow ? (
+                                <input
+                                  type="text"
+                                  value={picDraft.title}
+                                  onChange={(e) =>
+                                    setPicDraft((d) => ({ ...d, title: e.target.value }))
+                                  }
+                                  placeholder="Title"
+                                  className="w-full border border-[#d2d6de] focus:border-[#3c8dbc] outline-none rounded px-2 py-1 text-xs text-slate-800 bg-white"
+                                />
+                              ) : (
+                                <span className="text-slate-700">{pic.title || '-'}</span>
+                              )}
+                            </td>
+
+                            {/* Edit / Update / Cancel Cell */}
+                            <td className="p-3 border-r border-[#d2d6de] text-center align-middle">
+                              {isEditingRow ? (
+                                <div className="flex flex-col items-center gap-1.5">
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      const updated = currentPictures.map((item, idx) =>
+                                        idx === i ? { ...picDraft } : item
+                                      );
+                                      updated.sort((a, b) => a.displayOrder - b.displayOrder);
+                                      commitPictures(updated);
+                                      setEditingPicIdx(null);
+                                      showToast('Picture details updated.');
+                                    }}
+                                    className="inline-flex items-center justify-center gap-1 px-2.5 py-1 bg-white border border-[#d2d6de] hover:bg-slate-50 text-slate-800 rounded text-xs font-normal cursor-pointer shadow-2xs w-20"
+                                  >
+                                    <Check className="w-3 h-3 text-slate-700" />
+                                    <span>Update</span>
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => setEditingPicIdx(null)}
+                                    className="inline-flex items-center justify-center gap-1 px-2.5 py-1 bg-white border border-[#d2d6de] hover:bg-slate-50 text-slate-700 rounded text-xs font-normal cursor-pointer shadow-2xs w-20"
+                                  >
+                                    <Ban className="w-3 h-3 text-slate-600" />
+                                    <span>Cancel</span>
+                                  </button>
+                                </div>
+                              ) : (
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setEditingPicIdx(i);
+                                    setPicDraft({ ...pic });
+                                  }}
+                                  className="inline-flex items-center justify-center gap-1 px-3 py-1 bg-white border border-[#d2d6de] hover:bg-slate-50 text-slate-700 rounded text-xs font-normal cursor-pointer shadow-2xs"
+                                >
+                                  <Pencil className="w-3 h-3" />
+                                  <span>Edit</span>
+                                </button>
+                              )}
+                            </td>
+
+                            {/* Delete Cell */}
+                            <td className="p-3 text-center align-middle">
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const next = currentPictures.filter((_, idx) => idx !== i);
+                                  commitPictures(next);
+                                  if (editingPicIdx === i) setEditingPicIdx(null);
+                                }}
+                                className="inline-flex items-center justify-center gap-1 px-3 py-1 bg-white border border-[#d2d6de] hover:bg-red-50 hover:text-red-600 text-slate-700 rounded text-xs font-normal cursor-pointer shadow-2xs"
+                              >
+                                <Trash2 className="w-3 h-3" />
+                                <span>Delete</span>
+                              </button>
+                            </td>
+                          </tr>
+                        );
+                      })
+                    )}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Add a new picture */}
+              <div className="border border-[#d2d6de] rounded-xs bg-white overflow-hidden">
+                <div className="px-4 py-2.5 border-b border-[#f4f4f4] text-xs font-semibold text-slate-700 bg-[#fdfdfd]">
+                  Add a new picture
+                </div>
+                <div className="p-4 space-y-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div>
+                      <label className="block font-medium text-slate-700 mb-1">Display order</label>
+                      <input
+                        type="number"
+                        value={newPicOrder}
+                        onChange={(e) => setNewPicOrder(parseInt(e.target.value, 10) || 0)}
+                        className="w-full border border-[#d2d6de] rounded px-2.5 py-1.5 text-xs bg-white outline-none focus:border-[#3c8dbc]"
+                      />
+                    </div>
+                    <div>
+                      <label className="block font-medium text-slate-700 mb-1">Alt</label>
+                      <input
+                        type="text"
+                        value={newPicAlt}
+                        onChange={(e) => setNewPicAlt(e.target.value)}
+                        placeholder="Image alt text"
+                        className="w-full border border-[#d2d6de] rounded px-2.5 py-1.5 text-xs bg-white outline-none focus:border-[#3c8dbc]"
+                      />
+                    </div>
+                    <div>
+                      <label className="block font-medium text-slate-700 mb-1">Title</label>
+                      <input
+                        type="text"
+                        value={newPicTitle}
+                        onChange={(e) => setNewPicTitle(e.target.value)}
+                        placeholder="Image title"
+                        className="w-full border border-[#d2d6de] rounded px-2.5 py-1.5 text-xs bg-white outline-none focus:border-[#3c8dbc]"
+                      />
+                    </div>
                   </div>
                   <ImageEditorField
-                    value={img}
-                    onChange={(newUrl) => {
-                      if (!newUrl) {
-                        setFormData((prev) => ({
-                          ...prev,
-                          images: prev.images?.filter((_, idx) => idx !== i),
-                        }));
-                      } else {
-                        setFormData((prev) => ({
-                          ...prev,
-                          images: prev.images?.map((item, idx) =>
-                            idx === i ? newUrl : item
-                          ),
-                        }));
+                    value=""
+                    onChange={(url) => {
+                      if (url) {
+                        const nextOrder =
+                          newPicOrder !== 0 ? newPicOrder : currentPictures.length;
+                        const next = [
+                          ...currentPictures,
+                          {
+                            url,
+                            displayOrder: nextOrder,
+                            alt: newPicAlt.trim(),
+                            title: newPicTitle.trim(),
+                          },
+                        ].sort((a, b) => a.displayOrder - b.displayOrder);
+                        commitPictures(next);
+                        setNewPicAlt('');
+                        setNewPicTitle('');
+                        setNewPicOrder(0);
                       }
                     }}
-                    previewHeight="h-28"
                   />
                 </div>
-              ))}
+              </div>
             </div>
-          )}
-        </div>
+          );
+        })()}
+
+        {/* Tab 2: Videos */}
+        {multimediaTab === 'videos' && (() => {
+          const videos = formData.videos || [];
+          const commitVideos = (
+            nextVideos: { id: string; embedUrl: string; displayOrder: number }[]
+          ) => {
+            setFormData((prev) => ({
+              ...prev,
+              videos: nextVideos,
+            }));
+          };
+
+          const handleAddVideo = () => {
+            if (!newVideoUrl.trim()) {
+              showToast('Please enter an Embed video URL.');
+              return;
+            }
+            const next = [
+              ...videos,
+              {
+                id: `vid-${Date.now()}`,
+                embedUrl: newVideoUrl.trim(),
+                displayOrder: newVideoOrder || 0,
+              },
+            ].sort((a, b) => a.displayOrder - b.displayOrder);
+            commitVideos(next);
+            setNewVideoUrl('');
+            setNewVideoOrder(0);
+            showToast('Product video added.');
+          };
+
+          return (
+            <div className="p-4 sm:p-5 space-y-5 text-xs text-slate-700">
+              {/* Videos Table */}
+              <div className="border border-[#d2d6de] rounded-xs overflow-hidden">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left border-collapse text-xs">
+                    <thead>
+                      <tr className="bg-[#f9f9f9] border-b border-[#d2d6de] text-slate-700 font-semibold">
+                        <th className="py-2.5 px-3 border-r border-[#d2d6de] w-[18%]">Preview</th>
+                        <th className="py-2.5 px-3 border-r border-[#d2d6de] w-[38%]">
+                          Embed video URL
+                        </th>
+                        <th className="py-2.5 px-3 border-r border-[#d2d6de] text-center w-[16%]">
+                          Display order
+                        </th>
+                        <th className="py-2.5 px-3 border-r border-[#d2d6de] text-center w-[14%]">
+                          Edit
+                        </th>
+                        <th className="py-2.5 px-3 text-center w-[14%]">Delete</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-[#d2d6de]">
+                      {videos.length === 0 ? (
+                        <tr>
+                          <td colSpan={5} className="py-6 text-center text-slate-500 bg-[#f9f9f9]">
+                            No data available in table
+                          </td>
+                        </tr>
+                      ) : (
+                        videos.slice(0, videoPageSize).map((vid) => {
+                          const isEditingVid = editingVideoId === vid.id;
+                          return (
+                            <tr key={vid.id} className="bg-white hover:bg-slate-50/50">
+                              <td className="p-2.5 border-r border-[#d2d6de] align-middle">
+                                {/\.(mp4|webm|ogg)(\?|$)/i.test(vid.embedUrl) ? (
+                                  <video
+                                    src={vid.embedUrl}
+                                    controls
+                                    className="w-36 h-20 rounded border border-slate-200 bg-black"
+                                  />
+                                ) : (
+                                  <iframe
+                                    src={vid.embedUrl}
+                                    title="Product video preview"
+                                    className="w-36 h-20 rounded border border-slate-200 bg-black"
+                                    allowFullScreen
+                                  />
+                                )}
+                              </td>
+                              <td className="p-2.5 border-r border-[#d2d6de] align-middle break-all">
+                                {isEditingVid ? (
+                                  <input
+                                    type="text"
+                                    value={videoDraft.embedUrl}
+                                    onChange={(e) =>
+                                      setVideoDraft((d) => ({ ...d, embedUrl: e.target.value }))
+                                    }
+                                    className="w-full border border-[#d2d6de] focus:border-[#3c8dbc] outline-none rounded px-2 py-1 text-xs"
+                                  />
+                                ) : (
+                                  <span className="text-slate-700">{vid.embedUrl}</span>
+                                )}
+                              </td>
+                              <td className="p-2.5 border-r border-[#d2d6de] text-center align-middle">
+                                {isEditingVid ? (
+                                  <input
+                                    type="number"
+                                    value={videoDraft.displayOrder}
+                                    onChange={(e) =>
+                                      setVideoDraft((d) => ({
+                                        ...d,
+                                        displayOrder: parseInt(e.target.value, 10) || 0,
+                                      }))
+                                    }
+                                    className="w-20 border border-[#d2d6de] focus:border-[#3c8dbc] outline-none rounded px-2 py-1 text-xs mx-auto"
+                                  />
+                                ) : (
+                                  <span>{vid.displayOrder}</span>
+                                )}
+                              </td>
+                              <td className="p-2.5 border-r border-[#d2d6de] text-center align-middle">
+                                {isEditingVid ? (
+                                  <div className="flex flex-col items-center gap-1">
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        const next = videos
+                                          .map((v) =>
+                                            v.id === vid.id
+                                              ? {
+                                                  ...v,
+                                                  embedUrl: videoDraft.embedUrl.trim(),
+                                                  displayOrder: videoDraft.displayOrder,
+                                                }
+                                              : v
+                                          )
+                                          .sort((a, b) => a.displayOrder - b.displayOrder);
+                                        commitVideos(next);
+                                        setEditingVideoId(null);
+                                      }}
+                                      className="inline-flex items-center justify-center gap-1 px-2.5 py-1 bg-white border border-[#d2d6de] hover:bg-slate-50 text-slate-800 rounded text-xs cursor-pointer w-20"
+                                    >
+                                      <Check className="w-3 h-3" />
+                                      <span>Update</span>
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => setEditingVideoId(null)}
+                                      className="inline-flex items-center justify-center gap-1 px-2.5 py-1 bg-white border border-[#d2d6de] hover:bg-slate-50 text-slate-700 rounded text-xs cursor-pointer w-20"
+                                    >
+                                      <Ban className="w-3 h-3" />
+                                      <span>Cancel</span>
+                                    </button>
+                                  </div>
+                                ) : (
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      setEditingVideoId(vid.id);
+                                      setVideoDraft({
+                                        embedUrl: vid.embedUrl,
+                                        displayOrder: vid.displayOrder,
+                                      });
+                                    }}
+                                    className="inline-flex items-center justify-center gap-1 px-3 py-1 bg-white border border-[#d2d6de] hover:bg-slate-50 text-slate-700 rounded text-xs cursor-pointer"
+                                  >
+                                    <Pencil className="w-3 h-3" />
+                                    <span>Edit</span>
+                                  </button>
+                                )}
+                              </td>
+                              <td className="p-2.5 text-center align-middle">
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    commitVideos(videos.filter((v) => v.id !== vid.id))
+                                  }
+                                  className="inline-flex items-center justify-center gap-1 px-3 py-1 bg-white border border-[#d2d6de] hover:bg-red-50 hover:text-red-600 text-slate-700 rounded text-xs cursor-pointer"
+                                >
+                                  <Trash2 className="w-3 h-3" />
+                                  <span>Delete</span>
+                                </button>
+                              </td>
+                            </tr>
+                          );
+                        })
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Videos Table Footer */}
+                <div className="px-3 py-2.5 bg-white border-t border-[#d2d6de] flex flex-wrap items-center justify-between gap-2 text-xs text-slate-600">
+                  <div className="flex items-center gap-1">
+                    <button
+                      type="button"
+                      disabled
+                      className="px-2.5 py-1 border border-[#d2d6de] rounded-l bg-white text-slate-400"
+                    >
+                      Previous
+                    </button>
+                    <button
+                      type="button"
+                      disabled
+                      className="px-2.5 py-1 border border-[#d2d6de] rounded-r bg-white text-slate-400"
+                    >
+                      Next
+                    </button>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <span>Show</span>
+                    <select
+                      value={videoPageSize}
+                      onChange={(e) => setVideoPageSize(Number(e.target.value))}
+                      className="border border-[#d2d6de] rounded px-2 py-1 text-xs bg-white"
+                    >
+                      <option value={15}>15</option>
+                      <option value={25}>25</option>
+                      <option value={50}>50</option>
+                    </select>
+                    <span>items</span>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <span className="text-slate-600">
+                      {videos.length === 0 ? 'No records' : `1 - ${videos.length} of ${videos.length} items`}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setFormData((prev) => ({ ...prev }))}
+                      title="Refresh"
+                      className="p-1.5 border border-[#d2d6de] rounded bg-white hover:bg-slate-50 text-slate-600 cursor-pointer"
+                    >
+                      <RefreshCw className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Add a new video */}
+              <div className="border border-[#d2d6de] rounded-xs bg-white overflow-hidden">
+                <div className="px-4 py-2.5 border-b border-[#f4f4f4] text-xs font-normal text-slate-800 bg-white">
+                  Add a new video
+                </div>
+                <div className="p-4 sm:p-5 space-y-4">
+                  <p className="text-xs italic text-slate-600 leading-relaxed">
+                    How to embed a video: Find your video in your library (on any video hosting) and select it to open the video settings page. Select the privacy icon from your &quot;Share&quot; button. Click on &quot;Embed&quot; from the window that opens up. You can copy the{' '}
+                    <code className="font-semibold not-italic text-slate-800">src</code> from the embed option and use it.
+                  </p>
+
+                  {/* Embed video URL */}
+                  <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
+                    <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-semibold text-slate-700">
+                      <span>Embed video URL</span>
+                      <Tooltip text="Paste the embed src URL from YouTube, Vimeo, or your video hosting provider." />
+                    </div>
+                    <div className="sm:col-span-9">
+                      <input
+                        type="text"
+                        value={newVideoUrl}
+                        onChange={(e) => setNewVideoUrl(e.target.value)}
+                        className="w-full text-xs px-2.5 py-2 rounded border border-[#d2d6de] focus:border-[#3c8dbc] outline-none bg-white"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Display order */}
+                  <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
+                    <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-semibold text-slate-700">
+                      <span>Display order</span>
+                      <Tooltip text="Set the display order for this product video." />
+                    </div>
+                    <div className="sm:col-span-9">
+                      <input
+                        type="number"
+                        value={newVideoOrder}
+                        onChange={(e) => setNewVideoOrder(parseInt(e.target.value, 10) || 0)}
+                        className="w-full text-xs px-2.5 py-2 rounded border border-[#d2d6de] focus:border-[#3c8dbc] outline-none bg-white"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Add product video button */}
+                  <div className="grid grid-cols-1 sm:grid-cols-12">
+                    <div className="sm:col-start-4 sm:col-span-9">
+                      <button
+                        type="button"
+                        onClick={handleAddVideo}
+                        className="bg-[#2585be] hover:bg-[#1f72a3] text-white text-xs font-semibold px-4 py-2 rounded shadow-2xs transition cursor-pointer"
+                      >
+                        Add product video
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        })()}
 
         {/* BOTTOM SAVE BAR */}
         <div className="bg-white rounded border border-[#d2d6de] shadow-2xs p-4 flex flex-col sm:flex-row items-center justify-between gap-3">
