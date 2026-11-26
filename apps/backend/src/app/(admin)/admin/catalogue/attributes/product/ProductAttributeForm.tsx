@@ -44,7 +44,9 @@ export interface PredefinedValue {
   id: string;
   name: string;
   priceAdjustment: number;
+  priceAdjustmentUsePercentage?: boolean;
   weightAdjustment: number;
+  cost?: number;
   isPreSelected: boolean;
   displayOrder: number;
 }
@@ -121,9 +123,11 @@ export function ProductAttributeForm({
   const [editingValueId, setEditingValueId] = useState<string | null>(null);
   const [valName, setValName] = useState('');
   const [valPriceAdjustment, setValPriceAdjustment] = useState<number | string>(0);
+  const [valPriceAdjustmentUsePercentage, setValPriceAdjustmentUsePercentage] = useState<boolean>(false);
   const [valWeightAdjustment, setValWeightAdjustment] = useState<number | string>(0);
+  const [valCost, setValCost] = useState<number | string>(0);
   const [valIsPreSelected, setValIsPreSelected] = useState<boolean>(false);
-  const [valDisplayOrder, setValDisplayOrder] = useState<number>(1);
+  const [valDisplayOrder, setValDisplayOrder] = useState<number>(0);
   const [valError, setValError] = useState<string | null>(null);
 
   // Synchronize when initialValues changes
@@ -156,9 +160,11 @@ export function ProductAttributeForm({
     setEditingValueId(null);
     setValName('');
     setValPriceAdjustment(0);
+    setValPriceAdjustmentUsePercentage(false);
     setValWeightAdjustment(0);
+    setValCost(0);
     setValIsPreSelected(false);
-    setValDisplayOrder(predefinedValues.length + 1);
+    setValDisplayOrder(0);
     setValError(null);
     setModalOpen(true);
   };
@@ -167,7 +173,9 @@ export function ProductAttributeForm({
     setEditingValueId(item.id);
     setValName(item.name);
     setValPriceAdjustment(item.priceAdjustment);
+    setValPriceAdjustmentUsePercentage(Boolean(item.priceAdjustmentUsePercentage));
     setValWeightAdjustment(item.weightAdjustment);
+    setValCost(item.cost ?? 0);
     setValIsPreSelected(item.isPreSelected);
     setValDisplayOrder(item.displayOrder);
     setValError(null);
@@ -195,9 +203,11 @@ export function ProductAttributeForm({
                 ...item,
                 name: valName.trim(),
                 priceAdjustment: Number(valPriceAdjustment) || 0,
+                priceAdjustmentUsePercentage: valPriceAdjustmentUsePercentage,
                 weightAdjustment: Number(valWeightAdjustment) || 0,
+                cost: Number(valCost) || 0,
                 isPreSelected: valIsPreSelected,
-                displayOrder: Number(valDisplayOrder) || 1,
+                displayOrder: Number(valDisplayOrder) || 0,
               }
             : item
         )
@@ -208,9 +218,11 @@ export function ProductAttributeForm({
         id: `pv-${Date.now()}`,
         name: valName.trim(),
         priceAdjustment: Number(valPriceAdjustment) || 0,
+        priceAdjustmentUsePercentage: valPriceAdjustmentUsePercentage,
         weightAdjustment: Number(valWeightAdjustment) || 0,
+        cost: Number(valCost) || 0,
         isPreSelected: valIsPreSelected,
-        displayOrder: Number(valDisplayOrder) || (predefinedValues.length + 1),
+        displayOrder: Number(valDisplayOrder) || 0,
       };
       setPredefinedValues((prev) => [...prev, newItem]);
       showToast('Predefined value added', 'success');
@@ -1043,126 +1055,160 @@ export function ProductAttributeForm({
 
       {/* MODAL: Add / Edit Predefined Value */}
       {modalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="bg-white rounded border border-[#d2d6de] shadow-xl w-full max-w-lg overflow-hidden animate-fadeIn">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 overflow-y-auto">
+          <div className="bg-[#f4f6f9] rounded border border-[#d2d6de] shadow-xl w-full max-w-2xl overflow-hidden animate-fadeIn">
             {/* Modal Header */}
-            <div className="bg-[#f4f6f9] border-b border-[#e5e7eb] px-4 py-3 flex items-center justify-between">
-              <h3 className="font-semibold text-sm text-slate-800">
+            <div className="bg-[#f4f6f9] border-b border-[#d2d6de] px-5 py-3 flex items-center justify-between">
+              <h3 className="font-normal text-lg text-slate-800">
                 {editingValueId ? 'Edit value' : 'Add a new value'}
               </h3>
-              <button
-                type="button"
-                onClick={() => setModalOpen(false)}
-                className="text-slate-400 hover:text-slate-700 text-lg leading-none cursor-pointer"
-              >
-                &times;
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={handleSavePredefinedValue}
+                  className="bg-[#2585be] hover:bg-[#1f72a3] text-white text-xs font-semibold px-3.5 py-1.5 rounded flex items-center gap-1.5 transition cursor-pointer"
+                >
+                  <Save className="w-3.5 h-3.5" />
+                  <span>Save</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setModalOpen(false)}
+                  className="text-slate-400 hover:text-slate-700 text-xl leading-none px-1 cursor-pointer"
+                >
+                  &times;
+                </button>
+              </div>
             </div>
 
             {/* Modal Body */}
-            <div className="p-4 sm:p-5 space-y-4 text-xs">
-              {valError && (
-                <div className="bg-red-50 border border-red-200 text-red-600 p-2.5 rounded text-xs">
-                  {valError}
-                </div>
-              )}
+            <div className="p-4">
+              <div className="bg-white rounded border border-[#d2d6de] border-t-2 border-t-[#00c0ef] p-5 space-y-4 text-xs">
+                {valError && (
+                  <div className="bg-red-50 border border-red-200 text-red-600 p-2.5 rounded text-xs">
+                    {valError}
+                  </div>
+                )}
 
-              {/* Name */}
-              <div className="grid grid-cols-12 items-center gap-2">
-                <label className="col-span-4 text-right font-medium text-slate-700">
-                  Name <span className="text-red-500 font-bold">*</span>
-                </label>
-                <div className="col-span-8">
-                  <input
-                    type="text"
-                    required
-                    value={valName}
-                    onChange={(e) => setValName(e.target.value)}
-                    placeholder="e.g. Blue, Red, 5kg"
-                    className="w-full text-xs px-2.5 py-1.5 rounded border border-[#d2d6de] bg-white focus:border-[#3c8dbc] outline-none"
-                  />
+                {/* Name */}
+                <div className="border border-[#d2d6de] rounded-xs p-4 bg-[#fdfdfd]">
+                  <div className="grid grid-cols-12 items-center gap-2">
+                    <label className="col-span-4 flex items-center justify-end font-semibold text-slate-700">
+                      <span>Name</span>
+                      <Tooltip text="The name of the product attribute value." />
+                    </label>
+                    <div className="col-span-8 flex items-center gap-1.5">
+                      <input
+                        type="text"
+                        required
+                        value={valName}
+                        onChange={(e) => setValName(e.target.value)}
+                        className="w-full text-xs px-2.5 py-2 rounded border border-[#d2d6de] bg-white focus:border-[#3c8dbc] outline-none"
+                      />
+                      <span className="text-red-500 font-bold text-sm leading-none">*</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Price adjustment */}
+                <div className="grid grid-cols-12 items-center gap-2">
+                  <label className="col-span-4 flex items-center justify-end font-semibold text-slate-700">
+                    <span>Price adjustment</span>
+                    <Tooltip text="Amount added to or subtracted from the base product price." />
+                  </label>
+                  <div className="col-span-8">
+                    <input
+                      type="number"
+                      step="0.01"
+                      value={valPriceAdjustment}
+                      onChange={(e) => setValPriceAdjustment(parseFloat(e.target.value) || 0)}
+                      className="w-full max-w-xs text-xs px-2.5 py-2 rounded border border-[#d2d6de] bg-white focus:border-[#3c8dbc] outline-none"
+                    />
+                  </div>
+                </div>
+
+                {/* Price adjustment. Use percentage */}
+                <div className="grid grid-cols-12 items-center gap-2">
+                  <label className="col-span-4 flex items-center justify-end font-semibold text-slate-700 text-right">
+                    <span>Price adjustment. Use percentage</span>
+                    <Tooltip text="Check to calculate the price adjustment as a percentage of the product price." />
+                  </label>
+                  <div className="col-span-8 flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={valPriceAdjustmentUsePercentage}
+                      onChange={(e) => setValPriceAdjustmentUsePercentage(e.target.checked)}
+                      className="w-4 h-4 rounded border-gray-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                    />
+                  </div>
+                </div>
+
+                {/* Weight adjustment */}
+                <div className="grid grid-cols-12 items-center gap-2">
+                  <label className="col-span-4 flex items-center justify-end font-semibold text-slate-700">
+                    <span>Weight adjustment</span>
+                    <Tooltip text="Weight difference added to or subtracted from the product weight." />
+                  </label>
+                  <div className="col-span-8">
+                    <input
+                      type="number"
+                      step="0.01"
+                      value={valWeightAdjustment}
+                      onChange={(e) => setValWeightAdjustment(parseFloat(e.target.value) || 0)}
+                      className="w-full max-w-xs text-xs px-2.5 py-2 rounded border border-[#d2d6de] bg-white focus:border-[#3c8dbc] outline-none"
+                    />
+                  </div>
+                </div>
+
+                {/* Cost */}
+                <div className="grid grid-cols-12 items-center gap-2">
+                  <label className="col-span-4 flex items-center justify-end font-semibold text-slate-700">
+                    <span>Cost</span>
+                    <Tooltip text="Attribute value cost (for internal accounting)." />
+                  </label>
+                  <div className="col-span-8">
+                    <input
+                      type="number"
+                      step="0.01"
+                      value={valCost}
+                      onChange={(e) => setValCost(parseFloat(e.target.value) || 0)}
+                      className="w-full max-w-xs text-xs px-2.5 py-2 rounded border border-[#d2d6de] bg-white focus:border-[#3c8dbc] outline-none"
+                    />
+                  </div>
+                </div>
+
+                {/* Is pre-selected */}
+                <div className="grid grid-cols-12 items-center gap-2">
+                  <label className="col-span-4 flex items-center justify-end font-semibold text-slate-700">
+                    <span>Is pre-selected</span>
+                    <Tooltip text="Check if this value should be selected by default." />
+                  </label>
+                  <div className="col-span-8 flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={valIsPreSelected}
+                      onChange={(e) => setValIsPreSelected(e.target.checked)}
+                      className="w-4 h-4 rounded border-gray-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
+                    />
+                  </div>
+                </div>
+
+                {/* Display order */}
+                <div className="grid grid-cols-12 items-center gap-2">
+                  <label className="col-span-4 flex items-center justify-end font-semibold text-slate-700">
+                    <span>Display order</span>
+                    <Tooltip text="Display order of this attribute value." />
+                  </label>
+                  <div className="col-span-8">
+                    <input
+                      type="number"
+                      value={valDisplayOrder}
+                      onChange={(e) => setValDisplayOrder(parseInt(e.target.value, 10) || 0)}
+                      className="w-full text-xs px-2.5 py-2 rounded border border-[#d2d6de] bg-white focus:border-[#3c8dbc] outline-none"
+                    />
+                  </div>
                 </div>
               </div>
-
-              {/* Price adjustment */}
-              <div className="grid grid-cols-12 items-center gap-2">
-                <label className="col-span-4 text-right font-medium text-slate-700">
-                  Price adjustment
-                </label>
-                <div className="col-span-8">
-                  <input
-                    type="number"
-                    step="0.01"
-                    value={valPriceAdjustment}
-                    onChange={(e) => setValPriceAdjustment(parseFloat(e.target.value) || 0)}
-                    className="w-full text-xs px-2.5 py-1.5 rounded border border-[#d2d6de] bg-white focus:border-[#3c8dbc] outline-none"
-                  />
-                </div>
-              </div>
-
-              {/* Weight adjustment */}
-              <div className="grid grid-cols-12 items-center gap-2">
-                <label className="col-span-4 text-right font-medium text-slate-700">
-                  Weight adjustment
-                </label>
-                <div className="col-span-8">
-                  <input
-                    type="number"
-                    step="0.01"
-                    value={valWeightAdjustment}
-                    onChange={(e) => setValWeightAdjustment(parseFloat(e.target.value) || 0)}
-                    className="w-full text-xs px-2.5 py-1.5 rounded border border-[#d2d6de] bg-white focus:border-[#3c8dbc] outline-none"
-                  />
-                </div>
-              </div>
-
-              {/* Is pre-selected */}
-              <div className="grid grid-cols-12 items-center gap-2">
-                <label className="col-span-4 text-right font-medium text-slate-700">
-                  Is pre-selected
-                </label>
-                <div className="col-span-8 flex items-center">
-                  <input
-                    type="checkbox"
-                    checked={valIsPreSelected}
-                    onChange={(e) => setValIsPreSelected(e.target.checked)}
-                    className="w-4 h-4 rounded border-gray-300 text-[#3c8dbc] focus:ring-[#3c8dbc] cursor-pointer"
-                  />
-                </div>
-              </div>
-
-              {/* Display order */}
-              <div className="grid grid-cols-12 items-center gap-2">
-                <label className="col-span-4 text-right font-medium text-slate-700">
-                  Display order
-                </label>
-                <div className="col-span-8">
-                  <input
-                    type="number"
-                    value={valDisplayOrder}
-                    onChange={(e) => setValDisplayOrder(parseInt(e.target.value, 10) || 1)}
-                    className="w-full text-xs px-2.5 py-1.5 rounded border border-[#d2d6de] bg-white focus:border-[#3c8dbc] outline-none"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Modal Footer */}
-            <div className="bg-[#f4f6f9] border-t border-[#e5e7eb] px-4 py-2.5 flex items-center justify-end gap-2">
-              <button
-                type="button"
-                onClick={() => setModalOpen(false)}
-                className="bg-white border border-[#d2d6de] hover:bg-slate-100 text-slate-700 text-xs font-semibold px-3 py-1.5 rounded transition cursor-pointer"
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                onClick={handleSavePredefinedValue}
-                className="bg-[#2585be] hover:bg-[#1f72a3] text-white text-xs font-semibold px-3 py-1.5 rounded transition cursor-pointer"
-              >
-                Save
-              </button>
             </div>
           </div>
         </div>
