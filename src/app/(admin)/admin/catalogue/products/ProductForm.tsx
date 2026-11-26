@@ -123,6 +123,15 @@ export interface ProductFormData {
     pictures?: string[];
   }[];
   displayOnlyAttributeImages?: boolean;
+  specificationAttributes?: {
+    id: string;
+    attributeType: string;
+    attributeName: string;
+    value: string;
+    allowFiltering: boolean;
+    showOnProductPage: boolean;
+    displayOrder: number;
+  }[];
   stockQuantity?: number;
   minStockQuantity?: number;
   lowStockQuantity?: number;
@@ -283,6 +292,7 @@ export function ProductForm({
     productAttributes: initialValues?.productAttributes || [],
     attributeCombinations: initialValues?.attributeCombinations || [],
     displayOnlyAttributeImages: Boolean(initialValues?.displayOnlyAttributeImages),
+    specificationAttributes: initialValues?.specificationAttributes || [],
     stockQuantity:
       initialValues?.stockQuantity !== undefined
         ? initialValues.stockQuantity
@@ -507,6 +517,51 @@ export function ProductForm({
     pictures: [],
   });
 
+  // Specification Attributes state
+  const [specAttrCollapsed, setSpecAttrCollapsed] = useState(false);
+  const [availableSpecAttrNames, setAvailableSpecAttrNames] = useState<string[]>([
+    'Engine Power',
+    'Fuel Type',
+    'Working Width',
+    'Tank Capacity',
+    'Fabric',
+    'Warranty',
+  ]);
+  const [specAttrPageSize, setSpecAttrPageSize] = useState<number>(15);
+  const [specAttrPage, setSpecAttrPage] = useState<number>(1);
+  const [specAttrModalOpen, setSpecAttrModalOpen] = useState(false);
+  const [editingSpecAttrIdx, setEditingSpecAttrIdx] = useState<number | null>(null);
+  const [specAttrDraft, setSpecAttrDraft] = useState({
+    attributeType: 'Option',
+    attributeName: 'Engine Power',
+    value: '',
+    allowFiltering: true,
+    showOnProductPage: true,
+    displayOrder: 1,
+  });
+
+  useEffect(() => {
+    fetch('/api/admin/catalogue/attributes/specification', { cache: 'no-store' })
+      .then((r) => r.json())
+      .then((res) => {
+        if (res.success && Array.isArray(res.data) && res.data.length > 0) {
+          const names = Array.from(
+            new Set([
+              ...res.data.map((a: any) => a.name).filter(Boolean),
+              'Engine Power',
+              'Fuel Type',
+              'Working Width',
+              'Tank Capacity',
+              'Fabric',
+              'Warranty',
+            ])
+          ) as string[];
+          setAvailableSpecAttrNames(names);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
   useEffect(() => {
     fetch('/api/admin/catalogue/attributes/product', { cache: 'no-store' })
       .then((r) => r.json())
@@ -641,6 +696,9 @@ export function ProductForm({
         initialValues.displayOnlyAttributeImages !== undefined
           ? Boolean(initialValues.displayOnlyAttributeImages)
           : prev.displayOnlyAttributeImages,
+      specificationAttributes: Array.isArray(initialValues.specificationAttributes)
+        ? initialValues.specificationAttributes
+        : prev.specificationAttributes,
       stockQuantity:
         initialValues.stockQuantity !== undefined
           ? Number(initialValues.stockQuantity)
@@ -3840,6 +3898,354 @@ export function ProductForm({
           </div>
         )}
       </div>
+
+      {/* SPECIFICATION ATTRIBUTES CARD */}
+      <div className="bg-white rounded border border-[#d2d6de] border-t-2 border-t-[#00c0ef] shadow-2xs overflow-hidden">
+        <div
+          onClick={() => setSpecAttrCollapsed(!specAttrCollapsed)}
+          className="px-4 py-2.5 border-b border-[#f4f4f4] flex items-center justify-between cursor-pointer select-none bg-white hover:bg-slate-50/50 transition"
+        >
+          <h3 className="font-normal text-slate-800 text-sm flex items-center gap-2">
+            <Settings className="w-4 h-4 text-slate-700" />
+            <span>Specification attributes</span>
+          </h3>
+          <button type="button" className="p-1 text-slate-500 hover:text-slate-700 cursor-pointer">
+            {specAttrCollapsed ? <Plus className="w-3.5 h-3.5" /> : <Minus className="w-3.5 h-3.5" />}
+          </button>
+        </div>
+
+        {!specAttrCollapsed && (() => {
+          const specs = formData.specificationAttributes || [];
+          const totalSpecs = specs.length;
+          const totalPages = Math.max(1, Math.ceil(totalSpecs / specAttrPageSize));
+          const safePage = Math.min(specAttrPage, totalPages);
+          const startIdx = totalSpecs === 0 ? 0 : (safePage - 1) * specAttrPageSize + 1;
+          const endIdx = Math.min(safePage * specAttrPageSize, totalSpecs);
+          const pageRows = specs.slice((safePage - 1) * specAttrPageSize, safePage * specAttrPageSize);
+
+          return (
+            <div className="p-4 sm:p-5 space-y-4 text-xs text-slate-700">
+              <p className="text-xs text-slate-600 leading-relaxed">
+                Specification attributes are product features i.e, screen size, number of USB-ports, visible on product details page. Specification attributes can be used for filtering products on the category details page. Unlike product attributes, specification attributes are used for information purposes only. You can add attribute for your product using existing list of attributes, or if you need to create a new one go to Catalog &gt; Attributes &gt; Specification attributes.
+              </p>
+
+              <div className="overflow-x-auto border border-[#d2d6de] rounded-xs">
+                <table className="w-full text-left border-collapse text-xs">
+                  <thead>
+                    <tr className="bg-[#f9f9f9] border-b border-[#d2d6de] text-slate-700 font-semibold">
+                      <th className="py-2.5 px-3 border-r border-[#d2d6de]">Attribute type</th>
+                      <th className="py-2.5 px-3 border-r border-[#d2d6de]">Attribute</th>
+                      <th className="py-2.5 px-3 border-r border-[#d2d6de]">Value</th>
+                      <th className="py-2.5 px-3 border-r border-[#d2d6de] text-center">Allow filtering</th>
+                      <th className="py-2.5 px-3 border-r border-[#d2d6de] text-center">Show on product page</th>
+                      <th className="py-2.5 px-3 border-r border-[#d2d6de] text-center">Display order</th>
+                      <th className="py-2.5 px-3 text-center">Edit</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-[#d2d6de]">
+                    {pageRows.length === 0 ? (
+                      <tr>
+                        <td colSpan={7} className="py-5 text-center text-slate-400">
+                          No data available in table
+                        </td>
+                      </tr>
+                    ) : (
+                      pageRows.map((spec, idx) => {
+                        const realIdx = (safePage - 1) * specAttrPageSize + idx;
+                        return (
+                          <tr key={spec.id || realIdx} className="bg-white hover:bg-slate-50/60">
+                            <td className="py-2.5 px-3 border-r border-[#d2d6de] text-slate-700">
+                              {spec.attributeType}
+                            </td>
+                            <td className="py-2.5 px-3 border-r border-[#d2d6de] font-medium text-slate-800">
+                              {spec.attributeName}
+                            </td>
+                            <td className="py-2.5 px-3 border-r border-[#d2d6de] text-slate-700">
+                              {spec.value}
+                            </td>
+                            <td className="py-2.5 px-3 border-r border-[#d2d6de] text-center">
+                              {spec.allowFiltering ? (
+                                <Check className="w-4 h-4 text-[#2585be] stroke-[2.5] mx-auto" />
+                              ) : (
+                                <X className="w-4 h-4 text-[#dd4b39] stroke-[2.5] mx-auto" />
+                              )}
+                            </td>
+                            <td className="py-2.5 px-3 border-r border-[#d2d6de] text-center">
+                              {spec.showOnProductPage ? (
+                                <Check className="w-4 h-4 text-[#2585be] stroke-[2.5] mx-auto" />
+                              ) : (
+                                <X className="w-4 h-4 text-[#dd4b39] stroke-[2.5] mx-auto" />
+                              )}
+                            </td>
+                            <td className="py-2.5 px-3 border-r border-[#d2d6de] text-center text-slate-700">
+                              {spec.displayOrder}
+                            </td>
+                            <td className="py-2 px-3 text-center">
+                              <div className="inline-flex items-center gap-1.5">
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setEditingSpecAttrIdx(realIdx);
+                                    setSpecAttrDraft({
+                                      attributeType: spec.attributeType,
+                                      attributeName: spec.attributeName,
+                                      value: spec.value,
+                                      allowFiltering: spec.allowFiltering,
+                                      showOnProductPage: spec.showOnProductPage,
+                                      displayOrder: spec.displayOrder,
+                                    });
+                                    setSpecAttrModalOpen(true);
+                                  }}
+                                  className="inline-flex items-center gap-1 px-2.5 py-1 bg-white border border-[#d2d6de] hover:bg-slate-50 text-slate-700 rounded text-xs cursor-pointer shadow-2xs"
+                                >
+                                  <Pencil className="w-3 h-3" />
+                                  <span>Edit</span>
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    setFormData((prev) => ({
+                                      ...prev,
+                                      specificationAttributes: (
+                                        prev.specificationAttributes || []
+                                      ).filter((_, i) => i !== realIdx),
+                                    }))
+                                  }
+                                  className="inline-flex items-center p-1 bg-white border border-[#d2d6de] hover:bg-red-50 hover:text-red-600 text-slate-500 rounded text-xs cursor-pointer shadow-2xs"
+                                  title="Delete specification attribute"
+                                >
+                                  <Trash2 className="w-3 h-3" />
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })
+                    )}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Pagination Footer */}
+              <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-slate-600">
+                <div className="flex items-center">
+                  <button
+                    type="button"
+                    disabled={safePage <= 1}
+                    onClick={() => setSpecAttrPage((p) => Math.max(1, p - 1))}
+                    className="px-2.5 py-1 border border-[#d2d6de] rounded-l bg-white text-slate-500 disabled:opacity-50 hover:bg-slate-50 cursor-pointer disabled:cursor-default"
+                  >
+                    Previous
+                  </button>
+                  <button
+                    type="button"
+                    className="px-2.5 py-1 border-y border-r border-[#2585be] bg-[#2585be] text-white font-medium"
+                  >
+                    {safePage}
+                  </button>
+                  <button
+                    type="button"
+                    disabled={safePage >= totalPages}
+                    onClick={() => setSpecAttrPage((p) => Math.min(totalPages, p + 1))}
+                    className="px-2.5 py-1 border-y border-r border-[#d2d6de] rounded-r bg-white text-slate-500 disabled:opacity-50 hover:bg-slate-50 cursor-pointer disabled:cursor-default"
+                  >
+                    Next
+                  </button>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <span>Show</span>
+                  <select
+                    value={specAttrPageSize}
+                    onChange={(e) => {
+                      setSpecAttrPageSize(Number(e.target.value));
+                      setSpecAttrPage(1);
+                    }}
+                    className="border border-[#d2d6de] rounded px-2 py-1 text-xs bg-white"
+                  >
+                    <option value={15}>15</option>
+                    <option value={25}>25</option>
+                    <option value={50}>50</option>
+                  </select>
+                  <span>items</span>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <span>
+                    {totalSpecs === 0 ? 'No records' : `${startIdx}-${endIdx} of ${totalSpecs} items`}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setFormData((prev) => ({ ...prev }))}
+                    title="Refresh"
+                    className="p-1.5 border border-[#d2d6de] rounded bg-white hover:bg-slate-50 text-slate-600 cursor-pointer"
+                  >
+                    <RefreshCw className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Add attribute button */}
+              <div className="pt-1">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEditingSpecAttrIdx(null);
+                    setSpecAttrDraft({
+                      attributeType: 'Option',
+                      attributeName: availableSpecAttrNames[0] || 'Engine Power',
+                      value: '',
+                      allowFiltering: true,
+                      showOnProductPage: true,
+                      displayOrder: 1,
+                    });
+                    setSpecAttrModalOpen(true);
+                  }}
+                  className="bg-[#2585be] hover:bg-[#1f72a3] text-white text-xs font-semibold px-3.5 py-2 rounded inline-flex items-center gap-1.5 shadow-2xs transition cursor-pointer"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>Add attribute</span>
+                </button>
+              </div>
+            </div>
+          );
+        })()}
+      </div>
+
+      {/* Add / Edit Specification Attribute Modal */}
+      {specAttrModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full border border-slate-200 overflow-hidden text-xs">
+            <div className="px-4 py-3 bg-slate-50 border-b border-slate-200 flex justify-between items-center">
+              <h4 className="font-semibold text-sm text-slate-800">
+                {editingSpecAttrIdx !== null ? 'Edit specification attribute' : 'Add specification attribute'}
+              </h4>
+              <button
+                type="button"
+                onClick={() => setSpecAttrModalOpen(false)}
+                className="text-slate-400 hover:text-slate-600 cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            <div className="p-4 space-y-3">
+              <div>
+                <label className="block font-medium text-slate-700 mb-1">Attribute type</label>
+                <select
+                  value={specAttrDraft.attributeType}
+                  onChange={(e) => setSpecAttrDraft({ ...specAttrDraft, attributeType: e.target.value })}
+                  className="w-full border border-[#d2d6de] rounded px-2.5 py-1.5 text-xs bg-white"
+                >
+                  <option value="Option">Option</option>
+                  <option value="Custom text">Custom text</option>
+                  <option value="Custom HTML text">Custom HTML text</option>
+                  <option value="Hyperlink">Hyperlink</option>
+                </select>
+              </div>
+              <div>
+                <label className="block font-medium text-slate-700 mb-1">Attribute</label>
+                <input
+                  type="text"
+                  list="spec-attr-options"
+                  value={specAttrDraft.attributeName}
+                  onChange={(e) => setSpecAttrDraft({ ...specAttrDraft, attributeName: e.target.value })}
+                  placeholder="Select or type attribute name..."
+                  className="w-full border border-[#d2d6de] rounded px-2.5 py-1.5 text-xs bg-white"
+                />
+                <datalist id="spec-attr-options">
+                  {availableSpecAttrNames.map((name) => (
+                    <option key={name} value={name} />
+                  ))}
+                </datalist>
+              </div>
+              <div>
+                <label className="block font-medium text-slate-700 mb-1">Value</label>
+                <input
+                  type="text"
+                  value={specAttrDraft.value}
+                  onChange={(e) => setSpecAttrDraft({ ...specAttrDraft, value: e.target.value })}
+                  placeholder="e.g. 7 HP, Yes, https://..."
+                  className="w-full border border-[#d2d6de] rounded px-2.5 py-1.5 text-xs"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-3 pt-1">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={specAttrDraft.allowFiltering}
+                    onChange={(e) =>
+                      setSpecAttrDraft({ ...specAttrDraft, allowFiltering: e.target.checked })
+                    }
+                    className="h-4 w-4 rounded border-slate-300 text-[#3c8dbc]"
+                  />
+                  <span className="font-medium text-slate-700">Allow filtering</span>
+                </label>
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={specAttrDraft.showOnProductPage}
+                    onChange={(e) =>
+                      setSpecAttrDraft({ ...specAttrDraft, showOnProductPage: e.target.checked })
+                    }
+                    className="h-4 w-4 rounded border-slate-300 text-[#3c8dbc]"
+                  />
+                  <span className="font-medium text-slate-700">Show on product page</span>
+                </label>
+              </div>
+              <div>
+                <label className="block font-medium text-slate-700 mb-1">Display order</label>
+                <input
+                  type="number"
+                  value={specAttrDraft.displayOrder}
+                  onChange={(e) =>
+                    setSpecAttrDraft({
+                      ...specAttrDraft,
+                      displayOrder: parseInt(e.target.value, 10) || 0,
+                    })
+                  }
+                  className="w-full border border-[#d2d6de] rounded px-2.5 py-1.5 text-xs"
+                />
+              </div>
+            </div>
+            <div className="px-4 py-3 bg-slate-50 border-t border-slate-200 flex justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => setSpecAttrModalOpen(false)}
+                className="px-3 py-1.5 bg-white border border-slate-300 rounded text-slate-700 cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  if (!specAttrDraft.attributeName.trim() || !specAttrDraft.value.trim()) {
+                    showToast('Please enter Attribute and Value.');
+                    return;
+                  }
+                  const current = formData.specificationAttributes || [];
+                  if (editingSpecAttrIdx !== null) {
+                    const next = current.map((item, idx) =>
+                      idx === editingSpecAttrIdx ? { ...item, ...specAttrDraft } : item
+                    );
+                    handleChange('specificationAttributes', next);
+                  } else {
+                    const next = [
+                      ...current,
+                      { id: `spec-${Date.now()}`, ...specAttrDraft },
+                    ];
+                    handleChange('specificationAttributes', next);
+                  }
+                  setSpecAttrModalOpen(false);
+                  showToast('Specification attribute saved.');
+                }}
+                className="px-4 py-1.5 bg-[#2585be] hover:bg-[#1f72a3] text-white font-semibold rounded cursor-pointer"
+              >
+                Save
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Full-Page View: Add a new attribute / Edit product attribute */}
       {attrModalOpen && (
