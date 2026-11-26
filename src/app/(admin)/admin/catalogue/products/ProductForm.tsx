@@ -97,10 +97,14 @@ export interface ProductFormData {
       attributeValueType: string;
       name: string;
       associatedProduct: string;
+      rgbColor?: string;
       priceAdjustment: number;
+      priceAdjustmentUsePercentage?: boolean;
       weightAdjustment: number;
+      cost?: number;
       isPreSelected: boolean;
       picture: string;
+      pictures?: string[];
       displayOrder: number;
     }[];
   }[];
@@ -421,10 +425,14 @@ export function ProductForm({
       attributeValueType: string;
       name: string;
       associatedProduct: string;
+      rgbColor?: string;
       priceAdjustment: number;
+      priceAdjustmentUsePercentage?: boolean;
       weightAdjustment: number;
+      cost?: number;
       isPreSelected: boolean;
       picture: string;
+      pictures?: string[];
       displayOrder: number;
     }[];
   }>({
@@ -440,14 +448,31 @@ export function ProductForm({
   const [valModalOpen, setValModalOpen] = useState(false);
   const [editingValIdx, setEditingValIdx] = useState<number | null>(null);
   const [valPageSize, setValPageSize] = useState(15);
-  const [valDraft, setValDraft] = useState({
+  const [valDraft, setValDraft] = useState<{
+    attributeValueType: string;
+    name: string;
+    associatedProduct: string;
+    rgbColor: string;
+    priceAdjustment: number;
+    priceAdjustmentUsePercentage: boolean;
+    weightAdjustment: number;
+    cost: number;
+    isPreSelected: boolean;
+    picture: string;
+    pictures: string[];
+    displayOrder: number;
+  }>({
     attributeValueType: 'Simple',
     name: '',
     associatedProduct: '',
+    rgbColor: '#000000',
     priceAdjustment: 0,
+    priceAdjustmentUsePercentage: false,
     weightAdjustment: 0,
+    cost: 0,
     isPreSelected: false,
     picture: '',
+    pictures: [],
     displayOrder: 0,
   });
   const [comboModalOpen, setComboModalOpen] = useState(false);
@@ -4029,10 +4054,19 @@ export function ProductForm({
                                       attributeValueType: val.attributeValueType,
                                       name: val.name,
                                       associatedProduct: val.associatedProduct,
+                                      rgbColor: val.rgbColor || '#000000',
                                       priceAdjustment: val.priceAdjustment,
+                                      priceAdjustmentUsePercentage: Boolean(val.priceAdjustmentUsePercentage),
                                       weightAdjustment: val.weightAdjustment,
+                                      cost: val.cost ?? 0,
                                       isPreSelected: val.isPreSelected,
                                       picture: val.picture,
+                                      pictures:
+                                        Array.isArray(val.pictures) && val.pictures.length > 0
+                                          ? [...val.pictures]
+                                          : val.picture
+                                          ? [val.picture]
+                                          : [],
                                       displayOrder: val.displayOrder,
                                     });
                                     setValModalOpen(true);
@@ -4117,10 +4151,14 @@ export function ProductForm({
                           attributeValueType: 'Simple',
                           name: '',
                           associatedProduct: '',
+                          rgbColor: '#000000',
                           priceAdjustment: 0,
+                          priceAdjustmentUsePercentage: false,
                           weightAdjustment: 0,
+                          cost: 0,
                           isPreSelected: false,
                           picture: '',
+                          pictures: [],
                           displayOrder: attrDraft.values.length,
                         });
                         setValModalOpen(true);
@@ -4135,142 +4173,366 @@ export function ProductForm({
             </div>
           </div>
 
-          {/* Add / Edit Value Sub-Modal */}
+          {/* Add / Edit Value Sub-Modal (Full detailed view matching screenshot) */}
           {valModalOpen && (
-            <div className="fixed inset-0 z-[60] bg-black/40 flex items-center justify-center p-4">
-              <div className="bg-white rounded-lg shadow-xl max-w-md w-full border border-slate-200 overflow-hidden text-xs">
-                <div className="px-4 py-3 bg-slate-50 border-b border-slate-200 flex justify-between items-center">
-                  <h4 className="font-semibold text-sm text-slate-800">
-                    {editingValIdx !== null ? 'Edit attribute value' : 'Add a new attribute value'}
-                  </h4>
+            <div className="fixed inset-0 z-[60] bg-[#ecf0f5] overflow-y-auto p-4 sm:p-6">
+              <div className="max-w-5xl mx-auto space-y-4 pb-10 text-xs">
+                {/* Top Header */}
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-3">
+                    <h3 className="text-xl font-normal text-slate-800">
+                      {editingValIdx !== null ? 'Edit value' : 'Add a new value'}
+                    </h3>
+                    <button
+                      type="button"
+                      onClick={() => setValModalOpen(false)}
+                      className="text-[#3c8dbc] hover:underline flex items-center gap-1 text-xs font-semibold cursor-pointer"
+                    >
+                      <span className="w-4 h-4 rounded-full bg-[#3c8dbc] text-white inline-flex items-center justify-center text-[10px]">
+                        ←
+                      </span>
+                      <span>back to attribute details</span>
+                    </button>
+                  </div>
+
                   <button
                     type="button"
-                    onClick={() => setValModalOpen(false)}
-                    className="text-slate-400 hover:text-slate-600 cursor-pointer"
+                    onClick={() => {
+                      if (!valDraft.name.trim()) {
+                        showToast('Please enter a Name for the attribute value.');
+                        return;
+                      }
+                      const finalPicture = valDraft.pictures[0] || valDraft.picture || '';
+                      const savedVal = {
+                        ...valDraft,
+                        name: valDraft.name.trim(),
+                        picture: finalPicture,
+                      };
+                      if (editingValIdx !== null) {
+                        setAttrDraft((d) => ({
+                          ...d,
+                          values: d.values.map((item, idx) =>
+                            idx === editingValIdx ? { ...item, ...savedVal } : item
+                          ),
+                        }));
+                      } else {
+                        setAttrDraft((d) => ({
+                          ...d,
+                          values: [...d.values, { id: `aval-${Date.now()}`, ...savedVal }],
+                        }));
+                      }
+                      setValModalOpen(false);
+                      showToast('Attribute value saved.');
+                    }}
+                    className="bg-[#2585be] hover:bg-[#1f72a3] text-white text-xs font-semibold px-4 py-1.5 rounded flex items-center gap-1.5 shadow-xs cursor-pointer"
                   >
-                    <X className="w-4 h-4" />
+                    <Save className="w-3.5 h-3.5" />
+                    <span>Save</span>
                   </button>
                 </div>
-                <div className="p-4 space-y-3 max-h-[75vh] overflow-y-auto">
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className="block font-medium text-slate-700 mb-1">Attribute value type</label>
+
+                {/* Main Card */}
+                <div className="bg-white rounded border border-[#d2d6de] border-t-2 border-t-[#00c0ef] shadow-2xs p-5 sm:p-6 space-y-4">
+                  {/* Attribute value type */}
+                  <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
+                    <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-semibold text-slate-700">
+                      <span>Attribute value type</span>
+                      <Tooltip text="Choose Simple for standard values or Associated to product to link another product." />
+                    </div>
+                    <div className="sm:col-span-9">
                       <select
                         value={valDraft.attributeValueType}
                         onChange={(e) => setValDraft({ ...valDraft, attributeValueType: e.target.value })}
-                        className="w-full border border-[#d2d6de] rounded px-2.5 py-1.5 text-xs bg-white"
+                        className="w-full border border-[#d2d6de] rounded px-2.5 py-2 text-xs bg-white focus:border-[#3c8dbc] outline-none"
                       >
                         <option value="Simple">Simple</option>
                         <option value="Associated to product">Associated to product</option>
                       </select>
                     </div>
-                    <div>
-                      <label className="block font-medium text-slate-700 mb-1">Name</label>
-                      <input
-                        type="text"
-                        value={valDraft.name}
-                        onChange={(e) => setValDraft({ ...valDraft, name: e.target.value })}
-                        placeholder="e.g. White - #FFF"
-                        className="w-full border border-[#d2d6de] rounded px-2.5 py-1.5 text-xs"
-                      />
+                  </div>
+
+                  {/* Associated product (when Associated to product) */}
+                  {valDraft.attributeValueType === 'Associated to product' && (
+                    <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
+                      <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-semibold text-slate-700">
+                        <span>Associated product</span>
+                        <Tooltip text="Select or enter the associated product name/SKU." />
+                      </div>
+                      <div className="sm:col-span-9">
+                        <input
+                          type="text"
+                          value={valDraft.associatedProduct}
+                          onChange={(e) => setValDraft({ ...valDraft, associatedProduct: e.target.value })}
+                          placeholder="Search or enter associated product..."
+                          className="w-full border border-[#d2d6de] rounded px-2.5 py-2 text-xs bg-white focus:border-[#3c8dbc] outline-none"
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Name */}
+                  <div className="border border-[#d2d6de] rounded-xs p-4 bg-[#fdfdfd]">
+                    <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
+                      <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-semibold text-slate-700">
+                        <span>Name</span>
+                        <Tooltip text="Enter the attribute value name (e.g. White - #FFF, Red, 7HP)." />
+                      </div>
+                      <div className="sm:col-span-9 flex items-center gap-1.5">
+                        <input
+                          type="text"
+                          value={valDraft.name}
+                          onChange={(e) => setValDraft({ ...valDraft, name: e.target.value })}
+                          className="w-full border border-[#d2d6de] rounded px-2.5 py-2 text-xs bg-white focus:border-[#3c8dbc] outline-none"
+                        />
+                        <span className="text-red-500 font-bold text-sm leading-none">*</span>
+                      </div>
                     </div>
                   </div>
-                  <div>
-                    <label className="block font-medium text-slate-700 mb-1">Associated product</label>
-                    <input
-                      type="text"
-                      value={valDraft.associatedProduct}
-                      onChange={(e) => setValDraft({ ...valDraft, associatedProduct: e.target.value })}
-                      className="w-full border border-[#d2d6de] rounded px-2.5 py-1.5 text-xs"
-                    />
+
+                  {/* RGB color */}
+                  <div className="grid grid-cols-1 sm:grid-cols-12 items-start gap-2">
+                    <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-semibold text-slate-700 pt-2">
+                      <span>RGB color</span>
+                      <Tooltip text="Select or enter the RGB hex color code for Color squares display." />
+                    </div>
+                    <div className="sm:col-span-9 space-y-3">
+                      {/* Hex Color Preview Bar */}
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="text"
+                          value={valDraft.rgbColor}
+                          onChange={(e) => setValDraft({ ...valDraft, rgbColor: e.target.value })}
+                          style={{
+                            backgroundColor: /^#[0-9A-Fa-f]{3,6}$/.test(valDraft.rgbColor)
+                              ? valDraft.rgbColor
+                              : '#000000',
+                            color:
+                              valDraft.rgbColor.toLowerCase() === '#ffffff' ||
+                              valDraft.rgbColor.toLowerCase() === '#fff' ||
+                              valDraft.rgbColor.toLowerCase() === '#ffff00'
+                                ? '#000000'
+                                : '#ffffff',
+                          }}
+                          className="w-full border border-[#d2d6de] rounded px-3 py-2 text-xs font-mono outline-none"
+                        />
+                      </div>
+
+                      {/* Interactive Color Spectrum Picker + Quick Swatches */}
+                      <div className="flex flex-wrap items-center gap-4">
+                        <label className="flex items-center gap-2 cursor-pointer border border-[#d2d6de] rounded px-3 py-1.5 bg-slate-50 hover:bg-slate-100">
+                          <input
+                            type="color"
+                            value={/^#[0-9A-Fa-f]{6}$/.test(valDraft.rgbColor) ? valDraft.rgbColor : '#000000'}
+                            onChange={(e) => setValDraft({ ...valDraft, rgbColor: e.target.value })}
+                            className="w-8 h-8 rounded cursor-pointer border-0 p-0 bg-transparent"
+                          />
+                          <span className="text-xs font-medium text-slate-700">Pick Color</span>
+                        </label>
+
+                        <div className="flex flex-wrap items-center gap-1.5">
+                          {[
+                            '#000000',
+                            '#FFFFFF',
+                            '#DC2626',
+                            '#16A34A',
+                            '#2563EB',
+                            '#EAB308',
+                            '#F97316',
+                            '#9333EA',
+                            '#64748B',
+                          ].map((hex) => (
+                            <button
+                              key={hex}
+                              type="button"
+                              onClick={() => setValDraft({ ...valDraft, rgbColor: hex })}
+                              title={hex}
+                              style={{ backgroundColor: hex }}
+                              className={`w-6 h-6 rounded-full border cursor-pointer transition ${
+                                valDraft.rgbColor.toUpperCase() === hex
+                                  ? 'ring-2 ring-[#3c8dbc] ring-offset-1 border-slate-400 scale-110'
+                                  : 'border-slate-300 hover:scale-105'
+                              }`}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                  <div className="grid grid-cols-3 gap-2">
-                    <div>
-                      <label className="block font-medium text-slate-700 mb-1">Price adjustment</label>
+
+                  {/* Price adjustment */}
+                  <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
+                    <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-semibold text-slate-700">
+                      <span>Price adjustment</span>
+                      <Tooltip text="Amount added to or subtracted from the base product price when this value is selected." />
+                    </div>
+                    <div className="sm:col-span-9">
                       <input
                         type="number"
+                        step="0.01"
                         value={valDraft.priceAdjustment}
                         onChange={(e) =>
                           setValDraft({ ...valDraft, priceAdjustment: parseFloat(e.target.value) || 0 })
                         }
-                        className="w-full border border-[#d2d6de] rounded px-2.5 py-1.5 text-xs"
+                        className="w-full max-w-xs border border-[#d2d6de] rounded px-2.5 py-2 text-xs bg-white focus:border-[#3c8dbc] outline-none"
                       />
                     </div>
-                    <div>
-                      <label className="block font-medium text-slate-700 mb-1">Weight adjustment</label>
+                  </div>
+
+                  {/* Price adjustment. Use percentage */}
+                  <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
+                    <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-semibold text-slate-700 text-right">
+                      <span>Price adjustment. Use percentage</span>
+                      <Tooltip text="Check to calculate the price adjustment as a percentage of the product price." />
+                    </div>
+                    <div className="sm:col-span-9 flex items-center">
+                      <input
+                        type="checkbox"
+                        checked={valDraft.priceAdjustmentUsePercentage}
+                        onChange={(e) =>
+                          setValDraft({ ...valDraft, priceAdjustmentUsePercentage: e.target.checked })
+                        }
+                        className="h-4 w-4 rounded border-slate-300 text-[#3c8dbc] cursor-pointer"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Weight adjustment */}
+                  <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
+                    <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-semibold text-slate-700">
+                      <span>Weight adjustment</span>
+                      <Tooltip text="Weight difference added to or subtracted from the product weight." />
+                    </div>
+                    <div className="sm:col-span-9">
                       <input
                         type="number"
+                        step="0.01"
                         value={valDraft.weightAdjustment}
                         onChange={(e) =>
                           setValDraft({ ...valDraft, weightAdjustment: parseFloat(e.target.value) || 0 })
                         }
-                        className="w-full border border-[#d2d6de] rounded px-2.5 py-1.5 text-xs"
+                        className="w-full max-w-xs border border-[#d2d6de] rounded px-2.5 py-2 text-xs bg-white focus:border-[#3c8dbc] outline-none"
                       />
                     </div>
-                    <div>
-                      <label className="block font-medium text-slate-700 mb-1">Display order</label>
+                  </div>
+
+                  {/* Cost */}
+                  <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
+                    <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-semibold text-slate-700">
+                      <span>Cost</span>
+                      <Tooltip text="Attribute value cost (for internal accounting)." />
+                    </div>
+                    <div className="sm:col-span-9">
+                      <input
+                        type="number"
+                        step="0.01"
+                        value={valDraft.cost}
+                        onChange={(e) =>
+                          setValDraft({ ...valDraft, cost: parseFloat(e.target.value) || 0 })
+                        }
+                        className="w-full max-w-xs border border-[#d2d6de] rounded px-2.5 py-2 text-xs bg-white focus:border-[#3c8dbc] outline-none"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Is pre-selected */}
+                  <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
+                    <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-semibold text-slate-700">
+                      <span>Is pre-selected</span>
+                      <Tooltip text="Check if this attribute value should be selected by default." />
+                    </div>
+                    <div className="sm:col-span-9 flex items-center">
+                      <input
+                        type="checkbox"
+                        checked={valDraft.isPreSelected}
+                        onChange={(e) =>
+                          setValDraft({ ...valDraft, isPreSelected: e.target.checked })
+                        }
+                        className="h-4 w-4 rounded border-slate-300 text-[#3c8dbc] cursor-pointer"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Display order */}
+                  <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
+                    <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-semibold text-slate-700">
+                      <span>Display order</span>
+                      <Tooltip text="Display order of this attribute value." />
+                    </div>
+                    <div className="sm:col-span-9">
                       <input
                         type="number"
                         value={valDraft.displayOrder}
                         onChange={(e) =>
                           setValDraft({ ...valDraft, displayOrder: parseInt(e.target.value, 10) || 0 })
                         }
-                        className="w-full border border-[#d2d6de] rounded px-2.5 py-1.5 text-xs"
+                        className="w-full border border-[#d2d6de] rounded px-2.5 py-2 text-xs bg-white focus:border-[#3c8dbc] outline-none"
                       />
                     </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="checkbox"
-                      id="valPreSelected"
-                      checked={valDraft.isPreSelected}
-                      onChange={(e) => setValDraft({ ...valDraft, isPreSelected: e.target.checked })}
-                      className="h-4 w-4 rounded border-slate-300 text-[#3c8dbc]"
-                    />
-                    <label htmlFor="valPreSelected" className="font-medium text-slate-700">
-                      Is pre-selected
-                    </label>
+
+                  {/* Pictures */}
+                  <div className="grid grid-cols-1 sm:grid-cols-12 items-start gap-2 pt-1">
+                    <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-semibold text-slate-700 pt-2">
+                      <span>Pictures</span>
+                      <Tooltip text="Select product picture(s) associated with this attribute value, or upload a new picture." />
+                    </div>
+                    <div className="sm:col-span-9 space-y-3">
+                      {formData.images && formData.images.length > 0 && (
+                        <div className="space-y-2.5">
+                          {formData.images.map((imgUrl, imgIdx) => {
+                            const isChecked = valDraft.pictures.includes(imgUrl);
+                            return (
+                              <label
+                                key={`${imgIdx}-${imgUrl.slice(0, 24)}`}
+                                className="flex items-start gap-2.5 cursor-pointer w-fit"
+                              >
+                                <input
+                                  type="checkbox"
+                                  checked={isChecked}
+                                  onChange={(e) => {
+                                    const nextPics = e.target.checked
+                                      ? [...valDraft.pictures, imgUrl]
+                                      : valDraft.pictures.filter((u) => u !== imgUrl);
+                                    setValDraft({
+                                      ...valDraft,
+                                      pictures: nextPics,
+                                      picture: nextPics[0] || '',
+                                    });
+                                  }}
+                                  className="mt-1 h-4 w-4 rounded border-slate-300 text-[#3c8dbc]"
+                                />
+                                <img
+                                  src={imgUrl}
+                                  alt={`Product picture ${imgIdx + 1}`}
+                                  className={`w-20 h-20 object-contain border rounded bg-white p-0.5 ${
+                                    isChecked ? 'border-[#3c8dbc] ring-2 ring-[#3c8dbc]/30' : 'border-slate-200'
+                                  }`}
+                                />
+                              </label>
+                            );
+                          })}
+                        </div>
+                      )}
+
+                      <div className="pt-1">
+                        <span className="block text-[11px] font-medium text-slate-500 mb-1">
+                          Or upload / pick another picture:
+                        </span>
+                        <ImageEditorField
+                          value={valDraft.picture}
+                          onChange={(url) => {
+                            if (url) {
+                              const nextPics = valDraft.pictures.includes(url)
+                                ? valDraft.pictures
+                                : [url, ...valDraft.pictures];
+                              setValDraft({ ...valDraft, picture: url, pictures: nextPics });
+                            }
+                          }}
+                          previewHeight="h-24"
+                        />
+                      </div>
+                    </div>
                   </div>
-                  <div>
-                    <label className="block font-medium text-slate-700 mb-1">Picture</label>
-                    <ImageEditorField
-                      value={valDraft.picture}
-                      onChange={(url) => setValDraft({ ...valDraft, picture: url })}
-                      previewHeight="h-24"
-                    />
-                  </div>
-                </div>
-                <div className="px-4 py-3 bg-slate-50 border-t border-slate-200 flex justify-end gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setValModalOpen(false)}
-                    className="px-3 py-1.5 bg-white border border-slate-300 rounded text-slate-700 cursor-pointer"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (!valDraft.name.trim()) return;
-                      if (editingValIdx !== null) {
-                        setAttrDraft((d) => ({
-                          ...d,
-                          values: d.values.map((item, idx) =>
-                            idx === editingValIdx ? { ...item, ...valDraft } : item
-                          ),
-                        }));
-                      } else {
-                        setAttrDraft((d) => ({
-                          ...d,
-                          values: [...d.values, { id: `aval-${Date.now()}`, ...valDraft }],
-                        }));
-                      }
-                      setValModalOpen(false);
-                    }}
-                    className="px-4 py-1.5 bg-[#2585be] hover:bg-[#1f72a3] text-white font-semibold rounded cursor-pointer"
-                  >
-                    Save
-                  </button>
                 </div>
               </div>
             </div>
