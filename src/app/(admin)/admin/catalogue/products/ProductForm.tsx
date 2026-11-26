@@ -527,17 +527,25 @@ export function ProductForm({
     'Fabric',
     'Warranty',
   ]);
+  const [availableSpecAttrMap, setAvailableSpecAttrMap] = useState<Record<string, string[]>>({
+    Fabric: ['Leather', 'Cotton', 'Nylon', 'Polyester'],
+    'Engine Power': ['5 HP', '7 HP', '9 HP', '12 HP'],
+    'Fuel Type': ['Diesel', 'Petrol', 'Electric', 'Battery'],
+    'Working Width': ['600 mm', '900 mm', '1200 mm'],
+    'Tank Capacity': ['16 L', '20 L', '50 L'],
+    Warranty: ['1 Year', '2 Years', '6 Months'],
+  });
   const [specAttrPageSize, setSpecAttrPageSize] = useState<number>(15);
   const [specAttrPage, setSpecAttrPage] = useState<number>(1);
   const [specAttrModalOpen, setSpecAttrModalOpen] = useState(false);
   const [editingSpecAttrIdx, setEditingSpecAttrIdx] = useState<number | null>(null);
   const [specAttrDraft, setSpecAttrDraft] = useState({
     attributeType: 'Option',
-    attributeName: 'Engine Power',
-    value: '',
-    allowFiltering: true,
+    attributeName: 'Fabric',
+    value: 'Leather',
+    allowFiltering: false,
     showOnProductPage: true,
-    displayOrder: 1,
+    displayOrder: 0,
   });
 
   useEffect(() => {
@@ -548,15 +556,24 @@ export function ProductForm({
           const names = Array.from(
             new Set([
               ...res.data.map((a: any) => a.name).filter(Boolean),
+              'Fabric',
               'Engine Power',
               'Fuel Type',
               'Working Width',
               'Tank Capacity',
-              'Fabric',
               'Warranty',
             ])
           ) as string[];
           setAvailableSpecAttrNames(names);
+          setAvailableSpecAttrMap((prev) => {
+            const next = { ...prev };
+            res.data.forEach((a: any) => {
+              if (a.name && Array.isArray(a.options) && a.options.length > 0) {
+                next[a.name] = a.options.map((o: any) => (typeof o === 'string' ? o : o.name)).filter(Boolean);
+              }
+            });
+            return next;
+          });
         }
       })
       .catch(() => {});
@@ -4091,13 +4108,15 @@ export function ProductForm({
                   type="button"
                   onClick={() => {
                     setEditingSpecAttrIdx(null);
+                    const firstAttr = availableSpecAttrNames[0] || 'Fabric';
+                    const firstOpts = availableSpecAttrMap[firstAttr] || [];
                     setSpecAttrDraft({
                       attributeType: 'Option',
-                      attributeName: availableSpecAttrNames[0] || 'Engine Power',
-                      value: '',
-                      allowFiltering: true,
+                      attributeName: firstAttr,
+                      value: firstOpts[0] || '',
+                      allowFiltering: false,
                       showOnProductPage: true,
-                      displayOrder: 1,
+                      displayOrder: 0,
                     });
                     setSpecAttrModalOpen(true);
                   }}
@@ -4112,136 +4131,294 @@ export function ProductForm({
         })()}
       </div>
 
-      {/* Add / Edit Specification Attribute Modal */}
+      {/* Full-Page View: Add a new product specification attribute / Edit */}
       {specAttrModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4">
-          <div className="bg-white rounded-lg shadow-xl max-w-md w-full border border-slate-200 overflow-hidden text-xs">
-            <div className="px-4 py-3 bg-slate-50 border-b border-slate-200 flex justify-between items-center">
-              <h4 className="font-semibold text-sm text-slate-800">
-                {editingSpecAttrIdx !== null ? 'Edit specification attribute' : 'Add specification attribute'}
-              </h4>
-              <button
-                type="button"
-                onClick={() => setSpecAttrModalOpen(false)}
-                className="text-slate-400 hover:text-slate-600 cursor-pointer"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-            <div className="p-4 space-y-3">
-              <div>
-                <label className="block font-medium text-slate-700 mb-1">Attribute type</label>
-                <select
-                  value={specAttrDraft.attributeType}
-                  onChange={(e) => setSpecAttrDraft({ ...specAttrDraft, attributeType: e.target.value })}
-                  className="w-full border border-[#d2d6de] rounded px-2.5 py-1.5 text-xs bg-white"
+        <div className="fixed inset-0 z-50 bg-[#ecf0f5] overflow-y-auto p-4 sm:p-6">
+          <div className="max-w-7xl mx-auto space-y-4 pb-12 text-xs">
+            {/* Top Header */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <h2 className="text-xl sm:text-2xl font-normal text-slate-800">
+                  {editingSpecAttrIdx !== null
+                    ? 'Edit product specification attribute'
+                    : 'Add a new product specification attribute'}
+                </h2>
+                <button
+                  type="button"
+                  onClick={() => setSpecAttrModalOpen(false)}
+                  className="text-[#3c8dbc] hover:underline flex items-center gap-1 text-xs font-semibold cursor-pointer"
                 >
-                  <option value="Option">Option</option>
-                  <option value="Custom text">Custom text</option>
-                  <option value="Custom HTML text">Custom HTML text</option>
-                  <option value="Hyperlink">Hyperlink</option>
-                </select>
+                  <span className="w-4 h-4 rounded-full bg-[#3c8dbc] text-white inline-flex items-center justify-center text-[10px]">
+                    ←
+                  </span>
+                  <span>back to product details</span>
+                </button>
               </div>
-              <div>
-                <label className="block font-medium text-slate-700 mb-1">Attribute</label>
-                <input
-                  type="text"
-                  list="spec-attr-options"
-                  value={specAttrDraft.attributeName}
-                  onChange={(e) => setSpecAttrDraft({ ...specAttrDraft, attributeName: e.target.value })}
-                  placeholder="Select or type attribute name..."
-                  className="w-full border border-[#d2d6de] rounded px-2.5 py-1.5 text-xs bg-white"
-                />
-                <datalist id="spec-attr-options">
-                  {availableSpecAttrNames.map((name) => (
-                    <option key={name} value={name} />
-                  ))}
-                </datalist>
+
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (!specAttrDraft.attributeName.trim() || !specAttrDraft.value.trim()) {
+                      showToast('Please enter Attribute and Value.');
+                      return;
+                    }
+                    const current = formData.specificationAttributes || [];
+                    if (editingSpecAttrIdx !== null) {
+                      const next = current.map((item, idx) =>
+                        idx === editingSpecAttrIdx ? { ...item, ...specAttrDraft } : item
+                      );
+                      handleChange('specificationAttributes', next);
+                    } else {
+                      const next = [
+                        ...current,
+                        { id: `spec-${Date.now()}`, ...specAttrDraft },
+                      ];
+                      handleChange('specificationAttributes', next);
+                    }
+                    setSpecAttrModalOpen(false);
+                    showToast('Specification attribute saved.');
+                  }}
+                  className="bg-[#2585be] hover:bg-[#1f72a3] text-white text-xs font-semibold px-3.5 py-1.5 rounded flex items-center gap-1.5 shadow-xs cursor-pointer"
+                >
+                  <Save className="w-3.5 h-3.5" />
+                  <span>Save</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (!specAttrDraft.attributeName.trim() || !specAttrDraft.value.trim()) {
+                      showToast('Please enter Attribute and Value.');
+                      return;
+                    }
+                    const current = formData.specificationAttributes || [];
+                    if (editingSpecAttrIdx !== null) {
+                      const next = current.map((item, idx) =>
+                        idx === editingSpecAttrIdx ? { ...item, ...specAttrDraft } : item
+                      );
+                      handleChange('specificationAttributes', next);
+                    } else {
+                      const next = [
+                        ...current,
+                        { id: `spec-${Date.now()}`, ...specAttrDraft },
+                      ];
+                      handleChange('specificationAttributes', next);
+                      setEditingSpecAttrIdx(next.length - 1);
+                    }
+                    showToast('Specification attribute saved. Continue editing.');
+                  }}
+                  className="bg-[#2585be] hover:bg-[#1f72a3] text-white text-xs font-semibold px-3.5 py-1.5 rounded flex items-center gap-1.5 shadow-xs cursor-pointer"
+                >
+                  <Save className="w-3.5 h-3.5" />
+                  <span>Save and Continue Edit</span>
+                </button>
+
+                {editingSpecAttrIdx !== null && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const next = (formData.specificationAttributes || []).filter(
+                        (_, i) => i !== editingSpecAttrIdx
+                      );
+                      handleChange('specificationAttributes', next);
+                      setSpecAttrModalOpen(false);
+                      showToast('Specification attribute deleted.');
+                    }}
+                    className="bg-[#dd4b39] hover:bg-[#c9302c] text-white text-xs font-semibold px-3.5 py-1.5 rounded flex items-center gap-1.5 shadow-xs cursor-pointer"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                    <span>Delete</span>
+                  </button>
+                )}
               </div>
-              <div>
-                <label className="block font-medium text-slate-700 mb-1">Value</label>
-                <input
-                  type="text"
-                  value={specAttrDraft.value}
-                  onChange={(e) => setSpecAttrDraft({ ...specAttrDraft, value: e.target.value })}
-                  placeholder="e.g. 7 HP, Yes, https://..."
-                  className="w-full border border-[#d2d6de] rounded px-2.5 py-1.5 text-xs"
-                />
+            </div>
+
+            {/* Main Card */}
+            <div className="bg-white rounded border border-[#d2d6de] border-t-2 border-t-[#00c0ef] shadow-2xs p-5 sm:p-6 space-y-4">
+              {/* Attribute type */}
+              <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
+                <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-semibold text-slate-700">
+                  <span>Attribute type</span>
+                  <Tooltip text="Choose Option to pick a predefined attribute option, or Custom text / Custom HTML text / Hyperlink." />
+                </div>
+                <div className="sm:col-span-9">
+                  <select
+                    value={specAttrDraft.attributeType}
+                    onChange={(e) =>
+                      setSpecAttrDraft({ ...specAttrDraft, attributeType: e.target.value })
+                    }
+                    className="w-full border border-[#d2d6de] rounded px-2.5 py-2 text-xs bg-white focus:border-[#3c8dbc] outline-none"
+                  >
+                    <option value="Option">Option</option>
+                    <option value="Custom text">Custom text</option>
+                    <option value="Custom HTML text">Custom HTML text</option>
+                    <option value="Hyperlink">Hyperlink</option>
+                  </select>
+                </div>
               </div>
-              <div className="grid grid-cols-2 gap-3 pt-1">
-                <label className="flex items-center gap-2 cursor-pointer">
+
+              {/* Attribute */}
+              <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
+                <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-semibold text-slate-700">
+                  <span>Attribute</span>
+                  <Tooltip text="Select the specification attribute." />
+                </div>
+                <div className="sm:col-span-9">
+                  <select
+                    value={specAttrDraft.attributeName}
+                    onChange={(e) => {
+                      const nextName = e.target.value;
+                      const opts = availableSpecAttrMap[nextName] || [];
+                      setSpecAttrDraft({
+                        ...specAttrDraft,
+                        attributeName: nextName,
+                        value:
+                          specAttrDraft.attributeType === 'Option' && opts.length > 0
+                            ? opts[0]
+                            : specAttrDraft.value,
+                      });
+                    }}
+                    className="w-full border border-[#d2d6de] rounded px-2.5 py-2 text-xs bg-white focus:border-[#3c8dbc] outline-none"
+                  >
+                    {Array.from(
+                      new Set([...availableSpecAttrNames, specAttrDraft.attributeName].filter(Boolean))
+                    ).map((name) => (
+                      <option key={name} value={name}>
+                        {name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              {/* Attribute option (when Option) or Value (when Custom text / HTML / Hyperlink) */}
+              {specAttrDraft.attributeType === 'Option' ? (
+                <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
+                  <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-semibold text-slate-700">
+                    <span>Attribute option</span>
+                    <Tooltip text="Select an option for this specification attribute, or enter a custom value." />
+                  </div>
+                  <div className="sm:col-span-9 space-y-1.5">
+                    <select
+                      value={
+                        (availableSpecAttrMap[specAttrDraft.attributeName] || []).includes(
+                          specAttrDraft.value
+                        )
+                          ? specAttrDraft.value
+                          : '__custom__'
+                      }
+                      onChange={(e) => {
+                        if (e.target.value !== '__custom__') {
+                          setSpecAttrDraft({ ...specAttrDraft, value: e.target.value });
+                        } else {
+                          setSpecAttrDraft({ ...specAttrDraft, value: '' });
+                        }
+                      }}
+                      className="w-full border border-[#d2d6de] rounded px-2.5 py-2 text-xs bg-white focus:border-[#3c8dbc] outline-none"
+                    >
+                      {(availableSpecAttrMap[specAttrDraft.attributeName] || []).map((opt) => (
+                        <option key={opt} value={opt}>
+                          {opt}
+                        </option>
+                      ))}
+                      <option value="__custom__">-- Custom value --</option>
+                    </select>
+                    {!(availableSpecAttrMap[specAttrDraft.attributeName] || []).includes(
+                      specAttrDraft.value
+                    ) && (
+                      <input
+                        type="text"
+                        value={specAttrDraft.value}
+                        onChange={(e) =>
+                          setSpecAttrDraft({ ...specAttrDraft, value: e.target.value })
+                        }
+                        placeholder="Enter option value..."
+                        className="w-full border border-[#d2d6de] rounded px-2.5 py-2 text-xs bg-white focus:border-[#3c8dbc] outline-none"
+                      />
+                    )}
+                  </div>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
+                  <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-semibold text-slate-700">
+                    <span>Value</span>
+                    <Tooltip text="Enter the custom text, HTML, or URL value." />
+                  </div>
+                  <div className="sm:col-span-9">
+                    <input
+                      type="text"
+                      value={specAttrDraft.value}
+                      onChange={(e) =>
+                        setSpecAttrDraft({ ...specAttrDraft, value: e.target.value })
+                      }
+                      placeholder={
+                        specAttrDraft.attributeType === 'Hyperlink'
+                          ? 'https://example.com'
+                          : 'Enter value...'
+                      }
+                      className="w-full border border-[#d2d6de] rounded px-2.5 py-2 text-xs bg-white focus:border-[#3c8dbc] outline-none"
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Allow filtering */}
+              <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
+                <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-semibold text-slate-700">
+                  <span>Allow filtering</span>
+                  <Tooltip text="Check to allow customers to filter products by this specification attribute on category pages." />
+                </div>
+                <div className="sm:col-span-9 flex items-center">
                   <input
                     type="checkbox"
                     checked={specAttrDraft.allowFiltering}
                     onChange={(e) =>
                       setSpecAttrDraft({ ...specAttrDraft, allowFiltering: e.target.checked })
                     }
-                    className="h-4 w-4 rounded border-slate-300 text-[#3c8dbc]"
+                    className="h-4 w-4 rounded border-slate-300 text-[#3c8dbc] cursor-pointer"
                   />
-                  <span className="font-medium text-slate-700">Allow filtering</span>
-                </label>
-                <label className="flex items-center gap-2 cursor-pointer">
+                </div>
+              </div>
+
+              {/* Show on product page */}
+              <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
+                <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-semibold text-slate-700">
+                  <span>Show on product page</span>
+                  <Tooltip text="Check to display this specification attribute on the public product details page." />
+                </div>
+                <div className="sm:col-span-9 flex items-center">
                   <input
                     type="checkbox"
                     checked={specAttrDraft.showOnProductPage}
                     onChange={(e) =>
                       setSpecAttrDraft({ ...specAttrDraft, showOnProductPage: e.target.checked })
                     }
-                    className="h-4 w-4 rounded border-slate-300 text-[#3c8dbc]"
+                    className="h-4 w-4 rounded border-slate-300 text-[#3c8dbc] cursor-pointer"
                   />
-                  <span className="font-medium text-slate-700">Show on product page</span>
-                </label>
+                </div>
               </div>
-              <div>
-                <label className="block font-medium text-slate-700 mb-1">Display order</label>
-                <input
-                  type="number"
-                  value={specAttrDraft.displayOrder}
-                  onChange={(e) =>
-                    setSpecAttrDraft({
-                      ...specAttrDraft,
-                      displayOrder: parseInt(e.target.value, 10) || 0,
-                    })
-                  }
-                  className="w-full border border-[#d2d6de] rounded px-2.5 py-1.5 text-xs"
-                />
+
+              {/* Display order */}
+              <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
+                <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-semibold text-slate-700">
+                  <span>Display order</span>
+                  <Tooltip text="Display order of this specification attribute." />
+                </div>
+                <div className="sm:col-span-9">
+                  <input
+                    type="number"
+                    value={specAttrDraft.displayOrder}
+                    onChange={(e) =>
+                      setSpecAttrDraft({
+                        ...specAttrDraft,
+                        displayOrder: parseInt(e.target.value, 10) || 0,
+                      })
+                    }
+                    className="w-full border border-[#d2d6de] rounded px-2.5 py-2 text-xs bg-white focus:border-[#3c8dbc] outline-none"
+                  />
+                </div>
               </div>
-            </div>
-            <div className="px-4 py-3 bg-slate-50 border-t border-slate-200 flex justify-end gap-2">
-              <button
-                type="button"
-                onClick={() => setSpecAttrModalOpen(false)}
-                className="px-3 py-1.5 bg-white border border-slate-300 rounded text-slate-700 cursor-pointer"
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  if (!specAttrDraft.attributeName.trim() || !specAttrDraft.value.trim()) {
-                    showToast('Please enter Attribute and Value.');
-                    return;
-                  }
-                  const current = formData.specificationAttributes || [];
-                  if (editingSpecAttrIdx !== null) {
-                    const next = current.map((item, idx) =>
-                      idx === editingSpecAttrIdx ? { ...item, ...specAttrDraft } : item
-                    );
-                    handleChange('specificationAttributes', next);
-                  } else {
-                    const next = [
-                      ...current,
-                      { id: `spec-${Date.now()}`, ...specAttrDraft },
-                    ];
-                    handleChange('specificationAttributes', next);
-                  }
-                  setSpecAttrModalOpen(false);
-                  showToast('Specification attribute saved.');
-                }}
-                className="px-4 py-1.5 bg-[#2585be] hover:bg-[#1f72a3] text-white font-semibold rounded cursor-pointer"
-              >
-                Save
-              </button>
             </div>
           </div>
         </div>
