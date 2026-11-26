@@ -16,6 +16,8 @@ export interface SpecOption {
   id: string;
   name: string;
   displayOrder: number;
+  specifyColor?: boolean;
+  rgbColor?: string;
 }
 
 export interface SpecificationAttributeFormData {
@@ -87,7 +89,9 @@ export function SpecificationAttributeForm({
   const [optionModalOpen, setOptionModalOpen] = useState(false);
   const [editingOptionId, setEditingOptionId] = useState<string | null>(null);
   const [optName, setOptName] = useState('');
-  const [optDisplayOrder, setOptDisplayOrder] = useState<number>(1);
+  const [optSpecifyColor, setOptSpecifyColor] = useState(false);
+  const [optRgbColor, setOptRgbColor] = useState('#FFFFFF');
+  const [optDisplayOrder, setOptDisplayOrder] = useState<number>(0);
   const [optError, setOptError] = useState<string | null>(null);
 
   // Toast
@@ -145,7 +149,9 @@ export function SpecificationAttributeForm({
   const handleOpenAddOption = () => {
     setEditingOptionId(null);
     setOptName('');
-    setOptDisplayOrder(options.length + 1);
+    setOptSpecifyColor(false);
+    setOptRgbColor('#FFFFFF');
+    setOptDisplayOrder(0);
     setOptError(null);
     setOptionModalOpen(true);
   };
@@ -153,6 +159,8 @@ export function SpecificationAttributeForm({
   const handleEditOption = (opt: SpecOption) => {
     setEditingOptionId(opt.id);
     setOptName(opt.name);
+    setOptSpecifyColor(Boolean(opt.specifyColor));
+    setOptRgbColor(opt.rgbColor || '#FFFFFF');
     setOptDisplayOrder(opt.displayOrder);
     setOptError(null);
     setOptionModalOpen(true);
@@ -175,7 +183,13 @@ export function SpecificationAttributeForm({
       setOptions((prev) =>
         prev.map((o) =>
           o.id === editingOptionId
-            ? { ...o, name: optName.trim(), displayOrder: Number(optDisplayOrder) || 1 }
+            ? {
+                ...o,
+                name: optName.trim(),
+                specifyColor: optSpecifyColor,
+                rgbColor: optSpecifyColor ? optRgbColor : undefined,
+                displayOrder: Number(optDisplayOrder) || 0,
+              }
             : o
         )
       );
@@ -184,7 +198,9 @@ export function SpecificationAttributeForm({
       const newOpt: SpecOption = {
         id: `opt-${Date.now()}`,
         name: optName.trim(),
-        displayOrder: Number(optDisplayOrder) || options.length + 1,
+        specifyColor: optSpecifyColor,
+        rgbColor: optSpecifyColor ? optRgbColor : undefined,
+        displayOrder: Number(optDisplayOrder) || 0,
       };
       setOptions((prev) => [...prev, newOpt]);
       showToast('Option added', 'success');
@@ -705,76 +721,147 @@ export function SpecificationAttributeForm({
         </div>
       )}
 
-      {/* MODAL: Add / Edit Option */}
+      {/* MODAL / POPUP: Add / Edit Option */}
       {optionModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="bg-white rounded border border-[#d2d6de] shadow-xl w-full max-w-md overflow-hidden animate-fadeIn">
-            <div className="bg-[#f4f6f9] border-b border-[#e5e7eb] px-4 py-3 flex items-center justify-between">
-              <h3 className="font-semibold text-sm text-slate-800">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 overflow-y-auto">
+          <div className="bg-[#f4f6f9] rounded border border-[#d2d6de] shadow-xl w-full max-w-2xl overflow-hidden animate-fadeIn">
+            <div className="bg-[#f4f6f9] border-b border-[#d2d6de] px-5 py-3 flex items-center justify-between">
+              <h3 className="font-normal text-lg text-slate-800">
                 {editingOptionId ? 'Edit option' : 'Add a new option'}
               </h3>
-              <button
-                type="button"
-                onClick={() => setOptionModalOpen(false)}
-                className="text-slate-400 hover:text-slate-700 text-lg leading-none cursor-pointer"
-              >
-                &times;
-              </button>
-            </div>
-
-            <div className="p-4 sm:p-5 space-y-4 text-xs">
-              {optError && (
-                <div className="bg-red-50 border border-red-200 text-red-600 p-2.5 rounded text-xs">
-                  {optError}
-                </div>
-              )}
-
-              <div className="grid grid-cols-12 items-center gap-2">
-                <label className="col-span-4 text-right font-medium text-slate-700">
-                  Name <span className="text-red-500 font-bold">*</span>
-                </label>
-                <div className="col-span-8">
-                  <input
-                    type="text"
-                    required
-                    value={optName}
-                    onChange={(e) => setOptName(e.target.value)}
-                    placeholder="e.g. Yes, No, 500cc"
-                    className="w-full text-xs px-2.5 py-1.5 rounded border border-[#d2d6de] bg-white focus:border-[#3c8dbc] outline-none"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-12 items-center gap-2">
-                <label className="col-span-4 text-right font-medium text-slate-700">
-                  Display order
-                </label>
-                <div className="col-span-8">
-                  <input
-                    type="number"
-                    value={optDisplayOrder}
-                    onChange={(e) => setOptDisplayOrder(parseInt(e.target.value, 10) || 1)}
-                    className="w-full text-xs px-2.5 py-1.5 rounded border border-[#d2d6de] bg-white focus:border-[#3c8dbc] outline-none"
-                  />
-                </div>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={handleSaveOption}
+                  className="bg-[#2585be] hover:bg-[#1f72a3] text-white text-xs font-semibold px-3.5 py-1.5 rounded flex items-center gap-1.5 transition cursor-pointer"
+                >
+                  <Save className="w-3.5 h-3.5" />
+                  <span>Save</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setOptionModalOpen(false)}
+                  className="text-slate-400 hover:text-slate-700 text-xl leading-none px-1 cursor-pointer"
+                >
+                  &times;
+                </button>
               </div>
             </div>
 
-            <div className="bg-[#f4f6f9] border-t border-[#e5e7eb] px-4 py-2.5 flex items-center justify-end gap-2">
-              <button
-                type="button"
-                onClick={() => setOptionModalOpen(false)}
-                className="bg-white border border-[#d2d6de] hover:bg-slate-100 text-slate-700 text-xs font-semibold px-3 py-1.5 rounded transition cursor-pointer"
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                onClick={handleSaveOption}
-                className="bg-[#2585be] hover:bg-[#1f72a3] text-white text-xs font-semibold px-3 py-1.5 rounded transition cursor-pointer"
-              >
-                Save
-              </button>
+            <div className="p-4">
+              <div className="bg-white rounded border border-[#d2d6de] border-t-2 border-t-[#00c0ef] p-5 space-y-4 text-xs">
+                {optError && (
+                  <div className="bg-red-50 border border-red-200 text-red-600 p-2.5 rounded text-xs">
+                    {optError}
+                  </div>
+                )}
+
+                {/* Name */}
+                <div className="border border-[#d2d6de] rounded-xs p-4 bg-[#fdfdfd]">
+                  <div className="grid grid-cols-12 items-center gap-2">
+                    <label className="col-span-4 flex items-center justify-end font-semibold text-slate-700">
+                      <span>Name</span>
+                      <Tooltip text="The name of this specification attribute option." />
+                    </label>
+                    <div className="col-span-8 flex items-center gap-1.5">
+                      <input
+                        type="text"
+                        required
+                        value={optName}
+                        onChange={(e) => setOptName(e.target.value)}
+                        className="w-full text-xs px-2.5 py-2 rounded border border-[#d2d6de] bg-white focus:border-[#3c8dbc] outline-none"
+                      />
+                      <span className="text-red-500 font-bold text-sm leading-none">*</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Specify color */}
+                <div className="grid grid-cols-12 items-center gap-2">
+                  <label className="col-span-4 flex items-center justify-end font-semibold text-slate-700">
+                    <span>Specify color</span>
+                    <Tooltip text="Check to specify an RGB color square for this option." />
+                  </label>
+                  <div className="col-span-8 flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={optSpecifyColor}
+                      onChange={(e) => setOptSpecifyColor(e.target.checked)}
+                      className="h-4 w-4 rounded border-slate-300 text-[#3c8dbc] cursor-pointer"
+                    />
+                  </div>
+                </div>
+
+                {/* RGB color (shown only when Specify color is checked) */}
+                {optSpecifyColor && (
+                  <div className="grid grid-cols-12 items-start gap-2">
+                    <label className="col-span-4 flex items-center justify-end font-semibold text-slate-700 pt-2">
+                      <span>RGB color</span>
+                      <Tooltip text="Choose or enter the RGB hex color code for this option." />
+                    </label>
+                    <div className="col-span-8 space-y-3">
+                      <input
+                        type="text"
+                        value={optRgbColor}
+                        onChange={(e) => setOptRgbColor(e.target.value)}
+                        className="w-full text-xs px-2.5 py-2 rounded border border-[#d2d6de] bg-white focus:border-[#3c8dbc] outline-none font-mono"
+                      />
+                      <div className="flex flex-wrap items-center gap-3">
+                        <label className="flex items-center gap-2 cursor-pointer border border-[#d2d6de] rounded px-3 py-1.5 bg-slate-50 hover:bg-slate-100">
+                          <input
+                            type="color"
+                            value={/^#[0-9A-Fa-f]{6}$/.test(optRgbColor) ? optRgbColor : '#FFFFFF'}
+                            onChange={(e) => setOptRgbColor(e.target.value.toUpperCase())}
+                            className="w-8 h-8 rounded cursor-pointer border-0 p-0 bg-transparent"
+                          />
+                          <span className="text-xs font-medium text-slate-700">Pick Color</span>
+                        </label>
+                        <div className="flex flex-wrap items-center gap-1.5">
+                          {[
+                            '#FFFFFF',
+                            '#000000',
+                            '#DC2626',
+                            '#16A34A',
+                            '#2563EB',
+                            '#EAB308',
+                            '#F97316',
+                            '#9333EA',
+                          ].map((hex) => (
+                            <button
+                              key={hex}
+                              type="button"
+                              onClick={() => setOptRgbColor(hex)}
+                              title={hex}
+                              style={{ backgroundColor: hex }}
+                              className={`w-6 h-6 rounded-full border cursor-pointer transition ${
+                                optRgbColor.toUpperCase() === hex
+                                  ? 'ring-2 ring-[#3c8dbc] ring-offset-1 border-slate-400 scale-110'
+                                  : 'border-slate-300 hover:scale-105'
+                              }`}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Display order */}
+                <div className="grid grid-cols-12 items-center gap-2">
+                  <label className="col-span-4 flex items-center justify-end font-semibold text-slate-700">
+                    <span>Display order</span>
+                    <Tooltip text="Set the display order for this option." />
+                  </label>
+                  <div className="col-span-8">
+                    <input
+                      type="number"
+                      value={optDisplayOrder}
+                      onChange={(e) => setOptDisplayOrder(parseInt(e.target.value, 10) || 0)}
+                      className="w-full text-xs px-2.5 py-2 rounded border border-[#d2d6de] bg-white focus:border-[#3c8dbc] outline-none"
+                    />
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
