@@ -352,6 +352,8 @@ export function ProductForm({
     displayOrder: 0,
   });
   const [videoPageSize, setVideoPageSize] = useState<number>(15);
+  const [picPageSize, setPicPageSize] = useState<number>(15);
+  const [picPage, setPicPage] = useState<number>(1);
   const [sourceCodeMode, setSourceCodeMode] = useState(false);
   const [fontSize, setFontSize] = useState('16');
   const [textColor, setTextColor] = useState('#000000');
@@ -2788,65 +2790,164 @@ export function ProductForm({
                 </table>
               </div>
 
-              {/* Add a new picture */}
-              <div className="border border-[#d2d6de] rounded-xs bg-white overflow-hidden">
-                <div className="px-4 py-2.5 border-b border-[#f4f4f4] text-xs font-semibold text-slate-700 bg-[#fdfdfd]">
-                  Add a new picture
-                </div>
-                <div className="p-4 space-y-3">
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    <div>
-                      <label className="block font-medium text-slate-700 mb-1">Display order</label>
-                      <input
-                        type="number"
-                        value={newPicOrder}
-                        onChange={(e) => setNewPicOrder(parseInt(e.target.value, 10) || 0)}
-                        className="w-full border border-[#d2d6de] rounded px-2.5 py-1.5 text-xs bg-white outline-none focus:border-[#3c8dbc]"
-                      />
+              {/* Pictures Table Footer */}
+              {(() => {
+                const totalPics = currentPictures.length;
+                const totalPages = Math.max(1, Math.ceil(totalPics / picPageSize));
+                const safePage = Math.min(picPage, totalPages);
+                const startIdx = totalPics === 0 ? 0 : (safePage - 1) * picPageSize + 1;
+                const endIdx = Math.min(safePage * picPageSize, totalPics);
+                return (
+                  <div className="px-3 py-2.5 bg-white border border-[#d2d6de] rounded-xs flex flex-wrap items-center justify-between gap-2 text-xs text-slate-600">
+                    <div className="flex items-center">
+                      <button
+                        type="button"
+                        disabled={safePage <= 1}
+                        onClick={() => setPicPage((p) => Math.max(1, p - 1))}
+                        className="px-2.5 py-1 border border-[#d2d6de] rounded-l bg-white text-slate-500 disabled:opacity-50 hover:bg-slate-50 cursor-pointer disabled:cursor-default"
+                      >
+                        Previous
+                      </button>
+                      <button
+                        type="button"
+                        className="px-2.5 py-1 border-y border-r border-[#2585be] bg-[#2585be] text-white font-medium"
+                      >
+                        {safePage}
+                      </button>
+                      <button
+                        type="button"
+                        disabled={safePage >= totalPages}
+                        onClick={() => setPicPage((p) => Math.min(totalPages, p + 1))}
+                        className="px-2.5 py-1 border-y border-r border-[#d2d6de] rounded-r bg-white text-slate-500 disabled:opacity-50 hover:bg-slate-50 cursor-pointer disabled:cursor-default"
+                      >
+                        Next
+                      </button>
                     </div>
-                    <div>
-                      <label className="block font-medium text-slate-700 mb-1">Alt</label>
-                      <input
-                        type="text"
-                        value={newPicAlt}
-                        onChange={(e) => setNewPicAlt(e.target.value)}
-                        placeholder="Image alt text"
-                        className="w-full border border-[#d2d6de] rounded px-2.5 py-1.5 text-xs bg-white outline-none focus:border-[#3c8dbc]"
-                      />
+
+                    <div className="flex items-center gap-2">
+                      <span>Show</span>
+                      <select
+                        value={picPageSize}
+                        onChange={(e) => {
+                          setPicPageSize(Number(e.target.value));
+                          setPicPage(1);
+                        }}
+                        className="border border-[#d2d6de] rounded px-2 py-1 text-xs bg-white"
+                      >
+                        <option value={15}>15</option>
+                        <option value={25}>25</option>
+                        <option value={50}>50</option>
+                      </select>
+                      <span>items</span>
                     </div>
-                    <div>
-                      <label className="block font-medium text-slate-700 mb-1">Title</label>
-                      <input
-                        type="text"
-                        value={newPicTitle}
-                        onChange={(e) => setNewPicTitle(e.target.value)}
-                        placeholder="Image title"
-                        className="w-full border border-[#d2d6de] rounded px-2.5 py-1.5 text-xs bg-white outline-none focus:border-[#3c8dbc]"
-                      />
+
+                    <div className="flex items-center gap-3">
+                      <span className="text-slate-600">
+                        {totalPics === 0 ? 'No records' : `${startIdx}-${endIdx} of ${totalPics} items`}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setFormData((prev) => ({ ...prev }))}
+                        title="Refresh"
+                        className="p-1.5 border border-[#d2d6de] rounded bg-white hover:bg-slate-50 text-slate-600 cursor-pointer"
+                      >
+                        <RefreshCw className="w-3.5 h-3.5" />
+                      </button>
                     </div>
                   </div>
-                  <ImageEditorField
-                    value=""
-                    onChange={(url) => {
-                      if (url) {
-                        const nextOrder =
-                          newPicOrder !== 0 ? newPicOrder : currentPictures.length;
-                        const next = [
-                          ...currentPictures,
-                          {
-                            url,
-                            displayOrder: nextOrder,
-                            alt: newPicAlt.trim(),
-                            title: newPicTitle.trim(),
-                          },
-                        ].sort((a, b) => a.displayOrder - b.displayOrder);
-                        commitPictures(next);
-                        setNewPicAlt('');
-                        setNewPicTitle('');
-                        setNewPicOrder(0);
-                      }
-                    }}
-                  />
+                );
+              })()}
+
+              {/* Add a new picture */}
+              <div className="border border-[#d2d6de] rounded-xs bg-white overflow-hidden">
+                <div className="px-4 py-2.5 border-b border-[#f4f4f4] text-xs font-normal text-slate-800 bg-white">
+                  Add a new picture
+                </div>
+                <div className="p-4 sm:p-5">
+                  <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-3">
+                    <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-semibold text-slate-700 text-xs">
+                      <span>Picture</span>
+                      <Tooltip text="Upload one or more product pictures from your local device." />
+                    </div>
+                    <div className="sm:col-span-9">
+                      <label
+                        onDragOver={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                        }}
+                        onDrop={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          const files = Array.from(e.dataTransfer.files || []).filter((f) =>
+                            f.type.startsWith('image/')
+                          );
+                          if (files.length === 0) return;
+                          Promise.all(
+                            files.map(
+                              (file) =>
+                                new Promise<string>((resolve) => {
+                                  const reader = new FileReader();
+                                  reader.onload = () => resolve(String(reader.result || ''));
+                                  reader.readAsDataURL(file);
+                                })
+                            )
+                          ).then((urls) => {
+                            const validUrls = urls.filter(Boolean);
+                            if (validUrls.length > 0) {
+                              const baseLen = currentPictures.length;
+                              const added = validUrls.map((url, idx) => ({
+                                url,
+                                displayOrder: baseLen + idx,
+                                alt: '',
+                                title: '',
+                              }));
+                              commitPictures([...currentPictures, ...added]);
+                              showToast(`${validUrls.length} picture(s) uploaded.`);
+                            }
+                          });
+                        }}
+                        className="block w-full bg-[#eeeeee] hover:bg-[#e5e5e5] border border-slate-200 rounded py-5 px-4 text-center text-xs text-slate-700 cursor-pointer transition select-none"
+                      >
+                        <input
+                          type="file"
+                          accept="image/*"
+                          multiple
+                          className="hidden"
+                          onChange={(e) => {
+                            const files = Array.from(e.target.files || []);
+                            if (files.length === 0) return;
+                            Promise.all(
+                              files.map(
+                                (file) =>
+                                  new Promise<string>((resolve) => {
+                                    const reader = new FileReader();
+                                    reader.onload = () => resolve(String(reader.result || ''));
+                                    reader.readAsDataURL(file);
+                                  })
+                              )
+                            ).then((urls) => {
+                              const validUrls = urls.filter(Boolean);
+                              if (validUrls.length > 0) {
+                                const baseLen = currentPictures.length;
+                                const added = validUrls.map((url, idx) => ({
+                                  url,
+                                  displayOrder: baseLen + idx,
+                                  alt: '',
+                                  title: '',
+                                }));
+                                commitPictures([...currentPictures, ...added]);
+                                showToast(`${validUrls.length} picture(s) uploaded.`);
+                              }
+                            });
+                            e.target.value = '';
+                          }}
+                        />
+                        <span>
+                          Drop files here to upload / <span className="underline">Browse</span>
+                        </span>
+                      </label>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
