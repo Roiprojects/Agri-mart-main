@@ -48,6 +48,7 @@ import {
   Trash2,
   Pencil,
   RefreshCw,
+  Paperclip,
   Truck,
   Gift,
   Calendar,
@@ -82,6 +83,27 @@ export interface ProductFormData {
   images?: string[];
   pictureMeta?: { url: string; displayOrder: number; alt: string; title: string }[];
   videos?: { id: string; embedUrl: string; displayOrder: number }[];
+  productAttributes?: {
+    id: string;
+    attributeName: string;
+    textPrompt: string;
+    isRequired: boolean;
+    controlType: string;
+    displayOrder: number;
+    validationRules: string;
+    condition: string;
+  }[];
+  attributeCombinations?: {
+    id: string;
+    attributes: string;
+    stockQuantity: number;
+    allowOutOfStock: boolean;
+    sku: string;
+    manufacturerPartNumber: string;
+    gtin: string;
+    overriddenPrice: string;
+  }[];
+  displayOnlyAttributeImages?: boolean;
   stockQuantity?: number;
   minStockQuantity?: number;
   lowStockQuantity?: number;
@@ -239,6 +261,9 @@ export function ProductForm({
             title: '',
           })),
     videos: initialValues?.videos || [],
+    productAttributes: initialValues?.productAttributes || [],
+    attributeCombinations: initialValues?.attributeCombinations || [],
+    displayOnlyAttributeImages: Boolean(initialValues?.displayOnlyAttributeImages),
     stockQuantity:
       initialValues?.stockQuantity !== undefined
         ? initialValues.stockQuantity
@@ -354,6 +379,61 @@ export function ProductForm({
   const [videoPageSize, setVideoPageSize] = useState<number>(15);
   const [picPageSize, setPicPageSize] = useState<number>(15);
   const [picPage, setPicPage] = useState<number>(1);
+
+  // Product Attributes state
+  const [attrCollapsed, setAttrCollapsed] = useState(false);
+  const [attrTab, setAttrTab] = useState<'attributes' | 'combinations'>('attributes');
+  const [availableAttrNames, setAvailableAttrNames] = useState<string[]>([
+    'Color',
+    'Size',
+    'Engine Power',
+    'Tank Capacity',
+    'Material',
+  ]);
+  const [attrPageSize, setAttrPageSize] = useState<number>(15);
+  const [attrPage, setAttrPage] = useState<number>(1);
+  const [attrModalOpen, setAttrModalOpen] = useState(false);
+  const [editingAttrIdx, setEditingAttrIdx] = useState<number | null>(null);
+  const [attrDraft, setAttrDraft] = useState({
+    attributeName: 'Color',
+    textPrompt: '',
+    isRequired: true,
+    controlType: 'Color squares',
+    displayOrder: 0,
+    validationRules: '',
+    condition: '',
+  });
+  const [comboModalOpen, setComboModalOpen] = useState(false);
+  const [comboDraft, setComboDraft] = useState({
+    attributes: '',
+    stockQuantity: 10,
+    allowOutOfStock: false,
+    sku: '',
+    manufacturerPartNumber: '',
+    gtin: '',
+    overriddenPrice: '',
+  });
+
+  useEffect(() => {
+    fetch('/api/admin/catalogue/attributes/product', { cache: 'no-store' })
+      .then((r) => r.json())
+      .then((res) => {
+        if (res.success && Array.isArray(res.data) && res.data.length > 0) {
+          const names = Array.from(
+            new Set([
+              ...res.data.map((a: any) => a.name).filter(Boolean),
+              'Color',
+              'Size',
+              'Engine Power',
+              'Tank Capacity',
+              'Material',
+            ])
+          ) as string[];
+          setAvailableAttrNames(names);
+        }
+      })
+      .catch(() => {});
+  }, []);
   const [sourceCodeMode, setSourceCodeMode] = useState(false);
   const [fontSize, setFontSize] = useState('16');
   const [textColor, setTextColor] = useState('#000000');
@@ -458,6 +538,16 @@ export function ProductForm({
             }))
           : prev.pictureMeta,
       videos: Array.isArray(initialValues.videos) ? initialValues.videos : prev.videos,
+      productAttributes: Array.isArray(initialValues.productAttributes)
+        ? initialValues.productAttributes
+        : prev.productAttributes,
+      attributeCombinations: Array.isArray(initialValues.attributeCombinations)
+        ? initialValues.attributeCombinations
+        : prev.attributeCombinations,
+      displayOnlyAttributeImages:
+        initialValues.displayOnlyAttributeImages !== undefined
+          ? Boolean(initialValues.displayOnlyAttributeImages)
+          : prev.displayOnlyAttributeImages,
       stockQuantity:
         initialValues.stockQuantity !== undefined
           ? Number(initialValues.stockQuantity)
@@ -3245,8 +3335,611 @@ export function ProductForm({
             </div>
           );
         })()}
+      </div>
 
-        {/* BOTTOM SAVE BAR */}
+      {/* PRODUCT ATTRIBUTES CARD */}
+      <div className="bg-white rounded border border-[#d2d6de] border-t-2 border-t-[#00c0ef] shadow-2xs overflow-hidden">
+        <div
+          onClick={() => setAttrCollapsed(!attrCollapsed)}
+          className="px-4 py-2.5 border-b border-[#f4f4f4] flex items-center justify-between cursor-pointer select-none bg-white hover:bg-slate-50/50 transition"
+        >
+          <h3 className="font-normal text-slate-800 text-sm flex items-center gap-2">
+            <Paperclip className="w-4 h-4 text-slate-700" />
+            <span>Product attributes</span>
+          </h3>
+          <button type="button" className="p-1 text-slate-500 hover:text-slate-700 cursor-pointer">
+            {attrCollapsed ? <Plus className="w-3.5 h-3.5" /> : <Minus className="w-3.5 h-3.5" />}
+          </button>
+        </div>
+
+        {!attrCollapsed && (
+          <div className="p-4 sm:p-5 space-y-4 text-xs text-slate-700">
+            <p className="text-xs text-slate-600 leading-relaxed">
+              Product attributes are quantifiable or descriptive aspects of a product (such as, color). For example, if you were to create an attribute for color, with the values of blue, green, yellow, and so on, you may want to apply this attribute to shirts, which you sell in various colors (you can adjust a price or weight for any of existing attribute values). You can add attribute for your product using existing list of attributes, or if you need to create a new one go to Catalog &gt; Attributes &gt; Product attributes. Please notice that if you want to manage inventory by product attributes (e.g. 5 green shirts and 3 blue ones), then ensure that &quot;Inventory method&quot; is set to &quot;Track inventory by product attributes&quot;.
+            </p>
+
+            {/* Tabs Container */}
+            <div className="border border-[#d2d6de] rounded-xs bg-white">
+              <div className="px-3 pt-2 border-b border-[#d2d6de] flex items-center gap-1 bg-white">
+                <button
+                  type="button"
+                  onClick={() => setAttrTab('attributes')}
+                  className={`px-4 py-2 text-xs transition rounded-t cursor-pointer ${
+                    attrTab === 'attributes'
+                      ? 'border-t-2 border-t-[#3c8dbc] border-x border-[#d2d6de] bg-white text-slate-800 font-semibold -mb-px border-b border-b-white'
+                      : 'text-slate-600 hover:text-slate-800 border-t-2 border-t-transparent'
+                  }`}
+                >
+                  Attributes
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setAttrTab('combinations')}
+                  className={`px-4 py-2 text-xs transition rounded-t cursor-pointer ${
+                    attrTab === 'combinations'
+                      ? 'border-t-2 border-t-[#3c8dbc] border-x border-[#d2d6de] bg-white text-slate-800 font-semibold -mb-px border-b border-b-white'
+                      : 'text-slate-600 hover:text-slate-800 border-t-2 border-t-transparent'
+                  }`}
+                >
+                  Attribute combinations
+                </button>
+              </div>
+
+              {/* Tab 1: Attributes */}
+              {attrTab === 'attributes' && (() => {
+                const attrs = formData.productAttributes || [];
+                const totalAttrs = attrs.length;
+                const totalPages = Math.max(1, Math.ceil(totalAttrs / attrPageSize));
+                const safePage = Math.min(attrPage, totalPages);
+                const startIdx = totalAttrs === 0 ? 0 : (safePage - 1) * attrPageSize + 1;
+                const endIdx = Math.min(safePage * attrPageSize, totalAttrs);
+                const pageRows = attrs.slice((safePage - 1) * attrPageSize, safePage * attrPageSize);
+
+                return (
+                  <div className="p-4 space-y-4">
+                    <div className="overflow-x-auto border border-[#d2d6de] rounded-xs">
+                      <table className="w-full text-left border-collapse text-xs">
+                        <thead>
+                          <tr className="bg-[#f9f9f9] border-b border-[#d2d6de] text-slate-700 font-semibold">
+                            <th className="py-2.5 px-3 border-r border-[#d2d6de]">Attribute</th>
+                            <th className="py-2.5 px-3 border-r border-[#d2d6de]">Text prompt</th>
+                            <th className="py-2.5 px-3 border-r border-[#d2d6de] text-center">Is Required</th>
+                            <th className="py-2.5 px-3 border-r border-[#d2d6de]">Control type</th>
+                            <th className="py-2.5 px-3 border-r border-[#d2d6de] text-center">Display order</th>
+                            <th className="py-2.5 px-3 border-r border-[#d2d6de]">Validation rules</th>
+                            <th className="py-2.5 px-3 border-r border-[#d2d6de]">Condition</th>
+                            <th className="py-2.5 px-3 text-center">Edit</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-[#d2d6de]">
+                          {pageRows.length === 0 ? (
+                            <tr>
+                              <td colSpan={8} className="py-5 text-center text-slate-400">
+                                No data available in table
+                              </td>
+                            </tr>
+                          ) : (
+                            pageRows.map((attr, idx) => {
+                              const realIdx = (safePage - 1) * attrPageSize + idx;
+                              return (
+                                <tr key={attr.id || realIdx} className="bg-white hover:bg-slate-50/60">
+                                  <td className="py-2.5 px-3 border-r border-[#d2d6de] font-medium text-slate-800">
+                                    {attr.attributeName}
+                                  </td>
+                                  <td className="py-2.5 px-3 border-r border-[#d2d6de] text-slate-600">
+                                    {attr.textPrompt}
+                                  </td>
+                                  <td className="py-2.5 px-3 border-r border-[#d2d6de] text-center">
+                                    {attr.isRequired ? (
+                                      <Check className="w-4 h-4 text-[#2585be] stroke-[2.5] mx-auto" />
+                                    ) : (
+                                      <X className="w-4 h-4 text-slate-300 mx-auto" />
+                                    )}
+                                  </td>
+                                  <td className="py-2.5 px-3 border-r border-[#d2d6de] text-slate-700">
+                                    {attr.controlType}
+                                  </td>
+                                  <td className="py-2.5 px-3 border-r border-[#d2d6de] text-center text-slate-700">
+                                    {attr.displayOrder}
+                                  </td>
+                                  <td className="py-2.5 px-3 border-r border-[#d2d6de] text-slate-600">
+                                    {attr.validationRules}
+                                  </td>
+                                  <td className="py-2.5 px-3 border-r border-[#d2d6de] text-slate-600">
+                                    {attr.condition}
+                                  </td>
+                                  <td className="py-2 px-3 text-center">
+                                    <div className="inline-flex items-center gap-1.5">
+                                      <button
+                                        type="button"
+                                        onClick={() => {
+                                          setEditingAttrIdx(realIdx);
+                                          setAttrDraft({
+                                            attributeName: attr.attributeName,
+                                            textPrompt: attr.textPrompt,
+                                            isRequired: attr.isRequired,
+                                            controlType: attr.controlType,
+                                            displayOrder: attr.displayOrder,
+                                            validationRules: attr.validationRules,
+                                            condition: attr.condition,
+                                          });
+                                          setAttrModalOpen(true);
+                                        }}
+                                        className="inline-flex items-center gap-1 px-2.5 py-1 bg-white border border-[#d2d6de] hover:bg-slate-50 text-slate-700 rounded text-xs cursor-pointer shadow-2xs"
+                                      >
+                                        <Pencil className="w-3 h-3" />
+                                        <span>Edit</span>
+                                      </button>
+                                      <button
+                                        type="button"
+                                        onClick={() => {
+                                          setFormData((prev) => ({
+                                            ...prev,
+                                            productAttributes: (prev.productAttributes || []).filter(
+                                              (_, i) => i !== realIdx
+                                            ),
+                                          }));
+                                        }}
+                                        className="inline-flex items-center p-1 bg-white border border-[#d2d6de] hover:bg-red-50 hover:text-red-600 text-slate-500 rounded text-xs cursor-pointer shadow-2xs"
+                                        title="Delete attribute"
+                                      >
+                                        <Trash2 className="w-3 h-3" />
+                                      </button>
+                                    </div>
+                                  </td>
+                                </tr>
+                              );
+                            })
+                          )}
+                        </tbody>
+                      </table>
+                    </div>
+
+                    {/* Pagination Footer */}
+                    <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-slate-600">
+                      <div className="flex items-center">
+                        <button
+                          type="button"
+                          disabled={safePage <= 1}
+                          onClick={() => setAttrPage((p) => Math.max(1, p - 1))}
+                          className="px-2.5 py-1 border border-[#d2d6de] rounded-l bg-white text-slate-500 disabled:opacity-50 hover:bg-slate-50 cursor-pointer disabled:cursor-default"
+                        >
+                          Previous
+                        </button>
+                        <button
+                          type="button"
+                          className="px-2.5 py-1 border-y border-r border-[#2585be] bg-[#2585be] text-white font-medium"
+                        >
+                          {safePage}
+                        </button>
+                        <button
+                          type="button"
+                          disabled={safePage >= totalPages}
+                          onClick={() => setAttrPage((p) => Math.min(totalPages, p + 1))}
+                          className="px-2.5 py-1 border-y border-r border-[#d2d6de] rounded-r bg-white text-slate-500 disabled:opacity-50 hover:bg-slate-50 cursor-pointer disabled:cursor-default"
+                        >
+                          Next
+                        </button>
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        <span>Show</span>
+                        <select
+                          value={attrPageSize}
+                          onChange={(e) => {
+                            setAttrPageSize(Number(e.target.value));
+                            setAttrPage(1);
+                          }}
+                          className="border border-[#d2d6de] rounded px-2 py-1 text-xs bg-white"
+                        >
+                          <option value={15}>15</option>
+                          <option value={25}>25</option>
+                          <option value={50}>50</option>
+                        </select>
+                        <span>items</span>
+                      </div>
+
+                      <div className="flex items-center gap-3">
+                        <span>
+                          {totalAttrs === 0 ? 'No records' : `${startIdx}-${endIdx} of ${totalAttrs} items`}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => setFormData((prev) => ({ ...prev }))}
+                          title="Refresh"
+                          className="p-1.5 border border-[#d2d6de] rounded bg-white hover:bg-slate-50 text-slate-600 cursor-pointer"
+                        >
+                          <RefreshCw className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Add a new attribute button */}
+                    <div className="pt-1">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setEditingAttrIdx(null);
+                          setAttrDraft({
+                            attributeName: availableAttrNames[0] || 'Color',
+                            textPrompt: '',
+                            isRequired: true,
+                            controlType: 'Color squares',
+                            displayOrder: attrs.length,
+                            validationRules: '',
+                            condition: '',
+                          });
+                          setAttrModalOpen(true);
+                        }}
+                        className="bg-[#2585be] hover:bg-[#1f72a3] text-white text-xs font-semibold px-3.5 py-2 rounded inline-flex items-center gap-1.5 shadow-2xs transition cursor-pointer"
+                      >
+                        <Plus className="w-3.5 h-3.5" />
+                        <span>Add a new attribute</span>
+                      </button>
+                    </div>
+                  </div>
+                );
+              })()}
+
+              {/* Tab 2: Attribute combinations */}
+              {attrTab === 'combinations' && (() => {
+                const combos = formData.attributeCombinations || [];
+                return (
+                  <div className="p-4 space-y-4">
+                    <div className="overflow-x-auto border border-[#d2d6de] rounded-xs">
+                      <table className="w-full text-left border-collapse text-xs">
+                        <thead>
+                          <tr className="bg-[#f9f9f9] border-b border-[#d2d6de] text-slate-700 font-semibold">
+                            <th className="py-2.5 px-3 border-r border-[#d2d6de]">Attributes</th>
+                            <th className="py-2.5 px-3 border-r border-[#d2d6de] text-center">Stock quantity</th>
+                            <th className="py-2.5 px-3 border-r border-[#d2d6de] text-center">Allow out of stock</th>
+                            <th className="py-2.5 px-3 border-r border-[#d2d6de]">SKU</th>
+                            <th className="py-2.5 px-3 border-r border-[#d2d6de]">Overridden price</th>
+                            <th className="py-2.5 px-3 text-center">Delete</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-[#d2d6de]">
+                          {combos.length === 0 ? (
+                            <tr>
+                              <td colSpan={6} className="py-5 text-center text-slate-400">
+                                No data available in table
+                              </td>
+                            </tr>
+                          ) : (
+                            combos.map((c) => (
+                              <tr key={c.id} className="bg-white hover:bg-slate-50/60">
+                                <td className="py-2.5 px-3 border-r border-[#d2d6de] font-medium text-slate-800">
+                                  {c.attributes}
+                                </td>
+                                <td className="py-2.5 px-3 border-r border-[#d2d6de] text-center">
+                                  {c.stockQuantity}
+                                </td>
+                                <td className="py-2.5 px-3 border-r border-[#d2d6de] text-center">
+                                  {c.allowOutOfStock ? (
+                                    <Check className="w-4 h-4 text-[#2585be] mx-auto" />
+                                  ) : (
+                                    <X className="w-4 h-4 text-slate-300 mx-auto" />
+                                  )}
+                                </td>
+                                <td className="py-2.5 px-3 border-r border-[#d2d6de]">{c.sku || '-'}</td>
+                                <td className="py-2.5 px-3 border-r border-[#d2d6de]">
+                                  {c.overriddenPrice || '-'}
+                                </td>
+                                <td className="py-2 px-3 text-center">
+                                  <button
+                                    type="button"
+                                    onClick={() =>
+                                      setFormData((prev) => ({
+                                        ...prev,
+                                        attributeCombinations: (
+                                          prev.attributeCombinations || []
+                                        ).filter((item) => item.id !== c.id),
+                                      }))
+                                    }
+                                    className="inline-flex items-center gap-1 px-2.5 py-1 bg-white border border-[#d2d6de] hover:bg-red-50 hover:text-red-600 text-slate-700 rounded text-xs cursor-pointer"
+                                  >
+                                    <Trash2 className="w-3 h-3" />
+                                    <span>Delete</span>
+                                  </button>
+                                </td>
+                              </tr>
+                            ))
+                          )}
+                        </tbody>
+                      </table>
+                    </div>
+
+                    <div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setComboDraft({
+                            attributes: '',
+                            stockQuantity: 10,
+                            allowOutOfStock: false,
+                            sku: '',
+                            manufacturerPartNumber: '',
+                            gtin: '',
+                            overriddenPrice: '',
+                          });
+                          setComboModalOpen(true);
+                        }}
+                        className="bg-[#2585be] hover:bg-[#1f72a3] text-white text-xs font-semibold px-3.5 py-2 rounded inline-flex items-center gap-1.5 shadow-2xs transition cursor-pointer"
+                      >
+                        <Plus className="w-3.5 h-3.5" />
+                        <span>Add combination</span>
+                      </button>
+                    </div>
+                  </div>
+                );
+              })()}
+            </div>
+
+            {/* Display only uploaded images of attribute combination */}
+            <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2 pt-1">
+              <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-semibold text-slate-700 text-right">
+                <span>Display only uploaded images of attribute combination</span>
+                <Tooltip text="Check to display only images specifically assigned to the selected attribute combination." />
+              </div>
+              <div className="sm:col-span-9 flex items-center">
+                <input
+                  type="checkbox"
+                  checked={Boolean(formData.displayOnlyAttributeImages)}
+                  onChange={(e) =>
+                    handleChange('displayOnlyAttributeImages', e.target.checked)
+                  }
+                  className="h-4 w-4 rounded border-slate-300 text-[#3c8dbc] focus:ring-[#3c8dbc]"
+                />
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Add / Edit Product Attribute Modal */}
+      {attrModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full border border-slate-200 overflow-hidden text-xs">
+            <div className="px-4 py-3 bg-slate-50 border-b border-slate-200 flex justify-between items-center">
+              <h4 className="font-semibold text-sm text-slate-800">
+                {editingAttrIdx !== null ? 'Edit product attribute' : 'Add a new product attribute'}
+              </h4>
+              <button
+                type="button"
+                onClick={() => setAttrModalOpen(false)}
+                className="text-slate-400 hover:text-slate-600 cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            <div className="p-4 space-y-3">
+              <div>
+                <label className="block font-medium text-slate-700 mb-1">Attribute</label>
+                <select
+                  value={attrDraft.attributeName}
+                  onChange={(e) => setAttrDraft({ ...attrDraft, attributeName: e.target.value })}
+                  className="w-full border border-[#d2d6de] rounded px-2.5 py-1.5 text-xs bg-white"
+                >
+                  {availableAttrNames.map((name) => (
+                    <option key={name} value={name}>
+                      {name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block font-medium text-slate-700 mb-1">Text prompt</label>
+                <input
+                  type="text"
+                  value={attrDraft.textPrompt}
+                  onChange={(e) => setAttrDraft({ ...attrDraft, textPrompt: e.target.value })}
+                  className="w-full border border-[#d2d6de] rounded px-2.5 py-1.5 text-xs"
+                />
+              </div>
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  id="attrIsRequired"
+                  checked={attrDraft.isRequired}
+                  onChange={(e) => setAttrDraft({ ...attrDraft, isRequired: e.target.checked })}
+                  className="h-4 w-4 rounded border-slate-300 text-[#3c8dbc]"
+                />
+                <label htmlFor="attrIsRequired" className="font-medium text-slate-700">
+                  Is Required
+                </label>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-medium text-slate-700 mb-1">Control type</label>
+                  <select
+                    value={attrDraft.controlType}
+                    onChange={(e) => setAttrDraft({ ...attrDraft, controlType: e.target.value })}
+                    className="w-full border border-[#d2d6de] rounded px-2.5 py-1.5 text-xs bg-white"
+                  >
+                    <option value="Color squares">Color squares</option>
+                    <option value="Dropdown list">Dropdown list</option>
+                    <option value="Radio button list">Radio button list</option>
+                    <option value="Checkboxes">Checkboxes</option>
+                    <option value="Text box">Text box</option>
+                    <option value="Multiline textbox">Multiline textbox</option>
+                    <option value="Image squares">Image squares</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block font-medium text-slate-700 mb-1">Display order</label>
+                  <input
+                    type="number"
+                    value={attrDraft.displayOrder}
+                    onChange={(e) =>
+                      setAttrDraft({ ...attrDraft, displayOrder: parseInt(e.target.value, 10) || 0 })
+                    }
+                    className="w-full border border-[#d2d6de] rounded px-2.5 py-1.5 text-xs"
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-medium text-slate-700 mb-1">Validation rules</label>
+                  <input
+                    type="text"
+                    value={attrDraft.validationRules}
+                    onChange={(e) => setAttrDraft({ ...attrDraft, validationRules: e.target.value })}
+                    className="w-full border border-[#d2d6de] rounded px-2.5 py-1.5 text-xs"
+                  />
+                </div>
+                <div>
+                  <label className="block font-medium text-slate-700 mb-1">Condition</label>
+                  <input
+                    type="text"
+                    value={attrDraft.condition}
+                    onChange={(e) => setAttrDraft({ ...attrDraft, condition: e.target.value })}
+                    className="w-full border border-[#d2d6de] rounded px-2.5 py-1.5 text-xs"
+                  />
+                </div>
+              </div>
+            </div>
+            <div className="px-4 py-3 bg-slate-50 border-t border-slate-200 flex justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => setAttrModalOpen(false)}
+                className="px-3 py-1.5 bg-white border border-slate-300 rounded text-slate-700 cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  const current = formData.productAttributes || [];
+                  if (editingAttrIdx !== null) {
+                    const next = current.map((item, idx) =>
+                      idx === editingAttrIdx ? { ...item, ...attrDraft } : item
+                    );
+                    handleChange('productAttributes', next);
+                  } else {
+                    const next = [
+                      ...current,
+                      { id: `pattr-${Date.now()}`, ...attrDraft },
+                    ];
+                    handleChange('productAttributes', next);
+                  }
+                  setAttrModalOpen(false);
+                }}
+                className="px-4 py-1.5 bg-[#2585be] hover:bg-[#1f72a3] text-white font-semibold rounded cursor-pointer"
+              >
+                Save
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Add Attribute Combination Modal */}
+      {comboModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full border border-slate-200 overflow-hidden text-xs">
+            <div className="px-4 py-3 bg-slate-50 border-b border-slate-200 flex justify-between items-center">
+              <h4 className="font-semibold text-sm text-slate-800">Add attribute combination</h4>
+              <button
+                type="button"
+                onClick={() => setComboModalOpen(false)}
+                className="text-slate-400 hover:text-slate-600 cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            <div className="p-4 space-y-3">
+              <div>
+                <label className="block font-medium text-slate-700 mb-1">Attributes</label>
+                <input
+                  type="text"
+                  value={comboDraft.attributes}
+                  onChange={(e) => setComboDraft({ ...comboDraft, attributes: e.target.value })}
+                  placeholder="e.g. Color: Red, Size: 7HP"
+                  className="w-full border border-[#d2d6de] rounded px-2.5 py-1.5 text-xs"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-medium text-slate-700 mb-1">Stock quantity</label>
+                  <input
+                    type="number"
+                    value={comboDraft.stockQuantity}
+                    onChange={(e) =>
+                      setComboDraft({
+                        ...comboDraft,
+                        stockQuantity: parseInt(e.target.value, 10) || 0,
+                      })
+                    }
+                    className="w-full border border-[#d2d6de] rounded px-2.5 py-1.5 text-xs"
+                  />
+                </div>
+                <div>
+                  <label className="block font-medium text-slate-700 mb-1">SKU</label>
+                  <input
+                    type="text"
+                    value={comboDraft.sku}
+                    onChange={(e) => setComboDraft({ ...comboDraft, sku: e.target.value })}
+                    className="w-full border border-[#d2d6de] rounded px-2.5 py-1.5 text-xs"
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-medium text-slate-700 mb-1">Overridden price</label>
+                  <input
+                    type="text"
+                    value={comboDraft.overriddenPrice}
+                    onChange={(e) =>
+                      setComboDraft({ ...comboDraft, overriddenPrice: e.target.value })
+                    }
+                    className="w-full border border-[#d2d6de] rounded px-2.5 py-1.5 text-xs"
+                  />
+                </div>
+                <div className="flex items-center gap-2 pt-5">
+                  <input
+                    type="checkbox"
+                    id="allowOutOfStockCombo"
+                    checked={comboDraft.allowOutOfStock}
+                    onChange={(e) =>
+                      setComboDraft({ ...comboDraft, allowOutOfStock: e.target.checked })
+                    }
+                    className="h-4 w-4 rounded border-slate-300 text-[#3c8dbc]"
+                  />
+                  <label htmlFor="allowOutOfStockCombo" className="font-medium text-slate-700">
+                    Allow out of stock
+                  </label>
+                </div>
+              </div>
+            </div>
+            <div className="px-4 py-3 bg-slate-50 border-t border-slate-200 flex justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => setComboModalOpen(false)}
+                className="px-3 py-1.5 bg-white border border-slate-300 rounded text-slate-700 cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  if (!comboDraft.attributes.trim()) return;
+                  const next = [
+                    ...(formData.attributeCombinations || []),
+                    { id: `combo-${Date.now()}`, ...comboDraft },
+                  ];
+                  handleChange('attributeCombinations', next);
+                  setComboModalOpen(false);
+                }}
+                className="px-4 py-1.5 bg-[#2585be] hover:bg-[#1f72a3] text-white font-semibold rounded cursor-pointer"
+              >
+                Save
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* BOTTOM SAVE BAR */}
         <div className="bg-white rounded border border-[#d2d6de] shadow-2xs p-4 flex flex-col sm:flex-row items-center justify-between gap-3">
           <div className="text-xs text-slate-600">
             Ready to apply changes for <strong className="text-slate-900">{formData.name || 'this product'}</strong> ({formData.sku || 'SKU'})
@@ -3273,7 +3966,6 @@ export function ProductForm({
             </button>
           </div>
         </div>
-      </div>
 
       {/* QUICK SETTINGS MODAL */}
       {settingsOpen && (
