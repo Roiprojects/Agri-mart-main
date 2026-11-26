@@ -169,9 +169,9 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
 
         {availability.isBeforeStart && (
           <>
-            {/* Automatic Realistic Gold Satin Ribbon & Bow Overlay (Product Card Only) */}
+            {/* Automatic Realistic Red Satin Ribbon & Bow Overlay (Product Card Only) */}
             <img
-              src="/images/ribbons/gold-ribbon-bow.png"
+              src="/images/ribbons/red-ribbon-bow.png"
               alt=""
               aria-hidden="true"
               className="pointer-events-none absolute top-0 left-0 w-[46%] h-auto z-20 drop-shadow-[0_4px_10px_rgba(0,0,0,0.4)]"
