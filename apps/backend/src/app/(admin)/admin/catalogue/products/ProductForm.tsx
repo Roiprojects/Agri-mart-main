@@ -309,8 +309,6 @@ export function ProductForm({
   const [rentalCollapsed, setRentalCollapsed] = useState(false);
   const [rentServiceCollapsed, setRentServiceCollapsed] = useState(false);
   const [seoCollapsed, setSeoCollapsed] = useState(false);
-  const [seoActiveTab, setSeoActiveTab] = useState<'standard' | 'en' | 'rtl'>('standard');
-  const [activeLangTab, setActiveLangTab] = useState<'standard' | 'en' | 'rtl'>('standard');
   const [sourceCodeMode, setSourceCodeMode] = useState(false);
   const [fontSize, setFontSize] = useState('16');
   const [textColor, setTextColor] = useState('#000000');
@@ -827,47 +825,6 @@ export function ProductForm({
         {/* Card Body */}
         {!productInfoCollapsed && (
           <div className="p-4 sm:p-6 space-y-5 text-xs text-slate-700">
-            {/* Language / Variant Tabs (Advanced mode only) */}
-            {advancedMode && (
-              <div className="flex border-b border-slate-200 gap-1 pb-px">
-                <button
-                  type="button"
-                  onClick={() => setActiveLangTab('standard')}
-                  className={`px-3.5 py-1.5 text-xs font-medium rounded-t border-t-2 transition ${
-                    activeLangTab === 'standard'
-                      ? 'border-[#3c8dbc] text-slate-800 bg-white font-semibold border-x border-b-white -mb-px'
-                      : 'border-transparent text-slate-500 hover:text-slate-700'
-                  }`}
-                >
-                  Standard
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setActiveLangTab('en')}
-                  className={`px-3.5 py-1.5 text-xs font-medium rounded-t border-t-2 transition flex items-center gap-1 ${
-                    activeLangTab === 'en'
-                      ? 'border-[#3c8dbc] text-slate-800 bg-white font-semibold border-x border-b-white -mb-px'
-                      : 'border-transparent text-slate-500 hover:text-slate-700'
-                  }`}
-                >
-                  <span>🇺🇸</span>
-                  <span>EN</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setActiveLangTab('rtl')}
-                  className={`px-3.5 py-1.5 text-xs font-medium rounded-t border-t-2 transition flex items-center gap-1 ${
-                    activeLangTab === 'rtl'
-                      ? 'border-[#3c8dbc] text-slate-800 bg-white font-semibold border-x border-b-white -mb-px'
-                      : 'border-transparent text-slate-500 hover:text-slate-700'
-                  }`}
-                >
-                  <span>🇮🇳</span>
-                  <span>KN (Kannada)</span>
-                </button>
-              </div>
-            )}
-
             {/* FORM FIELDS */}
             <div className="space-y-4 max-w-4xl">
               {/* Product name */}
@@ -2456,45 +2413,6 @@ export function ProductForm({
             {!seoCollapsed && (
               <div className="p-4 sm:p-6 text-xs text-slate-700">
                 <div className="border border-[#d2d6de] rounded-xs bg-white">
-                  {/* Tabs bar */}
-                  <div className="flex border-b border-[#d2d6de] bg-[#fdfdfd]">
-                    <button
-                      type="button"
-                      onClick={() => setSeoActiveTab('standard')}
-                      className={`px-4 py-2 text-xs transition border-r border-[#d2d6de] select-none ${
-                        seoActiveTab === 'standard'
-                          ? 'border-t-2 border-t-[#3c8dbc] bg-white text-slate-800 font-medium -mb-px border-b border-b-white'
-                          : 'border-t-2 border-t-transparent text-slate-600 hover:text-slate-800'
-                      }`}
-                    >
-                      Standard
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setSeoActiveTab('en')}
-                      className={`px-4 py-2 text-xs transition border-r border-[#d2d6de] flex items-center gap-1.5 select-none ${
-                        seoActiveTab === 'en'
-                          ? 'border-t-2 border-t-[#3c8dbc] bg-white text-slate-800 font-medium -mb-px border-b border-b-white'
-                          : 'border-t-2 border-t-transparent text-slate-600 hover:text-slate-800'
-                      }`}
-                    >
-                      <span>🇺🇸</span>
-                      <span>EN</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setSeoActiveTab('rtl')}
-                      className={`px-4 py-2 text-xs transition flex items-center gap-1.5 select-none ${
-                        seoActiveTab === 'rtl'
-                          ? 'border-t-2 border-t-[#3c8dbc] bg-white text-slate-800 font-medium -mb-px border-b border-b-white'
-                          : 'border-t-2 border-t-transparent text-slate-600 hover:text-slate-800'
-                      }`}
-                    >
-                      <span>🇮🇱</span>
-                      <span>RTL</span>
-                    </button>
-                  </div>
-
                   {/* Tab Content Fields */}
                   <div className="p-5 sm:p-6 space-y-4">
                     {/* Search engine friendly page name */}
