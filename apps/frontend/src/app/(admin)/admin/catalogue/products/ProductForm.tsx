@@ -111,12 +111,16 @@ export interface ProductFormData {
   attributeCombinations?: {
     id: string;
     attributes: string;
+    selectedValues?: Record<string, string>;
     stockQuantity: number;
+    minimumStockQty?: number;
     allowOutOfStock: boolean;
     sku: string;
     manufacturerPartNumber: string;
     gtin: string;
     overriddenPrice: string;
+    notifyAdminForQuantityBelow?: number;
+    pictures?: string[];
   }[];
   displayOnlyAttributeImages?: boolean;
   stockQuantity?: number;
@@ -476,14 +480,31 @@ export function ProductForm({
     displayOrder: 0,
   });
   const [comboModalOpen, setComboModalOpen] = useState(false);
-  const [comboDraft, setComboDraft] = useState({
+  const [editingComboId, setEditingComboId] = useState<string | null>(null);
+  const [comboDraft, setComboDraft] = useState<{
+    attributes: string;
+    selectedValues: Record<string, string>;
+    stockQuantity: number;
+    minimumStockQty: number;
+    allowOutOfStock: boolean;
+    sku: string;
+    manufacturerPartNumber: string;
+    gtin: string;
+    overriddenPrice: string;
+    notifyAdminForQuantityBelow: number;
+    pictures: string[];
+  }>({
     attributes: '',
-    stockQuantity: 10,
+    selectedValues: {},
+    stockQuantity: 10000,
+    minimumStockQty: 0,
     allowOutOfStock: false,
     sku: '',
     manufacturerPartNumber: '',
     gtin: '',
     overriddenPrice: '',
+    notifyAdminForQuantityBelow: 1,
+    pictures: [],
   });
 
   useEffect(() => {
@@ -3670,13 +3691,15 @@ export function ProductForm({
                             <th className="py-2.5 px-3 border-r border-[#d2d6de] text-center">Allow out of stock</th>
                             <th className="py-2.5 px-3 border-r border-[#d2d6de]">SKU</th>
                             <th className="py-2.5 px-3 border-r border-[#d2d6de]">Overridden price</th>
+                            <th className="py-2.5 px-3 border-r border-[#d2d6de] text-center">Picture</th>
+                            <th className="py-2.5 px-3 border-r border-[#d2d6de] text-center">Edit</th>
                             <th className="py-2.5 px-3 text-center">Delete</th>
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-[#d2d6de]">
                           {combos.length === 0 ? (
                             <tr>
-                              <td colSpan={6} className="py-5 text-center text-slate-400">
+                              <td colSpan={8} className="py-5 text-center text-slate-400">
                                 No data available in table
                               </td>
                             </tr>
@@ -3699,6 +3722,43 @@ export function ProductForm({
                                 <td className="py-2.5 px-3 border-r border-[#d2d6de]">{c.sku || '-'}</td>
                                 <td className="py-2.5 px-3 border-r border-[#d2d6de]">
                                   {c.overriddenPrice || '-'}
+                                </td>
+                                <td className="py-2 px-3 border-r border-[#d2d6de] text-center">
+                                  {c.pictures && c.pictures[0] ? (
+                                    <img
+                                      src={c.pictures[0]}
+                                      alt={c.attributes}
+                                      className="w-12 h-12 object-contain mx-auto border border-slate-200 rounded bg-white p-0.5"
+                                    />
+                                  ) : (
+                                    <span className="text-slate-300">-</span>
+                                  )}
+                                </td>
+                                <td className="py-2 px-3 border-r border-[#d2d6de] text-center">
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      setEditingComboId(c.id);
+                                      setComboDraft({
+                                        attributes: c.attributes || '',
+                                        selectedValues: c.selectedValues ? { ...c.selectedValues } : {},
+                                        stockQuantity: c.stockQuantity ?? 10000,
+                                        minimumStockQty: c.minimumStockQty ?? 0,
+                                        allowOutOfStock: Boolean(c.allowOutOfStock),
+                                        sku: c.sku || '',
+                                        manufacturerPartNumber: c.manufacturerPartNumber || '',
+                                        gtin: c.gtin || '',
+                                        overriddenPrice: c.overriddenPrice || '',
+                                        notifyAdminForQuantityBelow: c.notifyAdminForQuantityBelow ?? 1,
+                                        pictures: Array.isArray(c.pictures) ? [...c.pictures] : [],
+                                      });
+                                      setComboModalOpen(true);
+                                    }}
+                                    className="inline-flex items-center gap-1 px-2.5 py-1 bg-white border border-[#d2d6de] hover:bg-slate-50 text-slate-700 rounded text-xs cursor-pointer"
+                                  >
+                                    <Pencil className="w-3 h-3" />
+                                    <span>Edit</span>
+                                  </button>
                                 </td>
                                 <td className="py-2 px-3 text-center">
                                   <button
@@ -3728,14 +3788,24 @@ export function ProductForm({
                       <button
                         type="button"
                         onClick={() => {
+                          setEditingComboId(null);
+                          const defaults: Record<string, string> = {};
+                          (formData.productAttributes || []).forEach((attr) => {
+                            const pre = attr.values?.find((v) => v.isPreSelected);
+                            if (pre) defaults[attr.attributeName] = pre.name;
+                          });
                           setComboDraft({
                             attributes: '',
-                            stockQuantity: 10,
+                            selectedValues: defaults,
+                            stockQuantity: 10000,
+                            minimumStockQty: 0,
                             allowOutOfStock: false,
                             sku: '',
                             manufacturerPartNumber: '',
                             gtin: '',
                             overriddenPrice: '',
+                            notifyAdminForQuantityBelow: 1,
+                            pictures: [],
                           });
                           setComboModalOpen(true);
                         }}
@@ -4540,107 +4610,326 @@ export function ProductForm({
         </div>
       )}
 
-      {/* Add Attribute Combination Modal */}
+      {/* Full-Page View: Select new combination and enter details below */}
       {comboModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4">
-          <div className="bg-white rounded-lg shadow-xl max-w-md w-full border border-slate-200 overflow-hidden text-xs">
-            <div className="px-4 py-3 bg-slate-50 border-b border-slate-200 flex justify-between items-center">
-              <h4 className="font-semibold text-sm text-slate-800">Add attribute combination</h4>
+        <div className="fixed inset-0 z-50 bg-[#ecf0f5] overflow-y-auto p-4 sm:p-6">
+          <div className="max-w-5xl mx-auto space-y-4 pb-12 text-xs">
+            {/* Top Header */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <h2 className="text-xl sm:text-2xl font-normal text-slate-800">
+                  {editingComboId ? 'Edit attribute combination' : 'Select new combination and enter details below'}
+                </h2>
+                <button
+                  type="button"
+                  onClick={() => setComboModalOpen(false)}
+                  className="text-[#3c8dbc] hover:underline flex items-center gap-1 text-xs font-semibold cursor-pointer"
+                >
+                  <span className="w-4 h-4 rounded-full bg-[#3c8dbc] text-white inline-flex items-center justify-center text-[10px]">
+                    ←
+                  </span>
+                  <span>back to product details</span>
+                </button>
+              </div>
+
               <button
                 type="button"
-                onClick={() => setComboModalOpen(false)}
-                className="text-slate-400 hover:text-slate-600 cursor-pointer"
+                onClick={() => {
+                  const attrsList = formData.productAttributes || [];
+                  const hasRadioAttrs = attrsList.some((a) => a.values && a.values.length > 0);
+                  let formattedAttrs = comboDraft.attributes.trim();
+
+                  if (hasRadioAttrs) {
+                    for (const attr of attrsList) {
+                      if (attr.isRequired && attr.values && attr.values.length > 0 && !comboDraft.selectedValues[attr.attributeName]) {
+                        showToast(`Please select a value for ${attr.attributeName}.`);
+                        return;
+                      }
+                    }
+                    const parts = attrsList
+                      .map((a) => {
+                        const v = comboDraft.selectedValues[a.attributeName];
+                        return v ? `${a.attributeName}: ${v}` : '';
+                      })
+                      .filter(Boolean);
+                    if (parts.length > 0) formattedAttrs = parts.join(', ');
+                  }
+
+                  if (!formattedAttrs) {
+                    showToast('Please select or enter the attribute combination.');
+                    return;
+                  }
+
+                  const savedCombo = {
+                    ...comboDraft,
+                    attributes: formattedAttrs,
+                  };
+
+                  if (editingComboId) {
+                    const next = (formData.attributeCombinations || []).map((item) =>
+                      item.id === editingComboId ? { ...item, ...savedCombo } : item
+                    );
+                    handleChange('attributeCombinations', next);
+                  } else {
+                    const next = [
+                      ...(formData.attributeCombinations || []),
+                      { id: `combo-${Date.now()}`, ...savedCombo },
+                    ];
+                    handleChange('attributeCombinations', next);
+                  }
+                  setComboModalOpen(false);
+                  showToast('Attribute combination saved.');
+                }}
+                className="bg-[#2585be] hover:bg-[#1f72a3] text-white text-xs font-semibold px-4 py-1.5 rounded flex items-center gap-1.5 shadow-xs cursor-pointer w-fit"
               >
-                <X className="w-4 h-4" />
+                <Save className="w-3.5 h-3.5" />
+                <span>Save</span>
               </button>
             </div>
-            <div className="p-4 space-y-3">
-              <div>
-                <label className="block font-medium text-slate-700 mb-1">Attributes</label>
-                <input
-                  type="text"
-                  value={comboDraft.attributes}
-                  onChange={(e) => setComboDraft({ ...comboDraft, attributes: e.target.value })}
-                  placeholder="e.g. Color: Red, Size: 7HP"
-                  className="w-full border border-[#d2d6de] rounded px-2.5 py-1.5 text-xs"
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block font-medium text-slate-700 mb-1">Stock quantity</label>
+
+            {/* Main Card */}
+            <div className="bg-white rounded border border-[#d2d6de] border-t-2 border-t-[#00c0ef] shadow-2xs p-5 sm:p-6 space-y-4">
+              {/* Dynamic Attribute Value Radio Groups (e.g. Color: ( ) White ( ) Black *) */}
+              {(formData.productAttributes || []).some((a) => a.values && a.values.length > 0) ? (
+                (formData.productAttributes || [])
+                  .filter((a) => a.values && a.values.length > 0)
+                  .map((attr) => (
+                    <div key={attr.id} className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
+                      <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-semibold text-slate-700">
+                        <span>{attr.attributeName}</span>
+                      </div>
+                      <div className="sm:col-span-9 flex flex-wrap items-center gap-4">
+                        {(attr.values || []).map((val) => (
+                          <label key={val.id} className="inline-flex items-center gap-1.5 cursor-pointer text-slate-700">
+                            <input
+                              type="radio"
+                              name={`combo-attr-${attr.id}`}
+                              checked={comboDraft.selectedValues[attr.attributeName] === val.name}
+                              onChange={() =>
+                                setComboDraft((d) => ({
+                                  ...d,
+                                  selectedValues: {
+                                    ...d.selectedValues,
+                                    [attr.attributeName]: val.name,
+                                  },
+                                }))
+                              }
+                              className="h-3.5 w-3.5 text-[#3c8dbc] border-slate-300"
+                            />
+                            <span>{val.name}</span>
+                          </label>
+                        ))}
+                        {attr.isRequired && (
+                          <span className="text-red-500 font-bold text-sm leading-none">*</span>
+                        )}
+                      </div>
+                    </div>
+                  ))
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
+                  <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-semibold text-slate-700">
+                    <span>Attributes</span>
+                    <Tooltip text="Enter the attribute combination (e.g. Color: White, Size: 7HP)." />
+                  </div>
+                  <div className="sm:col-span-9 flex items-center gap-1.5">
+                    <input
+                      type="text"
+                      value={comboDraft.attributes}
+                      onChange={(e) => setComboDraft({ ...comboDraft, attributes: e.target.value })}
+                      placeholder="e.g. Color: White, Color: Black"
+                      className="w-full border border-[#d2d6de] rounded px-2.5 py-2 text-xs bg-white focus:border-[#3c8dbc] outline-none"
+                    />
+                    <span className="text-red-500 font-bold text-sm leading-none">*</span>
+                  </div>
+                </div>
+              )}
+
+              {/* Stock quantity */}
+              <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
+                <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-semibold text-slate-700">
+                  <span>Stock quantity</span>
+                  <Tooltip text="Available stock quantity for this specific attribute combination." />
+                </div>
+                <div className="sm:col-span-9">
                   <input
                     type="number"
                     value={comboDraft.stockQuantity}
                     onChange={(e) =>
-                      setComboDraft({
-                        ...comboDraft,
-                        stockQuantity: parseInt(e.target.value, 10) || 0,
-                      })
+                      setComboDraft({ ...comboDraft, stockQuantity: parseInt(e.target.value, 10) || 0 })
                     }
-                    className="w-full border border-[#d2d6de] rounded px-2.5 py-1.5 text-xs"
+                    className="w-full border border-[#d2d6de] rounded px-2.5 py-2 text-xs bg-white focus:border-[#3c8dbc] outline-none"
                   />
                 </div>
-                <div>
-                  <label className="block font-medium text-slate-700 mb-1">SKU</label>
+              </div>
+
+              {/* Minimum stock qty */}
+              <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
+                <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-semibold text-slate-700">
+                  <span>Minimum stock qty</span>
+                  <Tooltip text="Minimum stock quantity threshold for this combination." />
+                </div>
+                <div className="sm:col-span-9">
+                  <input
+                    type="number"
+                    value={comboDraft.minimumStockQty}
+                    onChange={(e) =>
+                      setComboDraft({ ...comboDraft, minimumStockQty: parseInt(e.target.value, 10) || 0 })
+                    }
+                    className="w-full border border-[#d2d6de] rounded px-2.5 py-2 text-xs bg-white focus:border-[#3c8dbc] outline-none"
+                  />
+                </div>
+              </div>
+
+              {/* Allow out of stock */}
+              <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
+                <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-semibold text-slate-700">
+                  <span>Allow out of stock</span>
+                  <Tooltip text="Allow customers to order this combination even when stock reaches zero." />
+                </div>
+                <div className="sm:col-span-9 flex items-center">
+                  <input
+                    type="checkbox"
+                    checked={comboDraft.allowOutOfStock}
+                    onChange={(e) =>
+                      setComboDraft({ ...comboDraft, allowOutOfStock: e.target.checked })
+                    }
+                    className="h-4 w-4 rounded border-slate-300 text-[#3c8dbc] cursor-pointer"
+                  />
+                </div>
+              </div>
+
+              {/* SKU */}
+              <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
+                <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-semibold text-slate-700">
+                  <span>SKU</span>
+                  <Tooltip text="Stock Keeping Unit (SKU) for this combination." />
+                </div>
+                <div className="sm:col-span-9">
                   <input
                     type="text"
                     value={comboDraft.sku}
                     onChange={(e) => setComboDraft({ ...comboDraft, sku: e.target.value })}
-                    className="w-full border border-[#d2d6de] rounded px-2.5 py-1.5 text-xs"
+                    className="w-full border border-[#d2d6de] rounded px-2.5 py-2 text-xs bg-white focus:border-[#3c8dbc] outline-none"
                   />
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block font-medium text-slate-700 mb-1">Overridden price</label>
+
+              {/* Manufacturer part number */}
+              <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
+                <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-semibold text-slate-700">
+                  <span>Manufacturer part number</span>
+                  <Tooltip text="Manufacturer part number for this combination." />
+                </div>
+                <div className="sm:col-span-9">
+                  <input
+                    type="text"
+                    value={comboDraft.manufacturerPartNumber}
+                    onChange={(e) =>
+                      setComboDraft({ ...comboDraft, manufacturerPartNumber: e.target.value })
+                    }
+                    className="w-full border border-[#d2d6de] rounded px-2.5 py-2 text-xs bg-white focus:border-[#3c8dbc] outline-none"
+                  />
+                </div>
+              </div>
+
+              {/* GTIN */}
+              <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
+                <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-semibold text-slate-700">
+                  <span>GTIN</span>
+                  <Tooltip text="Global Trade Item Number (UPC, EAN, ISBN, JAN) for this combination." />
+                </div>
+                <div className="sm:col-span-9">
+                  <input
+                    type="text"
+                    value={comboDraft.gtin}
+                    onChange={(e) => setComboDraft({ ...comboDraft, gtin: e.target.value })}
+                    className="w-full border border-[#d2d6de] rounded px-2.5 py-2 text-xs bg-white focus:border-[#3c8dbc] outline-none"
+                  />
+                </div>
+              </div>
+
+              {/* Overridden price */}
+              <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
+                <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-semibold text-slate-700">
+                  <span>Overridden price</span>
+                  <Tooltip text="Enter a custom price to override the base product price for this combination." />
+                </div>
+                <div className="sm:col-span-9">
                   <input
                     type="text"
                     value={comboDraft.overriddenPrice}
                     onChange={(e) =>
                       setComboDraft({ ...comboDraft, overriddenPrice: e.target.value })
                     }
-                    className="w-full border border-[#d2d6de] rounded px-2.5 py-1.5 text-xs"
+                    className="w-full max-w-xs border border-[#d2d6de] rounded px-2.5 py-2 text-xs bg-white focus:border-[#3c8dbc] outline-none"
                   />
-                </div>
-                <div className="flex items-center gap-2 pt-5">
-                  <input
-                    type="checkbox"
-                    id="allowOutOfStockCombo"
-                    checked={comboDraft.allowOutOfStock}
-                    onChange={(e) =>
-                      setComboDraft({ ...comboDraft, allowOutOfStock: e.target.checked })
-                    }
-                    className="h-4 w-4 rounded border-slate-300 text-[#3c8dbc]"
-                  />
-                  <label htmlFor="allowOutOfStockCombo" className="font-medium text-slate-700">
-                    Allow out of stock
-                  </label>
                 </div>
               </div>
-            </div>
-            <div className="px-4 py-3 bg-slate-50 border-t border-slate-200 flex justify-end gap-2">
-              <button
-                type="button"
-                onClick={() => setComboModalOpen(false)}
-                className="px-3 py-1.5 bg-white border border-slate-300 rounded text-slate-700 cursor-pointer"
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  if (!comboDraft.attributes.trim()) return;
-                  const next = [
-                    ...(formData.attributeCombinations || []),
-                    { id: `combo-${Date.now()}`, ...comboDraft },
-                  ];
-                  handleChange('attributeCombinations', next);
-                  setComboModalOpen(false);
-                }}
-                className="px-4 py-1.5 bg-[#2585be] hover:bg-[#1f72a3] text-white font-semibold rounded cursor-pointer"
-              >
-                Save
-              </button>
+
+              {/* Notify admin for quantity below */}
+              <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
+                <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-semibold text-slate-700">
+                  <span>Notify admin for quantity below</span>
+                  <Tooltip text="Send low stock notification when combination quantity drops below this value." />
+                </div>
+                <div className="sm:col-span-9">
+                  <input
+                    type="number"
+                    value={comboDraft.notifyAdminForQuantityBelow}
+                    onChange={(e) =>
+                      setComboDraft({
+                        ...comboDraft,
+                        notifyAdminForQuantityBelow: parseInt(e.target.value, 10) || 0,
+                      })
+                    }
+                    className="w-full border border-[#d2d6de] rounded px-2.5 py-2 text-xs bg-white focus:border-[#3c8dbc] outline-none"
+                  />
+                </div>
+              </div>
+
+              {/* Pictures */}
+              <div className="grid grid-cols-1 sm:grid-cols-12 items-start gap-2 pt-1">
+                <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-semibold text-slate-700 pt-2">
+                  <span>Pictures</span>
+                  <Tooltip text="Select product picture(s) associated with this attribute combination." />
+                </div>
+                <div className="sm:col-span-9 space-y-2.5">
+                  {!formData.images || formData.images.length === 0 ? (
+                    <p className="text-xs text-slate-400 italic pt-2">
+                      No product pictures uploaded yet.
+                    </p>
+                  ) : (
+                    formData.images.map((imgUrl, imgIdx) => {
+                      const isChecked = comboDraft.pictures.includes(imgUrl);
+                      return (
+                        <label
+                          key={`${imgIdx}-${imgUrl.slice(0, 24)}`}
+                          className="flex items-start gap-2.5 cursor-pointer w-fit"
+                        >
+                          <input
+                            type="checkbox"
+                            checked={isChecked}
+                            onChange={(e) => {
+                              const nextPics = e.target.checked
+                                ? [...comboDraft.pictures, imgUrl]
+                                : comboDraft.pictures.filter((u) => u !== imgUrl);
+                              setComboDraft({ ...comboDraft, pictures: nextPics });
+                            }}
+                            className="mt-1 h-4 w-4 rounded border-slate-300 text-[#3c8dbc]"
+                          />
+                          <img
+                            src={imgUrl}
+                            alt={`Product picture ${imgIdx + 1}`}
+                            className={`w-20 h-20 object-contain border rounded bg-white p-0.5 ${
+                              isChecked ? 'border-[#3c8dbc] ring-2 ring-[#3c8dbc]/30' : 'border-slate-200'
+                            }`}
+                          />
+                        </label>
+                      );
+                    })
+                  )}
+                </div>
+              </div>
             </div>
           </div>
         </div>
