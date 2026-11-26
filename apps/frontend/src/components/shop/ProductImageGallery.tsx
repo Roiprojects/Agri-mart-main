@@ -91,116 +91,118 @@ export default function ProductImageGallery({
   };
 
   return (
-    <div className="space-y-4">
-      {/* Main Image Stage */}
-      <div className="relative aspect-square w-full bg-slate-50 rounded-3xl overflow-hidden border border-slate-200 shadow-sm group">
-        <Image
-          src={activeImage}
-          alt={`${productName} - Picture ${activeIndex + 1}`}
-          fill
-          unoptimized
-          priority
-          className={`object-cover transition-transform duration-300 group-hover:scale-105 cursor-zoom-in ${
-            availability.shouldBlurImage ? 'blur-lg scale-110 brightness-90' : ''
-          }`}
-          onClick={() => setLightboxOpen(true)}
-          sizes="(max-width: 768px) 100vw, 50vw"
-        />
-
-        {availability.isBeforeStart && (
-          <div className="absolute inset-0 z-10 bg-slate-900/35 flex flex-col items-center justify-center p-4 text-center pointer-events-none">
-            <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-950/85 text-amber-300 font-extrabold text-xs border border-amber-400/40 shadow-lg">
-              <Clock className="w-4 h-4" />
-              <span>Coming Soon</span>
-            </span>
-            {availability.formattedStart && (
-              <span className="mt-2 text-xs font-bold text-white bg-black/65 px-3 py-1 rounded-full">
-                Available from: {availability.formattedStart}
-              </span>
-            )}
-          </div>
-        )}
-
-        {/* Floating Tag or Badge */}
-        {badge && (
-          <div className="absolute top-4 left-4 z-10 bg-emerald-600 text-white font-extrabold text-[11px] px-3 py-1 rounded-full shadow-md uppercase tracking-wider">
-            {badge}
-          </div>
-        )}
-
-        {/* Counter Badge */}
-        <div className="absolute top-4 right-4 z-10 bg-slate-900/70 backdrop-blur-md text-white font-bold text-[11px] px-2.5 py-1 rounded-full flex items-center gap-1 shadow">
-          <Camera className="w-3.5 h-3.5 text-agri-yellow" />
-          <span>
-            {activeIndex + 1} / {validImages.length}
-          </span>
-        </div>
-
-        {/* Fullscreen Button */}
-        <button
-          type="button"
-          onClick={() => setLightboxOpen(true)}
-          title="Open fullscreen preview"
-          className="absolute bottom-4 right-4 z-10 w-9 h-9 rounded-full bg-white/90 hover:bg-white text-slate-800 shadow-md flex items-center justify-center transition opacity-0 group-hover:opacity-100"
-        >
-          <Maximize2 className="w-4 h-4" />
-        </button>
-
-        {/* Left & Right Arrow Buttons on Main Stage */}
+    <div>
+      <div className="flex flex-col-reverse sm:flex-row gap-3 items-start">
+        {/* Thumbnails Column (Left side of Main Image) */}
         {validImages.length > 1 && (
-          <>
-            <button
-              type="button"
-              onClick={handlePrev}
-              aria-label="Previous image"
-              className="absolute left-3 top-1/2 -translate-y-1/2 z-10 w-9 h-9 rounded-full bg-white/90 hover:bg-white text-slate-800 shadow-md flex items-center justify-center transition opacity-0 group-hover:opacity-100"
-            >
-              <ChevronLeft className="w-5 h-5" />
-            </button>
-            <button
-              type="button"
-              onClick={handleNext}
-              aria-label="Next image"
-              className="absolute right-3 top-1/2 -translate-y-1/2 z-10 w-9 h-9 rounded-full bg-white/90 hover:bg-white text-slate-800 shadow-md flex items-center justify-center transition opacity-0 group-hover:opacity-100"
-            >
-              <ChevronRight className="w-5 h-5" />
-            </button>
-          </>
+          <div className="flex sm:flex-col items-center gap-2.5 w-full sm:w-20 shrink-0 overflow-x-auto sm:overflow-y-auto sm:max-h-[480px] p-1 scrollbar-thin">
+            {validImages.map((img, idx) => {
+              const isActive = idx === activeIndex;
+              return (
+                <button
+                  key={idx}
+                  type="button"
+                  onClick={() => setActiveIndex(idx)}
+                  className={`relative w-16 h-16 sm:w-[72px] sm:h-[72px] shrink-0 rounded-2xl overflow-hidden border-2 transition-all cursor-pointer ${
+                    isActive
+                      ? 'border-emerald-600 ring-2 ring-emerald-500/30 scale-105 shadow-sm'
+                      : 'border-slate-200 hover:border-slate-300 opacity-70 hover:opacity-100'
+                  }`}
+                >
+                  <Image
+                    src={img}
+                    alt={`${productName} thumbnail ${idx + 1}`}
+                    fill
+                    unoptimized
+                    className={`object-cover ${availability.shouldBlurImage ? 'blur-sm scale-110' : ''}`}
+                    sizes="80px"
+                  />
+                  {isActive && (
+                    <div className="absolute inset-0 bg-emerald-600/10 pointer-events-none" />
+                  )}
+                </button>
+              );
+            })}
+          </div>
         )}
-      </div>
 
-      {/* Thumbnails Row */}
-      {validImages.length > 1 && (
-        <div className="flex items-center gap-3 overflow-x-auto pb-1 scrollbar-thin">
-          {validImages.map((img, idx) => {
-            const isActive = idx === activeIndex;
-            return (
+        {/* Main Image Stage */}
+        <div className="relative flex-1 aspect-square w-full bg-slate-50 rounded-3xl overflow-hidden border border-slate-200 shadow-sm group">
+          <Image
+            src={activeImage}
+            alt={`${productName} - Picture ${activeIndex + 1}`}
+            fill
+            unoptimized
+            priority
+            className={`object-cover transition-transform duration-300 group-hover:scale-105 cursor-zoom-in ${
+              availability.shouldBlurImage ? 'blur-lg scale-110 brightness-90' : ''
+            }`}
+            onClick={() => setLightboxOpen(true)}
+            sizes="(max-width: 768px) 100vw, 50vw"
+          />
+
+          {availability.isBeforeStart && (
+            <div className="absolute inset-0 z-10 bg-slate-900/35 flex flex-col items-center justify-center p-4 text-center pointer-events-none">
+              <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-950/85 text-amber-300 font-extrabold text-xs border border-amber-400/40 shadow-lg">
+                <Clock className="w-4 h-4" />
+                <span>Coming Soon</span>
+              </span>
+              {availability.formattedStart && (
+                <span className="mt-2 text-xs font-bold text-white bg-black/65 px-3 py-1 rounded-full">
+                  Available from: {availability.formattedStart}
+                </span>
+              )}
+            </div>
+          )}
+
+          {/* Floating Tag or Badge */}
+          {badge && (
+            <div className="absolute top-4 left-4 z-10 bg-emerald-600 text-white font-extrabold text-[11px] px-3 py-1 rounded-full shadow-md uppercase tracking-wider">
+              {badge}
+            </div>
+          )}
+
+          {/* Counter Badge */}
+          <div className="absolute top-4 right-4 z-10 bg-slate-900/70 backdrop-blur-md text-white font-bold text-[11px] px-2.5 py-1 rounded-full flex items-center gap-1 shadow">
+            <Camera className="w-3.5 h-3.5 text-agri-yellow" />
+            <span>
+              {activeIndex + 1} / {validImages.length}
+            </span>
+          </div>
+
+          {/* Fullscreen Button */}
+          <button
+            type="button"
+            onClick={() => setLightboxOpen(true)}
+            title="Open fullscreen preview"
+            className="absolute bottom-4 right-4 z-10 w-9 h-9 rounded-full bg-white/90 hover:bg-white text-slate-800 shadow-md flex items-center justify-center transition opacity-0 group-hover:opacity-100"
+          >
+            <Maximize2 className="w-4 h-4" />
+          </button>
+
+          {/* Left & Right Arrow Buttons on Main Stage */}
+          {validImages.length > 1 && (
+            <>
               <button
-                key={idx}
                 type="button"
-                onClick={() => setActiveIndex(idx)}
-                className={`relative w-20 h-20 shrink-0 rounded-2xl overflow-hidden border-2 transition-all ${
-                  isActive
-                    ? 'border-emerald-600 ring-2 ring-emerald-500/30 scale-105 shadow-sm'
-                    : 'border-slate-200 hover:border-slate-300 opacity-70 hover:opacity-100'
-                }`}
+                onClick={handlePrev}
+                aria-label="Previous image"
+                className="absolute left-3 top-1/2 -translate-y-1/2 z-10 w-9 h-9 rounded-full bg-white/90 hover:bg-white text-slate-800 shadow-md flex items-center justify-center transition opacity-0 group-hover:opacity-100"
               >
-                <Image
-                  src={img}
-                  alt={`${productName} thumbnail ${idx + 1}`}
-                  fill
-                  unoptimized
-                  className={`object-cover ${availability.shouldBlurImage ? 'blur-sm scale-110' : ''}`}
-                  sizes="80px"
-                />
-                {isActive && (
-                  <div className="absolute inset-0 bg-emerald-600/10 pointer-events-none" />
-                )}
+                <ChevronLeft className="w-5 h-5" />
               </button>
-            );
-          })}
+              <button
+                type="button"
+                onClick={handleNext}
+                aria-label="Next image"
+                className="absolute right-3 top-1/2 -translate-y-1/2 z-10 w-9 h-9 rounded-full bg-white/90 hover:bg-white text-slate-800 shadow-md flex items-center justify-center transition opacity-0 group-hover:opacity-100"
+              >
+                <ChevronRight className="w-5 h-5" />
+              </button>
+            </>
+          )}
         </div>
-      )}
+      </div>
 
       {/* Fullscreen Lightbox Modal */}
       {lightboxOpen && (

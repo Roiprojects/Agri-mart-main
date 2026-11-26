@@ -103,8 +103,25 @@ export default function RentalDetailClientFallback({
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
         {/* Machine Info */}
         <div className="lg:col-span-7 space-y-6">
-          <div className="space-y-3">
-            <div className="relative aspect-video w-full rounded-2xl overflow-hidden bg-slate-100 border border-slate-200 shadow-sm">
+          <div className="flex flex-col-reverse sm:flex-row gap-3 items-start">
+            {imagesList.length > 1 && (
+              <div className="flex sm:flex-col gap-2 w-full sm:w-20 shrink-0 overflow-x-auto sm:overflow-y-auto sm:max-h-[420px] p-1">
+                {imagesList.map((imgUrl, idx) => (
+                  <button
+                    key={`${idx}-${imgUrl.slice(0, 24)}`}
+                    type="button"
+                    onClick={() => setActiveImage(imgUrl)}
+                    className={`w-16 h-16 shrink-0 rounded-xl overflow-hidden border-2 transition cursor-pointer ${
+                      primaryImage === imgUrl ? 'border-emerald-600' : 'border-slate-200 hover:border-slate-300'
+                    }`}
+                  >
+                    <img src={imgUrl} alt={`${machine.title} ${idx + 1}`} className="w-full h-full object-cover" />
+                  </button>
+                ))}
+              </div>
+            )}
+
+            <div className="relative flex-1 aspect-video w-full rounded-2xl overflow-hidden bg-slate-100 border border-slate-200 shadow-sm">
               <img
                 src={primaryImage}
                 alt={machine.title}
@@ -116,23 +133,6 @@ export default function RentalDetailClientFallback({
                 </Badge>
               </div>
             </div>
-
-            {imagesList.length > 1 && (
-              <div className="flex flex-wrap gap-2">
-                {imagesList.map((imgUrl, idx) => (
-                  <button
-                    key={`${idx}-${imgUrl.slice(0, 24)}`}
-                    type="button"
-                    onClick={() => setActiveImage(imgUrl)}
-                    className={`w-16 h-16 rounded-xl overflow-hidden border-2 transition cursor-pointer ${
-                      primaryImage === imgUrl ? 'border-emerald-600' : 'border-slate-200 hover:border-slate-300'
-                    }`}
-                  >
-                    <img src={imgUrl} alt={`${machine.title} ${idx + 1}`} className="w-full h-full object-cover" />
-                  </button>
-                ))}
-              </div>
-            )}
           </div>
 
           <div className="bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 shadow-sm space-y-6">
