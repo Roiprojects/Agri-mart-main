@@ -169,12 +169,7 @@ export function ProductForm({
     if (!pId && rawCatId) {
       const found = categories.find((c) => c.id === rawCatId);
       if (found) {
-        if (found.parentId) {
-          sId = sId || found.id;
-          pId = found.parentId;
-        } else {
-          pId = found.id;
-        }
+        pId = found.id;
       }
     }
 
@@ -1235,7 +1230,7 @@ export function ProductForm({
                 </div>
                 <div className="sm:col-span-9">
                   <select
-                    value={formData.parentCategoryId || formData.categoryId}
+                    value={formData.categoryId || formData.parentCategoryId}
                     onChange={(e) => {
                       const newCatId = e.target.value;
                       setFormData((prev) => ({
@@ -1247,13 +1242,26 @@ export function ProductForm({
                     }}
                     className="w-full text-xs px-2.5 py-2 rounded border border-[#d2d6de] bg-white focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none font-medium"
                   >
-                    {(parentCategories.length > 0 ? parentCategories : categories).map(
-                      (c) => (
-                        <option key={c.id} value={c.id}>
-                          {c.name}
-                        </option>
-                      )
-                    )}
+                    {(() => {
+                      const catMap = new Map(categories.map((c) => [c.id, c]));
+                      const getFullName = (
+                        cat: { id: string; name: string; parentId?: string | null },
+                        seen = new Set<string>()
+                      ): string => {
+                        if (!cat.parentId || seen.has(cat.id)) return cat.name;
+                        seen.add(cat.id);
+                        const parent = catMap.get(cat.parentId);
+                        if (!parent) return cat.name;
+                        return `${getFullName(parent, seen)} >> ${cat.name}`;
+                      };
+                      return [...categories]
+                        .sort((a, b) => getFullName(a).localeCompare(getFullName(b)))
+                        .map((c) => (
+                          <option key={c.id} value={c.id}>
+                            {getFullName(c)}
+                          </option>
+                        ));
+                    })()}
                   </select>
                 </div>
               </div>
