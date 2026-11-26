@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -114,6 +114,158 @@ export default function ProductDetailClient({ product: initialProduct }: Product
   const [quantity, setQuantity] = useState(1);
   const [addedNotice, setAddedNotice] = useState(false);
   const [isWishlisted, setIsWishlisted] = useState(false);
+  const [selectedAttributes, setSelectedAttributes] = useState<Record<string, any>>({});
+  const [attributeError, setAttributeError] = useState<string | null>(null);
+
+  const sortedProductAttributes = useMemo(() => {
+    const attrs = Array.isArray(product.productAttributes) ? product.productAttributes : [];
+    return [...attrs].sort((a: any, b: any) => Number(a.displayOrder ?? 0) - Number(b.displayOrder ?? 0));
+  }, [product.productAttributes]);
+
+  const visibleProductAttributes = useMemo(() => {
+    return sortedProductAttributes.filter((attr: any) => {
+      if (attr.condition?.enabled && attr.condition?.attributeId) {
+        const targetVal = selectedAttributes[attr.condition.attributeId];
+        if (Array.isArray(targetVal)) {
+          return targetVal.includes(attr.condition.valueId);
+        }
+        return targetVal === attr.condition.valueId;
+      }
+      return true;
+    });
+  }, [sortedProductAttributes, selectedAttributes]);
+
+  // Pre-select default attribute values whenever product attributes load/change
+  useEffect(() => {
+    if (!Array.isArray(product.productAttributes) || product.productAttributes.length === 0) {
+      setSelectedAttributes({});
+      return;
+    }
+    const defaults: Record<string, any> = {};
+    for (const attr of product.productAttributes) {
+      const vals = Array.isArray(attr.values)
+        ? [...attr.values].sort((a: any, b: any) => Number(a.displayOrder ?? 0) - Number(b.displayOrder ?? 0))
+        : [];
+      const ct = String(attr.controlType || '').toLowerCase();
+      if (ct === 'checkboxes' || ct === 'read-only checkboxes') {
+        const pre = vals.filter((v: any) => v.isPreSelected).map((v: any) => v.id || v.name);
+        if (pre.length > 0) defaults[attr.id] = pre;
+      } else if (
+        ct === 'color squares' ||
+        ct === 'image squares' ||
+        ct === 'drop-down list' ||
+        ct === 'dropdown list' ||
+        ct === 'radio button list' ||
+        !ct
+      ) {
+        const pre = vals.find((v: any) => v.isPreSelected);
+        if (pre) defaults[attr.id] = pre.id || pre.name;
+      }
+    }
+    setSelectedAttributes(defaults);
+    setAttributeError(null);
+  }, [product.id, product.productAttributes]);
+
+  const matchedCombination = useMemo(() => {
+    const combs = Array.isArray(product.attributeCombinations) ? product.attributeCombinations : [];
+    if (combs.length === 0) return null;
+    return (
+      combs.find((comb: any) => {
+        if (comb.selectedValues && typeof comb.selectedValues === 'object') {
+          const entries = Object.entries(comb.selectedValues).filter(([, v]) => v !== '' && v !== undefined && v !== null);
+          if (entries.length === 0) return false;
+          return entries.every(([attrId, valId]) => {
+            const sel = selectedAttributes[attrId];
+            if (Array.isArray(sel)) return sel.includes(valId);
+            return sel === valId;
+          });
+        }
+        return false;
+      }) || null
+    );
+  }, [product.attributeCombinations, selectedAttributes]);
+
+  const basePriceBeforeAttrs = selectedVariant ? selectedVariant.price : product.price;
+
+  const attributeAdjustments = useMemo(() => {
+    let priceAdj = 0;
+    let weightAdj = 0;
+    const summaryParts: string[] = [];
+    const activeImages: string[] = [];
+
+    for (const attr of visibleProductAttributes) {
+      const sel = selectedAttributes[attr.id];
+      if (sel === undefined || sel === null || sel === '' || (Array.isArray(sel) && sel.length === 0)) continue;
+      const vals = Array.isArray(attr.values) ? attr.values : [];
+      const ct = String(attr.controlType || '').toLowerCase();
+
+      if (
+        ct === 'text box' ||
+        ct === 'multiline textbox' ||
+        ct === 'date picker' ||
+        ct === 'file upload'
+      ) {
+        summaryParts.push(`${attr.attributeName}: ${String(sel)}`);
+        continue;
+      }
+
+      const selIds = Array.isArray(sel) ? sel : [sel];
+      const matchedVals = vals.filter((v: any) => selIds.includes(v.id || v.name));
+      if (matchedVals.length > 0) {
+        summaryParts.push(`${attr.attributeName}: ${matchedVals.map((v: any) => v.name).join(', ')}`);
+      }
+      for (const val of matchedVals) {
+        const pAdj = Number(val.priceAdjustment || 0);
+        if (Number.isFinite(pAdj) && pAdj !== 0) {
+          priceAdj += val.priceAdjustmentUsePercentage ? basePriceBeforeAttrs * (pAdj / 100) : pAdj;
+        }
+        const wAdj = Number(val.weightAdjustment || 0);
+        if (Number.isFinite(wAdj) && wAdj !== 0) {
+          weightAdj += wAdj;
+        }
+        if (val.picture && typeof val.picture === 'string') {
+          activeImages.push(val.picture);
+        }
+        if (Array.isArray(val.pictures)) {
+          val.pictures.forEach((p: string) => {
+            if (p && !activeImages.includes(p)) activeImages.push(p);
+          });
+        }
+      }
+    }
+
+    const combImages =
+      matchedCombination && Array.isArray(matchedCombination.pictures) && matchedCombination.pictures.length > 0
+        ? matchedCombination.pictures.filter(Boolean)
+        : [];
+
+    return {
+      priceAdjustment: Math.round(priceAdj * 100) / 100,
+      weightAdjustment: Math.round(weightAdj * 1000) / 1000,
+      summary: summaryParts.join(' | '),
+      images: combImages.length > 0 ? combImages : activeImages,
+    };
+  }, [visibleProductAttributes, selectedAttributes, basePriceBeforeAttrs, matchedCombination]);
+
+  // Notify ProductImageGallery when attribute/combination images change
+  useEffect(() => {
+    if (typeof window === 'undefined' || !product?.id) return;
+    window.dispatchEvent(
+      new CustomEvent('productAttributeImagesChanged', {
+        detail: {
+          productId: product.id,
+          images: attributeAdjustments.images,
+          displayOnlyAttributeImages: Boolean(product.displayOnlyAttributeImages),
+        },
+      })
+    );
+  }, [product?.id, product?.displayOnlyAttributeImages, attributeAdjustments.images]);
+
+  const effectiveMaxStock = matchedCombination
+    ? matchedCombination.allowOutOfStock
+      ? Math.max(1, Number(matchedCombination.stockQuantity ?? 999))
+      : Math.max(0, Number(matchedCombination.stockQuantity ?? 0))
+    : maxStock;
 
   // Keep quantity clamped between [minQty, maxStock] when variant or product stock changes
   useEffect(() => {
@@ -130,9 +282,24 @@ export default function ProductDetailClient({ product: initialProduct }: Product
   const [reviewComment, setReviewComment] = useState('');
   const [reviewSubmitted, setReviewSubmitted] = useState(false);
 
-  const currentPrice = selectedVariant ? selectedVariant.price : product.price;
+  const hasOverriddenPrice =
+    matchedCombination &&
+    matchedCombination.overriddenPrice !== undefined &&
+    matchedCombination.overriddenPrice !== '' &&
+    matchedCombination.overriddenPrice !== null &&
+    Number(matchedCombination.overriddenPrice) > 0;
+  const currentPrice = hasOverriddenPrice
+    ? Number(matchedCombination.overriddenPrice)
+    : Math.max(0, basePriceBeforeAttrs + attributeAdjustments.priceAdjustment);
   const currentComparePrice = selectedVariant ? selectedVariant.comparePrice : product.comparePrice;
-  const currentSku = selectedVariant ? selectedVariant.sku : product.sku;
+  const currentSku =
+    matchedCombination?.sku && String(matchedCombination.sku).trim()
+      ? matchedCombination.sku
+      : selectedVariant
+      ? selectedVariant.sku
+      : product.sku;
+  const currentGtin = matchedCombination?.gtin || product.gtin;
+  const currentMpn = matchedCombination?.manufacturerPartNumber || product.manufacturerPartNumber;
   const discountPercent = currentComparePrice
     ? Math.round(((currentComparePrice - currentPrice) / currentComparePrice) * 100)
     : 0;
@@ -240,9 +407,37 @@ export default function ProductDetailClient({ product: initialProduct }: Product
     } catch {}
   };
 
+  const validateRequiredAttributes = (): string | null => {
+    for (const attr of visibleProductAttributes) {
+      const sel = selectedAttributes[attr.id];
+      const isEmpty = Array.isArray(sel)
+        ? sel.length === 0
+        : sel === undefined || sel === null || String(sel).trim() === '';
+      if (attr.isRequired && isEmpty) {
+        return `Please select or enter required option: ${attr.attributeName}`;
+      }
+      if (!isEmpty && attr.validationRules && typeof attr.validationRules === 'object') {
+        const strVal = String(sel);
+        if (attr.validationRules.minLength && strVal.length < Number(attr.validationRules.minLength)) {
+          return `${attr.attributeName} must be at least ${attr.validationRules.minLength} characters.`;
+        }
+        if (attr.validationRules.maxLength && strVal.length > Number(attr.validationRules.maxLength)) {
+          return `${attr.attributeName} must be at most ${attr.validationRules.maxLength} characters.`;
+        }
+      }
+    }
+    return null;
+  };
+
   const executeAddToCart = () => {
     setRequiredWarning(null);
     setCustomPriceError(null);
+    setAttributeError(null);
+    const attrErr = validateRequiredAttributes();
+    if (attrErr) {
+      setAttributeError(attrErr);
+      return;
+    }
     if (isCustomPriceEnabled && effectivePrice <= 0) {
       setCustomPriceError('Please enter a valid price greater than ₹0.');
       return;
@@ -284,12 +479,13 @@ export default function ProductDetailClient({ product: initialProduct }: Product
           (i: any) =>
             i.id === product.id &&
             i.variantId === selectedVariant?.id &&
+            (i.selectedAttributesSummary || '') === attributeAdjustments.summary &&
             (!isCustomPriceEnabled || Number(i.price) === effectivePrice)
         );
         if (existingIdx >= 0) {
           const nextQty = existingIdx >= 0 ? cart[existingIdx].quantity + quantity : quantity;
-          cart[existingIdx].quantity = maxStock > 0 ? Math.min(nextQty, maxStock) : nextQty;
-          cart[existingIdx].maxStock = maxStock;
+          cart[existingIdx].quantity = effectiveMaxStock > 0 ? Math.min(nextQty, effectiveMaxStock) : nextQty;
+          cart[existingIdx].maxStock = effectiveMaxStock;
           cart[existingIdx].minQty = minQty;
         } else {
           cart.push({
@@ -297,13 +493,16 @@ export default function ProductDetailClient({ product: initialProduct }: Product
             name: product.name,
             price: effectivePrice,
             customPrice: isCustomPriceEnabled ? effectivePrice : undefined,
-            quantity: maxStock > 0 ? Math.min(quantity, maxStock) : quantity,
-            maxStock,
+            quantity: effectiveMaxStock > 0 ? Math.min(quantity, effectiveMaxStock) : quantity,
+            maxStock: effectiveMaxStock,
             minQty,
-            image: product.media?.[0]?.url || product.images?.[0],
+            image: attributeAdjustments.images[0] || product.media?.[0]?.url || product.images?.[0],
             category: product.category?.name || product.category,
             variantId: selectedVariant?.id,
             variantTitle: selectedVariant?.title,
+            selectedAttributes: selectedAttributes,
+            selectedAttributesSummary: attributeAdjustments.summary || undefined,
+            sku: currentSku,
           });
         }
         localStorage.setItem('agri_cart_items', JSON.stringify(cart));
@@ -321,6 +520,12 @@ export default function ProductDetailClient({ product: initialProduct }: Product
   const executeBuyNow = () => {
     setRequiredWarning(null);
     setCustomPriceError(null);
+    setAttributeError(null);
+    const attrErr = validateRequiredAttributes();
+    if (attrErr) {
+      setAttributeError(attrErr);
+      return;
+    }
     if (isCustomPriceEnabled && effectivePrice <= 0) {
       setCustomPriceError('Please enter a valid price greater than ₹0.');
       return;
@@ -333,10 +538,13 @@ export default function ProductDetailClient({ product: initialProduct }: Product
           price: effectivePrice,
           customPrice: isCustomPriceEnabled ? effectivePrice : undefined,
           quantity,
-          image: product.media?.[0]?.url || product.images?.[0],
+          image: attributeAdjustments.images[0] || product.media?.[0]?.url || product.images?.[0],
           category: product.category?.name || product.category,
           variantId: selectedVariant?.id,
           variantTitle: selectedVariant?.title,
+          selectedAttributes: selectedAttributes,
+          selectedAttributesSummary: attributeAdjustments.summary || undefined,
+          sku: currentSku,
         },
       ];
 
@@ -470,6 +678,20 @@ export default function ProductDetailClient({ product: initialProduct }: Product
               <strong className="text-slate-800">
                 {product.modelNumber || selectedVariant?.title}
               </strong>
+            </div>
+          )}
+          {currentGtin && (
+            <div className="flex items-center gap-1">
+              <span className="text-slate-400">&bull;</span>
+              <span>GTIN:</span>
+              <strong className="text-slate-800">{currentGtin}</strong>
+            </div>
+          )}
+          {currentMpn && (
+            <div className="flex items-center gap-1">
+              <span className="text-slate-400">&bull;</span>
+              <span>MPN:</span>
+              <strong className="text-slate-800">{currentMpn}</strong>
             </div>
           )}
         </div>
@@ -612,6 +834,292 @@ export default function ProductDetailClient({ product: initialProduct }: Product
         </div>
       )}
 
+      {/* Product Attributes Selector */}
+      {visibleProductAttributes.length > 0 && (
+        <div className="space-y-4 pt-1 border-t border-slate-100">
+          {visibleProductAttributes.map((attr: any) => {
+            const vals = Array.isArray(attr.values)
+              ? [...attr.values].sort((a: any, b: any) => Number(a.displayOrder ?? 0) - Number(b.displayOrder ?? 0))
+              : [];
+            const ct = String(attr.controlType || 'Drop-down list').toLowerCase();
+            const sel = selectedAttributes[attr.id];
+
+            const formatAdj = (v: any) => {
+              const p = Number(v.priceAdjustment || 0);
+              if (!p) return '';
+              const sign = p > 0 ? '+' : '-';
+              return v.priceAdjustmentUsePercentage
+                ? ` (${sign}${Math.abs(p)}%)`
+                : ` (${sign}₹${Math.abs(p).toLocaleString('en-IN')})`;
+            };
+
+            return (
+              <div key={attr.id} className="space-y-1.5">
+                <label className="block text-xs font-bold text-slate-900">
+                  {attr.attributeName}
+                  {attr.isRequired && <span className="text-rose-600 ml-1">*</span>}
+                  {attr.textPrompt && (
+                    <span className="block text-[11px] font-normal text-slate-500 mt-0.5">{attr.textPrompt}</span>
+                  )}
+                </label>
+
+                {ct === 'color squares' && (
+                  <div className="flex flex-wrap items-center gap-2.5 pt-0.5">
+                    {vals.map((val: any) => {
+                      const valKey = val.id || val.name;
+                      const isSel = sel === valKey;
+                      return (
+                        <button
+                          key={valKey}
+                          type="button"
+                          onClick={() => {
+                            setSelectedAttributes((prev) => ({ ...prev, [attr.id]: valKey }));
+                            setAttributeError(null);
+                          }}
+                          title={`${val.name}${formatAdj(val)}`}
+                          className={`flex items-center gap-2 px-2.5 py-1.5 rounded-xl border text-xs font-semibold transition cursor-pointer ${
+                            isSel
+                              ? 'border-agri-green bg-emerald-50 text-emerald-900 ring-2 ring-agri-green/30'
+                              : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300'
+                          }`}
+                        >
+                          <span
+                            className="w-5 h-5 rounded-full border border-slate-300 shrink-0 shadow-2xs"
+                            style={{ backgroundColor: val.rgbColor || '#e2e8f0' }}
+                          />
+                          <span>
+                            {val.name}
+                            {formatAdj(val) && <span className="text-[10px] text-emerald-700 font-bold">{formatAdj(val)}</span>}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+
+                {ct === 'image squares' && (
+                  <div className="flex flex-wrap items-center gap-2.5 pt-0.5">
+                    {vals.map((val: any) => {
+                      const valKey = val.id || val.name;
+                      const isSel = sel === valKey;
+                      const imgUrl = val.picture || (Array.isArray(val.pictures) && val.pictures[0]) || '';
+                      return (
+                        <button
+                          key={valKey}
+                          type="button"
+                          onClick={() => {
+                            setSelectedAttributes((prev) => ({ ...prev, [attr.id]: valKey }));
+                            setAttributeError(null);
+                          }}
+                          className={`flex flex-col items-center gap-1 p-1.5 rounded-xl border text-[11px] font-semibold transition cursor-pointer ${
+                            isSel
+                              ? 'border-agri-green bg-emerald-50 text-emerald-900 ring-2 ring-agri-green/30'
+                              : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300'
+                          }`}
+                        >
+                          {imgUrl ? (
+                            <img src={imgUrl} alt={val.name} className="w-12 h-12 object-cover rounded-lg border border-slate-100" />
+                          ) : (
+                            <div className="w-12 h-12 rounded-lg bg-slate-100 flex items-center justify-center text-[10px] text-slate-400">
+                              Img
+                            </div>
+                          )}
+                          <span>
+                            {val.name}
+                            {formatAdj(val) && <span className="text-[10px] text-emerald-700 font-bold">{formatAdj(val)}</span>}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+
+                {(ct === 'drop-down list' || ct === 'dropdown list') && (
+                  <select
+                    value={typeof sel === 'string' ? sel : ''}
+                    onChange={(e) => {
+                      setSelectedAttributes((prev) => ({ ...prev, [attr.id]: e.target.value }));
+                      setAttributeError(null);
+                    }}
+                    className="w-full sm:w-auto min-w-[240px] px-3 py-2 border border-slate-300 rounded-xl text-xs font-semibold text-slate-800 bg-white focus:outline-none focus:ring-2 focus:ring-agri-green"
+                  >
+                    <option value="">-- Select {attr.attributeName} --</option>
+                    {vals.map((val: any) => {
+                      const valKey = val.id || val.name;
+                      return (
+                        <option key={valKey} value={valKey}>
+                          {val.name}
+                          {formatAdj(val)}
+                        </option>
+                      );
+                    })}
+                  </select>
+                )}
+
+                {ct === 'radio button list' && (
+                  <div className="flex flex-wrap gap-3 pt-0.5">
+                    {vals.map((val: any) => {
+                      const valKey = val.id || val.name;
+                      const isSel = sel === valKey;
+                      return (
+                        <label
+                          key={valKey}
+                          className={`flex items-center gap-2 px-3 py-2 rounded-xl border text-xs font-semibold cursor-pointer transition ${
+                            isSel
+                              ? 'border-agri-green bg-emerald-50 text-emerald-900'
+                              : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
+                          }`}
+                        >
+                          <input
+                            type="radio"
+                            name={`attr_${attr.id}`}
+                            checked={isSel}
+                            onChange={() => {
+                              setSelectedAttributes((prev) => ({ ...prev, [attr.id]: valKey }));
+                              setAttributeError(null);
+                            }}
+                            className="accent-emerald-700"
+                          />
+                          <span>
+                            {val.name}
+                            {formatAdj(val) && <span className="text-[10px] text-emerald-700 font-bold">{formatAdj(val)}</span>}
+                          </span>
+                        </label>
+                      );
+                    })}
+                  </div>
+                )}
+
+                {(ct === 'checkboxes' || ct === 'read-only checkboxes') && (
+                  <div className="flex flex-wrap gap-2.5 pt-0.5">
+                    {vals.map((val: any) => {
+                      const valKey = val.id || val.name;
+                      const arr = Array.isArray(sel) ? sel : [];
+                      const isSel = arr.includes(valKey);
+                      const isReadOnly = ct === 'read-only checkboxes';
+                      return (
+                        <label
+                          key={valKey}
+                          className={`flex items-center gap-2 px-3 py-2 rounded-xl border text-xs font-semibold transition ${
+                            isReadOnly ? 'cursor-default opacity-80' : 'cursor-pointer'
+                          } ${
+                            isSel
+                              ? 'border-agri-green bg-emerald-50 text-emerald-900'
+                              : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
+                          }`}
+                        >
+                          <input
+                            type="checkbox"
+                            disabled={isReadOnly}
+                            checked={isSel}
+                            onChange={(e) => {
+                              if (isReadOnly) return;
+                              setSelectedAttributes((prev) => {
+                                const current = Array.isArray(prev[attr.id]) ? prev[attr.id] : [];
+                                const next = e.target.checked
+                                  ? [...current, valKey]
+                                  : current.filter((x: string) => x !== valKey);
+                                return { ...prev, [attr.id]: next };
+                              });
+                              setAttributeError(null);
+                            }}
+                            className="accent-emerald-700"
+                          />
+                          <span>
+                            {val.name}
+                            {formatAdj(val) && <span className="text-[10px] text-emerald-700 font-bold">{formatAdj(val)}</span>}
+                          </span>
+                        </label>
+                      );
+                    })}
+                  </div>
+                )}
+
+                {ct === 'text box' && (
+                  <input
+                    type="text"
+                    value={typeof sel === 'string' ? sel : ''}
+                    onChange={(e) => {
+                      setSelectedAttributes((prev) => ({ ...prev, [attr.id]: e.target.value }));
+                      setAttributeError(null);
+                    }}
+                    placeholder={attr.textPrompt || `Enter ${attr.attributeName}`}
+                    className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-agri-green"
+                  />
+                )}
+
+                {ct === 'multiline textbox' && (
+                  <textarea
+                    rows={3}
+                    value={typeof sel === 'string' ? sel : ''}
+                    onChange={(e) => {
+                      setSelectedAttributes((prev) => ({ ...prev, [attr.id]: e.target.value }));
+                      setAttributeError(null);
+                    }}
+                    placeholder={attr.textPrompt || `Enter ${attr.attributeName}`}
+                    className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-agri-green"
+                  />
+                )}
+
+                {ct === 'date picker' && (
+                  <input
+                    type="date"
+                    value={typeof sel === 'string' ? sel : ''}
+                    onChange={(e) => {
+                      setSelectedAttributes((prev) => ({ ...prev, [attr.id]: e.target.value }));
+                      setAttributeError(null);
+                    }}
+                    className="px-3 py-2 border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-agri-green"
+                  />
+                )}
+
+                {ct === 'file upload' && (
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="file"
+                      onChange={(e) => {
+                        const f = e.target.files?.[0];
+                        setSelectedAttributes((prev) => ({ ...prev, [attr.id]: f ? f.name : '' }));
+                        setAttributeError(null);
+                      }}
+                      className="text-xs text-slate-600 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100"
+                    />
+                    {sel && <span className="text-[11px] font-semibold text-emerald-700">{String(sel)}</span>}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+
+          {(attributeAdjustments.priceAdjustment !== 0 || attributeAdjustments.weightAdjustment !== 0 || hasOverriddenPrice) && (
+            <div className="flex flex-wrap items-center gap-3 text-[11px] font-semibold text-emerald-800 bg-emerald-50/70 border border-emerald-200 px-3 py-2 rounded-xl">
+              {hasOverriddenPrice && (
+                <span>Combination Price Applied: ₹{Number(matchedCombination.overriddenPrice).toLocaleString('en-IN')}</span>
+              )}
+              {!hasOverriddenPrice && attributeAdjustments.priceAdjustment !== 0 && (
+                <span>
+                  Attribute Price Adjustment:{' '}
+                  {attributeAdjustments.priceAdjustment > 0 ? '+' : '-'}₹
+                  {Math.abs(attributeAdjustments.priceAdjustment).toLocaleString('en-IN')}
+                </span>
+              )}
+              {attributeAdjustments.weightAdjustment !== 0 && (
+                <span>
+                  Weight Adjustment: {attributeAdjustments.weightAdjustment > 0 ? '+' : ''}
+                  {attributeAdjustments.weightAdjustment} kg
+                </span>
+              )}
+            </div>
+          )}
+
+          {attributeError && (
+            <div className="p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-bold">
+              {attributeError}
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Variant Selector (if available) */}
       {variants.length > 1 && (
         <div className="space-y-2 pt-1">
@@ -666,19 +1174,19 @@ export default function ProductDetailClient({ product: initialProduct }: Product
             </span>
             <button
               type="button"
-              disabled={maxStock <= 0 || quantity >= maxStock}
+              disabled={effectiveMaxStock <= 0 || quantity >= effectiveMaxStock}
               onClick={() =>
-                setQuantity((q) => (maxStock > 0 ? Math.min(maxStock, q + 1) : q))
+                setQuantity((q) => (effectiveMaxStock > 0 ? Math.min(effectiveMaxStock, q + 1) : q))
               }
               className={`p-2 transition ${
-                maxStock <= 0 || quantity >= maxStock
+                effectiveMaxStock <= 0 || quantity >= effectiveMaxStock
                   ? 'text-slate-300 opacity-45 cursor-not-allowed'
                   : 'text-slate-600 hover:bg-slate-200 cursor-pointer'
               }`}
               aria-label="Increase quantity"
               title={
-                maxStock > 0 && quantity >= maxStock
-                  ? `Maximum available stock (${maxStock}) reached`
+                effectiveMaxStock > 0 && quantity >= effectiveMaxStock
+                  ? `Maximum available stock (${effectiveMaxStock}) reached`
                   : 'Increase quantity'
               }
             >
@@ -899,6 +1407,46 @@ export default function ProductDetailClient({ product: initialProduct }: Product
           </button>
         </div>
       )}
+
+      {/* Specification Attributes Summary (live with admin overrides) */}
+      {Array.isArray(product.specificationAttributes) &&
+        product.specificationAttributes.some((s: any) => s.showOnProductPage !== false) && (
+          <div className="p-4 bg-white rounded-2xl border border-slate-200 space-y-2 text-xs">
+            <div className="font-extrabold text-slate-900 border-b border-slate-100 pb-2">
+              Product Specifications
+            </div>
+            <div className="divide-y divide-slate-100">
+              {product.specificationAttributes
+                .filter((s: any) => s.showOnProductPage !== false)
+                .sort((a: any, b: any) => Number(a.displayOrder ?? 0) - Number(b.displayOrder ?? 0))
+                .map((spec: any, idx: number) => {
+                  const attrType = String(spec.attributeType || '').toLowerCase();
+                  return (
+                    <div key={spec.id || idx} className="flex items-center justify-between gap-4 py-1.5">
+                      <span className="text-slate-500 font-semibold">{spec.attributeName}</span>
+                      {attrType === 'hyperlink' && spec.value ? (
+                        <a
+                          href={String(spec.value).startsWith('http') ? spec.value : `https://${spec.value}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-emerald-700 hover:underline font-bold text-right break-all"
+                        >
+                          {spec.value}
+                        </a>
+                      ) : attrType === 'custom html text' ? (
+                        <div
+                          className="text-slate-900 font-bold text-right"
+                          dangerouslySetInnerHTML={{ __html: spec.value || '' }}
+                        />
+                      ) : (
+                        <span className="text-slate-900 font-bold text-right">{spec.value}</span>
+                      )}
+                    </div>
+                  );
+                })}
+            </div>
+          </div>
+        )}
 
       {/* Dark Warehouse Live Availability Breakdown */}
       <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-2 text-[11px]">

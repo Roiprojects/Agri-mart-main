@@ -33,6 +33,10 @@ export default function ProductImageGallery({
 }: ProductImageGalleryProps) {
   const [dates, setDates] = useState({ availableStartDate, availableEndDate });
   const [overrideImages, setOverrideImages] = useState<string[] | null>(null);
+  const [attrImagesState, setAttrImagesState] = useState<{
+    images: string[];
+    displayOnly: boolean;
+  } | null>(null);
 
   useEffect(() => {
     if (productId) {
@@ -68,10 +72,42 @@ export default function ProductImageGallery({
     setOverrideImages(null);
   }, [productId, availableStartDate, availableEndDate]);
 
+  useEffect(() => {
+    const handleAttrImages = (e: Event) => {
+      const detail = (e as CustomEvent).detail;
+      if (!detail || detail.productId !== productId) return;
+      const imgs = Array.isArray(detail.images) ? detail.images.filter(Boolean) : [];
+      if (imgs.length > 0) {
+        setAttrImagesState({
+          images: imgs,
+          displayOnly: Boolean(detail.displayOnlyAttributeImages),
+        });
+        setActiveIndex(0);
+      } else {
+        setAttrImagesState(null);
+      }
+    };
+    window.addEventListener('productAttributeImagesChanged', handleAttrImages);
+    return () => window.removeEventListener('productAttributeImagesChanged', handleAttrImages);
+  }, [productId]);
+
   const availability = getProductAvailability(dates);
   const fallbackImage =
     'https://images.unsplash.com/photo-1589923188900-85dae523342b?auto=format&fit=crop&w=800&q=80';
-  const effectiveImages = overrideImages && overrideImages.length > 0 ? overrideImages : images;
+  const baseEffectiveImages = overrideImages && overrideImages.length > 0 ? overrideImages : images;
+  const effectiveImages = (() => {
+    if (attrImagesState && attrImagesState.images.length > 0) {
+      if (attrImagesState.displayOnly) {
+        return attrImagesState.images;
+      }
+      const merged = [...attrImagesState.images];
+      for (const img of baseEffectiveImages || []) {
+        if (img && !merged.includes(img)) merged.push(img);
+      }
+      return merged;
+    }
+    return baseEffectiveImages;
+  })();
   const validImages = effectiveImages && effectiveImages.length > 0 ? effectiveImages : [fallbackImage];
 
   const [activeIndex, setActiveIndex] = useState(0);

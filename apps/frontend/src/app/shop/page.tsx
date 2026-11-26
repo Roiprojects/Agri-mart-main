@@ -35,6 +35,8 @@ export default function ShopPage() {
 
   const [selectedCategory, setSelectedCategory] = useState<string>('ALL');
   const [selectedBrand, setSelectedBrand] = useState<string>('ALL');
+  const [selectedSpecFilters, setSelectedSpecFilters] = useState<Record<string, string[]>>({});
+  const [selectedProdAttrFilters, setSelectedProdAttrFilters] = useState<Record<string, string[]>>({});
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [sortBy, setSortBy] = useState<string>('popular');
 
@@ -87,6 +89,88 @@ export default function ShopPage() {
     return p.brand || p.brandName || '';
   };
 
+  // Extract filterable Specification Attributes (allowFiltering !== false) and Product Attributes
+  const { specFilterGroups, prodAttrFilterGroups } = useMemo(() => {
+    const specMap = new Map<string, Map<string, { count: number; rgbColor?: string }>>();
+    const attrMap = new Map<string, Map<string, { count: number; rgbColor?: string }>>();
+
+    for (const p of products) {
+      if (Array.isArray(p.specificationAttributes)) {
+        const seenPerProd = new Set<string>();
+        for (const s of p.specificationAttributes) {
+          if (s.allowFiltering === false) continue;
+          const name = String(s.attributeName || '').trim();
+          const val = String(s.value || '').trim();
+          if (!name || !val) continue;
+          if (!specMap.has(name)) specMap.set(name, new Map());
+          const valMap = specMap.get(name)!;
+          const key = `${name}:::${val}`;
+          if (!seenPerProd.has(key)) {
+            seenPerProd.add(key);
+            const prev = valMap.get(val) || { count: 0, rgbColor: s.rgbColor };
+            valMap.set(val, { count: prev.count + 1, rgbColor: prev.rgbColor || s.rgbColor });
+          }
+        }
+      }
+
+      if (Array.isArray(p.productAttributes)) {
+        const seenAttrPerProd = new Set<string>();
+        for (const a of p.productAttributes) {
+          const name = String(a.attributeName || '').trim();
+          if (!name || !Array.isArray(a.values) || a.values.length === 0) continue;
+          if (!attrMap.has(name)) attrMap.set(name, new Map());
+          const valMap = attrMap.get(name)!;
+          for (const v of a.values) {
+            const valName = String(v.name || '').trim();
+            if (!valName) continue;
+            const key = `${name}:::${valName}`;
+            if (!seenAttrPerProd.has(key)) {
+              seenAttrPerProd.add(key);
+              const prev = valMap.get(valName) || { count: 0, rgbColor: v.rgbColor };
+              valMap.set(valName, { count: prev.count + 1, rgbColor: prev.rgbColor || v.rgbColor });
+            }
+          }
+        }
+      }
+    }
+
+    return {
+      specFilterGroups: Array.from(specMap.entries()).map(([name, valMap]) => ({
+        name,
+        values: Array.from(valMap.entries()).map(([value, meta]) => ({ value, ...meta })),
+      })),
+      prodAttrFilterGroups: Array.from(attrMap.entries()).map(([name, valMap]) => ({
+        name,
+        values: Array.from(valMap.entries()).map(([value, meta]) => ({ value, ...meta })),
+      })),
+    };
+  }, [products]);
+
+  const toggleSpecFilter = (attrName: string, val: string) => {
+    setSelectedSpecFilters((prev) => {
+      const curr = prev[attrName] || [];
+      const next = curr.includes(val) ? curr.filter((x) => x !== val) : [...curr, val];
+      const copy = { ...prev };
+      if (next.length === 0) delete copy[attrName];
+      else copy[attrName] = next;
+      return copy;
+    });
+  };
+
+  const toggleProdAttrFilter = (attrName: string, val: string) => {
+    setSelectedProdAttrFilters((prev) => {
+      const curr = prev[attrName] || [];
+      const next = curr.includes(val) ? curr.filter((x) => x !== val) : [...curr, val];
+      const copy = { ...prev };
+      if (next.length === 0) delete copy[attrName];
+      else copy[attrName] = next;
+      return copy;
+    });
+  };
+
+  const hasActiveAttributeFilters =
+    Object.keys(selectedSpecFilters).length > 0 || Object.keys(selectedProdAttrFilters).length > 0;
+
   const filteredProducts = useMemo(() => {
     return products.filter((p) => {
       if (selectedCategory !== 'ALL' && p.categoryId !== selectedCategory && p.parentCategoryId !== selectedCategory && p.subCategoryId !== selectedCategory) return false;
@@ -94,6 +178,33 @@ export default function ShopPage() {
         const pBrand = getProductBrandName(p);
         if (pBrand.toLowerCase() !== selectedBrand.toLowerCase()) return false;
       }
+
+      // Specification attribute filters (AND across attributes, OR within same attribute's selected values)
+      for (const [attrName, wantedVals] of Object.entries(selectedSpecFilters)) {
+        if (!wantedVals || wantedVals.length === 0) continue;
+        const specs = Array.isArray(p.specificationAttributes) ? p.specificationAttributes : [];
+        const matched = specs.some(
+          (s: any) =>
+            s.allowFiltering !== false &&
+            String(s.attributeName || '').trim() === attrName &&
+            wantedVals.includes(String(s.value || '').trim())
+        );
+        if (!matched) return false;
+      }
+
+      // Product attribute filters (AND across attributes, OR within same attribute's selected values)
+      for (const [attrName, wantedVals] of Object.entries(selectedProdAttrFilters)) {
+        if (!wantedVals || wantedVals.length === 0) continue;
+        const pAttrs = Array.isArray(p.productAttributes) ? p.productAttributes : [];
+        const matched = pAttrs.some(
+          (a: any) =>
+            String(a.attributeName || '').trim() === attrName &&
+            Array.isArray(a.values) &&
+            a.values.some((v: any) => wantedVals.includes(String(v.name || '').trim()))
+        );
+        if (!matched) return false;
+      }
+
       if (searchQuery.trim()) {
         const q = searchQuery.toLowerCase();
         const matchName = p.name.toLowerCase().includes(q) || (p.nameKn && p.nameKn.toLowerCase().includes(q));
@@ -113,7 +224,7 @@ export default function ShopPage() {
       if (sortBy === 'rating') return (b.rating || 5) - (a.rating || 5);
       return (b.reviewsCount || 0) - (a.reviewsCount || 0);
     });
-  }, [products, brands, selectedCategory, selectedBrand, searchQuery, sortBy]);
+  }, [products, brands, selectedCategory, selectedBrand, selectedSpecFilters, selectedProdAttrFilters, searchQuery, sortBy]);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6 text-xs">
@@ -155,11 +266,13 @@ export default function ShopPage() {
             <h3 className="font-extrabold text-sm text-slate-900 flex items-center gap-2">
               <Filter className="w-4 h-4 text-agri-green" /> Filters
             </h3>
-            {(selectedCategory !== 'ALL' || selectedBrand !== 'ALL' || searchQuery) && (
+            {(selectedCategory !== 'ALL' || selectedBrand !== 'ALL' || searchQuery || hasActiveAttributeFilters) && (
               <button
                 onClick={() => {
                   setSelectedCategory('ALL');
                   setSelectedBrand('ALL');
+                  setSelectedSpecFilters({});
+                  setSelectedProdAttrFilters({});
                   setSearchQuery('');
                 }}
                 className="text-[11px] text-agri-green font-bold hover:underline"
@@ -261,6 +374,100 @@ export default function ShopPage() {
               })}
             </div>
           </div>
+
+          {/* Product Attribute Filters */}
+          {prodAttrFilterGroups.map((group) => (
+            <div key={`pattr-${group.name}`} className="space-y-2 border-t border-slate-100 pt-4">
+              <label className="text-[11px] font-bold text-slate-600 uppercase tracking-wider">
+                {group.name}
+              </label>
+              <div className="space-y-1.5 max-h-48 overflow-y-auto pr-1">
+                {group.values.map((item) => {
+                  const isChecked = (selectedProdAttrFilters[group.name] || []).includes(item.value);
+                  return (
+                    <label
+                      key={item.value}
+                      className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl text-xs font-semibold cursor-pointer transition ${
+                        isChecked
+                          ? 'bg-emerald-50 text-agri-green-dark border border-emerald-200'
+                          : 'text-slate-600 hover:bg-slate-50 border border-transparent'
+                      }`}
+                    >
+                      <span className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          checked={isChecked}
+                          onChange={() => toggleProdAttrFilter(group.name, item.value)}
+                          className="accent-emerald-700 rounded"
+                        />
+                        {item.rgbColor && (
+                          <span
+                            className="w-3.5 h-3.5 rounded-full border border-slate-300 shrink-0"
+                            style={{ backgroundColor: item.rgbColor }}
+                          />
+                        )}
+                        <span>{item.value}</span>
+                      </span>
+                      <span
+                        className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${
+                          isChecked ? 'bg-agri-green text-white' : 'bg-slate-100 text-slate-500'
+                        }`}
+                      >
+                        {item.count}
+                      </span>
+                    </label>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
+
+          {/* Specification Attribute Filters */}
+          {specFilterGroups.map((group) => (
+            <div key={`spec-${group.name}`} className="space-y-2 border-t border-slate-100 pt-4">
+              <label className="text-[11px] font-bold text-slate-600 uppercase tracking-wider">
+                {group.name}
+              </label>
+              <div className="space-y-1.5 max-h-48 overflow-y-auto pr-1">
+                {group.values.map((item) => {
+                  const isChecked = (selectedSpecFilters[group.name] || []).includes(item.value);
+                  return (
+                    <label
+                      key={item.value}
+                      className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl text-xs font-semibold cursor-pointer transition ${
+                        isChecked
+                          ? 'bg-emerald-50 text-agri-green-dark border border-emerald-200'
+                          : 'text-slate-600 hover:bg-slate-50 border border-transparent'
+                      }`}
+                    >
+                      <span className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          checked={isChecked}
+                          onChange={() => toggleSpecFilter(group.name, item.value)}
+                          className="accent-emerald-700 rounded"
+                        />
+                        {item.rgbColor && (
+                          <span
+                            className="w-3.5 h-3.5 rounded-full border border-slate-300 shrink-0"
+                            style={{ backgroundColor: item.rgbColor }}
+                          />
+                        )}
+                        <span>{item.value}</span>
+                      </span>
+                      <span
+                        className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${
+                          isChecked ? 'bg-agri-green text-white' : 'bg-slate-100 text-slate-500'
+                        }`}
+                      >
+                        {item.count}
+                      </span>
+                    </label>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
         </div>
 
         {/* Products Grid */}

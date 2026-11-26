@@ -256,18 +256,48 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
       </div>
 
       {/* Specifications Table */}
-      {product.specifications && product.specifications.length > 0 && (
+      {((product.specifications && product.specifications.length > 0) ||
+        (Array.isArray(product.specificationAttributes) &&
+          product.specificationAttributes.some((s: any) => s.showOnProductPage !== false))) && (
         <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-4">
           <h2 className="text-base font-extrabold text-slate-900 border-b border-slate-100 pb-3">
             Technical &amp; Engineering Specifications
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-3">
-            {product.specifications.map((spec: any, idx: number) => (
-              <div key={idx} className="flex justify-between py-2 border-b border-slate-100">
+            {(product.specifications || []).map((spec: any, idx: number) => (
+              <div key={`spec-${idx}`} className="flex justify-between py-2 border-b border-slate-100">
                 <span className="text-slate-500 font-semibold">{spec.name}</span>
                 <span className="text-slate-900 font-bold text-right">{spec.value}</span>
               </div>
             ))}
+            {(product.specificationAttributes || [])
+              .filter((s: any) => s.showOnProductPage !== false)
+              .sort((a: any, b: any) => Number(a.displayOrder ?? 0) - Number(b.displayOrder ?? 0))
+              .map((spec: any, idx: number) => {
+                const attrType = String(spec.attributeType || '').toLowerCase();
+                return (
+                  <div key={`sa-${spec.id || idx}`} className="flex justify-between items-center gap-4 py-2 border-b border-slate-100">
+                    <span className="text-slate-500 font-semibold">{spec.attributeName}</span>
+                    {attrType === 'hyperlink' && spec.value ? (
+                      <a
+                        href={String(spec.value).startsWith('http') ? spec.value : `https://${spec.value}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-emerald-700 hover:underline font-bold text-right break-all"
+                      >
+                        {spec.value}
+                      </a>
+                    ) : attrType === 'custom html text' ? (
+                      <div
+                        className="text-slate-900 font-bold text-right text-xs"
+                        dangerouslySetInnerHTML={{ __html: spec.value || '' }}
+                      />
+                    ) : (
+                      <span className="text-slate-900 font-bold text-right">{spec.value}</span>
+                    )}
+                  </div>
+                );
+              })}
           </div>
         </div>
       )}
@@ -348,9 +378,11 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
             {product.videos.map((v: any, idx: number) => {
-              const isYouTube = v.type === 'youtube' || (typeof v.url === 'string' && (v.url.includes('youtube.com') || v.url.includes('youtu.be')));
-              const ytId = isYouTube ? (v.url.match(/(?:embed\/|v=|vi\/|youtu\.be\/|\/v\/)([^&?/\s]+)/) || [])[1] : null;
-              const embedSrc = ytId ? `https://www.youtube-nocookie.com/embed/${ytId}` : v.url;
+              const rawUrl = String(v.embedUrl || v.url || '').trim();
+              if (!rawUrl) return null;
+              const isYouTube = v.type === 'youtube' || rawUrl.includes('youtube.com') || rawUrl.includes('youtu.be');
+              const ytId = isYouTube ? (rawUrl.match(/(?:embed\/|v=|vi\/|youtu\.be\/|\/v\/)([^&?/\s]+)/) || [])[1] : null;
+              const embedSrc = ytId ? `https://www.youtube-nocookie.com/embed/${ytId}` : rawUrl;
 
               return (
                 <div key={idx} className="rounded-2xl overflow-hidden border border-slate-200 bg-slate-950 shadow-sm flex flex-col">
