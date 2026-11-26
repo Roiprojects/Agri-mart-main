@@ -13,17 +13,22 @@ export default function EditCategoryPage({ params }: { params: Promise<{ id: str
   const resolvedParams = use(params);
   const router = useRouter();
   const [category, setCategory] = useState<any>(null);
-  const [categories, setCategories] = useState<{ id: string; name: string }[]>([]);
+  const [categories, setCategories] = useState<
+    { id: string; name: string; parentId?: string | null; published?: boolean; isPublished?: boolean }[]
+  >([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
+    const targetId = decodeURIComponent(resolvedParams.id || '');
     fetch('/api/admin/catalogue/categories', { cache: 'no-store' })
       .then((r) => r.json())
       .then((catRes) => {
         const merged = mergeCategoriesWithOverrides(catRes.success && Array.isArray(catRes.data) ? catRes.data : []);
         setCategories(merged);
-        const match = merged.find((c: any) => c.id === resolvedParams.id) || getCategoryOverrideById(resolvedParams.id);
+        const match =
+          merged.find((c: any) => c.id === targetId || c.slug === targetId) ||
+          getCategoryOverrideById(targetId);
         setCategory(match || null);
       })
       .finally(() => setLoading(false));

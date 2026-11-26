@@ -10,7 +10,9 @@ import {
 
 export default function NewCategoryPage() {
   const router = useRouter();
-  const [categories, setCategories] = useState<{ id: string; name: string }[]>([]);
+  const [categories, setCategories] = useState<
+    { id: string; name: string; parentId?: string | null; published?: boolean; isPublished?: boolean }[]
+  >([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 

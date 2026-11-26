@@ -73,7 +73,7 @@ export interface CategoryFormData {
 
 interface CategoryFormProps {
   initialValues?: Partial<CategoryFormData>;
-  categories: { id: string; name: string }[];
+  categories: { id: string; name: string; parentId?: string | null; published?: boolean; isPublished?: boolean }[];
   onSave: (data: CategoryFormData, continueEditing?: boolean) => Promise<void>;
   saving: boolean;
   isEdit?: boolean;
@@ -95,13 +95,18 @@ export function CategoryForm({
     image: initialValues?.image || '',
     parentId: initialValues?.parentId || '',
     displayOrder: initialValues?.displayOrder !== undefined ? initialValues.displayOrder : 0,
-    published: false,
-    restrictFromVendors: false,
-    showOnHomePage: false,
-    allowCustomersToSelectPageSize: false,
+    published:
+      initialValues?.published !== undefined
+        ? Boolean(initialValues.published)
+        : (initialValues as any)?.isPublished !== undefined
+        ? Boolean((initialValues as any).isPublished)
+        : true,
+    restrictFromVendors: Boolean(initialValues?.restrictFromVendors),
+    showOnHomePage: Boolean(initialValues?.showOnHomePage),
+    allowCustomersToSelectPageSize: Boolean(initialValues?.allowCustomersToSelectPageSize),
     pageSizeOptions: initialValues?.pageSizeOptions || '6, 3, 9',
-    priceRangeFiltering: false,
-    manuallyPriceRange: false,
+    priceRangeFiltering: Boolean(initialValues?.priceRangeFiltering),
+    manuallyPriceRange: Boolean(initialValues?.manuallyPriceRange),
     priceFrom: initialValues?.priceFrom !== undefined ? initialValues.priceFrom : 0,
     priceTo: initialValues?.priceTo !== undefined ? initialValues.priceTo : 10000,
     discounts: initialValues?.discounts || '',
@@ -149,12 +154,33 @@ export function CategoryForm({
       setFormData((prev) => ({
         ...prev,
         ...initialValues,
-        published: false,
-        restrictFromVendors: false,
-        showOnHomePage: false,
-        allowCustomersToSelectPageSize: false,
-        priceRangeFiltering: false,
-        manuallyPriceRange: false,
+        parentId: initialValues.parentId || '',
+        published:
+          initialValues.published !== undefined
+            ? Boolean(initialValues.published)
+            : (initialValues as any).isPublished !== undefined
+            ? Boolean((initialValues as any).isPublished)
+            : prev.published,
+        restrictFromVendors:
+          initialValues.restrictFromVendors !== undefined
+            ? Boolean(initialValues.restrictFromVendors)
+            : prev.restrictFromVendors,
+        showOnHomePage:
+          initialValues.showOnHomePage !== undefined
+            ? Boolean(initialValues.showOnHomePage)
+            : prev.showOnHomePage,
+        allowCustomersToSelectPageSize:
+          initialValues.allowCustomersToSelectPageSize !== undefined
+            ? Boolean(initialValues.allowCustomersToSelectPageSize)
+            : prev.allowCustomersToSelectPageSize,
+        priceRangeFiltering:
+          initialValues.priceRangeFiltering !== undefined
+            ? Boolean(initialValues.priceRangeFiltering)
+            : prev.priceRangeFiltering,
+        manuallyPriceRange:
+          initialValues.manuallyPriceRange !== undefined
+            ? Boolean(initialValues.manuallyPriceRange)
+            : prev.manuallyPriceRange,
         seName: initialValues.seName || initialValues.slug || prev.seName || '',
       }));
       if (initialValues.description !== undefined) {
@@ -308,8 +334,31 @@ export function CategoryForm({
     </span>
   );
 
-  // Filter out self from parent options to avoid circular hierarchies
-  const parentOptions = categories.filter((c) => !formData.id || c.id !== formData.id);
+  // Build full hierarchy label (e.g. "Parent >> Subcategory >> Sub-Subcategory")
+  const categoryMap = new Map(categories.map((c) => [c.id, c]));
+  const getCategoryFullName = (
+    cat: { id: string; name: string; parentId?: string | null },
+    seen = new Set<string>()
+  ): string => {
+    if (!cat.parentId || seen.has(cat.id)) return cat.name;
+    seen.add(cat.id);
+    const parent = categoryMap.get(cat.parentId);
+    if (!parent) return cat.name;
+    return `${getCategoryFullName(parent, seen)} >> ${cat.name}`;
+  };
+
+  // Filter out self and any descendants from parent options to avoid circular hierarchies
+  const isDescendant = (candidateId: string, rootId: string, seen = new Set<string>()): boolean => {
+    if (candidateId === rootId) return true;
+    const node = categoryMap.get(candidateId);
+    if (!node || !node.parentId || seen.has(candidateId)) return false;
+    seen.add(candidateId);
+    return isDescendant(node.parentId, rootId, seen);
+  };
+
+  const parentOptions = categories
+    .filter((c) => !formData.id || !isDescendant(c.id, formData.id))
+    .sort((a, b) => getCategoryFullName(a).localeCompare(getCategoryFullName(b)));
 
   return (
     <div className="space-y-4 max-w-full text-slate-800 pb-16">
@@ -806,7 +855,7 @@ export function CategoryForm({
                   <option value="">[None]</option>
                   {parentOptions.map((c) => (
                     <option key={c.id} value={c.id}>
-                      {c.name}
+                      {getCategoryFullName(c)}
                     </option>
                   ))}
                 </select>

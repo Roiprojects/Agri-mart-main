@@ -787,7 +787,7 @@ export default function AdminCategoriesPage() {
                       .filter((c) => !editingCategory || c.id !== editingCategory.id)
                       .map((c) => (
                         <option key={c.id} value={c.id}>
-                          {c.name}
+                          {getCategoryFullName(c)}
                         </option>
                       ))}
                   </select>
