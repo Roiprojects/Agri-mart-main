@@ -4018,7 +4018,7 @@ export function ProductForm({
                             const selectedValues: Record<string, string> = {};
                             const pics: string[] = [];
                             pairList.forEach((p) => {
-                              selectedValues[p.attr.id || p.attr.attributeName] = p.val.id || p.val.name;
+                              selectedValues[p.attr.attributeName] = p.val.name;
                               if (p.val.picture && !pics.includes(p.val.picture)) pics.push(p.val.picture);
                             });
                             added.push({
@@ -4182,8 +4182,7 @@ export function ProductForm({
                                   const selectedValues: Record<string, string> = {};
                                   const pics: string[] = [];
                                   pairList.forEach((p) => {
-                                    selectedValues[p.attr.id || p.attr.attributeName] =
-                                      p.val.id || p.val.name;
+                                    selectedValues[p.attr.attributeName] = p.val.name;
                                     if (p.val.picture && !pics.includes(p.val.picture))
                                       pics.push(p.val.picture);
                                   });
@@ -5869,7 +5868,14 @@ export function ProductForm({
                       </div>
                       <div className="sm:col-span-9 flex items-center gap-2">
                         <select
-                          value={comboDraft.selectedValues[attr.attributeName] || ''}
+                          value={
+                            comboDraft.selectedValues[attr.attributeName] ||
+                            (() => {
+                              const byId = comboDraft.selectedValues[attr.id || ''];
+                              const found = (attr.values || []).find((v) => (v.id || v.name) === byId);
+                              return found ? found.name : '';
+                            })()
+                          }
                           onChange={(e) => {
                             const nextVal = e.target.value;
                             setComboDraft((d) => ({
