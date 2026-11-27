@@ -498,8 +498,13 @@ export function ProductForm({
     isRequired: boolean;
     controlType: string;
     displayOrder: number;
-    validationRules: string;
+    validationRules: any;
     condition: string;
+    defaultValue?: string;
+    minLength?: string;
+    maxLength?: string;
+    allowedFileExtensions?: string;
+    maxFileSizeKb?: string;
     values: {
       id: string;
       attributeValueType: string;
@@ -523,6 +528,11 @@ export function ProductForm({
     displayOrder: 0,
     validationRules: '',
     condition: '',
+    defaultValue: '',
+    minLength: '',
+    maxLength: '',
+    allowedFileExtensions: '',
+    maxFileSizeKb: '',
     values: [],
   });
   const [valModalOpen, setValModalOpen] = useState(false);
@@ -3698,6 +3708,23 @@ export function ProductForm({
                                             displayOrder: attr.displayOrder,
                                             validationRules: attr.validationRules,
                                             condition: attr.condition,
+                                            defaultValue: (attr as any).defaultValue || '',
+                                            minLength:
+                                              (attr as any).minLength ??
+                                              (attr.validationRules as any)?.minLength ??
+                                              '',
+                                            maxLength:
+                                              (attr as any).maxLength ??
+                                              (attr.validationRules as any)?.maxLength ??
+                                              '',
+                                            allowedFileExtensions:
+                                              (attr as any).allowedFileExtensions ??
+                                              (attr.validationRules as any)?.allowedFileExtensions ??
+                                              '',
+                                            maxFileSizeKb:
+                                              (attr as any).maxFileSizeKb ??
+                                              (attr.validationRules as any)?.maxFileSizeKb ??
+                                              '',
                                             values: Array.isArray(attr.values) ? [...attr.values] : [],
                                           });
                                           setAttrModalOpen(true);
@@ -4727,6 +4754,24 @@ export function ProductForm({
                     </div>
                   </div>
 
+                  {/* Default value (Text box & Multiline textbox) */}
+                  {(attrDraft.controlType === 'Text box' || attrDraft.controlType === 'Multiline textbox') && (
+                    <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
+                      <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-semibold text-slate-700">
+                        <span>Default value</span>
+                        <Tooltip text="Optional default text pre-filled for the customer." />
+                      </div>
+                      <div className="sm:col-span-9">
+                        <input
+                          type="text"
+                          value={attrDraft.defaultValue || ''}
+                          onChange={(e) => setAttrDraft({ ...attrDraft, defaultValue: e.target.value })}
+                          className="w-full border border-[#d2d6de] rounded px-2.5 py-2 text-xs bg-white focus:border-[#3c8dbc] outline-none"
+                        />
+                      </div>
+                    </div>
+                  )}
+
                   {/* Display order */}
                   <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
                     <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-semibold text-slate-700">
@@ -4744,11 +4789,126 @@ export function ProductForm({
                       />
                     </div>
                   </div>
+
+                  {/* Minimum length & Maximum length (Text box & Multiline textbox) */}
+                  {(attrDraft.controlType === 'Text box' || attrDraft.controlType === 'Multiline textbox') && (
+                    <>
+                      <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
+                        <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-semibold text-slate-700">
+                          <span>Minimum length</span>
+                          <Tooltip text="Minimum number of characters required." />
+                        </div>
+                        <div className="sm:col-span-9">
+                          <input
+                            type="number"
+                            min={0}
+                            value={attrDraft.minLength || ''}
+                            onChange={(e) => {
+                              const minLength = e.target.value;
+                              setAttrDraft((prev) => ({
+                                ...prev,
+                                minLength,
+                                validationRules: {
+                                  ...(typeof prev.validationRules === 'object' && prev.validationRules ? prev.validationRules : {}),
+                                  minLength: minLength ? Number(minLength) : undefined,
+                                },
+                              }));
+                            }}
+                            className="w-full border border-[#d2d6de] rounded px-2.5 py-2 text-xs bg-white focus:border-[#3c8dbc] outline-none"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
+                        <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-semibold text-slate-700">
+                          <span>Maximum length</span>
+                          <Tooltip text="Maximum number of characters allowed." />
+                        </div>
+                        <div className="sm:col-span-9">
+                          <input
+                            type="number"
+                            min={0}
+                            value={attrDraft.maxLength || ''}
+                            onChange={(e) => {
+                              const maxLength = e.target.value;
+                              setAttrDraft((prev) => ({
+                                ...prev,
+                                maxLength,
+                                validationRules: {
+                                  ...(typeof prev.validationRules === 'object' && prev.validationRules ? prev.validationRules : {}),
+                                  maxLength: maxLength ? Number(maxLength) : undefined,
+                                },
+                              }));
+                            }}
+                            className="w-full border border-[#d2d6de] rounded px-2.5 py-2 text-xs bg-white focus:border-[#3c8dbc] outline-none"
+                          />
+                        </div>
+                      </div>
+                    </>
+                  )}
+
+                  {/* Allowed file extensions & Maximum file size (KB) (File upload) */}
+                  {attrDraft.controlType === 'File upload' && (
+                    <>
+                      <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
+                        <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-semibold text-slate-700">
+                          <span>Allowed file extensions</span>
+                          <Tooltip text="Comma-separated list of allowed extensions (e.g. pdf, jpg, png)." />
+                        </div>
+                        <div className="sm:col-span-9">
+                          <input
+                            type="text"
+                            placeholder="e.g. jpg, png, pdf"
+                            value={attrDraft.allowedFileExtensions || ''}
+                            onChange={(e) => {
+                              const allowedFileExtensions = e.target.value;
+                              setAttrDraft((prev) => ({
+                                ...prev,
+                                allowedFileExtensions,
+                                validationRules: {
+                                  ...(typeof prev.validationRules === 'object' && prev.validationRules ? prev.validationRules : {}),
+                                  allowedFileExtensions,
+                                },
+                              }));
+                            }}
+                            className="w-full border border-[#d2d6de] rounded px-2.5 py-2 text-xs bg-white focus:border-[#3c8dbc] outline-none"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
+                        <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-semibold text-slate-700">
+                          <span>Maximum file size (KB)</span>
+                          <Tooltip text="Maximum allowed file upload size in kilobytes." />
+                        </div>
+                        <div className="sm:col-span-9">
+                          <input
+                            type="number"
+                            min={0}
+                            value={attrDraft.maxFileSizeKb || ''}
+                            onChange={(e) => {
+                              const maxFileSizeKb = e.target.value;
+                              setAttrDraft((prev) => ({
+                                ...prev,
+                                maxFileSizeKb,
+                                validationRules: {
+                                  ...(typeof prev.validationRules === 'object' && prev.validationRules ? prev.validationRules : {}),
+                                  maxFileSizeKb: maxFileSizeKb ? Number(maxFileSizeKb) : undefined,
+                                },
+                              }));
+                            }}
+                            className="w-full border border-[#d2d6de] rounded px-2.5 py-2 text-xs bg-white focus:border-[#3c8dbc] outline-none"
+                          />
+                        </div>
+                      </div>
+                    </>
+                  )}
                 </div>
               )}
             </div>
 
-            {/* Values Card */}
+            {/* Values Card (only shown for choice-based control types) */}
+            {!['Text box', 'Multiline textbox', 'Date picker', 'File upload'].includes(attrDraft.controlType) && (
             <div className="bg-white rounded border border-[#d2d6de] border-t-2 border-t-[#00c0ef] shadow-2xs overflow-hidden">
               <div
                 onClick={() => setAttrValuesCollapsed(!attrValuesCollapsed)}
@@ -4980,6 +5140,7 @@ export function ProductForm({
                 </div>
               )}
             </div>
+            )}
           </div>
 
           {/* Add / Edit Value Sub-Modal (Full detailed view matching screenshot) */}

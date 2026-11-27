@@ -170,7 +170,11 @@ export default function ProductDetailClient({ product: initialProduct }: Product
         ? [...attr.values].sort((a: any, b: any) => Number(a.displayOrder ?? 0) - Number(b.displayOrder ?? 0))
         : [];
       const ct = String(attr.controlType || '').toLowerCase();
-      if (ct === 'checkboxes' || ct === 'read-only checkboxes') {
+      if (ct === 'text box' || ct === 'multiline textbox') {
+        if (attr.defaultValue && String(attr.defaultValue).trim() !== '') {
+          defaults[attr.id] = String(attr.defaultValue);
+        }
+      } else if (ct === 'checkboxes' || ct === 'read-only checkboxes') {
         const pre = vals.filter((v: any) => v.isPreSelected).map((v: any) => v.id || v.name);
         if (pre.length > 0) defaults[attr.id] = pre;
       } else if (
@@ -439,13 +443,15 @@ export default function ProductDetailClient({ product: initialProduct }: Product
       if (attr.isRequired && isEmpty) {
         return `Please select or enter required option: ${attr.attributeName}`;
       }
-      if (!isEmpty && attr.validationRules && typeof attr.validationRules === 'object') {
+      const minLen = attr.minLength || attr.validationRules?.minLength;
+      const maxLen = attr.maxLength || attr.validationRules?.maxLength;
+      if (!isEmpty && (minLen || maxLen)) {
         const strVal = String(sel);
-        if (attr.validationRules.minLength && strVal.length < Number(attr.validationRules.minLength)) {
-          return `${attr.attributeName} must be at least ${attr.validationRules.minLength} characters.`;
+        if (minLen && strVal.length < Number(minLen)) {
+          return `${attr.attributeName} must be at least ${minLen} characters.`;
         }
-        if (attr.validationRules.maxLength && strVal.length > Number(attr.validationRules.maxLength)) {
-          return `${attr.attributeName} must be at most ${attr.validationRules.maxLength} characters.`;
+        if (maxLen && strVal.length > Number(maxLen)) {
+          return `${attr.attributeName} must be at most ${maxLen} characters.`;
         }
       }
     }
@@ -1147,8 +1153,40 @@ export default function ProductDetailClient({ product: initialProduct }: Product
                   <div className="flex items-center gap-3">
                     <input
                       type="file"
+                      accept={
+                        attr.allowedFileExtensions || attr.validationRules?.allowedFileExtensions
+                          ? String(attr.allowedFileExtensions || attr.validationRules?.allowedFileExtensions)
+                              .split(',')
+                              .map((ext: string) => `.${ext.trim().replace(/^\./, '')}`)
+                              .join(',')
+                          : undefined
+                      }
                       onChange={(e) => {
                         const f = e.target.files?.[0];
+                        if (f) {
+                          const allowedRaw =
+                            attr.allowedFileExtensions || attr.validationRules?.allowedFileExtensions || '';
+                          if (allowedRaw) {
+                            const allowed = String(allowedRaw)
+                              .split(',')
+                              .map((s: string) => s.trim().toLowerCase().replace(/^\./, ''))
+                              .filter(Boolean);
+                            const ext = f.name.split('.').pop()?.toLowerCase() || '';
+                            if (allowed.length > 0 && !allowed.includes(ext)) {
+                              setAttributeError(
+                                `${attr.attributeName}: Allowed file extensions are ${allowed.join(', ')}.`
+                              );
+                              return;
+                            }
+                          }
+                          const maxKb = Number(attr.maxFileSizeKb || attr.validationRules?.maxFileSizeKb || 0);
+                          if (maxKb > 0 && f.size > maxKb * 1024) {
+                            setAttributeError(
+                              `${attr.attributeName}: File size must be under ${maxKb} KB.`
+                            );
+                            return;
+                          }
+                        }
                         setSelectedAttributes((prev) => ({ ...prev, [attr.id]: f ? f.name : '' }));
                         setAttributeError(null);
                       }}
