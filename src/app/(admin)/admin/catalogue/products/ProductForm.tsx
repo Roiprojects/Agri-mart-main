@@ -5286,58 +5286,89 @@ export function ProductForm({
                       <Tooltip text="Select product picture(s) associated with this attribute value, or upload a new picture." />
                     </div>
                     <div className="sm:col-span-9 space-y-3">
-                      {formData.images && formData.images.length > 0 && (
-                        <div className="space-y-2.5">
-                          {formData.images.map((imgUrl, imgIdx) => {
-                            const isChecked = valDraft.pictures.includes(imgUrl);
-                            return (
-                              <label
-                                key={`${imgIdx}-${imgUrl.slice(0, 24)}`}
-                                className="flex items-start gap-2.5 cursor-pointer w-fit"
-                              >
-                                <input
-                                  type="checkbox"
-                                  checked={isChecked}
-                                  onChange={(e) => {
-                                    const nextPics = e.target.checked
-                                      ? [...valDraft.pictures, imgUrl]
-                                      : valDraft.pictures.filter((u) => u !== imgUrl);
-                                    setValDraft({
-                                      ...valDraft,
-                                      pictures: nextPics,
-                                      picture: nextPics[0] || '',
-                                    });
-                                  }}
-                                  className="mt-1 h-4 w-4 rounded border-slate-300 text-[#3c8dbc]"
-                                />
-                                <img
-                                  src={imgUrl}
-                                  alt={`Product picture ${imgIdx + 1}`}
-                                  className={`w-20 h-20 object-contain border rounded bg-white p-0.5 ${
-                                    isChecked ? 'border-[#3c8dbc] ring-2 ring-[#3c8dbc]/30' : 'border-slate-200'
-                                  }`}
-                                />
-                              </label>
-                            );
-                          })}
-                        </div>
-                      )}
+                      {(() => {
+                        const pool = Array.from(
+                          new Set([
+                            ...(formData.images || []),
+                            ...(valDraft.pictures || []),
+                            ...(valDraft.picture ? [valDraft.picture] : []),
+                            ...(attrDraft.values || []).flatMap((v) => [
+                              ...(Array.isArray(v.pictures) ? v.pictures : []),
+                              ...(v.picture ? [v.picture] : []),
+                            ]),
+                          ].filter(Boolean))
+                        );
 
-                      <div className="pt-1">
-                        <span className="block text-[11px] font-medium text-slate-500 mb-1">
-                          Or upload / pick another picture:
+                        if (pool.length === 0) {
+                          return (
+                            <p className="text-xs text-slate-400 italic pt-1.5">
+                              No product pictures uploaded yet. Add pictures below.
+                            </p>
+                          );
+                        }
+
+                        return (
+                          <div className="space-y-3">
+                            {pool.map((imgUrl, imgIdx) => {
+                              const isChecked = valDraft.pictures.includes(imgUrl);
+                              return (
+                                <label
+                                  key={`${imgIdx}-${imgUrl.slice(0, 24)}`}
+                                  className="flex items-start gap-2.5 cursor-pointer w-fit group"
+                                >
+                                  <input
+                                    type="checkbox"
+                                    checked={isChecked}
+                                    onChange={(e) => {
+                                      const nextPics = e.target.checked
+                                        ? [...valDraft.pictures, imgUrl]
+                                        : valDraft.pictures.filter((u) => u !== imgUrl);
+                                      setValDraft({
+                                        ...valDraft,
+                                        pictures: nextPics,
+                                        picture: nextPics[0] || '',
+                                      });
+                                    }}
+                                    className="mt-1 h-4 w-4 rounded border-slate-300 text-[#3c8dbc] cursor-pointer"
+                                  />
+                                  <img
+                                    src={imgUrl}
+                                    alt={`Product picture ${imgIdx + 1}`}
+                                    className={`w-24 h-24 object-contain border rounded bg-white p-1 transition ${
+                                      isChecked
+                                        ? 'border-[#3c8dbc] ring-2 ring-[#3c8dbc]/30'
+                                        : 'border-slate-200 group-hover:border-slate-300'
+                                    }`}
+                                  />
+                                </label>
+                              );
+                            })}
+                          </div>
+                        );
+                      })()}
+
+                      <div className="pt-2 border-t border-slate-100">
+                        <span className="block text-[11px] font-medium text-slate-500 mb-1.5">
+                          Upload / add another picture to product &amp; select it:
                         </span>
                         <ImageEditorField
-                          value={valDraft.picture}
+                          value=""
                           onChange={(url) => {
                             if (url) {
+                              if (!(formData.images || []).includes(url)) {
+                                handleChange('images', [...(formData.images || []), url]);
+                              }
                               const nextPics = valDraft.pictures.includes(url)
                                 ? valDraft.pictures
-                                : [url, ...valDraft.pictures];
-                              setValDraft({ ...valDraft, picture: url, pictures: nextPics });
+                                : [...valDraft.pictures, url];
+                              setValDraft({
+                                ...valDraft,
+                                picture: nextPics[0] || url,
+                                pictures: nextPics,
+                              });
                             }
                           }}
-                          previewHeight="h-24"
+                          previewHeight="h-20"
                         />
                       </div>
                     </div>
