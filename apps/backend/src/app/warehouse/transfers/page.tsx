@@ -394,6 +394,38 @@ export default function TransfersModulePage() {
             )}
 
             <div className="flex justify-end gap-2">
+              <WmsButton
+                variant="primary"
+                onClick={async () => {
+                  const r = await postAction({
+                    action: 'ISSUE_CHALLAN',
+                    transferId: challanModal.transfer.id,
+                    groupId: challanModal.group.id,
+                    vehicleRegistration: vehReg,
+                    vehicleType: vehType,
+                    driverName: drvName,
+                    driverReference: drvRef,
+                    driverMobile: drvMobile,
+                  });
+                  if (r?.challan) {
+                    setChallanModal({
+                      ...challanModal,
+                      group: {
+                        ...challanModal.group,
+                        vehicleRegistration: vehReg,
+                        vehicleType: vehType,
+                        driverName: drvName,
+                        driverReference: drvRef,
+                        driverMobile: drvMobile,
+                        challan: r.challan,
+                        pickupOtpCode: r.pickupOtpCode,
+                      },
+                    });
+                  }
+                }}
+              >
+                Save
+              </WmsButton>
               <WmsButton onClick={() => window.print()} icon={<Printer className="w-3.5 h-3.5" />}>Print Copies</WmsButton>
               <WmsButton onClick={() => setChallanModal(null)}>Close</WmsButton>
             </div>
