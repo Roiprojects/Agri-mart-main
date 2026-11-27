@@ -632,15 +632,7 @@ export function ProductForm({
       .then((res) => {
         if (res.success && Array.isArray(res.data) && res.data.length > 0) {
           const names = Array.from(
-            new Set([
-              ...res.data.map((a: any) => a.name).filter(Boolean),
-              'Fabric',
-              'Engine Power',
-              'Fuel Type',
-              'Working Width',
-              'Tank Capacity',
-              'Warranty',
-            ])
+            new Set(res.data.map((a: any) => a.name).filter(Boolean))
           ) as string[];
           setAvailableSpecAttrNames(names);
           setAvailableSpecAttrMap((prev) => {
@@ -664,14 +656,7 @@ export function ProductForm({
         if (res.success && Array.isArray(res.data) && res.data.length > 0) {
           setAdminAttrDefs(res.data);
           const names = Array.from(
-            new Set([
-              ...res.data.map((a: any) => a.name).filter(Boolean),
-              'Color',
-              'Size',
-              'Engine Power',
-              'Tank Capacity',
-              'Material',
-            ])
+            new Set(res.data.map((a: any) => a.name).filter(Boolean))
           ) as string[];
           setAvailableAttrNames(names);
         }

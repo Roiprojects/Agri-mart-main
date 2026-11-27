@@ -58011,6 +58011,150 @@
       "name": "Packaging Size (5kg, 10kg, 25kg)",
       "description": "Bulk bag and granule SKU size",
       "displayOrder": 6
+    },
+    {
+      "id": "pa-size",
+      "name": "Size",
+      "description": "Product size variants (Small, Medium, Large, XL)",
+      "displayOrder": 7,
+      "predefinedValues": [
+        {
+          "id": "pv-sz-1",
+          "name": "Small",
+          "priceAdjustment": 0,
+          "weightAdjustment": 0,
+          "cost": 0,
+          "isPreSelected": true,
+          "displayOrder": 1
+        },
+        {
+          "id": "pv-sz-2",
+          "name": "Medium",
+          "priceAdjustment": 100,
+          "weightAdjustment": 0.5,
+          "cost": 50,
+          "isPreSelected": false,
+          "displayOrder": 2
+        },
+        {
+          "id": "pv-sz-3",
+          "name": "Large",
+          "priceAdjustment": 250,
+          "weightAdjustment": 1,
+          "cost": 120,
+          "isPreSelected": false,
+          "displayOrder": 3
+        },
+        {
+          "id": "pv-sz-4",
+          "name": "XL",
+          "priceAdjustment": 400,
+          "weightAdjustment": 1.5,
+          "cost": 200,
+          "isPreSelected": false,
+          "displayOrder": 4
+        }
+      ],
+      "usedByProducts": []
+    },
+    {
+      "id": "pa-engine-power",
+      "name": "Engine Power",
+      "description": "Engine horsepower rating options",
+      "displayOrder": 8,
+      "predefinedValues": [
+        {
+          "id": "pv-ep-1",
+          "name": "5 HP",
+          "priceAdjustment": 0,
+          "weightAdjustment": 0,
+          "cost": 0,
+          "isPreSelected": true,
+          "displayOrder": 1
+        },
+        {
+          "id": "pv-ep-2",
+          "name": "7 HP",
+          "priceAdjustment": 2500,
+          "weightAdjustment": 5,
+          "cost": 1500,
+          "isPreSelected": false,
+          "displayOrder": 2
+        },
+        {
+          "id": "pv-ep-3",
+          "name": "9 HP",
+          "priceAdjustment": 5000,
+          "weightAdjustment": 10,
+          "cost": 3000,
+          "isPreSelected": false,
+          "displayOrder": 3
+        }
+      ],
+      "usedByProducts": []
+    },
+    {
+      "id": "pa-tank-capacity",
+      "name": "Tank Capacity",
+      "description": "Tank volume capacity options",
+      "displayOrder": 9,
+      "predefinedValues": [
+        {
+          "id": "pv-tc-1",
+          "name": "16 Litres",
+          "priceAdjustment": 0,
+          "weightAdjustment": 0,
+          "cost": 0,
+          "isPreSelected": true,
+          "displayOrder": 1
+        },
+        {
+          "id": "pv-tc-2",
+          "name": "20 Litres",
+          "priceAdjustment": 450,
+          "weightAdjustment": 1,
+          "cost": 250,
+          "isPreSelected": false,
+          "displayOrder": 2
+        },
+        {
+          "id": "pv-tc-3",
+          "name": "50 Litres",
+          "priceAdjustment": 1500,
+          "weightAdjustment": 3,
+          "cost": 900,
+          "isPreSelected": false,
+          "displayOrder": 3
+        }
+      ],
+      "usedByProducts": []
+    },
+    {
+      "id": "pa-material",
+      "name": "Material",
+      "description": "Body or component material options",
+      "displayOrder": 10,
+      "predefinedValues": [
+        {
+          "id": "pv-mat-1",
+          "name": "Heavy Duty Steel",
+          "priceAdjustment": 0,
+          "weightAdjustment": 0,
+          "cost": 0,
+          "isPreSelected": true,
+          "displayOrder": 1
+        },
+        {
+          "id": "pv-mat-2",
+          "name": "Reinforced Polymer",
+          "priceAdjustment": -200,
+          "weightAdjustment": -1,
+          "cost": 0,
+          "isPreSelected": false,
+          "displayOrder": 2
+        }
+      ],
+      "usedByProducts": []
     }
   ],
   "galleryItems": [
