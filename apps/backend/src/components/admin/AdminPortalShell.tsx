@@ -255,8 +255,8 @@ export function AdminPortalShell({
           </div>
         </div>
 
-        {/* Portal Announcement Banner if configured */}
-        {config?.announcementBanner && (
+        {/* Portal Announcement Banner if configured (hidden on Warehouse WMS) */}
+        {portalId !== 'warehouse' && config?.announcementBanner && (
           <div className="bg-emerald-50 border-b border-emerald-200 px-4 sm:px-6 py-1.5 flex items-center justify-between gap-2 text-xs text-emerald-900 shrink-0">
             <div className="flex items-center gap-2">
               <Megaphone className="w-3.5 h-3.5 text-emerald-700 shrink-0" />
