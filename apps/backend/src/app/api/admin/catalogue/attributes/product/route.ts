@@ -217,7 +217,7 @@ function ensureSeedData() {
           : seedMatch?.predefinedValues || []
       ).map((v: any) => ({
         ...v,
-        isPreSelected: false,
+        isPreSelected: Boolean(v.isPreSelected),
       }));
       return {
         ...attr,

@@ -20,6 +20,7 @@ const globalShopCache = globalThis as unknown as {
   __shopProducts?: any[];
   __shopCategories?: any[];
   __shopBrands?: any[];
+  __shopAdminAttributes?: any[];
 };
 
 export default function ShopPage() {
@@ -31,6 +32,9 @@ export default function ShopPage() {
   );
   const [brands, setBrands] = useState<any[]>(
     () => globalShopCache.__shopBrands || DEFAULT_BRANDS
+  );
+  const [adminAttributes, setAdminAttributes] = useState<any[]>(
+    () => globalShopCache.__shopAdminAttributes || []
   );
   const [loading, setLoading] = useState(false);
 
@@ -47,8 +51,13 @@ export default function ShopPage() {
       fetch('/api/products', { cache: 'no-store' }).then((r) => r.json()),
       fetch('/api/categories', { cache: 'no-store' }).then((r) => r.json()),
       fetch('/api/admin/brands', { cache: 'no-store' }).then((r) => r.json()).catch(() => ({ success: false, data: [] })),
+      fetch('/api/admin/catalogue/attributes/product', { cache: 'no-store' }).then((r) => r.json()).catch(() => ({ success: false, data: [] })),
     ])
-      .then(([prodData, catData, brandData]) => {
+      .then(([prodData, catData, brandData, attrData]) => {
+        if (attrData?.success && Array.isArray(attrData.data)) {
+          globalShopCache.__shopAdminAttributes = attrData.data;
+          setAdminAttributes(attrData.data);
+        }
         const mergedCats = mergeCategoriesWithOverrides(
           catData.success && Array.isArray(catData.data) ? catData.data : SEED_CATEGORIES
         );
@@ -96,7 +105,7 @@ export default function ShopPage() {
     const attrMap = new Map<string, Map<string, { count: number; rgbColor?: string }>>();
 
     for (const p of products) {
-      const pAttrsList = getEffectiveProductAttributes(p);
+      const pAttrsList = getEffectiveProductAttributes(p, adminAttributes);
       const seenAttrPerProd = new Set<string>();
       for (const a of pAttrsList) {
         const name = String(a.attributeName || '').trim();
@@ -124,7 +133,7 @@ export default function ShopPage() {
       name,
       values: Array.from(valMap.entries()).map(([value, meta]) => ({ value, ...meta })),
     }));
-  }, [products]);
+  }, [products, adminAttributes]);
 
   const toggleProdAttrFilter = (attrName: string, val: string) => {
     setSelectedProdAttrFilters((prev) => {
@@ -155,7 +164,7 @@ export default function ShopPage() {
       // Color attribute filters (AND across attributes, OR within same attribute's selected values)
       for (const [attrName, wantedVals] of Object.entries(selectedProdAttrFilters)) {
         if (!wantedVals || wantedVals.length === 0) continue;
-        const pAttrs = getEffectiveProductAttributes(p);
+        const pAttrs = getEffectiveProductAttributes(p, adminAttributes);
         const matched = pAttrs.some(
           (a: any) =>
             String(a.attributeName || '').trim() === attrName &&
@@ -200,7 +209,7 @@ export default function ShopPage() {
       if (sortBy === 'rating') return (b.rating || 5) - (a.rating || 5);
       return (b.reviewsCount || 0) - (a.reviewsCount || 0);
     });
-  }, [products, brands, selectedBrand, selectedProdAttrFilters, selectedMrpRange, minMrp, maxMrp, searchQuery, sortBy]);
+  }, [products, brands, adminAttributes, selectedBrand, selectedProdAttrFilters, selectedMrpRange, minMrp, maxMrp, searchQuery, sortBy]);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6 text-xs">

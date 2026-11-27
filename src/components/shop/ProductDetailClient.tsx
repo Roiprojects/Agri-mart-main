@@ -122,10 +122,22 @@ export default function ProductDetailClient({ product: initialProduct }: Product
   const [isWishlisted, setIsWishlisted] = useState(false);
   const [selectedAttributes, setSelectedAttributes] = useState<Record<string, any>>({});
   const [attributeError, setAttributeError] = useState<string | null>(null);
+  const [adminProductAttributes, setAdminProductAttributes] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetch('/api/admin/catalogue/attributes/product', { cache: 'no-store' })
+      .then((r) => r.json())
+      .then((json) => {
+        if (json?.success && Array.isArray(json.data)) {
+          setAdminProductAttributes(json.data);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   const effectiveProductAttributes = useMemo(() => {
-    return getEffectiveProductAttributes(product);
-  }, [product]);
+    return getEffectiveProductAttributes(product, adminProductAttributes);
+  }, [product, adminProductAttributes]);
 
   const sortedProductAttributes = useMemo(() => {
     return [...effectiveProductAttributes].sort(
