@@ -59,6 +59,7 @@ export default function WarehousePortalPage() {
 
   // Filters
   const [stockLocationFilter, setStockLocationFilter] = useState<string>('');
+  const [stockBalanceFilter, setStockBalanceFilter] = useState<'ALL' | 'ON_HAND' | 'RESERVED' | 'AVAILABLE' | 'HELD' | 'INCOMING'>('ALL');
   const [incomingSearch, setIncomingSearch] = useState('');
   const [orderSearch, setOrderSearch] = useState('');
 
@@ -828,12 +829,32 @@ export default function WarehousePortalPage() {
                 ))}
               </select>
             </div>
-            <div className="text-[11px] text-slate-400">
-              Balances: <strong className="text-white">On hand</strong> |{' '}
-              <strong className="text-amber-300">Reserved</strong> |{' '}
-              <strong className="text-emerald-300">Available</strong> |{' '}
-              <strong className="text-rose-300">Held</strong> |{' '}
-              <strong className="text-sky-300">Incoming</strong>
+            <div className="flex flex-wrap items-center gap-1.5 text-[11px]">
+              <span className="text-slate-400 mr-1">Balances:</span>
+              {[
+                { key: 'ALL', label: 'All', activeClass: 'bg-slate-700 text-white border-slate-500' },
+                { key: 'ON_HAND', label: 'On hand', activeClass: 'bg-white text-slate-950 border-white' },
+                { key: 'RESERVED', label: 'Reserved', activeClass: 'bg-amber-500/25 text-amber-300 border-amber-400' },
+                { key: 'AVAILABLE', label: 'Available', activeClass: 'bg-emerald-500/25 text-emerald-300 border-emerald-400' },
+                { key: 'HELD', label: 'Held', activeClass: 'bg-rose-500/25 text-rose-300 border-rose-400' },
+                { key: 'INCOMING', label: 'Incoming', activeClass: 'bg-sky-500/25 text-sky-300 border-sky-400' },
+              ].map((b) => {
+                const isActive = stockBalanceFilter === b.key;
+                return (
+                  <button
+                    key={b.key}
+                    type="button"
+                    onClick={() => setStockBalanceFilter(isActive && b.key !== 'ALL' ? 'ALL' : (b.key as any))}
+                    className={`px-2.5 py-1 rounded-md border font-semibold transition cursor-pointer ${
+                      isActive
+                        ? b.activeClass
+                        : 'bg-slate-950 text-slate-300 border-slate-700 hover:bg-slate-800'
+                    }`}
+                  >
+                    {b.label}
+                  </button>
+                );
+              })}
             </div>
           </div>
 
@@ -844,27 +865,60 @@ export default function WarehousePortalPage() {
                   <tr className="bg-slate-950/60 border-b border-slate-800 text-slate-400">
                     <th className="py-2.5 px-3">Product &amp; Variant</th>
                     <th className="py-2.5 px-3">SKU</th>
-                    <th className="py-2.5 px-3 text-center">On hand</th>
-                    <th className="py-2.5 px-3 text-center">Reserved</th>
-                    <th className="py-2.5 px-3 text-center">Available</th>
-                    <th className="py-2.5 px-3 text-center">Held</th>
-                    <th className="py-2.5 px-3 text-center">Incoming</th>
+                    <th className={`py-2.5 px-3 text-center ${stockBalanceFilter === 'ON_HAND' ? 'text-white bg-slate-800/60' : ''}`}>On hand</th>
+                    <th className={`py-2.5 px-3 text-center ${stockBalanceFilter === 'RESERVED' ? 'text-amber-300 bg-amber-950/40' : ''}`}>Reserved</th>
+                    <th className={`py-2.5 px-3 text-center ${stockBalanceFilter === 'AVAILABLE' ? 'text-emerald-300 bg-emerald-950/40' : ''}`}>Available</th>
+                    <th className={`py-2.5 px-3 text-center ${stockBalanceFilter === 'HELD' ? 'text-rose-300 bg-rose-950/40' : ''}`}>Held</th>
+                    <th className={`py-2.5 px-3 text-center ${stockBalanceFilter === 'INCOMING' ? 'text-sky-300 bg-sky-950/40' : ''}`}>Incoming</th>
                     <th className="py-2.5 px-3 text-right">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {(data?.catalogVariants || []).map((cv: any) => {
-                    const row = (data?.stocks || []).find(
-                      (s: any) =>
-                        s.locationId === stockLocationFilter &&
-                        s.productId === cv.productId &&
-                        s.variantId === cv.variantId
-                    );
-                    const onHand = row?.onHand || 0;
-                    const reserved = row?.reserved || 0;
-                    const available = Math.max(0, onHand - reserved);
-                    const held = row?.held || 0;
-                    const incoming = computeIncomingQty(stockLocationFilter, cv.productId, cv.variantId);
+                  {(() => {
+                    const filteredVariants = (data?.catalogVariants || [])
+                      .map((cv: any) => {
+                        const row = (data?.stocks || []).find(
+                          (s: any) =>
+                            s.locationId === stockLocationFilter &&
+                            s.productId === cv.productId &&
+                            s.variantId === cv.variantId
+                        );
+                        const onHand = row?.onHand || 0;
+                        const reserved = row?.reserved || 0;
+                        const available = Math.max(0, onHand - reserved);
+                        const held = row?.held || 0;
+                        const incoming = computeIncomingQty(stockLocationFilter, cv.productId, cv.variantId);
+                        return { cv, onHand, reserved, available, held, incoming };
+                      })
+                      .filter((item: any) => {
+                        if (stockBalanceFilter === 'ON_HAND') return item.onHand > 0;
+                        if (stockBalanceFilter === 'RESERVED') return item.reserved > 0;
+                        if (stockBalanceFilter === 'AVAILABLE') return item.available > 0;
+                        if (stockBalanceFilter === 'HELD') return item.held > 0;
+                        if (stockBalanceFilter === 'INCOMING') return item.incoming > 0;
+                        return true;
+                      });
+
+                    if (filteredVariants.length === 0) {
+                      return (
+                        <tr>
+                          <td colSpan={8} className="py-8 text-center text-slate-400">
+                            No items with <strong>{stockBalanceFilter.replace('_', ' ')}</strong> balance at this location.{' '}
+                            {stockBalanceFilter !== 'ALL' && (
+                              <button
+                                type="button"
+                                onClick={() => setStockBalanceFilter('ALL')}
+                                className="text-sky-400 hover:underline ml-1 cursor-pointer"
+                              >
+                                Show all items
+                              </button>
+                            )}
+                          </td>
+                        </tr>
+                      );
+                    }
+
+                    return filteredVariants.map(({ cv, onHand, reserved, available, held, incoming }: any) => {
 
                     return (
                       <tr key={`${cv.productId}-${cv.variantId}`} className="border-b border-slate-800/60 hover:bg-slate-800/30">
@@ -941,7 +995,8 @@ export default function WarehousePortalPage() {
                         </td>
                       </tr>
                     );
-                  })}
+                  });
+                  })()}
                 </tbody>
               </table>
             </div>
