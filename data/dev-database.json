@@ -904,13 +904,31 @@
       ],
       "specificationAttributes": [
         {
+          "id": "spec-test-agri-1",
+          "attributeType": "Option",
+          "attributeName": "Operating Pressure & Battery",
+          "value": "12V 12Ah / 110 PSI",
+          "allowFiltering": true,
+          "showOnProductPage": true,
+          "displayOrder": 1
+        },
+        {
+          "id": "spec-test-agri-2",
+          "attributeType": "Option",
+          "attributeName": "Quality Standard & Fulfillment Hub",
+          "value": "ISO Certified • Hubballi Hub",
+          "allowFiltering": true,
+          "showOnProductPage": true,
+          "displayOrder": 2
+        },
+        {
           "id": "spec-test-1",
           "attributeType": "Option",
           "attributeName": "Color",
           "value": "Grey",
           "allowFiltering": true,
           "showOnProductPage": false,
-          "displayOrder": 1
+          "displayOrder": 3
         },
         {
           "id": "spec-test-2",
@@ -919,7 +937,7 @@
           "value": "Red",
           "allowFiltering": true,
           "showOnProductPage": false,
-          "displayOrder": 2
+          "displayOrder": 4
         },
         {
           "id": "spec-test-3",
@@ -928,7 +946,7 @@
           "value": "Blue",
           "allowFiltering": true,
           "showOnProductPage": false,
-          "displayOrder": 3
+          "displayOrder": 5
         }
       ]
     },
