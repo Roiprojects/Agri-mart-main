@@ -96,9 +96,6 @@ export function ProductAttributeForm({
   );
   const [usedProductSearch, setUsedProductSearch] = useState('');
 
-  // Advanced / Basic Mode State (starts in Advanced mode showing all fields; clicking switches to Basic showing only mandatory/important fields)
-  const [advancedMode, setAdvancedMode] = useState(true);
-
   // Localization tabs
   const [activeTab, setActiveTab] = useState<'standard' | 'en' | 'rtl'>('standard');
 
@@ -295,48 +292,6 @@ export function ProductAttributeForm({
         </div>
       )}
 
-      {/* ADVANCED / BASIC TOGGLE SWITCH */}
-      <div className="flex flex-wrap items-center gap-2.5 pt-1 pb-1">
-        <button
-          type="button"
-          onClick={() => setAdvancedMode(!advancedMode)}
-          className={`inline-flex items-center justify-between px-2.5 py-1 rounded text-xs font-semibold border transition cursor-pointer select-none min-w-[96px] h-7 shadow-2xs ${
-            advancedMode
-              ? 'bg-[#2585be] border-[#2585be] text-white hover:bg-[#1f72a3]'
-              : 'bg-white border-[#3c8dbc] text-[#3c8dbc] hover:bg-slate-50'
-          }`}
-          title={
-            advancedMode
-              ? 'Click to switch to Basic mode (show only mandatory & important fields)'
-              : 'Click to switch to Advanced mode (show all hidden fields)'
-          }
-        >
-          {advancedMode ? (
-            <>
-              <span className="text-white font-semibold text-xs">Advanced</span>
-              <span className="w-3.5 h-5 rounded-xs bg-white shadow-xs ml-2" />
-            </>
-          ) : (
-            <>
-              <span className="w-3.5 h-5 rounded-xs bg-[#3c8dbc] border border-[#3c8dbc] shadow-xs mr-2" />
-              <span className="text-[#3c8dbc] font-semibold text-xs">Basic</span>
-            </>
-          )}
-        </button>
-
-        <span
-          className={`text-[11px] px-2.5 py-0.5 rounded border font-medium ${
-            advancedMode
-              ? 'bg-blue-50 text-blue-700 border-blue-200'
-              : 'bg-amber-50 text-amber-800 border-amber-200'
-          }`}
-        >
-          {advancedMode
-            ? 'Advanced mode: Showing all product attribute fields & sections'
-            : 'Basic mode: Showing only mandatory & important fields (click Basic to show all hidden fields)'}
-        </span>
-      </div>
-
       {/* TOP HEADER: Title + back link + Action buttons */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1 pb-1">
         <div className="flex items-center gap-2 flex-wrap">
@@ -401,9 +356,8 @@ export function ProductAttributeForm({
         {/* Card Body */}
         {infoOpen && (
           <div className="p-4 sm:p-6 space-y-5 text-xs text-slate-700">
-            {/* Multi-language Tabs (Standard | EN | RTL) — Advanced mode only */}
-            {advancedMode && (
-              <div className="flex items-center gap-1 border-b border-[#d2d6de] -mt-1 mb-4 select-none">
+            {/* Multi-language Tabs (Standard | EN | RTL) */}
+            <div className="flex items-center gap-1 border-b border-[#d2d6de] -mt-1 mb-4 select-none">
                 <button
                   type="button"
                   onClick={() => setActiveTab('standard')}
@@ -442,7 +396,6 @@ export function ProductAttributeForm({
                   <span>RTL</span>
                 </button>
               </div>
-            )}
 
             {/* FORM FIELDS */}
             <div className="space-y-4 max-w-4xl">
@@ -715,10 +668,8 @@ export function ProductAttributeForm({
         )}
       </div>
 
-      {/* PREDEFINED VALUES & USED BY PRODUCTS CARDS (Advanced mode only) */}
-      {advancedMode && (
-        <>
-          <div className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden">
+      {/* PREDEFINED VALUES & USED BY PRODUCTS CARDS */}
+      <div className="bg-white rounded border border-[#d2d6de] shadow-2xs overflow-hidden">
         {/* Card Header: "☑ Predefined values" with collapse toggle */}
         <div
           onClick={() => setPredefinedOpen(!predefinedOpen)}
@@ -1050,8 +1001,6 @@ export function ProductAttributeForm({
           </div>
         )}
       </div>
-        </>
-      )}
 
       {/* MODAL: Add / Edit Predefined Value */}
       {modalOpen && (

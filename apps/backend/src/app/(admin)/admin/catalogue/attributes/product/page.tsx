@@ -54,9 +54,6 @@ export default function ProductAttributesPage() {
   // Selection
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
-  // Advanced / Basic Mode State
-  const [advancedMode, setAdvancedMode] = useState(true);
-
   // Search Collapsible State
   const [searchOpen, setSearchOpen] = useState(true);
 
@@ -299,51 +296,9 @@ export default function ProductAttributesPage() {
         </div>
       )}
 
-      {/* TOP HEADER: Title + Advanced/Basic Toggle + Add new & Delete selected buttons */}
+      {/* TOP HEADER: Title + Add new & Delete selected buttons */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1 pb-1">
-        <div className="flex items-center gap-3 flex-wrap">
-          <h1 className="text-2xl font-normal text-slate-800 tracking-tight">Product attributes</h1>
-
-          {/* ADVANCED / BASIC TOGGLE SWITCH */}
-          <button
-            type="button"
-            onClick={() => setAdvancedMode(!advancedMode)}
-            className={`inline-flex items-center justify-between px-2.5 py-1 rounded text-xs font-semibold border transition cursor-pointer select-none min-w-[96px] h-7 shadow-2xs ${
-              advancedMode
-                ? 'bg-[#2585be] border-[#2585be] text-white hover:bg-[#1f72a3]'
-                : 'bg-white border-[#3c8dbc] text-[#3c8dbc] hover:bg-slate-50'
-            }`}
-            title={
-              advancedMode
-                ? 'Click to switch to Basic mode (show only mandatory & important fields)'
-                : 'Click to switch to Advanced mode (show all hidden fields)'
-            }
-          >
-            {advancedMode ? (
-              <>
-                <span className="text-white font-semibold text-xs">Advanced</span>
-                <span className="w-3.5 h-5 rounded-xs bg-white shadow-xs ml-2" />
-              </>
-            ) : (
-              <>
-                <span className="w-3.5 h-5 rounded-xs bg-[#3c8dbc] border border-[#3c8dbc] shadow-xs mr-2" />
-                <span className="text-[#3c8dbc] font-semibold text-xs">Basic</span>
-              </>
-            )}
-          </button>
-
-          <span
-            className={`text-[11px] px-2.5 py-0.5 rounded border font-medium ${
-              advancedMode
-                ? 'bg-blue-50 text-blue-700 border-blue-200'
-                : 'bg-amber-50 text-amber-800 border-amber-200'
-            }`}
-          >
-            {advancedMode
-              ? 'Advanced mode: All fields visible'
-              : 'Basic mode: Showing only mandatory & important fields'}
-          </span>
-        </div>
+        <h1 className="text-2xl font-normal text-slate-800 tracking-tight">Product attributes</h1>
 
         <div className="flex flex-wrap items-center gap-2">
           {/* Add new button */}
@@ -412,7 +367,6 @@ export default function ProductAttributesPage() {
                         setCurrentPage(1);
                       }}
                       onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                      placeholder="Search by Attribute Name, Product ID (prod-001), Product Name, or SKU (AGP-PW-7HP)..."
                       className="w-full text-xs px-2.5 py-1.5 pr-8 rounded border border-[#d2d6de] bg-white focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none text-slate-700"
                     />
                     {filterName && (
@@ -551,16 +505,13 @@ export default function ProductAttributesPage() {
                   />
                 </th>
                 <th className="p-2.5 border-r border-[#d2d6de] min-w-[240px]">Name</th>
-                <th className="p-2.5 border-r border-[#d2d6de] min-w-[340px]">
-                  Used by Products (Product ID, Name &amp; SKU)
-                </th>
-                <th className="p-2.5 text-center w-28">Edit</th>
+                <th className="p-2.5 text-center w-48">Edit</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan={4} className="text-center py-12 text-slate-500 bg-white">
+                  <td colSpan={3} className="text-center py-12 text-slate-500 bg-white">
                     <div className="flex flex-col items-center justify-center gap-2">
                       <RotateCw className="w-5 h-5 animate-spin text-[#3c8dbc]" />
                       <span>Loading product attributes...</span>
@@ -569,7 +520,7 @@ export default function ProductAttributesPage() {
                 </tr>
               ) : paginatedAttributes.length === 0 ? (
                 <tr>
-                  <td colSpan={4} className="text-center py-12 text-slate-400 bg-white">
+                  <td colSpan={3} className="text-center py-12 text-slate-400 bg-white">
                     No product attributes found matching &quot;{filterName || appliedName}&quot;.
                   </td>
                 </tr>
@@ -583,25 +534,10 @@ export default function ProductAttributesPage() {
                     ? 'bg-[#f9f9f9]'
                     : 'bg-white';
 
-                  const usedProducts = attr.usedByProducts || [];
-                  const sortedUsedProducts = activeQuery
-                    ? [...usedProducts].sort((a, b) => {
-                        const aMatch =
-                          (a.id || '').toLowerCase().includes(activeQuery) ||
-                          (a.name || '').toLowerCase().includes(activeQuery) ||
-                          (a.sku || '').toLowerCase().includes(activeQuery);
-                        const bMatch =
-                          (b.id || '').toLowerCase().includes(activeQuery) ||
-                          (b.name || '').toLowerCase().includes(activeQuery) ||
-                          (b.sku || '').toLowerCase().includes(activeQuery);
-                        return aMatch === bMatch ? 0 : aMatch ? -1 : 1;
-                      })
-                    : usedProducts;
-
                   return (
                     <tr
                       key={attr.id}
-                      className={`${rowBg} hover:bg-[#f1f1f1] border-b border-[#e9ecef] transition-colors align-top`}
+                      className={`${rowBg} hover:bg-[#f1f1f1] border-b border-[#e9ecef] transition-colors`}
                     >
                       {/* Checkbox */}
                       <td className="p-2.5 text-center border-r border-[#e9ecef]">
@@ -613,80 +549,9 @@ export default function ProductAttributesPage() {
                         />
                       </td>
 
-                      {/* Name & Predefined Values */}
-                      <td className="p-2.5 border-r border-[#e9ecef] text-slate-700">
-                        <div className="font-semibold text-slate-800">{attr.name}</div>
-                        {advancedMode && attr.description && (
-                          <div className="text-[11px] text-slate-500 mt-0.5">{attr.description}</div>
-                        )}
-                        {advancedMode && attr.predefinedValues && attr.predefinedValues.length > 0 && (
-                          <div className="flex flex-wrap gap-1 mt-1.5">
-                            {attr.predefinedValues.map((pv) => (
-                              <span
-                                key={pv.id}
-                                className="px-1.5 py-0.5 rounded bg-slate-100 border border-slate-200 text-[10px] text-slate-700"
-                              >
-                                {pv.name}
-                                {pv.priceAdjustment > 0 ? ` (+₹${pv.priceAdjustment} INR)` : ''}
-                              </span>
-                            ))}
-                          </div>
-                        )}
-                      </td>
-
-                      {/* Associated Products (ID, Name, SKU) */}
-                      <td className="p-2.5 border-r border-[#e9ecef] text-slate-700">
-                        {sortedUsedProducts.length === 0 ? (
-                          <span className="text-slate-400 text-[11px]">No products linked</span>
-                        ) : (
-                          <div className="space-y-1.5">
-                            {sortedUsedProducts.slice(0, activeQuery ? 6 : 3).map((p) => {
-                              const isHighlighted =
-                                Boolean(activeQuery) &&
-                                ((p.id || '').toLowerCase().includes(activeQuery) ||
-                                  (p.name || '').toLowerCase().includes(activeQuery) ||
-                                  (p.sku || '').toLowerCase().includes(activeQuery));
-                              return (
-                                <div
-                                  key={p.id}
-                                  className={`p-1.5 rounded border text-[11px] flex flex-wrap items-center justify-between gap-1.5 ${
-                                    isHighlighted
-                                      ? 'bg-amber-50/90 border-amber-300 text-slate-900 font-medium'
-                                      : 'bg-white border-slate-200 text-slate-700'
-                                  }`}
-                                >
-                                  <div className="flex flex-wrap items-center gap-1.5">
-                                    <span className="px-1.5 py-0.5 rounded bg-slate-100 text-slate-700 font-mono text-[10px] border border-slate-200">
-                                      ID: {p.id}
-                                    </span>
-                                    {p.sku && (
-                                      <span className="px-1.5 py-0.5 rounded bg-blue-50 text-blue-700 font-mono text-[10px] border border-blue-200 font-semibold">
-                                        SKU: {p.sku}
-                                      </span>
-                                    )}
-                                    <Link
-                                      href={`/admin/catalogue/products?productId=${encodeURIComponent(p.id)}&sku=${encodeURIComponent(p.sku || '')}&name=${encodeURIComponent(p.name || '')}`}
-                                      className="text-slate-800 hover:text-[#2585be] hover:underline font-medium"
-                                    >
-                                      {p.name}
-                                    </Link>
-                                  </div>
-                                  <Link
-                                    href={`/admin/catalogue/products?productId=${encodeURIComponent(p.id)}&sku=${encodeURIComponent(p.sku || '')}&name=${encodeURIComponent(p.name || '')}`}
-                                    className="text-[10px] font-semibold text-[#2585be] hover:underline shrink-0"
-                                  >
-                                    View in Products →
-                                  </Link>
-                                </div>
-                              );
-                            })}
-                            {sortedUsedProducts.length > (activeQuery ? 6 : 3) && (
-                              <div className="text-[11px] text-[#3c8dbc] font-medium">
-                                +{sortedUsedProducts.length - (activeQuery ? 6 : 3)} more product(s)
-                              </div>
-                            )}
-                          </div>
-                        )}
+                      {/* Name */}
+                      <td className="p-2.5 border-r border-[#e9ecef] text-slate-700 font-medium">
+                        {attr.name}
                       </td>
 
                       {/* Edit Button */}
@@ -794,33 +659,10 @@ export default function ProductAttributesPage() {
           <div className="bg-white rounded border border-[#d2d6de] shadow-xl w-full max-w-md overflow-hidden animate-fadeIn">
             {/* Header */}
             <div className="bg-slate-50 border-b border-[#d2d6de] px-4 py-3 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <h3 className="font-semibold text-sm text-slate-800 flex items-center gap-1.5">
-                  <Sliders className="w-4 h-4 text-[#3c8dbc]" />
-                  <span>{editingAttr ? 'Edit product attribute' : 'Add new product attribute'}</span>
-                </h3>
-                <button
-                  type="button"
-                  onClick={() => setAdvancedMode(!advancedMode)}
-                  className={`inline-flex items-center justify-between px-2 py-0.5 rounded text-[11px] font-semibold border transition cursor-pointer select-none min-w-[84px] h-6 shadow-2xs ${
-                    advancedMode
-                      ? 'bg-[#2585be] border-[#2585be] text-white'
-                      : 'bg-white border-[#3c8dbc] text-[#3c8dbc]'
-                  }`}
-                >
-                  {advancedMode ? (
-                    <>
-                      <span>Advanced</span>
-                      <span className="w-3 h-4 rounded-xs bg-white ml-1.5" />
-                    </>
-                  ) : (
-                    <>
-                      <span className="w-3 h-4 rounded-xs bg-[#3c8dbc] mr-1.5" />
-                      <span>Basic</span>
-                    </>
-                  )}
-                </button>
-              </div>
+              <h3 className="font-semibold text-sm text-slate-800 flex items-center gap-1.5">
+                <Sliders className="w-4 h-4 text-[#3c8dbc]" />
+                <span>{editingAttr ? 'Edit product attribute' : 'Add new product attribute'}</span>
+              </h3>
               <button
                 type="button"
                 onClick={() => setModalOpen(false)}
@@ -847,21 +689,19 @@ export default function ProductAttributesPage() {
                 />
               </div>
 
-              {advancedMode && (
-                <div className="space-y-1">
-                  <label className="font-medium text-slate-700 flex items-center">
-                    <span>Description</span>
-                    <Tooltip text="The description of the product attribute." />
-                  </label>
-                  <textarea
-                    rows={2}
-                    placeholder="e.g. Available color variations"
-                    value={formDescription}
-                    onChange={(e) => setFormDescription(e.target.value)}
-                    className="w-full text-xs px-2.5 py-1.5 rounded border border-[#d2d6de] bg-white focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none"
-                  />
-                </div>
-              )}
+              <div className="space-y-1">
+                <label className="font-medium text-slate-700 flex items-center">
+                  <span>Description</span>
+                  <Tooltip text="The description of the product attribute." />
+                </label>
+                <textarea
+                  rows={2}
+                  placeholder="e.g. Available color variations"
+                  value={formDescription}
+                  onChange={(e) => setFormDescription(e.target.value)}
+                  className="w-full text-xs px-2.5 py-1.5 rounded border border-[#d2d6de] bg-white focus:border-[#3c8dbc] focus:ring-1 focus:ring-[#3c8dbc] outline-none"
+                />
+              </div>
 
               {/* Footer */}
               <div className="pt-3 border-t border-[#d2d6de] flex items-center justify-end gap-2">
