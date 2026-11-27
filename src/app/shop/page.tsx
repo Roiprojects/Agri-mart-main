@@ -2,16 +2,13 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import ProductCard from '@/components/shop/ProductCard';
-import { Filter, Search, Sparkles, RefreshCw } from 'lucide-react';
+import { Filter, Sparkles, RefreshCw } from 'lucide-react';
 import Link from 'next/link';
 import { SEED_PRODUCTS, SEED_CATEGORIES } from '@/lib/seed-data';
 import { mergeCategoriesWithOverrides } from '@/lib/admin-category-overrides';
 import { mergeBrandsWithOverrides } from '@/lib/admin-brand-overrides';
 import { mergeProductsWithOverrides } from '@/lib/admin-product-overrides';
-import {
-  getEffectiveProductAttributes,
-  getEffectiveSpecificationAttributes,
-} from '@/lib/product-attribute-defaults';
+import { getEffectiveProductAttributes } from '@/lib/product-attribute-defaults';
 
 const DEFAULT_BRANDS = [
   { id: 'br-am-agrimate', name: 'AGRIMATE', slug: 'agrimate', published: true },
@@ -37,11 +34,10 @@ export default function ShopPage() {
   );
   const [loading, setLoading] = useState(false);
 
-  const [selectedCategory, setSelectedCategory] = useState<string>('ALL');
-  const [selectedBrand, setSelectedBrand] = useState<string>('ALL');
-  const [selectedSpecFilters, setSelectedSpecFilters] = useState<Record<string, string[]>>({});
   const [selectedProdAttrFilters, setSelectedProdAttrFilters] = useState<Record<string, string[]>>({});
-  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [selectedMrpRange, setSelectedMrpRange] = useState<string>('ALL');
+  const [minMrp, setMinMrp] = useState<string>('');
+  const [maxMrp, setMaxMrp] = useState<string>('');
   const [sortBy, setSortBy] = useState<string>('popular');
 
   const fetchCatalogue = () => {
@@ -93,34 +89,20 @@ export default function ShopPage() {
     return p.brand || p.brandName || '';
   };
 
-  // Extract filterable Specification Attributes (allowFiltering !== false) and Product Attributes
-  const { specFilterGroups, prodAttrFilterGroups } = useMemo(() => {
-    const specMap = new Map<string, Map<string, { count: number; rgbColor?: string }>>();
+  // Extract Color filters across products
+  const colorFilterGroups = useMemo(() => {
     const attrMap = new Map<string, Map<string, { count: number; rgbColor?: string }>>();
 
     for (const p of products) {
-      const specsList = getEffectiveSpecificationAttributes(p);
-      const seenPerProd = new Set<string>();
-      for (const s of specsList) {
-        if (s.allowFiltering === false) continue;
-        const name = String(s.attributeName || '').trim();
-        const val = String(s.value || '').trim();
-        if (!name || !val) continue;
-        if (!specMap.has(name)) specMap.set(name, new Map());
-        const valMap = specMap.get(name)!;
-        const key = `${name}:::${val}`;
-        if (!seenPerProd.has(key)) {
-          seenPerProd.add(key);
-          const prev = valMap.get(val) || { count: 0 };
-          valMap.set(val, { count: prev.count + 1 });
-        }
-      }
-
       const pAttrsList = getEffectiveProductAttributes(p);
       const seenAttrPerProd = new Set<string>();
       for (const a of pAttrsList) {
         const name = String(a.attributeName || '').trim();
-        if (!name || !Array.isArray(a.values) || a.values.length === 0) continue;
+        const isColorAttr =
+          /color/i.test(name) ||
+          String(a.controlType || '').toLowerCase() === 'color squares' ||
+          (Array.isArray(a.values) && a.values.some((v: any) => Boolean(v?.rgbColor)));
+        if (!isColorAttr || !name || !Array.isArray(a.values) || a.values.length === 0) continue;
         if (!attrMap.has(name)) attrMap.set(name, new Map());
         const valMap = attrMap.get(name)!;
         for (const v of a.values) {
@@ -136,28 +118,11 @@ export default function ShopPage() {
       }
     }
 
-    return {
-      specFilterGroups: Array.from(specMap.entries()).map(([name, valMap]) => ({
-        name,
-        values: Array.from(valMap.entries()).map(([value, meta]) => ({ value, ...meta })),
-      })),
-      prodAttrFilterGroups: Array.from(attrMap.entries()).map(([name, valMap]) => ({
-        name,
-        values: Array.from(valMap.entries()).map(([value, meta]) => ({ value, ...meta })),
-      })),
-    };
+    return Array.from(attrMap.entries()).map(([name, valMap]) => ({
+      name,
+      values: Array.from(valMap.entries()).map(([value, meta]) => ({ value, ...meta })),
+    }));
   }, [products]);
-
-  const toggleSpecFilter = (attrName: string, val: string) => {
-    setSelectedSpecFilters((prev) => {
-      const curr = prev[attrName] || [];
-      const next = curr.includes(val) ? curr.filter((x) => x !== val) : [...curr, val];
-      const copy = { ...prev };
-      if (next.length === 0) delete copy[attrName];
-      else copy[attrName] = next;
-      return copy;
-    });
-  };
 
   const toggleProdAttrFilter = (attrName: string, val: string) => {
     setSelectedProdAttrFilters((prev) => {
@@ -171,30 +136,14 @@ export default function ShopPage() {
   };
 
   const hasActiveAttributeFilters =
-    Object.keys(selectedSpecFilters).length > 0 || Object.keys(selectedProdAttrFilters).length > 0;
+    Object.keys(selectedProdAttrFilters).length > 0 ||
+    selectedMrpRange !== 'ALL' ||
+    minMrp.trim() !== '' ||
+    maxMrp.trim() !== '';
 
   const filteredProducts = useMemo(() => {
     return products.filter((p) => {
-      if (selectedCategory !== 'ALL' && p.categoryId !== selectedCategory && p.parentCategoryId !== selectedCategory && p.subCategoryId !== selectedCategory) return false;
-      if (selectedBrand !== 'ALL') {
-        const pBrand = getProductBrandName(p);
-        if (pBrand.toLowerCase() !== selectedBrand.toLowerCase()) return false;
-      }
-
-      // Specification attribute filters (AND across attributes, OR within same attribute's selected values)
-      for (const [attrName, wantedVals] of Object.entries(selectedSpecFilters)) {
-        if (!wantedVals || wantedVals.length === 0) continue;
-        const specs = getEffectiveSpecificationAttributes(p);
-        const matched = specs.some(
-          (s) =>
-            s.allowFiltering !== false &&
-            String(s.attributeName || '').trim() === attrName &&
-            wantedVals.includes(String(s.value || '').trim())
-        );
-        if (!matched) return false;
-      }
-
-      // Product attribute filters (AND across attributes, OR within same attribute's selected values)
+      // Color attribute filters (AND across attributes, OR within same attribute's selected values)
       for (const [attrName, wantedVals] of Object.entries(selectedProdAttrFilters)) {
         if (!wantedVals || wantedVals.length === 0) continue;
         const pAttrs = getEffectiveProductAttributes(p);
@@ -207,18 +156,21 @@ export default function ShopPage() {
         if (!matched) return false;
       }
 
-      if (searchQuery.trim()) {
-        const q = searchQuery.toLowerCase();
-        const matchName = p.name.toLowerCase().includes(q) || (p.nameKn && p.nameKn.toLowerCase().includes(q));
-        const matchDesc = p.description?.toLowerCase().includes(q);
-        const catName = typeof p.category === 'object' ? p.category?.name : p.category;
-        const matchCat = catName?.toLowerCase().includes(q);
-        const matchSku = p.sku?.toLowerCase().includes(q);
-        const matchRipl = p.riplCode?.toLowerCase().includes(q);
-        const matchBrand = getProductBrandName(p).toLowerCase().includes(q);
-        const matchModel = p.modelNumber?.toLowerCase().includes(q);
-        if (!matchName && !matchDesc && !matchCat && !matchSku && !matchRipl && !matchBrand && !matchModel) return false;
+      // MRP filter (uses comparePrice as MRP if present, otherwise price)
+      const mrpValue = Number(p.comparePrice || p.price || 0);
+      if (selectedMrpRange !== 'ALL') {
+        if (selectedMrpRange === 'under-1000' && mrpValue >= 1000) return false;
+        if (selectedMrpRange === '1000-5000' && (mrpValue < 1000 || mrpValue > 5000)) return false;
+        if (selectedMrpRange === '5000-20000' && (mrpValue < 5000 || mrpValue > 20000)) return false;
+        if (selectedMrpRange === 'above-20000' && mrpValue <= 20000) return false;
       }
+      if (minMrp.trim() !== '' && Number.isFinite(Number(minMrp)) && mrpValue < Number(minMrp)) {
+        return false;
+      }
+      if (maxMrp.trim() !== '' && Number.isFinite(Number(maxMrp)) && mrpValue > Number(maxMrp)) {
+        return false;
+      }
+
       return true;
     }).sort((a, b) => {
       if (sortBy === 'price-low') return a.price - b.price;
@@ -226,7 +178,7 @@ export default function ShopPage() {
       if (sortBy === 'rating') return (b.rating || 5) - (a.rating || 5);
       return (b.reviewsCount || 0) - (a.reviewsCount || 0);
     });
-  }, [products, brands, selectedCategory, selectedBrand, selectedSpecFilters, selectedProdAttrFilters, searchQuery, sortBy]);
+  }, [products, selectedProdAttrFilters, selectedMrpRange, minMrp, maxMrp, sortBy]);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6 text-xs">
@@ -268,14 +220,13 @@ export default function ShopPage() {
             <h3 className="font-extrabold text-sm text-slate-900 flex items-center gap-2">
               <Filter className="w-4 h-4 text-agri-green" /> Filters
             </h3>
-            {(selectedCategory !== 'ALL' || selectedBrand !== 'ALL' || searchQuery || hasActiveAttributeFilters) && (
+            {hasActiveAttributeFilters && (
               <button
                 onClick={() => {
-                  setSelectedCategory('ALL');
-                  setSelectedBrand('ALL');
-                  setSelectedSpecFilters({});
                   setSelectedProdAttrFilters({});
-                  setSearchQuery('');
+                  setSelectedMrpRange('ALL');
+                  setMinMrp('');
+                  setMaxMrp('');
                 }}
                 className="text-[11px] text-agri-green font-bold hover:underline"
               >
@@ -284,101 +235,64 @@ export default function ShopPage() {
             )}
           </div>
 
-          {/* Search Box */}
-          <div className="space-y-1.5">
-            <label className="font-bold text-slate-800 text-xs">Search Products</label>
-            <div className="relative">
-              <Search className="w-4 h-4 absolute left-3 top-3 text-slate-400" />
+          {/* MRP Filter */}
+          <div className="space-y-2.5">
+            <label className="text-[11px] font-bold text-slate-600 uppercase tracking-wider">
+              MRP (₹)
+            </label>
+            <div className="space-y-1">
+              {[
+                { id: 'ALL', label: 'All MRP' },
+                { id: 'under-1000', label: 'Under ₹1,000' },
+                { id: '1000-5000', label: '₹1,000 – ₹5,000' },
+                { id: '5000-20000', label: '₹5,000 – ₹20,000' },
+                { id: 'above-20000', label: 'Above ₹20,000' },
+              ].map((opt) => (
+                <button
+                  key={opt.id}
+                  onClick={() => {
+                    setSelectedMrpRange(opt.id);
+                    setMinMrp('');
+                    setMaxMrp('');
+                  }}
+                  className={`w-full text-left px-3 py-2 rounded-xl text-xs transition ${
+                    selectedMrpRange === opt.id && minMrp === '' && maxMrp === ''
+                      ? 'bg-agri-pale text-agri-green-dark font-extrabold'
+                      : 'text-slate-600 hover:bg-slate-50 font-semibold'
+                  }`}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+            <div className="grid grid-cols-2 gap-2 pt-1">
               <input
-                type="text"
-                placeholder="Weeder, NPK, Seeds..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-9 pr-3 py-2 border border-slate-200 rounded-xl text-xs focus:ring-1 focus:ring-agri-green outline-none"
+                type="number"
+                min={0}
+                placeholder="Min ₹"
+                value={minMrp}
+                onChange={(e) => {
+                  setMinMrp(e.target.value);
+                  setSelectedMrpRange('ALL');
+                }}
+                className="w-full px-2.5 py-1.5 border border-slate-200 rounded-xl text-xs focus:ring-1 focus:ring-agri-green outline-none"
+              />
+              <input
+                type="number"
+                min={0}
+                placeholder="Max ₹"
+                value={maxMrp}
+                onChange={(e) => {
+                  setMaxMrp(e.target.value);
+                  setSelectedMrpRange('ALL');
+                }}
+                className="w-full px-2.5 py-1.5 border border-slate-200 rounded-xl text-xs focus:ring-1 focus:ring-agri-green outline-none"
               />
             </div>
           </div>
 
-          {/* Category Filter */}
-          <div className="space-y-2">
-            <label className="font-bold text-slate-800 text-xs">Category</label>
-            <div className="space-y-1">
-              <button
-                onClick={() => setSelectedCategory('ALL')}
-                className={`w-full text-left px-3 py-2 rounded-xl text-xs transition ${
-                  selectedCategory === 'ALL'
-                    ? 'bg-agri-pale text-agri-green-dark font-extrabold'
-                    : 'text-slate-600 hover:bg-slate-50'
-                }`}
-              >
-                All Categories ({products.length})
-              </button>
-              {categories.map((cat) => {
-                const count = products.filter((p) => p.categoryId === cat.id).length;
-                return (
-                  <button
-                    key={cat.id}
-                    onClick={() => setSelectedCategory(cat.id)}
-                    className={`w-full text-left px-3 py-2 rounded-xl text-xs transition flex items-center justify-between ${
-                      selectedCategory === cat.id
-                        ? 'bg-agri-pale text-agri-green-dark font-extrabold'
-                        : 'text-slate-600 hover:bg-slate-50'
-                    }`}
-                  >
-                    <span>{cat.name}</span>
-                    {count > 0 && (
-                      <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${selectedCategory === cat.id ? 'bg-agri-green text-white' : 'bg-slate-100 text-slate-500'}`}>
-                        {count}
-                      </span>
-                    )}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Brand Filter */}
-          <div className="space-y-2">
-            <label className="font-bold text-slate-800 text-xs">Brand</label>
-            <div className="space-y-1">
-              <button
-                onClick={() => setSelectedBrand('ALL')}
-                className={`w-full text-left px-3 py-2 rounded-xl text-xs transition ${
-                  selectedBrand === 'ALL'
-                    ? 'bg-agri-pale text-agri-green-dark font-extrabold'
-                    : 'text-slate-600 hover:bg-slate-50'
-                }`}
-              >
-                All Brands ({products.length})
-              </button>
-              {brands.map((brandObj: any) => {
-                const brandName = brandObj.name;
-                const count = products.filter(
-                  (p: any) => getProductBrandName(p).toLowerCase() === brandName.toLowerCase()
-                ).length;
-                const isSelected = selectedBrand.toLowerCase() === brandName.toLowerCase();
-                return (
-                  <button
-                    key={brandObj.id || brandName}
-                    onClick={() => setSelectedBrand(brandName)}
-                    className={`w-full text-left px-3 py-2 rounded-xl text-xs transition flex items-center justify-between ${
-                      isSelected
-                        ? 'bg-agri-pale text-agri-green-dark font-extrabold'
-                        : 'text-slate-600 hover:bg-slate-50'
-                    }`}
-                  >
-                    <span>{brandName}</span>
-                    <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${isSelected ? 'bg-agri-green text-white' : 'bg-slate-100 text-slate-500'}`}>
-                      {count}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Product Attribute Filters */}
-          {prodAttrFilterGroups.map((group) => (
+          {/* Color Filters */}
+          {colorFilterGroups.map((group) => (
             <div key={`pattr-${group.name}`} className="space-y-2 border-t border-slate-100 pt-4">
               <label className="text-[11px] font-bold text-slate-600 uppercase tracking-wider">
                 {group.name}
@@ -400,53 +314,6 @@ export default function ShopPage() {
                           type="checkbox"
                           checked={isChecked}
                           onChange={() => toggleProdAttrFilter(group.name, item.value)}
-                          className="accent-emerald-700 rounded"
-                        />
-                        {item.rgbColor && (
-                          <span
-                            className="w-3.5 h-3.5 rounded-full border border-slate-300 shrink-0"
-                            style={{ backgroundColor: item.rgbColor }}
-                          />
-                        )}
-                        <span>{item.value}</span>
-                      </span>
-                      <span
-                        className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${
-                          isChecked ? 'bg-agri-green text-white' : 'bg-slate-100 text-slate-500'
-                        }`}
-                      >
-                        {item.count}
-                      </span>
-                    </label>
-                  );
-                })}
-              </div>
-            </div>
-          ))}
-
-          {/* Specification Attribute Filters */}
-          {specFilterGroups.map((group) => (
-            <div key={`spec-${group.name}`} className="space-y-2 border-t border-slate-100 pt-4">
-              <label className="text-[11px] font-bold text-slate-600 uppercase tracking-wider">
-                {group.name}
-              </label>
-              <div className="space-y-1.5 max-h-48 overflow-y-auto pr-1">
-                {group.values.map((item) => {
-                  const isChecked = (selectedSpecFilters[group.name] || []).includes(item.value);
-                  return (
-                    <label
-                      key={item.value}
-                      className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl text-xs font-semibold cursor-pointer transition ${
-                        isChecked
-                          ? 'bg-emerald-50 text-agri-green-dark border border-emerald-200'
-                          : 'text-slate-600 hover:bg-slate-50 border border-transparent'
-                      }`}
-                    >
-                      <span className="flex items-center gap-2">
-                        <input
-                          type="checkbox"
-                          checked={isChecked}
-                          onChange={() => toggleSpecFilter(group.name, item.value)}
                           className="accent-emerald-700 rounded"
                         />
                         {item.rgbColor && (
