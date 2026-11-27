@@ -385,6 +385,24 @@ export default function WarehousePortalPage() {
 
           <button
             type="button"
+            onClick={() => postAction({ action: 'SEED_TEST_SCENARIOS' })}
+            disabled={busy}
+            className="mt-4 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-700 hover:bg-emerald-600 text-xs font-semibold text-white cursor-pointer"
+          >
+            <Plus className="w-3.5 h-3.5" />
+            <span>Seed Test Data (All Categories)</span>
+          </button>
+
+          <a
+            href="/admin"
+            className="mt-4 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-medium text-slate-200"
+          >
+            <ShieldCheck className="w-3.5 h-3.5 text-sky-400" />
+            <span>Super Admin</span>
+          </a>
+
+          <button
+            type="button"
             onClick={loadPortal}
             disabled={busy}
             className="mt-4 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-medium text-slate-200 cursor-pointer"

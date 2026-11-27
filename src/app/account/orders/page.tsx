@@ -135,7 +135,7 @@ export default function CustomerOrdersPage() {
                       </span>
                     </div>
                     <div className="text-[11px] text-slate-500 mt-0.5">
-                      Fulfillment Hub: <strong>{ord.assignedWarehouseName || 'Hubballi Dark Warehouse'}</strong>
+                      Fulfillment Hub: <strong>{ord.assignedWarehouseName || 'Pending Assignment'}</strong>
                     </div>
                   </div>
 

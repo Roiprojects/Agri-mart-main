@@ -1416,6 +1416,144 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: true, message: 'Exception marked resolved.' });
     }
 
+    // -------------------------------------------------------------------------
+    // 10. SEED EXAMPLE TEST DATA ACROSS ALL CATEGORIES
+    // -------------------------------------------------------------------------
+    if (action === 'SEED_TEST_SCENARIOS') {
+      const core = readDb();
+      const warehouses = core.warehouses || [];
+      const mainWh = warehouses[0];
+      const branchWh = warehouses[1] || warehouses[0];
+      const franchisee = db.franchisees[0];
+
+      if (!mainWh) {
+        return NextResponse.json({ success: false, error: 'Create at least one warehouse first.' }, { status: 400 });
+      }
+
+      const categories = core.categories || [];
+      const products = core.products || [];
+      const variants = core.variants || [];
+      let seededCount = 0;
+
+      // Ensure at least one product-variant per category has stock across Main, Branch, and Franchisee
+      for (const cat of categories) {
+        const catProducts = products.filter((p) => p.categoryId === cat.id || p.parentCategoryId === cat.id);
+        for (const prod of catProducts.slice(0, 2)) {
+          const pVars = variants.filter((v) => v.productId === prod.id);
+          const targetVars = pVars.length > 0 ? pVars : [{ id: `default-${prod.id}`, variantName: 'Standard', sku: prod.sku, price: prod.price }];
+          for (const v of targetVars.slice(0, 2)) {
+            const mainRow = getOrCreateStockRow(db, mainWh.id, 'WAREHOUSE', prod.id, v.id);
+            if (mainRow.onHand === 0) {
+              mainRow.onHand = 25;
+              mainRow.updatedAt = now;
+              syncCoreWarehouseStock(mainWh.id, prod.id, v.id, mainRow.onHand, mainRow.reserved);
+              seededCount++;
+            }
+            if (branchWh && branchWh.id !== mainWh.id) {
+              const branchRow = getOrCreateStockRow(db, branchWh.id, 'WAREHOUSE', prod.id, v.id);
+              if (branchRow.onHand === 0) {
+                branchRow.onHand = 3; // deliberately low so shortage/routing alternatives can be tested
+                branchRow.updatedAt = now;
+                syncCoreWarehouseStock(branchWh.id, prod.id, v.id, branchRow.onHand, branchRow.reserved);
+              }
+            }
+            if (franchisee) {
+              const frRow = getOrCreateStockRow(db, franchisee.id, 'FRANCHISEE', prod.id, v.id);
+              if (frRow.onHand === 0) {
+                frRow.onHand = 2;
+                frRow.updatedAt = now;
+              }
+            }
+          }
+        }
+      }
+
+      // Create one sample multi-stop bulk transfer if none exist
+      if (db.transfers.length === 0 && products.length > 0) {
+        const sampleProd = products[0];
+        const sampleVar = variants.find((v) => v.productId === sampleProd.id);
+        const varId = sampleVar?.id || `default-${sampleProd.id}`;
+        const varName = sampleVar?.variantName || 'Standard';
+        const trfNum = `TRF-${new Date().getFullYear()}-0001`;
+
+        const groups: DispatchGroup[] = [];
+        if (branchWh && branchWh.id !== mainWh.id) {
+          groups.push({
+            id: `grp-seed-1`,
+            destinationId: branchWh.id,
+            destinationKind: 'WAREHOUSE',
+            destinationName: branchWh.name,
+            transportMethod: 'OWN_VEHICLE',
+            purpose: 'REPLENISHMENT',
+            status: 'DRAFT',
+            items: [
+              {
+                id: `tli-seed-1`,
+                productId: sampleProd.id,
+                variantId: varId,
+                productName: sampleProd.name,
+                variantName: varName,
+                sku: sampleVar?.sku || sampleProd.sku,
+                requestedQty: 5,
+                packedQty: 5,
+                receivedGoodQty: 0,
+                receivedDamagedQty: 0,
+                packageId: `PKG-SEED-1`,
+              },
+            ],
+            receipts: [],
+          });
+        }
+        if (franchisee) {
+          groups.push({
+            id: `grp-seed-2`,
+            destinationId: franchisee.id,
+            destinationKind: 'FRANCHISEE',
+            destinationName: franchisee.name,
+            transportMethod: 'OWN_VEHICLE',
+            purpose: 'REPLENISHMENT',
+            status: 'DRAFT',
+            items: [
+              {
+                id: `tli-seed-2`,
+                productId: sampleProd.id,
+                variantId: varId,
+                productName: sampleProd.name,
+                variantName: varName,
+                sku: sampleVar?.sku || sampleProd.sku,
+                requestedQty: 3,
+                packedQty: 3,
+                receivedGoodQty: 0,
+                receivedDamagedQty: 0,
+                packageId: `PKG-SEED-2`,
+              },
+            ],
+            receipts: [],
+          });
+        }
+        if (groups.length > 0) {
+          db.transfers.unshift({
+            id: `trf-seed-${Date.now()}`,
+            transferNumber: trfNum,
+            sourceWarehouseId: mainWh.id,
+            sourceWarehouseName: mainWh.name,
+            isBulkTrip: groups.length > 1,
+            notes: 'Sample multi-stop bulk trip across branch & franchisee (editable)',
+            groups,
+            createdBy: 'Test Seeder',
+            createdAt: now,
+            updatedAt: now,
+          });
+        }
+      }
+
+      writePortalDb(db);
+      return NextResponse.json({
+        success: true,
+        message: `Seeded example stock across ${categories.length} categories (${seededCount} new stock rows) and sample workflow data.`,
+      });
+    }
+
     return NextResponse.json({ success: false, error: `Unsupported action: ${action}` }, { status: 400 });
   } catch (err: any) {
     return NextResponse.json({ success: false, error: err.message }, { status: 500 });
