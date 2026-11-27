@@ -420,6 +420,71 @@ export function ProductForm({
     'Material',
   ]);
   const [adminAttrDefs, setAdminAttrDefs] = useState<any[]>([]);
+
+  const resolveDefaultRgb = (valName: string, explicit?: string): string => {
+    if (explicit && /^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(explicit.trim())) return explicit.trim();
+    const n = String(valName || '').toLowerCase();
+    if (n.includes('red')) return '#dc2626';
+    if (n.includes('white')) return '#ffffff';
+    if (n.includes('black')) return '#1e293b';
+    if (n.includes('green')) return '#15803d';
+    if (n.includes('blue')) return '#1d4ed8';
+    if (n.includes('yellow')) return '#eab308';
+    if (n.includes('grey') || n.includes('gray')) return '#475569';
+    return '#64748b';
+  };
+
+  const buildDefaultValuesForAttribute = (attrName: string) => {
+    const imgs = (formData.images || []).filter(Boolean);
+    const matchedDef = adminAttrDefs.find(
+      (a: any) => String(a.name || '').toLowerCase() === String(attrName || '').toLowerCase()
+    );
+    const isColor = /color/i.test(String(attrName || ''));
+    if (matchedDef && Array.isArray(matchedDef.predefinedValues) && matchedDef.predefinedValues.length > 0) {
+      return matchedDef.predefinedValues.map((pv: any, idx: number) => ({
+        id: pv.id || `val-${Date.now()}-${idx}`,
+        attributeValueType: 'Simple',
+        name: pv.name,
+        associatedProduct: '',
+        rgbColor: isColor ? resolveDefaultRgb(pv.name, pv.rgbColor) : pv.rgbColor || '#000000',
+        priceAdjustment: Number(pv.priceAdjustment || 0),
+        priceAdjustmentUsePercentage: Boolean(pv.priceAdjustmentUsePercentage),
+        weightAdjustment: Number(pv.weightAdjustment || 0),
+        cost: Number(pv.cost ?? 0),
+        isPreSelected: Boolean(pv.isPreSelected) || idx === 0,
+        picture: pv.picture || imgs[idx % Math.max(1, imgs.length)] || '',
+        pictures: pv.picture
+          ? [pv.picture]
+          : imgs[idx % Math.max(1, imgs.length)]
+          ? [imgs[idx % Math.max(1, imgs.length)]]
+          : [],
+        displayOrder: Number(pv.displayOrder ?? idx + 1),
+      }));
+    }
+    if (isColor) {
+      const sampleColors = [
+        { name: 'Red', rgbColor: '#dc2626' },
+        { name: 'White', rgbColor: '#ffffff' },
+        { name: 'Black', rgbColor: '#1e293b' },
+      ];
+      return sampleColors.map((c, idx) => ({
+        id: `val-col-${Date.now()}-${idx}`,
+        attributeValueType: 'Simple',
+        name: c.name,
+        associatedProduct: '',
+        rgbColor: c.rgbColor,
+        priceAdjustment: 0,
+        priceAdjustmentUsePercentage: false,
+        weightAdjustment: 0,
+        cost: 0,
+        isPreSelected: idx === 0,
+        picture: imgs[idx % Math.max(1, imgs.length)] || '',
+        pictures: imgs[idx % Math.max(1, imgs.length)] ? [imgs[idx % Math.max(1, imgs.length)]] : [],
+        displayOrder: idx + 1,
+      }));
+    }
+    return [];
+  };
   const [attrPageSize, setAttrPageSize] = useState<number>(15);
   const [attrPage, setAttrPage] = useState<number>(1);
   const [attrModalOpen, setAttrModalOpen] = useState(false);
@@ -3731,16 +3796,17 @@ export function ProductForm({
                       <button
                         type="button"
                         onClick={() => {
+                          const defaultName = availableAttrNames[0] || 'Color';
                           setEditingAttrIdx(null);
                           setAttrDraft({
-                            attributeName: availableAttrNames[0] || 'Color',
+                            attributeName: defaultName,
                             textPrompt: '',
                             isRequired: false,
                             controlType: 'Drop-down list',
                             displayOrder: 0,
                             validationRules: '',
                             condition: '',
-                            values: [],
+                            values: buildDefaultValuesForAttribute(defaultName),
                           });
                           setAttrModalOpen(true);
                         }}
@@ -4626,7 +4692,25 @@ export function ProductForm({
                     <div className="sm:col-span-9">
                       <select
                         value={attrDraft.controlType}
-                        onChange={(e) => setAttrDraft({ ...attrDraft, controlType: e.target.value })}
+                        onChange={(e) => {
+                          const nextType = e.target.value;
+                          const isChoiceControl = [
+                            'Drop-down list',
+                            'Radio button list',
+                            'Checkboxes',
+                            'Color squares',
+                            'Image squares',
+                            'Read-only checkboxes',
+                          ].includes(nextType);
+                          setAttrDraft((prev) => ({
+                            ...prev,
+                            controlType: nextType,
+                            values:
+                              isChoiceControl && prev.values.length === 0
+                                ? buildDefaultValuesForAttribute(prev.attributeName)
+                                : prev.values,
+                          }));
+                        }}
                         className="w-full border border-[#d2d6de] rounded px-2.5 py-2 text-xs bg-white focus:border-[#3c8dbc] outline-none"
                       >
                         <option value="Drop-down list">Drop-down list</option>
@@ -4681,6 +4765,14 @@ export function ProductForm({
 
               {!attrValuesCollapsed && (
                 <div className="p-4 sm:p-5 space-y-4 text-xs text-slate-700">
+                  {['Text box', 'Multiline textbox', 'Date picker', 'File upload'].includes(
+                    attrDraft.controlType
+                  ) ? (
+                    <div className="p-4 rounded border border-slate-200 bg-slate-50 text-slate-600 text-xs">
+                      <strong>{attrDraft.controlType}</strong> collects input directly from the customer on the product page. Switch <strong>Control type</strong> to <em>Drop-down list</em>, <em>Radio button list</em>, <em>Checkboxes</em>, <em>Color squares</em>, or <em>Image squares</em> to configure selectable values.
+                    </div>
+                  ) : (
+                  <>
                   <div className="overflow-x-auto border border-[#d2d6de] rounded-xs">
                     <table className="w-full text-left border-collapse text-xs">
                       <thead>
@@ -4709,7 +4801,22 @@ export function ProductForm({
                           attrDraft.values.slice(0, valPageSize).map((val, vIdx) => (
                             <tr key={val.id || vIdx} className="bg-white hover:bg-slate-50/50">
                               <td className="py-2.5 px-3 border-r border-[#d2d6de]">{val.attributeValueType}</td>
-                              <td className="py-2.5 px-3 border-r border-[#d2d6de] font-medium text-slate-800">{val.name}</td>
+                              <td className="py-2.5 px-3 border-r border-[#d2d6de] font-medium text-slate-800">
+                                <div className="flex items-center gap-1.5">
+                                  {val.rgbColor && /color/i.test(attrDraft.attributeName || '') && (
+                                    <span
+                                      className="w-3.5 h-3.5 rounded-xs border border-slate-300 shrink-0"
+                                      style={{ backgroundColor: val.rgbColor }}
+                                    />
+                                  )}
+                                  <span>
+                                    {val.name}
+                                    {val.rgbColor && /color/i.test(attrDraft.attributeName || '')
+                                      ? ` - ${val.rgbColor}`
+                                      : ''}
+                                  </span>
+                                </div>
+                              </td>
                               <td className="py-2.5 px-3 border-r border-[#d2d6de]">{val.associatedProduct}</td>
                               <td className="py-2.5 px-3 border-r border-[#d2d6de] text-right">{val.priceAdjustment}</td>
                               <td className="py-2.5 px-3 border-r border-[#d2d6de] text-right">{val.weightAdjustment}</td>
@@ -4723,11 +4830,23 @@ export function ProductForm({
                               </td>
                               <td className="py-2 px-3 border-r border-[#d2d6de] text-center">
                                 {val.picture ? (
-                                  <img
-                                    src={val.picture}
-                                    alt={val.name}
-                                    className="w-20 h-20 object-contain mx-auto border border-slate-200 rounded bg-white p-0.5"
-                                  />
+                                  <div className="relative w-20 h-20 mx-auto border border-slate-200 rounded bg-white p-0.5 overflow-hidden">
+                                    <img
+                                      src={val.picture}
+                                      alt={val.name}
+                                      className="w-full h-full object-contain"
+                                    />
+                                    {val.rgbColor && /color/i.test(attrDraft.attributeName || '') && (
+                                      <span
+                                        className="absolute inset-0 pointer-events-none"
+                                        style={{
+                                          backgroundColor: val.rgbColor,
+                                          opacity: 0.22,
+                                          mixBlendMode: 'multiply',
+                                        }}
+                                      />
+                                    )}
+                                  </div>
                                 ) : (
                                   <span className="text-slate-300">-</span>
                                 )}
@@ -4856,6 +4975,8 @@ export function ProductForm({
                       Add a new value
                     </button>
                   </div>
+                  </>
+                  )}
                 </div>
               )}
             </div>
