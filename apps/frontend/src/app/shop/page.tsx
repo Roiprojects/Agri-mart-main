@@ -34,6 +34,7 @@ export default function ShopPage() {
   );
   const [loading, setLoading] = useState(false);
 
+  const [selectedBrand, setSelectedBrand] = useState<string>('ALL');
   const [selectedProdAttrFilters, setSelectedProdAttrFilters] = useState<Record<string, string[]>>({});
   const [selectedMrpRange, setSelectedMrpRange] = useState<string>('ALL');
   const [minMrp, setMinMrp] = useState<string>('');
@@ -137,6 +138,7 @@ export default function ShopPage() {
   };
 
   const hasActiveAttributeFilters =
+    selectedBrand !== 'ALL' ||
     Object.keys(selectedProdAttrFilters).length > 0 ||
     selectedMrpRange !== 'ALL' ||
     minMrp.trim() !== '' ||
@@ -145,6 +147,11 @@ export default function ShopPage() {
 
   const filteredProducts = useMemo(() => {
     return products.filter((p) => {
+      if (selectedBrand !== 'ALL') {
+        const pBrand = getProductBrandName(p);
+        if (pBrand.toLowerCase() !== selectedBrand.toLowerCase()) return false;
+      }
+
       // Color attribute filters (AND across attributes, OR within same attribute's selected values)
       for (const [attrName, wantedVals] of Object.entries(selectedProdAttrFilters)) {
         if (!wantedVals || wantedVals.length === 0) continue;
@@ -193,7 +200,7 @@ export default function ShopPage() {
       if (sortBy === 'rating') return (b.rating || 5) - (a.rating || 5);
       return (b.reviewsCount || 0) - (a.reviewsCount || 0);
     });
-  }, [products, brands, selectedProdAttrFilters, selectedMrpRange, minMrp, maxMrp, searchQuery, sortBy]);
+  }, [products, brands, selectedBrand, selectedProdAttrFilters, selectedMrpRange, minMrp, maxMrp, searchQuery, sortBy]);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6 text-xs">
@@ -238,6 +245,7 @@ export default function ShopPage() {
             {hasActiveAttributeFilters && (
               <button
                 onClick={() => {
+                  setSelectedBrand('ALL');
                   setSelectedProdAttrFilters({});
                   setSelectedMrpRange('ALL');
                   setMinMrp('');
@@ -319,6 +327,52 @@ export default function ShopPage() {
                 }}
                 className="w-full px-2.5 py-1.5 border border-slate-200 rounded-xl text-xs focus:ring-1 focus:ring-agri-green outline-none"
               />
+            </div>
+          </div>
+
+          {/* Brand Filter */}
+          <div className="space-y-2 border-t border-slate-100 pt-4">
+            <label className="text-[11px] font-bold text-slate-600 uppercase tracking-wider">
+              Brand
+            </label>
+            <div className="space-y-1">
+              <button
+                onClick={() => setSelectedBrand('ALL')}
+                className={`w-full text-left px-3 py-2 rounded-xl text-xs transition ${
+                  selectedBrand === 'ALL'
+                    ? 'bg-agri-pale text-agri-green-dark font-extrabold'
+                    : 'text-slate-600 hover:bg-slate-50 font-semibold'
+                }`}
+              >
+                All Brands ({products.length})
+              </button>
+              {brands.map((brandObj: any) => {
+                const brandName = brandObj.name;
+                const count = products.filter(
+                  (p: any) => getProductBrandName(p).toLowerCase() === brandName.toLowerCase()
+                ).length;
+                const isSelected = selectedBrand.toLowerCase() === brandName.toLowerCase();
+                return (
+                  <button
+                    key={brandObj.id || brandName}
+                    onClick={() => setSelectedBrand(brandName)}
+                    className={`w-full text-left px-3 py-2 rounded-xl text-xs transition flex items-center justify-between ${
+                      isSelected
+                        ? 'bg-agri-pale text-agri-green-dark font-extrabold'
+                        : 'text-slate-600 hover:bg-slate-50 font-semibold'
+                    }`}
+                  >
+                    <span>{brandName}</span>
+                    <span
+                      className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${
+                        isSelected ? 'bg-agri-green text-white' : 'bg-slate-100 text-slate-500'
+                      }`}
+                    >
+                      {count}
+                    </span>
+                  </button>
+                );
+              })}
             </div>
           </div>
 
