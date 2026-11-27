@@ -1012,6 +1012,7 @@ export default function ProductDetailClient({ product: initialProduct }: Product
                     {vals.map((val: any) => {
                       const valKey = val.id || val.name;
                       const isSel = sel === valKey;
+                      const thumbUrl = val.picture || (Array.isArray(val.pictures) && val.pictures[0]) || '';
                       return (
                         <button
                           key={valKey}
@@ -1020,12 +1021,21 @@ export default function ProductDetailClient({ product: initialProduct }: Product
                             setSelectedAttributes((prev) => ({ ...prev, [attr.id]: valKey }));
                             setAttributeError(null);
                           }}
-                          className={`min-w-[56px] px-4 py-2 rounded-xl border-2 text-xs font-bold cursor-pointer transition ${
+                          className={`min-w-[56px] px-3.5 py-2 rounded-xl border-2 text-xs font-bold cursor-pointer transition inline-flex items-center gap-2 ${
                             isSel
                               ? 'border-slate-900 bg-slate-900 text-white shadow-xs'
                               : 'border-slate-200 bg-white text-slate-800 hover:border-slate-400'
                           }`}
                         >
+                          {thumbUrl && (
+                            <img src={thumbUrl} alt={val.name} className="w-5 h-5 rounded object-cover border border-slate-200 shrink-0" />
+                          )}
+                          {val.rgbColor && /color/i.test(attr.attributeName || '') && (
+                            <span
+                              className="w-3.5 h-3.5 rounded-full border border-slate-300 shrink-0"
+                              style={{ backgroundColor: val.rgbColor }}
+                            />
+                          )}
                           <span>
                             {val.name}
                             {formatAdj(val) && (
@@ -1047,6 +1057,7 @@ export default function ProductDetailClient({ product: initialProduct }: Product
                       const arr = Array.isArray(sel) ? sel : [];
                       const isSel = arr.includes(valKey);
                       const isReadOnly = ct === 'read-only checkboxes';
+                      const thumbUrl = val.picture || (Array.isArray(val.pictures) && val.pictures[0]) || '';
                       return (
                         <label
                           key={valKey}
@@ -1075,6 +1086,15 @@ export default function ProductDetailClient({ product: initialProduct }: Product
                             }}
                             className="accent-emerald-700"
                           />
+                          {thumbUrl && (
+                            <img src={thumbUrl} alt={val.name} className="w-5 h-5 rounded object-cover border border-slate-200 shrink-0" />
+                          )}
+                          {val.rgbColor && /color/i.test(attr.attributeName || '') && (
+                            <span
+                              className="w-3.5 h-3.5 rounded-full border border-slate-300 shrink-0"
+                              style={{ backgroundColor: val.rgbColor }}
+                            />
+                          )}
                           <span>
                             {val.name}
                             {formatAdj(val) && <span className="text-[10px] text-emerald-700 font-bold">{formatAdj(val)}</span>}
