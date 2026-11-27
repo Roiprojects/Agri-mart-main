@@ -901,6 +901,35 @@
             }
           ]
         }
+      ],
+      "specificationAttributes": [
+        {
+          "id": "spec-test-1",
+          "attributeType": "Option",
+          "attributeName": "Color",
+          "value": "Grey",
+          "allowFiltering": true,
+          "showOnProductPage": false,
+          "displayOrder": 1
+        },
+        {
+          "id": "spec-test-2",
+          "attributeType": "Option",
+          "attributeName": "Color",
+          "value": "Red",
+          "allowFiltering": true,
+          "showOnProductPage": false,
+          "displayOrder": 2
+        },
+        {
+          "id": "spec-test-3",
+          "attributeType": "Option",
+          "attributeName": "Color",
+          "value": "Blue",
+          "allowFiltering": true,
+          "showOnProductPage": false,
+          "displayOrder": 3
+        }
       ]
     },
     {
@@ -59058,6 +59087,37 @@
       ],
       "createdAt": "2026-10-25T11:00:00Z",
       "updatedAt": "2026-10-28T16:00:00Z"
+    }
+  ],
+  "specificationAttributes": [
+    {
+      "id": "sa-color",
+      "name": "Color",
+      "displayOrder": 0,
+      "groupId": "group-default",
+      "options": [
+        {
+          "id": "sao-grey",
+          "name": "Grey",
+          "specifyColor": true,
+          "rgbColor": "#808080",
+          "displayOrder": 1
+        },
+        {
+          "id": "sao-red",
+          "name": "Red",
+          "specifyColor": true,
+          "rgbColor": "#dc2626",
+          "displayOrder": 2
+        },
+        {
+          "id": "sao-blue",
+          "name": "Blue",
+          "specifyColor": true,
+          "rgbColor": "#2563eb",
+          "displayOrder": 3
+        }
+      ]
     }
   ]
 }

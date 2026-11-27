@@ -100,7 +100,7 @@ export default function ShopPage() {
     return p.brand || p.brandName || '';
   };
 
-  // Extract Color filters across products
+  // Extract Color filters across products (from both Product Attributes and filterable Specification Attributes)
   const colorFilterGroups = useMemo(() => {
     const attrMap = new Map<string, Map<string, { count: number; rgbColor?: string }>>();
 
@@ -124,6 +124,23 @@ export default function ShopPage() {
             seenAttrPerProd.add(key);
             const prev = valMap.get(valName) || { count: 0, rgbColor: v.rgbColor };
             valMap.set(valName, { count: prev.count + 1, rgbColor: prev.rgbColor || v.rgbColor });
+          }
+        }
+      }
+
+      if (Array.isArray(p.specificationAttributes)) {
+        for (const s of p.specificationAttributes) {
+          if (s.allowFiltering === false) continue;
+          const name = String(s.attributeName || '').trim();
+          const valName = String(s.value || '').trim();
+          if (!/color/i.test(name) || !valName) continue;
+          if (!attrMap.has(name)) attrMap.set(name, new Map());
+          const valMap = attrMap.get(name)!;
+          const key = `${name}:::${valName}`;
+          if (!seenAttrPerProd.has(key)) {
+            seenAttrPerProd.add(key);
+            const prev = valMap.get(valName) || { count: 0, rgbColor: s.rgbColor };
+            valMap.set(valName, { count: prev.count + 1, rgbColor: prev.rgbColor || s.rgbColor });
           }
         }
       }
@@ -165,13 +182,21 @@ export default function ShopPage() {
       for (const [attrName, wantedVals] of Object.entries(selectedProdAttrFilters)) {
         if (!wantedVals || wantedVals.length === 0) continue;
         const pAttrs = getEffectiveProductAttributes(p, adminAttributes);
-        const matched = pAttrs.some(
+        const matchedProdAttr = pAttrs.some(
           (a: any) =>
             String(a.attributeName || '').trim() === attrName &&
             Array.isArray(a.values) &&
             a.values.some((v: any) => wantedVals.includes(String(v.name || '').trim()))
         );
-        if (!matched) return false;
+        const matchedSpecAttr =
+          Array.isArray(p.specificationAttributes) &&
+          p.specificationAttributes.some(
+            (s: any) =>
+              s.allowFiltering !== false &&
+              String(s.attributeName || '').trim() === attrName &&
+              wantedVals.includes(String(s.value || '').trim())
+          );
+        if (!matchedProdAttr && !matchedSpecAttr) return false;
       }
 
       // MRP filter (uses comparePrice as MRP if present, otherwise price)
