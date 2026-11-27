@@ -54,6 +54,14 @@ export async function GET(
       images: mediaList.length > 0 ? mediaList : [defaultImage],
       variants: detailed?.variants || [],
       specifications: detailed?.specifications || [],
+      productAttributes: (product as any).productAttributes || (detailed as any)?.productAttributes || [],
+      attributeCombinations:
+        (product as any).attributeCombinations || (detailed as any)?.attributeCombinations || [],
+      displayOnlyAttributeImages: Boolean(
+        (product as any).displayOnlyAttributeImages ?? (detailed as any)?.displayOnlyAttributeImages
+      ),
+      specificationAttributes:
+        (product as any).specificationAttributes || (detailed as any)?.specificationAttributes || [],
       reviews: detailed?.reviews || [],
       warehouseStocks: detailed?.warehouseStocks || [],
       disableBuyButton: Boolean(product.disableBuyButton),

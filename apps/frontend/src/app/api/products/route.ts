@@ -10,6 +10,9 @@ export async function GET(request: Request) {
   const crop = searchParams.get('crop');
   const stage = searchParams.get('stage');
   const search = searchParams.get('search') || searchParams.get('q');
+  const color = searchParams.get('color');
+  const minMrpParam = searchParams.get('minMrp');
+  const maxMrpParam = searchParams.get('maxMrp');
 
   const products = await CatalogueService.getProducts({
     categoryId: category || undefined,
@@ -19,7 +22,7 @@ export async function GET(request: Request) {
     onlyPublished: true,
   });
 
-  const detailed = products.map((p) => {
+  let detailed = products.map((p) => {
     const full = devDb.getProductWithDetails(p.id);
     const categoryObj = full?.category;
     const mediaObj = full?.media?.[0];
@@ -78,8 +81,37 @@ export async function GET(request: Request) {
       inStock: (p.stockQuantity ?? 0) > 0 || (full?.warehouseStocks?.some((ws) => ws.quantity > 0) ?? true),
       variants: full?.variants || [],
       specifications: full?.specifications || [],
+      productAttributes: (p as any).productAttributes || (full as any)?.productAttributes || [],
+      attributeCombinations: (p as any).attributeCombinations || (full as any)?.attributeCombinations || [],
+      displayOnlyAttributeImages: Boolean(
+        (p as any).displayOnlyAttributeImages ?? (full as any)?.displayOnlyAttributeImages
+      ),
+      specificationAttributes:
+        (p as any).specificationAttributes || (full as any)?.specificationAttributes || [],
     };
   });
+
+  if (color) {
+    const targetColor = color.trim().toLowerCase();
+    detailed = detailed.filter((item: any) =>
+      Array.isArray(item.productAttributes) &&
+      item.productAttributes.some(
+        (a: any) =>
+          Array.isArray(a.values) &&
+          a.values.some((v: any) => String(v.name || '').trim().toLowerCase() === targetColor)
+      )
+    );
+  }
+
+  if (minMrpParam !== null && minMrpParam !== '' && Number.isFinite(Number(minMrpParam))) {
+    const minVal = Number(minMrpParam);
+    detailed = detailed.filter((item: any) => Number(item.comparePrice || item.price || 0) >= minVal);
+  }
+
+  if (maxMrpParam !== null && maxMrpParam !== '' && Number.isFinite(Number(maxMrpParam))) {
+    const maxVal = Number(maxMrpParam);
+    detailed = detailed.filter((item: any) => Number(item.comparePrice || item.price || 0) <= maxVal);
+  }
 
   return NextResponse.json({
     success: true,

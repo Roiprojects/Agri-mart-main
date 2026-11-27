@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import ProductCard from '@/components/shop/ProductCard';
-import { Filter, Sparkles, RefreshCw } from 'lucide-react';
+import { Filter, Search, Sparkles, RefreshCw } from 'lucide-react';
 import Link from 'next/link';
 import { SEED_PRODUCTS, SEED_CATEGORIES } from '@/lib/seed-data';
 import { mergeCategoriesWithOverrides } from '@/lib/admin-category-overrides';
@@ -38,6 +38,7 @@ export default function ShopPage() {
   const [selectedMrpRange, setSelectedMrpRange] = useState<string>('ALL');
   const [minMrp, setMinMrp] = useState<string>('');
   const [maxMrp, setMaxMrp] = useState<string>('');
+  const [searchQuery, setSearchQuery] = useState<string>('');
   const [sortBy, setSortBy] = useState<string>('popular');
 
   const fetchCatalogue = () => {
@@ -139,7 +140,8 @@ export default function ShopPage() {
     Object.keys(selectedProdAttrFilters).length > 0 ||
     selectedMrpRange !== 'ALL' ||
     minMrp.trim() !== '' ||
-    maxMrp.trim() !== '';
+    maxMrp.trim() !== '' ||
+    searchQuery.trim() !== '';
 
   const filteredProducts = useMemo(() => {
     return products.filter((p) => {
@@ -171,6 +173,19 @@ export default function ShopPage() {
         return false;
       }
 
+      if (searchQuery.trim()) {
+        const q = searchQuery.toLowerCase();
+        const matchName = p.name.toLowerCase().includes(q) || (p.nameKn && p.nameKn.toLowerCase().includes(q));
+        const matchDesc = p.description?.toLowerCase().includes(q);
+        const catName = typeof p.category === 'object' ? p.category?.name : p.category;
+        const matchCat = catName?.toLowerCase().includes(q);
+        const matchSku = p.sku?.toLowerCase().includes(q);
+        const matchRipl = p.riplCode?.toLowerCase().includes(q);
+        const matchBrand = getProductBrandName(p).toLowerCase().includes(q);
+        const matchModel = p.modelNumber?.toLowerCase().includes(q);
+        if (!matchName && !matchDesc && !matchCat && !matchSku && !matchRipl && !matchBrand && !matchModel) return false;
+      }
+
       return true;
     }).sort((a, b) => {
       if (sortBy === 'price-low') return a.price - b.price;
@@ -178,7 +193,7 @@ export default function ShopPage() {
       if (sortBy === 'rating') return (b.rating || 5) - (a.rating || 5);
       return (b.reviewsCount || 0) - (a.reviewsCount || 0);
     });
-  }, [products, selectedProdAttrFilters, selectedMrpRange, minMrp, maxMrp, sortBy]);
+  }, [products, brands, selectedProdAttrFilters, selectedMrpRange, minMrp, maxMrp, searchQuery, sortBy]);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6 text-xs">
@@ -227,12 +242,28 @@ export default function ShopPage() {
                   setSelectedMrpRange('ALL');
                   setMinMrp('');
                   setMaxMrp('');
+                  setSearchQuery('');
                 }}
                 className="text-[11px] text-agri-green font-bold hover:underline"
               >
                 Reset All
               </button>
             )}
+          </div>
+
+          {/* Search Box */}
+          <div className="space-y-1.5">
+            <label className="font-bold text-slate-800 text-xs">Search Products</label>
+            <div className="relative">
+              <Search className="w-4 h-4 absolute left-3 top-3 text-slate-400" />
+              <input
+                type="text"
+                placeholder="Weeder, NPK, Seeds..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-9 pr-3 py-2 border border-slate-200 rounded-xl text-xs focus:ring-1 focus:ring-agri-green outline-none"
+              />
+            </div>
           </div>
 
           {/* MRP Filter */}
