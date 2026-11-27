@@ -318,11 +318,34 @@ export interface WarehousePortalDb {
 }
 
 const DB_PATH = path.join(process.cwd(), 'data', 'warehouse-portal-db.json');
+const TMP_DB_PATH = path.join('/tmp', 'warehouse-portal-db.json');
 
-function ensureDataDir() {
-  const dir = path.dirname(DB_PATH);
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
+const globalPortalState = globalThis as unknown as {
+  __warehousePortalDb?: WarehousePortalDb;
+};
+
+function getActiveDbPath(): string {
+  if (process.env.VERCEL) return TMP_DB_PATH;
+  return DB_PATH;
+}
+
+function safeWriteFile(targetPath: string, payload: string) {
+  try {
+    const dir = path.dirname(targetPath);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+    fs.writeFileSync(targetPath, payload, 'utf-8');
+  } catch {
+    try {
+      const tmpDir = path.dirname(TMP_DB_PATH);
+      if (!fs.existsSync(tmpDir)) {
+        fs.mkdirSync(tmpDir, { recursive: true });
+      }
+      fs.writeFileSync(TMP_DB_PATH, payload, 'utf-8');
+    } catch {
+      // Fallback to in-memory cache if filesystem is completely read-only
+    }
   }
 }
 
@@ -471,25 +494,35 @@ function buildInitialPortalDb(): WarehousePortalDb {
 }
 
 export function readPortalDb(): WarehousePortalDb {
-  ensureDataDir();
-  if (!fs.existsSync(DB_PATH)) {
-    const initial = buildInitialPortalDb();
-    fs.writeFileSync(DB_PATH, JSON.stringify(initial, null, 2), 'utf-8');
-    return initial;
+  if (globalPortalState.__warehousePortalDb) {
+    return globalPortalState.__warehousePortalDb;
   }
-  try {
-    const raw = fs.readFileSync(DB_PATH, 'utf-8');
-    return JSON.parse(raw) as WarehousePortalDb;
-  } catch {
-    const initial = buildInitialPortalDb();
-    fs.writeFileSync(DB_PATH, JSON.stringify(initial, null, 2), 'utf-8');
-    return initial;
+
+  const activePath = getActiveDbPath();
+  const candidatePaths = process.env.VERCEL ? [TMP_DB_PATH, DB_PATH] : [activePath, TMP_DB_PATH];
+
+  for (const p of candidatePaths) {
+    try {
+      if (fs.existsSync(p)) {
+        const raw = fs.readFileSync(p, 'utf-8');
+        const parsed = JSON.parse(raw) as WarehousePortalDb;
+        globalPortalState.__warehousePortalDb = parsed;
+        return parsed;
+      }
+    } catch {
+      // Try next candidate
+    }
   }
+
+  const initial = buildInitialPortalDb();
+  globalPortalState.__warehousePortalDb = initial;
+  safeWriteFile(activePath, JSON.stringify(initial, null, 2));
+  return initial;
 }
 
 export function writePortalDb(data: WarehousePortalDb) {
-  ensureDataDir();
-  fs.writeFileSync(DB_PATH, JSON.stringify(data, null, 2), 'utf-8');
+  globalPortalState.__warehousePortalDb = data;
+  safeWriteFile(getActiveDbPath(), JSON.stringify(data, null, 2));
 }
 
 export function getLocationName(db: WarehousePortalDb, locationId: string): string {
