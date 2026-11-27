@@ -8,6 +8,10 @@ import { SEED_PRODUCTS, SEED_CATEGORIES } from '@/lib/seed-data';
 import { mergeCategoriesWithOverrides } from '@/lib/admin-category-overrides';
 import { mergeBrandsWithOverrides } from '@/lib/admin-brand-overrides';
 import { mergeProductsWithOverrides } from '@/lib/admin-product-overrides';
+import {
+  getEffectiveProductAttributes,
+  getEffectiveSpecificationAttributes,
+} from '@/lib/product-attribute-defaults';
 
 const DEFAULT_BRANDS = [
   { id: 'br-am-agrimate', name: 'AGRIMATE', slug: 'agrimate', published: true },
@@ -95,40 +99,38 @@ export default function ShopPage() {
     const attrMap = new Map<string, Map<string, { count: number; rgbColor?: string }>>();
 
     for (const p of products) {
-      if (Array.isArray(p.specificationAttributes)) {
-        const seenPerProd = new Set<string>();
-        for (const s of p.specificationAttributes) {
-          if (s.allowFiltering === false) continue;
-          const name = String(s.attributeName || '').trim();
-          const val = String(s.value || '').trim();
-          if (!name || !val) continue;
-          if (!specMap.has(name)) specMap.set(name, new Map());
-          const valMap = specMap.get(name)!;
-          const key = `${name}:::${val}`;
-          if (!seenPerProd.has(key)) {
-            seenPerProd.add(key);
-            const prev = valMap.get(val) || { count: 0, rgbColor: s.rgbColor };
-            valMap.set(val, { count: prev.count + 1, rgbColor: prev.rgbColor || s.rgbColor });
-          }
+      const specsList = getEffectiveSpecificationAttributes(p);
+      const seenPerProd = new Set<string>();
+      for (const s of specsList) {
+        if (s.allowFiltering === false) continue;
+        const name = String(s.attributeName || '').trim();
+        const val = String(s.value || '').trim();
+        if (!name || !val) continue;
+        if (!specMap.has(name)) specMap.set(name, new Map());
+        const valMap = specMap.get(name)!;
+        const key = `${name}:::${val}`;
+        if (!seenPerProd.has(key)) {
+          seenPerProd.add(key);
+          const prev = valMap.get(val) || { count: 0 };
+          valMap.set(val, { count: prev.count + 1 });
         }
       }
 
-      if (Array.isArray(p.productAttributes)) {
-        const seenAttrPerProd = new Set<string>();
-        for (const a of p.productAttributes) {
-          const name = String(a.attributeName || '').trim();
-          if (!name || !Array.isArray(a.values) || a.values.length === 0) continue;
-          if (!attrMap.has(name)) attrMap.set(name, new Map());
-          const valMap = attrMap.get(name)!;
-          for (const v of a.values) {
-            const valName = String(v.name || '').trim();
-            if (!valName) continue;
-            const key = `${name}:::${valName}`;
-            if (!seenAttrPerProd.has(key)) {
-              seenAttrPerProd.add(key);
-              const prev = valMap.get(valName) || { count: 0, rgbColor: v.rgbColor };
-              valMap.set(valName, { count: prev.count + 1, rgbColor: prev.rgbColor || v.rgbColor });
-            }
+      const pAttrsList = getEffectiveProductAttributes(p);
+      const seenAttrPerProd = new Set<string>();
+      for (const a of pAttrsList) {
+        const name = String(a.attributeName || '').trim();
+        if (!name || !Array.isArray(a.values) || a.values.length === 0) continue;
+        if (!attrMap.has(name)) attrMap.set(name, new Map());
+        const valMap = attrMap.get(name)!;
+        for (const v of a.values) {
+          const valName = String(v.name || '').trim();
+          if (!valName) continue;
+          const key = `${name}:::${valName}`;
+          if (!seenAttrPerProd.has(key)) {
+            seenAttrPerProd.add(key);
+            const prev = valMap.get(valName) || { count: 0, rgbColor: v.rgbColor };
+            valMap.set(valName, { count: prev.count + 1, rgbColor: prev.rgbColor || v.rgbColor });
           }
         }
       }
@@ -182,9 +184,9 @@ export default function ShopPage() {
       // Specification attribute filters (AND across attributes, OR within same attribute's selected values)
       for (const [attrName, wantedVals] of Object.entries(selectedSpecFilters)) {
         if (!wantedVals || wantedVals.length === 0) continue;
-        const specs = Array.isArray(p.specificationAttributes) ? p.specificationAttributes : [];
+        const specs = getEffectiveSpecificationAttributes(p);
         const matched = specs.some(
-          (s: any) =>
+          (s) =>
             s.allowFiltering !== false &&
             String(s.attributeName || '').trim() === attrName &&
             wantedVals.includes(String(s.value || '').trim())
@@ -195,7 +197,7 @@ export default function ShopPage() {
       // Product attribute filters (AND across attributes, OR within same attribute's selected values)
       for (const [attrName, wantedVals] of Object.entries(selectedProdAttrFilters)) {
         if (!wantedVals || wantedVals.length === 0) continue;
-        const pAttrs = Array.isArray(p.productAttributes) ? p.productAttributes : [];
+        const pAttrs = getEffectiveProductAttributes(p);
         const matched = pAttrs.some(
           (a: any) =>
             String(a.attributeName || '').trim() === attrName &&

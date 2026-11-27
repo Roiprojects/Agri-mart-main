@@ -25,7 +25,13 @@ import {
   PhoneCall,
   Ban,
   Clock,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react';
+import {
+  getEffectiveProductAttributes,
+  getEffectiveSpecificationAttributes,
+} from '@/lib/product-attribute-defaults';
 import { useAuth, setClientAuthUser } from '@/lib/auth-client';
 import { useShoppingCartSettings } from '@/lib/shopping-cart-settings';
 import { useFilterYmmSettings } from '@/lib/filter-ymm-settings';
@@ -117,10 +123,15 @@ export default function ProductDetailClient({ product: initialProduct }: Product
   const [selectedAttributes, setSelectedAttributes] = useState<Record<string, any>>({});
   const [attributeError, setAttributeError] = useState<string | null>(null);
 
+  const effectiveProductAttributes = useMemo(() => {
+    return getEffectiveProductAttributes(product);
+  }, [product]);
+
   const sortedProductAttributes = useMemo(() => {
-    const attrs = Array.isArray(product.productAttributes) ? product.productAttributes : [];
-    return [...attrs].sort((a: any, b: any) => Number(a.displayOrder ?? 0) - Number(b.displayOrder ?? 0));
-  }, [product.productAttributes]);
+    return [...effectiveProductAttributes].sort(
+      (a: any, b: any) => Number(a.displayOrder ?? 0) - Number(b.displayOrder ?? 0)
+    );
+  }, [effectiveProductAttributes]);
 
   const visibleProductAttributes = useMemo(() => {
     return sortedProductAttributes.filter((attr: any) => {
@@ -137,12 +148,12 @@ export default function ProductDetailClient({ product: initialProduct }: Product
 
   // Pre-select default attribute values whenever product attributes load/change
   useEffect(() => {
-    if (!Array.isArray(product.productAttributes) || product.productAttributes.length === 0) {
+    if (!Array.isArray(effectiveProductAttributes) || effectiveProductAttributes.length === 0) {
       setSelectedAttributes({});
       return;
     }
     const defaults: Record<string, any> = {};
-    for (const attr of product.productAttributes) {
+    for (const attr of effectiveProductAttributes) {
       const vals = Array.isArray(attr.values)
         ? [...attr.values].sort((a: any, b: any) => Number(a.displayOrder ?? 0) - Number(b.displayOrder ?? 0))
         : [];
@@ -164,7 +175,7 @@ export default function ProductDetailClient({ product: initialProduct }: Product
     }
     setSelectedAttributes(defaults);
     setAttributeError(null);
-  }, [product.id, product.productAttributes]);
+  }, [product.id, effectiveProductAttributes]);
 
   const matchedCombination = useMemo(() => {
     const combs = Array.isArray(product.attributeCombinations) ? product.attributeCombinations : [];
@@ -853,84 +864,112 @@ export default function ProductDetailClient({ product: initialProduct }: Product
                 : ` (${sign}₹${Math.abs(p).toLocaleString('en-IN')})`;
             };
 
+            const selectedValObj = vals.find((v: any) => (v.id || v.name) === sel);
+            const fallbackThumb =
+              product.media?.[0]?.url ||
+              (Array.isArray(product.images) && product.images[0]) ||
+              '';
+
             return (
-              <div key={attr.id} className="space-y-1.5">
+              <div key={attr.id} className="space-y-2">
                 <label className="block text-xs font-bold text-slate-900">
-                  {attr.attributeName}
+                  {ct === 'color squares' || ct === 'image squares' ? (
+                    <span>
+                      Selected {attr.attributeName}:{' '}
+                      <span className="font-semibold text-slate-700">
+                        {selectedValObj?.name || 'Choose option'}
+                      </span>
+                    </span>
+                  ) : (
+                    <span>
+                      {ct === 'radio button list' ? `Select ${attr.attributeName}` : attr.attributeName}
+                    </span>
+                  )}
                   {attr.isRequired && <span className="text-rose-600 ml-1">*</span>}
                   {attr.textPrompt && (
                     <span className="block text-[11px] font-normal text-slate-500 mt-0.5">{attr.textPrompt}</span>
                   )}
                 </label>
 
-                {ct === 'color squares' && (
-                  <div className="flex flex-wrap items-center gap-2.5 pt-0.5">
-                    {vals.map((val: any) => {
-                      const valKey = val.id || val.name;
-                      const isSel = sel === valKey;
-                      return (
-                        <button
-                          key={valKey}
-                          type="button"
-                          onClick={() => {
-                            setSelectedAttributes((prev) => ({ ...prev, [attr.id]: valKey }));
-                            setAttributeError(null);
-                          }}
-                          title={`${val.name}${formatAdj(val)}`}
-                          className={`flex items-center gap-2 px-2.5 py-1.5 rounded-xl border text-xs font-semibold transition cursor-pointer ${
-                            isSel
-                              ? 'border-agri-green bg-emerald-50 text-emerald-900 ring-2 ring-agri-green/30'
-                              : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300'
-                          }`}
-                        >
-                          <span
-                            className="w-5 h-5 rounded-full border border-slate-300 shrink-0 shadow-2xs"
-                            style={{ backgroundColor: val.rgbColor || '#e2e8f0' }}
-                          />
-                          <span>
-                            {val.name}
-                            {formatAdj(val) && <span className="text-[10px] text-emerald-700 font-bold">{formatAdj(val)}</span>}
-                          </span>
-                        </button>
-                      );
-                    })}
-                  </div>
-                )}
-
-                {ct === 'image squares' && (
-                  <div className="flex flex-wrap items-center gap-2.5 pt-0.5">
-                    {vals.map((val: any) => {
-                      const valKey = val.id || val.name;
-                      const isSel = sel === valKey;
-                      const imgUrl = val.picture || (Array.isArray(val.pictures) && val.pictures[0]) || '';
-                      return (
-                        <button
-                          key={valKey}
-                          type="button"
-                          onClick={() => {
-                            setSelectedAttributes((prev) => ({ ...prev, [attr.id]: valKey }));
-                            setAttributeError(null);
-                          }}
-                          className={`flex flex-col items-center gap-1 p-1.5 rounded-xl border text-[11px] font-semibold transition cursor-pointer ${
-                            isSel
-                              ? 'border-agri-green bg-emerald-50 text-emerald-900 ring-2 ring-agri-green/30'
-                              : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300'
-                          }`}
-                        >
-                          {imgUrl ? (
-                            <img src={imgUrl} alt={val.name} className="w-12 h-12 object-cover rounded-lg border border-slate-100" />
-                          ) : (
-                            <div className="w-12 h-12 rounded-lg bg-slate-100 flex items-center justify-center text-[10px] text-slate-400">
-                              Img
+                {(ct === 'color squares' || ct === 'image squares') && (
+                  <div className="relative group flex items-center">
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        const scroller = e.currentTarget.nextElementSibling as HTMLElement | null;
+                        scroller?.scrollBy({ left: -180, behavior: 'smooth' });
+                      }}
+                      aria-label={`Scroll ${attr.attributeName} left`}
+                      className="hidden sm:flex items-center justify-center w-7 h-7 rounded-full bg-white/95 border border-slate-200 shadow-sm text-slate-700 hover:bg-slate-50 shrink-0 mr-1.5 cursor-pointer"
+                    >
+                      <ChevronLeft className="w-4 h-4" />
+                    </button>
+                    <div className="flex items-center gap-2.5 overflow-x-auto py-1 px-0.5 scrollbar-thin">
+                      {vals.map((val: any) => {
+                        const valKey = val.id || val.name;
+                        const isSel = sel === valKey;
+                        const imgUrl =
+                          val.picture ||
+                          (Array.isArray(val.pictures) && val.pictures[0]) ||
+                          fallbackThumb;
+                        return (
+                          <button
+                            key={valKey}
+                            type="button"
+                            onClick={() => {
+                              setSelectedAttributes((prev) => ({ ...prev, [attr.id]: valKey }));
+                              setAttributeError(null);
+                            }}
+                            title={`${val.name}${formatAdj(val)}`}
+                            className={`relative shrink-0 flex flex-col items-center p-1 rounded-xl border-2 transition cursor-pointer bg-white ${
+                              isSel
+                                ? 'border-slate-900 ring-2 ring-slate-900/15 shadow-sm'
+                                : 'border-slate-200 hover:border-slate-400'
+                            }`}
+                          >
+                            <div className="relative w-14 h-14 sm:w-16 sm:h-16 rounded-lg overflow-hidden bg-slate-50 border border-slate-100">
+                              {imgUrl ? (
+                                <img
+                                  src={imgUrl}
+                                  alt={val.name}
+                                  className="w-full h-full object-cover"
+                                />
+                              ) : (
+                                <div
+                                  className="w-full h-full"
+                                  style={{ backgroundColor: val.rgbColor || '#e2e8f0' }}
+                                />
+                              )}
+                              {val.rgbColor && (
+                                <span
+                                  className="absolute bottom-1 right-1 w-3.5 h-3.5 rounded-full border border-white shadow-sm"
+                                  style={{ backgroundColor: val.rgbColor }}
+                                />
+                              )}
                             </div>
-                          )}
-                          <span>
-                            {val.name}
-                            {formatAdj(val) && <span className="text-[10px] text-emerald-700 font-bold">{formatAdj(val)}</span>}
-                          </span>
-                        </button>
-                      );
-                    })}
+                            <span className="mt-1 text-[10px] font-semibold text-slate-700 max-w-[68px] truncate">
+                              {val.name}
+                            </span>
+                            {formatAdj(val) && (
+                              <span className="text-[9px] text-emerald-700 font-bold">
+                                {formatAdj(val)}
+                              </span>
+                            )}
+                          </button>
+                        );
+                      })}
+                    </div>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        const scroller = e.currentTarget.previousElementSibling as HTMLElement | null;
+                        scroller?.scrollBy({ left: 180, behavior: 'smooth' });
+                      }}
+                      aria-label={`Scroll ${attr.attributeName} right`}
+                      className="hidden sm:flex items-center justify-center w-7 h-7 rounded-full bg-white/95 border border-slate-200 shadow-sm text-slate-700 hover:bg-slate-50 shrink-0 ml-1.5 cursor-pointer"
+                    >
+                      <ChevronRight className="w-4 h-4" />
+                    </button>
                   </div>
                 )}
 
@@ -957,34 +996,33 @@ export default function ProductDetailClient({ product: initialProduct }: Product
                 )}
 
                 {ct === 'radio button list' && (
-                  <div className="flex flex-wrap gap-3 pt-0.5">
+                  <div className="flex flex-wrap gap-2.5 pt-0.5">
                     {vals.map((val: any) => {
                       const valKey = val.id || val.name;
                       const isSel = sel === valKey;
                       return (
-                        <label
+                        <button
                           key={valKey}
-                          className={`flex items-center gap-2 px-3 py-2 rounded-xl border text-xs font-semibold cursor-pointer transition ${
+                          type="button"
+                          onClick={() => {
+                            setSelectedAttributes((prev) => ({ ...prev, [attr.id]: valKey }));
+                            setAttributeError(null);
+                          }}
+                          className={`min-w-[56px] px-4 py-2 rounded-xl border-2 text-xs font-bold cursor-pointer transition ${
                             isSel
-                              ? 'border-agri-green bg-emerald-50 text-emerald-900'
-                              : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
+                              ? 'border-slate-900 bg-slate-900 text-white shadow-xs'
+                              : 'border-slate-200 bg-white text-slate-800 hover:border-slate-400'
                           }`}
                         >
-                          <input
-                            type="radio"
-                            name={`attr_${attr.id}`}
-                            checked={isSel}
-                            onChange={() => {
-                              setSelectedAttributes((prev) => ({ ...prev, [attr.id]: valKey }));
-                              setAttributeError(null);
-                            }}
-                            className="accent-emerald-700"
-                          />
                           <span>
                             {val.name}
-                            {formatAdj(val) && <span className="text-[10px] text-emerald-700 font-bold">{formatAdj(val)}</span>}
+                            {formatAdj(val) && (
+                              <span className={`text-[10px] font-bold ${isSel ? 'text-emerald-300' : 'text-emerald-700'}`}>
+                                {formatAdj(val)}
+                              </span>
+                            )}
                           </span>
-                        </label>
+                        </button>
                       );
                     })}
                   </div>
@@ -1408,45 +1446,47 @@ export default function ProductDetailClient({ product: initialProduct }: Product
         </div>
       )}
 
-      {/* Specification Attributes Summary (live with admin overrides) */}
-      {Array.isArray(product.specificationAttributes) &&
-        product.specificationAttributes.some((s: any) => s.showOnProductPage !== false) && (
+      {/* Product Specifications Summary (unified across specificationAttributes, specifications & metadata) */}
+      {(() => {
+        const displaySpecs = getEffectiveSpecificationAttributes(product).filter(
+          (s) => s.showOnProductPage !== false
+        );
+        if (displaySpecs.length === 0) return null;
+        return (
           <div className="p-4 bg-white rounded-2xl border border-slate-200 space-y-2 text-xs">
             <div className="font-extrabold text-slate-900 border-b border-slate-100 pb-2">
               Product Specifications
             </div>
             <div className="divide-y divide-slate-100">
-              {product.specificationAttributes
-                .filter((s: any) => s.showOnProductPage !== false)
-                .sort((a: any, b: any) => Number(a.displayOrder ?? 0) - Number(b.displayOrder ?? 0))
-                .map((spec: any, idx: number) => {
-                  const attrType = String(spec.attributeType || '').toLowerCase();
-                  return (
-                    <div key={spec.id || idx} className="flex items-center justify-between gap-4 py-1.5">
-                      <span className="text-slate-500 font-semibold">{spec.attributeName}</span>
-                      {attrType === 'hyperlink' && spec.value ? (
-                        <a
-                          href={String(spec.value).startsWith('http') ? spec.value : `https://${spec.value}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-emerald-700 hover:underline font-bold text-right break-all"
-                        >
-                          {spec.value}
-                        </a>
-                      ) : attrType === 'custom html text' ? (
-                        <div
-                          className="text-slate-900 font-bold text-right"
-                          dangerouslySetInnerHTML={{ __html: spec.value || '' }}
-                        />
-                      ) : (
-                        <span className="text-slate-900 font-bold text-right">{spec.value}</span>
-                      )}
-                    </div>
-                  );
-                })}
+              {displaySpecs.map((spec, idx) => {
+                const attrType = String(spec.attributeType || '').toLowerCase();
+                return (
+                  <div key={spec.id || idx} className="flex items-center justify-between gap-4 py-1.5">
+                    <span className="text-slate-500 font-semibold">{spec.attributeName}</span>
+                    {attrType === 'hyperlink' && spec.value ? (
+                      <a
+                        href={String(spec.value).startsWith('http') ? spec.value : `https://${spec.value}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-emerald-700 hover:underline font-bold text-right break-all"
+                      >
+                        {spec.value}
+                      </a>
+                    ) : attrType === 'custom html text' ? (
+                      <div
+                        className="text-slate-900 font-bold text-right"
+                        dangerouslySetInnerHTML={{ __html: spec.value || '' }}
+                      />
+                    ) : (
+                      <span className="text-slate-900 font-bold text-right">{spec.value}</span>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </div>
-        )}
+        );
+      })()}
 
       {/* Dark Warehouse Live Availability Breakdown */}
       <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-2 text-[11px]">
