@@ -356,47 +356,6 @@ export function ProductAttributeForm({
         {/* Card Body */}
         {infoOpen && (
           <div className="p-4 sm:p-6 space-y-5 text-xs text-slate-700">
-            {/* Multi-language Tabs (Standard | EN | RTL) */}
-            <div className="flex items-center gap-1 border-b border-[#d2d6de] -mt-1 mb-4 select-none">
-                <button
-                  type="button"
-                  onClick={() => setActiveTab('standard')}
-                  className={`px-4 py-2 text-xs font-medium border-t-2 rounded-t transition-colors cursor-pointer ${
-                    activeTab === 'standard'
-                      ? 'border-t-[#3c8dbc] border-x border-[#d2d6de] bg-white text-slate-800 -mb-px font-semibold'
-                      : 'border-t-transparent text-slate-600 hover:text-slate-900 bg-slate-50/60'
-                  }`}
-                >
-                  Standard
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setActiveTab('en')}
-                  className={`px-3 py-2 text-xs font-medium border-t-2 rounded-t flex items-center gap-1.5 transition-colors cursor-pointer ${
-                    activeTab === 'en'
-                      ? 'border-t-[#3c8dbc] border-x border-[#d2d6de] bg-white text-slate-800 -mb-px font-semibold'
-                      : 'border-t-transparent text-slate-600 hover:text-slate-900 bg-slate-50/60'
-                  }`}
-                >
-                  <span>🇺🇸</span>
-                  <span>EN</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setActiveTab('rtl')}
-                  className={`px-3 py-2 text-xs font-medium border-t-2 rounded-t flex items-center gap-1.5 transition-colors cursor-pointer ${
-                    activeTab === 'rtl'
-                      ? 'border-t-[#3c8dbc] border-x border-[#d2d6de] bg-white text-slate-800 -mb-px font-semibold'
-                      : 'border-t-transparent text-slate-600 hover:text-slate-900 bg-slate-50/60'
-                  }`}
-                >
-                  <span>🇮🇱</span>
-                  <span>RTL</span>
-                </button>
-              </div>
-
             {/* FORM FIELDS */}
             <div className="space-y-4 max-w-4xl">
               {/* Field: Name */}
