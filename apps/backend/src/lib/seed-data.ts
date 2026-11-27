@@ -37,6 +37,7 @@ export interface ProductType {
   accessoriesInfo?: string;
   brochures?: Array<{ label: string; url: string; fileName: string; available?: boolean }>;
   videos?: Array<{ url: string; fileName?: string; type?: string; available?: boolean }>;
+  productAttributes?: any[];
 }
 
 export interface WarehouseType {
@@ -220,7 +221,65 @@ export const SEED_PRODUCTS: ProductType[] = [
     "stock": 50,
     "images": [
       "/images/products/agrimart/product_1646_2.jpg",
-      "/images/products/agrimart/product_3018_1.jpg"
+      "/images/products/agrimart/product_3018_1.jpg",
+      "/images/products/agrimart/product_1027_5.jpg"
+    ],
+    "productAttributes": [
+      {
+        "id": "pattr-test-color",
+        "attributeName": "Color",
+        "textPrompt": "Choose your preferred color",
+        "isRequired": true,
+        "controlType": "Color squares",
+        "displayOrder": 0,
+        "values": [
+          {
+            "id": "pv-test-1",
+            "attributeValueType": "Simple",
+            "name": "Agri Green",
+            "associatedProduct": "",
+            "rgbColor": "#15803d",
+            "priceAdjustment": 0,
+            "priceAdjustmentUsePercentage": false,
+            "weightAdjustment": 0,
+            "cost": 100,
+            "isPreSelected": true,
+            "picture": "/images/products/agrimart/product_1646_2.jpg",
+            "pictures": ["/images/products/agrimart/product_1646_2.jpg"],
+            "displayOrder": 1
+          },
+          {
+            "id": "pv-test-2",
+            "attributeValueType": "Simple",
+            "name": "Kisan Blue",
+            "associatedProduct": "",
+            "rgbColor": "#1d4ed8",
+            "priceAdjustment": 50,
+            "priceAdjustmentUsePercentage": false,
+            "weightAdjustment": 0,
+            "cost": 120,
+            "isPreSelected": false,
+            "picture": "/images/products/agrimart/product_3018_1.jpg",
+            "pictures": ["/images/products/agrimart/product_3018_1.jpg"],
+            "displayOrder": 2
+          },
+          {
+            "id": "pv-test-3",
+            "attributeValueType": "Simple",
+            "name": "Flame Red",
+            "associatedProduct": "",
+            "rgbColor": "#dc2626",
+            "priceAdjustment": 75,
+            "priceAdjustmentUsePercentage": false,
+            "weightAdjustment": 0,
+            "cost": 150,
+            "isPreSelected": false,
+            "picture": "/images/products/agrimart/product_1027_5.jpg",
+            "pictures": ["/images/products/agrimart/product_1027_5.jpg"],
+            "displayOrder": 3
+          }
+        ]
+      }
     ],
     "description": "Test product (producttest) added for testing purposes with full product image, pricing, inventory, and category/brand mapping.",
     "descriptionHtml": "<p>Test product (<b>producttest</b>) added for testing purposes with full product image, pricing, inventory, and category/brand mapping.</p>",

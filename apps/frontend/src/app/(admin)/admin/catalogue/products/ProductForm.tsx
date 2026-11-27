@@ -566,6 +566,8 @@ export function ProductForm({
     displayOrder: 0,
   });
   const [comboModalOpen, setComboModalOpen] = useState(false);
+  const [severalComboModalOpen, setSeveralComboModalOpen] = useState(false);
+  const [severalComboSelections, setSeveralComboSelections] = useState<Record<string, string[]>>({});
   const [editingComboId, setEditingComboId] = useState<string | null>(null);
   const [comboDraft, setComboDraft] = useState<{
     attributes: string;
@@ -3954,7 +3956,7 @@ export function ProductForm({
                       </table>
                     </div>
 
-                    <div>
+                    <div className="flex flex-wrap items-center gap-2">
                       <button
                         type="button"
                         onClick={() => {
@@ -3984,7 +3986,240 @@ export function ProductForm({
                         <Plus className="w-3.5 h-3.5" />
                         <span>Add combination</span>
                       </button>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const choiceAttrs = (formData.productAttributes || []).filter(
+                            (a) => Array.isArray(a.values) && a.values.length > 0
+                          );
+                          if (choiceAttrs.length === 0) {
+                            showToast('Add at least one product attribute with values first.');
+                            return;
+                          }
+                          let cartesian: Array<Array<{ attr: any; val: any }>> = [[]];
+                          for (const attr of choiceAttrs) {
+                            const next: Array<Array<{ attr: any; val: any }>> = [];
+                            for (const prefix of cartesian) {
+                              for (const val of attr.values || []) {
+                                next.push([...prefix, { attr, val }]);
+                              }
+                            }
+                            cartesian = next;
+                          }
+                          const existing = formData.attributeCombinations || [];
+                          const existingKeys = new Set(existing.map((c) => c.attributes));
+                          const added: any[] = [];
+                          cartesian.forEach((pairList, idx) => {
+                            const label = pairList
+                              .map((p) => `${p.attr.attributeName}: ${p.val.name}`)
+                              .join(', ');
+                            if (existingKeys.has(label)) return;
+                            const selectedValues: Record<string, string> = {};
+                            const pics: string[] = [];
+                            pairList.forEach((p) => {
+                              selectedValues[p.attr.id || p.attr.attributeName] = p.val.id || p.val.name;
+                              if (p.val.picture && !pics.includes(p.val.picture)) pics.push(p.val.picture);
+                            });
+                            added.push({
+                              id: `combo-${Date.now()}-${idx}`,
+                              attributes: label,
+                              selectedValues,
+                              stockQuantity: 10000,
+                              minimumStockQty: 0,
+                              allowOutOfStock: false,
+                              sku: '',
+                              manufacturerPartNumber: '',
+                              gtin: '',
+                              overriddenPrice: '',
+                              notifyAdminForQuantityBelow: 1,
+                              pictures: pics,
+                            });
+                          });
+                          if (added.length === 0) {
+                            showToast('All possible combinations already exist.');
+                            return;
+                          }
+                          handleChange('attributeCombinations', [...existing, ...added]);
+                          showToast(`Generated ${added.length} attribute combination(s).`);
+                        }}
+                        className="bg-[#2585be] hover:bg-[#1f72a3] text-white text-xs font-semibold px-3.5 py-2 rounded inline-flex items-center gap-1.5 shadow-2xs transition cursor-pointer"
+                      >
+                        <span>Generate all possible combinations</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const choiceAttrs = (formData.productAttributes || []).filter(
+                            (a) => Array.isArray(a.values) && a.values.length > 0
+                          );
+                          if (choiceAttrs.length === 0) {
+                            showToast('Add at least one product attribute with values first.');
+                            return;
+                          }
+                          const init: Record<string, string[]> = {};
+                          choiceAttrs.forEach((a) => {
+                            init[a.id || a.attributeName] = (a.values || [])
+                              .filter((v) => v.isPreSelected)
+                              .map((v) => v.id || v.name);
+                          });
+                          setSeveralComboSelections(init);
+                          setSeveralComboModalOpen(true);
+                        }}
+                        className="bg-[#2585be] hover:bg-[#1f72a3] text-white text-xs font-semibold px-3.5 py-2 rounded inline-flex items-center gap-1.5 shadow-2xs transition cursor-pointer"
+                      >
+                        <span>Generate several combinations</span>
+                      </button>
                     </div>
+
+                    {/* Generate several combinations modal */}
+                    {severalComboModalOpen && (
+                      <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
+                        <div className="bg-white rounded border border-[#d2d6de] shadow-xl w-full max-w-lg overflow-hidden text-xs">
+                          <div className="bg-slate-50 border-b border-[#d2d6de] px-4 py-3 flex items-center justify-between">
+                            <h3 className="font-semibold text-sm text-slate-800">
+                              Generate several combinations
+                            </h3>
+                            <button
+                              type="button"
+                              onClick={() => setSeveralComboModalOpen(false)}
+                              className="text-slate-400 hover:text-slate-600 p-1 cursor-pointer"
+                            >
+                              <X className="w-4 h-4" />
+                            </button>
+                          </div>
+                          <div className="p-4 space-y-4 max-h-[60vh] overflow-y-auto">
+                            <p className="text-slate-600">
+                              Select the attribute values you want to include when generating combinations:
+                            </p>
+                            {(formData.productAttributes || [])
+                              .filter((a) => Array.isArray(a.values) && a.values.length > 0)
+                              .map((attr) => {
+                                const attrKey = attr.id || attr.attributeName;
+                                const selected = severalComboSelections[attrKey] || [];
+                                return (
+                                  <div key={attrKey} className="space-y-1.5 border-b border-slate-100 pb-3">
+                                    <div className="font-semibold text-slate-800">{attr.attributeName}</div>
+                                    <div className="flex flex-wrap gap-2">
+                                      {(attr.values || []).map((val) => {
+                                        const valKey = val.id || val.name;
+                                        const checked = selected.includes(valKey);
+                                        return (
+                                          <label
+                                            key={valKey}
+                                            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded border cursor-pointer ${
+                                              checked
+                                                ? 'bg-blue-50 border-[#2585be] text-slate-900 font-semibold'
+                                                : 'bg-white border-slate-200 text-slate-700'
+                                            }`}
+                                          >
+                                            <input
+                                              type="checkbox"
+                                              checked={checked}
+                                              onChange={(e) => {
+                                                setSeveralComboSelections((prev) => {
+                                                  const curr = prev[attrKey] || [];
+                                                  const next = e.target.checked
+                                                    ? [...curr, valKey]
+                                                    : curr.filter((x) => x !== valKey);
+                                                  return { ...prev, [attrKey]: next };
+                                                });
+                                              }}
+                                              className="h-3.5 w-3.5 text-[#2585be]"
+                                            />
+                                            <span>{val.name}</span>
+                                          </label>
+                                        );
+                                      })}
+                                    </div>
+                                  </div>
+                                );
+                              })}
+                          </div>
+                          <div className="bg-slate-50 border-t border-[#d2d6de] px-4 py-3 flex justify-end gap-2">
+                            <button
+                              type="button"
+                              onClick={() => setSeveralComboModalOpen(false)}
+                              className="px-3 py-1.5 rounded border border-[#d2d6de] bg-white text-slate-700 hover:bg-slate-100 cursor-pointer"
+                            >
+                              Cancel
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const choiceAttrs = (formData.productAttributes || []).filter(
+                                  (a) => Array.isArray(a.values) && a.values.length > 0
+                                );
+                                let cartesian: Array<Array<{ attr: any; val: any }>> = [[]];
+                                for (const attr of choiceAttrs) {
+                                  const attrKey = attr.id || attr.attributeName;
+                                  const wanted = severalComboSelections[attrKey] || [];
+                                  const pool = (attr.values || []).filter((v) =>
+                                    wanted.includes(v.id || v.name)
+                                  );
+                                  if (pool.length === 0) continue;
+                                  const next: Array<Array<{ attr: any; val: any }>> = [];
+                                  for (const prefix of cartesian) {
+                                    for (const val of pool) {
+                                      next.push([...prefix, { attr, val }]);
+                                    }
+                                  }
+                                  cartesian = next;
+                                }
+                                if (cartesian.length === 1 && cartesian[0].length === 0) {
+                                  showToast('Select at least one value to generate combinations.');
+                                  return;
+                                }
+                                const existing = formData.attributeCombinations || [];
+                                const existingKeys = new Set(existing.map((c) => c.attributes));
+                                const added: any[] = [];
+                                cartesian.forEach((pairList, idx) => {
+                                  const label = pairList
+                                    .map((p) => `${p.attr.attributeName}: ${p.val.name}`)
+                                    .join(', ');
+                                  if (existingKeys.has(label)) return;
+                                  const selectedValues: Record<string, string> = {};
+                                  const pics: string[] = [];
+                                  pairList.forEach((p) => {
+                                    selectedValues[p.attr.id || p.attr.attributeName] =
+                                      p.val.id || p.val.name;
+                                    if (p.val.picture && !pics.includes(p.val.picture))
+                                      pics.push(p.val.picture);
+                                  });
+                                  added.push({
+                                    id: `combo-${Date.now()}-${idx}`,
+                                    attributes: label,
+                                    selectedValues,
+                                    stockQuantity: 10000,
+                                    minimumStockQty: 0,
+                                    allowOutOfStock: false,
+                                    sku: '',
+                                    manufacturerPartNumber: '',
+                                    gtin: '',
+                                    overriddenPrice: '',
+                                    notifyAdminForQuantityBelow: 1,
+                                    pictures: pics,
+                                  });
+                                });
+                                if (added.length > 0) {
+                                  handleChange('attributeCombinations', [...existing, ...added]);
+                                }
+                                setSeveralComboModalOpen(false);
+                                showToast(
+                                  added.length > 0
+                                    ? `Generated ${added.length} attribute combination(s).`
+                                    : 'Selected combinations already exist.'
+                                );
+                              }}
+                              className="px-3.5 py-1.5 rounded bg-[#2585be] hover:bg-[#1f72a3] text-white font-semibold cursor-pointer"
+                            >
+                              Generate
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 );
               })()}
@@ -5620,39 +5855,40 @@ export function ProductForm({
 
             {/* Main Card */}
             <div className="bg-white rounded border border-[#d2d6de] border-t-2 border-t-[#00c0ef] shadow-2xs p-5 sm:p-6 space-y-4">
-              {/* Dynamic Attribute Value Radio Groups (e.g. Color: ( ) White ( ) Black *) */}
+              {/* Dynamic Attribute Value Dropdowns (live-synced with productAttributes) */}
               {(formData.productAttributes || []).some((a) => a.values && a.values.length > 0) ? (
                 (formData.productAttributes || [])
                   .filter((a) => a.values && a.values.length > 0)
                   .map((attr) => (
-                    <div key={attr.id} className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
+                    <div key={attr.id || attr.attributeName} className="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
                       <div className="sm:col-span-3 flex items-center justify-start sm:justify-end gap-1 font-semibold text-slate-700">
                         <span>{attr.attributeName}</span>
-                      </div>
-                      <div className="sm:col-span-9 flex flex-wrap items-center gap-4">
-                        {(attr.values || []).map((val) => (
-                          <label key={val.id} className="inline-flex items-center gap-1.5 cursor-pointer text-slate-700">
-                            <input
-                              type="radio"
-                              name={`combo-attr-${attr.id}`}
-                              checked={comboDraft.selectedValues[attr.attributeName] === val.name}
-                              onChange={() =>
-                                setComboDraft((d) => ({
-                                  ...d,
-                                  selectedValues: {
-                                    ...d.selectedValues,
-                                    [attr.attributeName]: val.name,
-                                  },
-                                }))
-                              }
-                              className="h-3.5 w-3.5 text-[#3c8dbc] border-slate-300"
-                            />
-                            <span>{val.name}</span>
-                          </label>
-                        ))}
                         {attr.isRequired && (
                           <span className="text-red-500 font-bold text-sm leading-none">*</span>
                         )}
+                      </div>
+                      <div className="sm:col-span-9 flex items-center gap-2">
+                        <select
+                          value={comboDraft.selectedValues[attr.attributeName] || ''}
+                          onChange={(e) => {
+                            const nextVal = e.target.value;
+                            setComboDraft((d) => ({
+                              ...d,
+                              selectedValues: {
+                                ...d.selectedValues,
+                                [attr.attributeName]: nextVal,
+                              },
+                            }));
+                          }}
+                          className="w-full max-w-md border border-[#d2d6de] rounded px-2.5 py-2 text-xs bg-white focus:border-[#3c8dbc] outline-none"
+                        >
+                          <option value="">-- Select {attr.attributeName} --</option>
+                          {(attr.values || []).map((val) => (
+                            <option key={val.id || val.name} value={val.name}>
+                              {val.name}
+                            </option>
+                          ))}
+                        </select>
                       </div>
                     </div>
                   ))

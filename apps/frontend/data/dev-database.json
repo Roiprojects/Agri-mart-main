@@ -782,7 +782,8 @@
       "minOrderQty": 1,
       "images": [
         "/images/products/agrimart/product_1646_2.jpg",
-        "/images/products/agrimart/product_3018_1.jpg"
+        "/images/products/agrimart/product_3018_1.jpg",
+        "/images/products/agrimart/product_1027_5.jpg"
       ],
       "brochures": [],
       "videos": [],
@@ -837,7 +838,70 @@
       "requiredProductIds": [],
       "automaticallyAddRequiredProducts": false,
       "availableStartDate": "",
-      "availableEndDate": ""
+      "availableEndDate": "",
+      "productAttributes": [
+        {
+          "id": "pattr-test-color",
+          "attributeName": "Color",
+          "textPrompt": "Choose your preferred color",
+          "isRequired": true,
+          "controlType": "Color squares",
+          "displayOrder": 0,
+          "values": [
+            {
+              "id": "pv-test-1",
+              "attributeValueType": "Simple",
+              "name": "Agri Green",
+              "associatedProduct": "",
+              "rgbColor": "#15803d",
+              "priceAdjustment": 0,
+              "priceAdjustmentUsePercentage": false,
+              "weightAdjustment": 0,
+              "cost": 100,
+              "isPreSelected": true,
+              "picture": "/images/products/agrimart/product_1646_2.jpg",
+              "pictures": [
+                "/images/products/agrimart/product_1646_2.jpg"
+              ],
+              "displayOrder": 1
+            },
+            {
+              "id": "pv-test-2",
+              "attributeValueType": "Simple",
+              "name": "Kisan Blue",
+              "associatedProduct": "",
+              "rgbColor": "#1d4ed8",
+              "priceAdjustment": 50,
+              "priceAdjustmentUsePercentage": false,
+              "weightAdjustment": 0,
+              "cost": 120,
+              "isPreSelected": false,
+              "picture": "/images/products/agrimart/product_3018_1.jpg",
+              "pictures": [
+                "/images/products/agrimart/product_3018_1.jpg"
+              ],
+              "displayOrder": 2
+            },
+            {
+              "id": "pv-test-3",
+              "attributeValueType": "Simple",
+              "name": "Flame Red",
+              "associatedProduct": "",
+              "rgbColor": "#dc2626",
+              "priceAdjustment": 75,
+              "priceAdjustmentUsePercentage": false,
+              "weightAdjustment": 0,
+              "cost": 150,
+              "isPreSelected": false,
+              "picture": "/images/products/agrimart/product_1027_5.jpg",
+              "pictures": [
+                "/images/products/agrimart/product_1027_5.jpg"
+              ],
+              "displayOrder": 3
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "am-3018",
@@ -29510,6 +29574,36 @@
       "isPrimary": false,
       "displayOrder": 2,
       "createdAt": "2026-11-11T09:28:50.049Z"
+    },
+    {
+      "id": "med-am-producttest-1",
+      "productId": "am-producttest",
+      "url": "/images/products/agrimart/product_1646_2.jpg",
+      "altText": "producttest - Picture 1",
+      "type": "IMAGE",
+      "isPrimary": true,
+      "displayOrder": 1,
+      "createdAt": "2026-11-27T09:03:25.298Z"
+    },
+    {
+      "id": "med-am-producttest-2",
+      "productId": "am-producttest",
+      "url": "/images/products/agrimart/product_3018_1.jpg",
+      "altText": "producttest - Picture 2",
+      "type": "IMAGE",
+      "isPrimary": false,
+      "displayOrder": 2,
+      "createdAt": "2026-11-27T09:03:25.298Z"
+    },
+    {
+      "id": "med-am-producttest-3",
+      "productId": "am-producttest",
+      "url": "/images/products/agrimart/product_1027_5.jpg",
+      "altText": "producttest - Picture 3",
+      "type": "IMAGE",
+      "isPrimary": false,
+      "displayOrder": 3,
+      "createdAt": "2026-11-27T09:03:25.298Z"
     }
   ],
   "specifications": [
