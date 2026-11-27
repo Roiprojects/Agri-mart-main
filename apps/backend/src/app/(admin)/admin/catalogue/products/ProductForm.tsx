@@ -419,6 +419,7 @@ export function ProductForm({
     'Tank Capacity',
     'Material',
   ]);
+  const [adminAttrDefs, setAdminAttrDefs] = useState<any[]>([]);
   const [attrPageSize, setAttrPageSize] = useState<number>(15);
   const [attrPage, setAttrPage] = useState<number>(1);
   const [attrModalOpen, setAttrModalOpen] = useState(false);
@@ -584,6 +585,7 @@ export function ProductForm({
       .then((r) => r.json())
       .then((res) => {
         if (res.success && Array.isArray(res.data) && res.data.length > 0) {
+          setAdminAttrDefs(res.data);
           const names = Array.from(
             new Set([
               ...res.data.map((a: any) => a.name).filter(Boolean),
@@ -4540,7 +4542,38 @@ export function ProductForm({
                     <div className="sm:col-span-9">
                       <select
                         value={attrDraft.attributeName}
-                        onChange={(e) => setAttrDraft({ ...attrDraft, attributeName: e.target.value })}
+                        onChange={(e) => {
+                          const nextName = e.target.value;
+                          const matchedDef = adminAttrDefs.find(
+                            (a: any) => String(a.name || '').toLowerCase() === nextName.toLowerCase()
+                          );
+                          const hasPredefined =
+                            matchedDef &&
+                            Array.isArray(matchedDef.predefinedValues) &&
+                            matchedDef.predefinedValues.length > 0;
+                          setAttrDraft((prev) => ({
+                            ...prev,
+                            attributeName: nextName,
+                            values:
+                              prev.values.length === 0 && hasPredefined
+                                ? matchedDef.predefinedValues.map((pv: any, idx: number) => ({
+                                    id: pv.id || `val-${Date.now()}-${idx}`,
+                                    attributeValueType: 'Simple',
+                                    name: pv.name,
+                                    associatedProduct: '',
+                                    rgbColor: pv.rgbColor || '#000000',
+                                    priceAdjustment: Number(pv.priceAdjustment || 0),
+                                    priceAdjustmentUsePercentage: Boolean(pv.priceAdjustmentUsePercentage),
+                                    weightAdjustment: Number(pv.weightAdjustment || 0),
+                                    cost: Number(pv.cost ?? 0),
+                                    isPreSelected: Boolean(pv.isPreSelected),
+                                    picture: pv.picture || '',
+                                    pictures: pv.picture ? [pv.picture] : [],
+                                    displayOrder: Number(pv.displayOrder ?? idx),
+                                  }))
+                                : prev.values,
+                          }));
+                        }}
                         className="w-full border border-[#d2d6de] rounded px-2.5 py-2 text-xs bg-white focus:border-[#3c8dbc] outline-none"
                       >
                         {availableAttrNames.map((name) => (
@@ -4657,6 +4690,7 @@ export function ProductForm({
                           <th className="py-2.5 px-3 border-r border-[#d2d6de]">Associated product</th>
                           <th className="py-2.5 px-3 border-r border-[#d2d6de] text-right">Price adjustment</th>
                           <th className="py-2.5 px-3 border-r border-[#d2d6de] text-right">Weight adjustment</th>
+                          <th className="py-2.5 px-3 border-r border-[#d2d6de] text-right">Cost</th>
                           <th className="py-2.5 px-3 border-r border-[#d2d6de] text-center">Is pre-selected</th>
                           <th className="py-2.5 px-3 border-r border-[#d2d6de] text-center">Picture</th>
                           <th className="py-2.5 px-3 border-r border-[#d2d6de] text-center">Display order</th>
@@ -4667,7 +4701,7 @@ export function ProductForm({
                       <tbody className="divide-y divide-[#d2d6de]">
                         {attrDraft.values.length === 0 ? (
                           <tr>
-                            <td colSpan={10} className="py-5 text-center text-slate-400">
+                            <td colSpan={11} className="py-5 text-center text-slate-400">
                               No data available in table
                             </td>
                           </tr>
@@ -4679,6 +4713,7 @@ export function ProductForm({
                               <td className="py-2.5 px-3 border-r border-[#d2d6de]">{val.associatedProduct}</td>
                               <td className="py-2.5 px-3 border-r border-[#d2d6de] text-right">{val.priceAdjustment}</td>
                               <td className="py-2.5 px-3 border-r border-[#d2d6de] text-right">{val.weightAdjustment}</td>
+                              <td className="py-2.5 px-3 border-r border-[#d2d6de] text-right">{val.cost ?? 0}</td>
                               <td className="py-2.5 px-3 border-r border-[#d2d6de] text-center">
                                 {val.isPreSelected ? (
                                   <Check className="w-4 h-4 text-[#2585be] stroke-[2.5] mx-auto" />
