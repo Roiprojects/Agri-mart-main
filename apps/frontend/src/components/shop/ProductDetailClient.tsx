@@ -63,10 +63,14 @@ export default function ProductDetailClient({ product: initialProduct }: Product
   );
 
   useEffect(() => {
-    const ov = getProductOverrideById(initialProduct?.id);
-    if (ov) {
-      const merged = { ...initialProduct, ...ov };
-      if (ov.stockQuantity !== undefined && Array.isArray(merged.variants) && merged.variants.length > 0) {
+    const applyProductState = (baseProd: any) => {
+      const ov = getProductOverrideById(baseProd?.id);
+      const baseTime = baseProd?.updatedAt ? new Date(baseProd.updatedAt).getTime() : 0;
+      const ovTime = ov?.updatedAt ? new Date(ov.updatedAt).getTime() : 0;
+      const useOverride = Boolean(ov) && (!baseTime || (Number.isFinite(ovTime) && ovTime >= baseTime));
+
+      const merged = useOverride ? { ...baseProd, ...ov } : baseProd;
+      if (useOverride && ov.stockQuantity !== undefined && Array.isArray(merged.variants) && merged.variants.length > 0) {
         merged.variants = merged.variants.map((v: any, idx: number) =>
           idx === 0 ? { ...v, stockQuantity: Number(ov.stockQuantity) } : v
         );
@@ -90,13 +94,25 @@ export default function ProductDetailClient({ product: initialProduct }: Product
           })
           .catch(() => {});
       } else {
-        setResolvedRequiredProducts([]);
+        setResolvedRequiredProducts(
+          Array.isArray(merged?.requiredProducts) ? merged.requiredProducts : []
+        );
       }
-    } else {
-      setProduct(initialProduct);
-      setResolvedRequiredProducts(
-        Array.isArray(initialProduct?.requiredProducts) ? initialProduct.requiredProducts : []
-      );
+    };
+
+    applyProductState(initialProduct);
+
+    if (initialProduct?.slug || initialProduct?.id) {
+      fetch(`/api/products/${encodeURIComponent(initialProduct.slug || initialProduct.id)}`, {
+        cache: 'no-store',
+      })
+        .then((r) => r.json())
+        .then((json) => {
+          if (json?.success && json.data) {
+            applyProductState(json.data);
+          }
+        })
+        .catch(() => {});
     }
   }, [initialProduct]);
 

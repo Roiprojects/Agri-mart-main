@@ -163,10 +163,15 @@ export function mergeProductsWithOverrides<T extends { id: string }>(
   const seenIds = new Set<string>();
   const merged = serverProducts
     .filter((p) => !deletedIds.has(p.id))
-    .map((p) => {
+    .map((p: any) => {
       seenIds.add(p.id);
-      if (overrides[p.id]) {
-        return enrichProduct({ ...p, ...overrides[p.id] });
+      const ov = overrides[p.id];
+      if (ov) {
+        const pTime = p.updatedAt ? new Date(p.updatedAt).getTime() : 0;
+        const ovTime = ov.updatedAt ? new Date(ov.updatedAt).getTime() : 0;
+        if (!pTime || (Number.isFinite(ovTime) && ovTime >= pTime)) {
+          return enrichProduct({ ...p, ...ov });
+        }
       }
       return p;
     });

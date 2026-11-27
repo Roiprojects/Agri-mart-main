@@ -62,6 +62,7 @@ export async function GET(
       ),
       specificationAttributes:
         (product as any).specificationAttributes || (detailed as any)?.specificationAttributes || [],
+      updatedAt: (product as any).updatedAt || (detailed as any)?.updatedAt || '',
       reviews: detailed?.reviews || [],
       warehouseStocks: detailed?.warehouseStocks || [],
       disableBuyButton: Boolean(product.disableBuyButton),

@@ -88,6 +88,7 @@ export async function GET(request: Request) {
       ),
       specificationAttributes:
         (p as any).specificationAttributes || (full as any)?.specificationAttributes || [],
+      updatedAt: (p as any).updatedAt || (full as any)?.updatedAt || '',
     };
   });
 
