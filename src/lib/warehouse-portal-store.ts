@@ -333,7 +333,7 @@ function generateOtp(): string {
 function buildInitialPortalDb(): WarehousePortalDb {
   const warehouses = devDb.getWarehouses();
   const products = devDb.getProducts();
-  const variants = devDb.getVariants();
+  const variants = readDb().variants || [];
   const now = new Date().toISOString();
 
   const mainWh = warehouses[0];
@@ -580,7 +580,7 @@ export function getFullPortalState() {
   const db = readPortalDb();
   const warehouses = devDb.getWarehouses();
   const products = devDb.getProducts();
-  const variants = devDb.getVariants();
+  const variants = readDb().variants || [];
   const rawOrders = devDb.getOrders();
 
   // Merge warehouse metadata
