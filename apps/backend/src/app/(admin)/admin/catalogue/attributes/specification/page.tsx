@@ -13,6 +13,7 @@ import {
   ChevronUp,
   ChevronDown,
   Package,
+  Pencil,
 } from 'lucide-react';
 
 interface SpecGroup {
@@ -45,9 +46,6 @@ export default function SpecificationAttributesPage() {
   const [allProducts, setAllProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-
-  // Advanced / Basic Mode State
-  const [advancedMode, setAdvancedMode] = useState(true);
 
   // Search State (Single Unified Search Bar for Specification Attribute Name, Product ID, Product Name, and Product SKU)
   const [searchOpen, setSearchOpen] = useState(true);
@@ -326,50 +324,10 @@ export default function SpecificationAttributesPage() {
         </div>
       )}
 
-      {/* TOP HEADER: Title + Advanced/Basic Toggle + Buttons */}
+      {/* TOP HEADER: Title + Buttons */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1 pb-1">
         <div className="flex items-center gap-3 flex-wrap">
           <h1 className="text-2xl font-normal text-slate-800 tracking-tight">Specification attributes</h1>
-
-          {/* ADVANCED / BASIC TOGGLE SWITCH */}
-          <button
-            type="button"
-            onClick={() => setAdvancedMode(!advancedMode)}
-            className={`inline-flex items-center justify-between px-2.5 py-1 rounded text-xs font-semibold border transition cursor-pointer select-none min-w-[96px] h-7 shadow-2xs ${
-              advancedMode
-                ? 'bg-[#2585be] border-[#2585be] text-white hover:bg-[#1f72a3]'
-                : 'bg-white border-[#3c8dbc] text-[#3c8dbc] hover:bg-slate-50'
-            }`}
-            title={
-              advancedMode
-                ? 'Click to switch to Basic mode (show only mandatory & important fields)'
-                : 'Click to switch to Advanced mode (show all hidden fields)'
-            }
-          >
-            {advancedMode ? (
-              <>
-                <span className="text-white font-semibold text-xs">Advanced</span>
-                <span className="w-3.5 h-5 rounded-xs bg-white shadow-xs ml-2" />
-              </>
-            ) : (
-              <>
-                <span className="w-3.5 h-5 rounded-xs bg-[#3c8dbc] border border-[#3c8dbc] shadow-xs mr-2" />
-                <span className="text-[#3c8dbc] font-semibold text-xs">Basic</span>
-              </>
-            )}
-          </button>
-
-          <span
-            className={`text-[11px] px-2.5 py-0.5 rounded border font-medium ${
-              advancedMode
-                ? 'bg-blue-50 text-blue-700 border-blue-200'
-                : 'bg-amber-50 text-amber-800 border-amber-200'
-            }`}
-          >
-            {advancedMode
-              ? 'Advanced mode: All fields visible'
-              : 'Basic mode: Showing only mandatory & important fields'}
-          </span>
         </div>
 
         <div className="flex items-center gap-2 flex-wrap">
@@ -633,7 +591,7 @@ export default function SpecificationAttributesPage() {
                                     <table className="w-full text-xs text-left border-collapse">
                                       <thead>
                                         <tr className="bg-[#f4f6f9] text-slate-700 font-semibold border-b border-[#e5e7eb]">
-                                          <th className="p-2 w-10 text-center border-r border-[#e5e7eb]">
+                                          <th className="p-2.5 w-12 text-center border-r border-[#e5e7eb]">
                                             <input
                                               type="checkbox"
                                               checked={
@@ -644,156 +602,96 @@ export default function SpecificationAttributesPage() {
                                               className="w-3.5 h-3.5 rounded text-[#3c8dbc] cursor-pointer"
                                             />
                                           </th>
-                                          <th className="px-3 py-2 border-r border-[#e5e7eb] min-w-[200px]">
-                                            Attribute Name
+                                          <th className="px-3 py-2.5 border-r border-[#e5e7eb]">
+                                            Name
                                           </th>
-                                          <th className="px-3 py-2 border-r border-[#e5e7eb] min-w-[320px]">
-                                            Used by Products (Product ID, Name, SKU &amp; Spec Value)
-                                          </th>
-                                          <th className="px-3 py-2 text-center w-28 border-r border-[#e5e7eb]">
+                                          <th className="px-3 py-2.5 text-center w-40 border-r border-[#e5e7eb]">
                                             Display order
                                           </th>
-                                          <th className="px-3 py-2 text-center w-20 border-r border-[#e5e7eb]">Edit</th>
-                                          <th className="px-3 py-2 text-center w-20">Delete</th>
+                                          <th className="px-3 py-2.5 text-center w-36">Edit</th>
                                         </tr>
                                       </thead>
                                       <tbody>
                                         {groupAttrs.length === 0 ? (
                                           <tr>
-                                            <td colSpan={6} className="py-6 text-center text-slate-400">
+                                            <td colSpan={4} className="py-6 text-center text-slate-400">
                                               No specification attributes matching &quot;{searchName || activeSearch}&quot;.
                                             </td>
                                           </tr>
                                         ) : (
-                                          groupAttrs.map((attr) => {
-                                            const usedProducts = attr.usedByProducts || [];
-                                            const sortedUsed = query
-                                              ? [...usedProducts].sort((a, b) => {
-                                                  const aMatch =
-                                                    (a.id || '').toLowerCase().includes(query) ||
-                                                    (a.name || '').toLowerCase().includes(query) ||
-                                                    (a.sku || '').toLowerCase().includes(query) ||
-                                                    (a.specValue || '').toLowerCase().includes(query);
-                                                  const bMatch =
-                                                    (b.id || '').toLowerCase().includes(query) ||
-                                                    (b.name || '').toLowerCase().includes(query) ||
-                                                    (b.sku || '').toLowerCase().includes(query) ||
-                                                    (b.specValue || '').toLowerCase().includes(query);
-                                                  return aMatch === bMatch ? 0 : aMatch ? -1 : 1;
-                                                })
-                                              : usedProducts;
-
-                                            return (
-                                              <tr
-                                                key={attr.id}
-                                                className="border-b border-[#f0f0f0] hover:bg-slate-50 transition align-top"
-                                              >
-                                                <td className="p-2 text-center border-r border-[#f0f0f0]">
-                                                  <input
-                                                    type="checkbox"
-                                                    checked={selectedAttrIds.includes(attr.id)}
-                                                    onChange={() => handleToggleSelectAttr(attr.id)}
-                                                    className="w-3.5 h-3.5 rounded text-[#3c8dbc] cursor-pointer"
-                                                  />
-                                                </td>
-                                                <td className="px-3 py-2 border-r border-[#f0f0f0] font-medium text-slate-800">
-                                                  <Link
-                                                    href={`/admin/catalogue/attributes/specification/${attr.id}/edit`}
-                                                    className="text-[#3c8dbc] hover:underline font-semibold"
-                                                  >
-                                                    {attr.name}
-                                                  </Link>
-                                                </td>
-                                                <td className="px-3 py-2 border-r border-[#f0f0f0] text-slate-700">
-                                                  {sortedUsed.length === 0 ? (
-                                                    <span className="text-slate-400 text-[11px]">No products linked</span>
-                                                  ) : (
-                                                    <div className="space-y-1.5">
-                                                      {sortedUsed.slice(0, query ? 6 : 3).map((p) => {
-                                                        const isHighlighted =
-                                                          Boolean(query) &&
-                                                          ((p.id || '').toLowerCase().includes(query) ||
-                                                            (p.name || '').toLowerCase().includes(query) ||
-                                                            (p.sku || '').toLowerCase().includes(query) ||
-                                                            (p.specValue || '').toLowerCase().includes(query));
-                                                        return (
-                                                          <div
-                                                            key={p.id}
-                                                            className={`p-1.5 rounded border text-[11px] flex flex-wrap items-center justify-between gap-1.5 ${
-                                                              isHighlighted
-                                                                ? 'bg-amber-50/90 border-amber-300 text-slate-900 font-medium'
-                                                                : 'bg-white border-slate-200 text-slate-700'
-                                                            }`}
-                                                          >
-                                                            <div className="flex flex-wrap items-center gap-1.5">
-                                                              <span className="px-1.5 py-0.5 rounded bg-slate-100 text-slate-700 font-mono text-[10px] border border-slate-200">
-                                                                ID: {p.id}
-                                                              </span>
-                                                              {p.sku && (
-                                                                <span className="px-1.5 py-0.5 rounded bg-blue-50 text-blue-700 font-mono text-[10px] border border-blue-200 font-semibold">
-                                                                  SKU: {p.sku}
-                                                                </span>
-                                                              )}
-                                                              <Link
-                                                                href={`/admin/catalogue/products?productId=${encodeURIComponent(p.id)}&sku=${encodeURIComponent(p.sku || '')}&name=${encodeURIComponent(p.name || '')}`}
-                                                                className="text-slate-800 hover:text-[#2585be] hover:underline font-medium"
-                                                              >
-                                                                {p.name}
-                                                              </Link>
-                                                            </div>
-                                                            <div className="flex items-center gap-2">
-                                                              {p.specValue && (
-                                                                <span className="px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px]">
-                                                                  {p.specValue}
-                                                                </span>
-                                                              )}
-                                                              <Link
-                                                                href={`/admin/catalogue/products?productId=${encodeURIComponent(p.id)}&sku=${encodeURIComponent(p.sku || '')}&name=${encodeURIComponent(p.name || '')}`}
-                                                                className="text-[10px] font-semibold text-[#2585be] hover:underline shrink-0"
-                                                              >
-                                                                View in Products →
-                                                              </Link>
-                                                            </div>
-                                                          </div>
-                                                        );
-                                                      })}
-                                                      {sortedUsed.length > (query ? 6 : 3) && (
-                                                        <div className="text-[11px] text-[#3c8dbc] font-medium">
-                                                          +{sortedUsed.length - (query ? 6 : 3)} more product(s)
-                                                        </div>
-                                                      )}
-                                                    </div>
-                                                  )}
-                                                </td>
-                                                <td className="px-3 py-2 text-center text-slate-700 border-r border-[#f0f0f0]">
-                                                  {attr.displayOrder}
-                                                </td>
-                                                <td className="px-3 py-2 text-center border-r border-[#f0f0f0]">
-                                                  <Link
-                                                    href={`/admin/catalogue/attributes/specification/${attr.id}/edit`}
-                                                    className="text-[#2585be] hover:underline font-medium cursor-pointer"
-                                                  >
-                                                    Edit
-                                                  </Link>
-                                                </td>
-                                                <td className="px-3 py-2 text-center">
-                                                  <button
-                                                    type="button"
-                                                    onClick={(e) => {
-                                                      e.stopPropagation();
-                                                      handleConfirmDeleteSingle(attr.id);
-                                                    }}
-                                                    className="text-red-500 hover:underline font-medium cursor-pointer"
-                                                  >
-                                                    Delete
-                                                  </button>
-                                                </td>
-                                              </tr>
-                                            );
-                                          })
+                                          groupAttrs.map((attr) => (
+                                            <tr
+                                              key={attr.id}
+                                              className="border-b border-[#f0f0f0] hover:bg-slate-50 transition"
+                                            >
+                                              <td className="p-2.5 text-center border-r border-[#f0f0f0]">
+                                                <input
+                                                  type="checkbox"
+                                                  checked={selectedAttrIds.includes(attr.id)}
+                                                  onChange={() => handleToggleSelectAttr(attr.id)}
+                                                  className="w-3.5 h-3.5 rounded text-[#3c8dbc] cursor-pointer"
+                                                />
+                                              </td>
+                                              <td className="px-3 py-2.5 border-r border-[#f0f0f0] font-normal text-slate-800">
+                                                {attr.name}
+                                              </td>
+                                              <td className="px-3 py-2.5 text-center text-slate-700 border-r border-[#f0f0f0]">
+                                                {attr.displayOrder}
+                                              </td>
+                                              <td className="px-3 py-2.5 text-center">
+                                                <Link
+                                                  href={`/admin/catalogue/attributes/specification/${attr.id}/edit`}
+                                                  className="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-semibold rounded border border-[#d2d6de] bg-white text-slate-700 hover:bg-slate-100 shadow-2xs transition cursor-pointer"
+                                                >
+                                                  <Pencil className="w-3.5 h-3.5 text-slate-600" />
+                                                  <span>Edit</span>
+                                                </Link>
+                                              </td>
+                                            </tr>
+                                          ))
                                         )}
                                       </tbody>
                                     </table>
+                                    {groupAttrs.length > 0 && (
+                                      <div className="bg-white border-t border-[#e5e7eb] px-3 py-2 flex flex-wrap items-center justify-between gap-3 text-xs text-slate-600">
+                                        <div className="flex items-center">
+                                          <button
+                                            type="button"
+                                            disabled
+                                            className="px-2.5 py-1 border border-[#d2d6de] rounded-l bg-white text-slate-400 cursor-not-allowed"
+                                          >
+                                            Previous
+                                          </button>
+                                          <button
+                                            type="button"
+                                            className="px-2.5 py-1 border-y border-r border-[#3c8dbc] bg-[#3c8dbc] text-white font-semibold"
+                                          >
+                                            1
+                                          </button>
+                                          <button
+                                            type="button"
+                                            disabled
+                                            className="px-2.5 py-1 border-y border-r border-[#d2d6de] rounded-r bg-white text-slate-400 cursor-not-allowed"
+                                          >
+                                            Next
+                                          </button>
+                                        </div>
+                                        <div className="flex items-center gap-1.5">
+                                          <span>Show</span>
+                                          <select
+                                            value={15}
+                                            disabled
+                                            className="border border-[#d2d6de] rounded px-2 py-1 bg-white text-slate-700 outline-none"
+                                          >
+                                            <option value={15}>15</option>
+                                          </select>
+                                          <span>items</span>
+                                        </div>
+                                        <div>
+                                          1-{groupAttrs.length} of {groupAttrs.length} items
+                                        </div>
+                                      </div>
+                                    )}
                                   </div>
                                 </div>
                               </td>
