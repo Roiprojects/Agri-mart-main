@@ -23,6 +23,7 @@ import ProductCard from '@/components/shop/ProductCard';
 import ProductDetailClient from '@/components/shop/ProductDetailClient';
 import ProductImageGallery from '@/components/shop/ProductImageGallery';
 import ProductReviewsSection from '@/components/shop/ProductReviewsSection';
+import { getEffectiveSpecificationAttributes } from '@/lib/product-attribute-defaults';
 
 interface ProductDetailPageProps {
   params: Promise<{ slug: string }>;
@@ -256,24 +257,18 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
       </div>
 
       {/* Specifications Table */}
-      {((product.specifications && product.specifications.length > 0) ||
-        (Array.isArray(product.specificationAttributes) &&
-          product.specificationAttributes.some((s: any) => s.showOnProductPage !== false))) && (
-        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-4">
-          <h2 className="text-base font-extrabold text-slate-900 border-b border-slate-100 pb-3">
-            Technical &amp; Engineering Specifications
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-3">
-            {(product.specifications || []).map((spec: any, idx: number) => (
-              <div key={`spec-${idx}`} className="flex justify-between py-2 border-b border-slate-100">
-                <span className="text-slate-500 font-semibold">{spec.name}</span>
-                <span className="text-slate-900 font-bold text-right">{spec.value}</span>
-              </div>
-            ))}
-            {(product.specificationAttributes || [])
-              .filter((s: any) => s.showOnProductPage !== false)
-              .sort((a: any, b: any) => Number(a.displayOrder ?? 0) - Number(b.displayOrder ?? 0))
-              .map((spec: any, idx: number) => {
+      {(() => {
+        const displaySpecs = getEffectiveSpecificationAttributes(product).filter(
+          (s) => s.showOnProductPage !== false
+        );
+        if (displaySpecs.length === 0) return null;
+        return (
+          <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-4">
+            <h2 className="text-base font-extrabold text-slate-900 border-b border-slate-100 pb-3">
+              Technical &amp; Engineering Specifications
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-3">
+              {displaySpecs.map((spec, idx) => {
                 const attrType = String(spec.attributeType || '').toLowerCase();
                 return (
                   <div key={`sa-${spec.id || idx}`} className="flex justify-between items-center gap-4 py-2 border-b border-slate-100">
@@ -298,9 +293,10 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
                   </div>
                 );
               })}
+            </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
 
       {/* Genuine Attachments & Accessories */}
       {product.accessoriesInfo && (
