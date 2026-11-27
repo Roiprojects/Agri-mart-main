@@ -7,14 +7,14 @@ import { WmsNavBar } from './WmsNavBar';
 import { WmsErrorState } from './WmsErrorState';
 
 function WmsShellInner({ children }: { children: React.ReactNode }) {
-  const { error, refreshSummary } = useWmsContext();
+  const { error, refreshPortal } = useWmsContext();
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 p-4 sm:p-6">
-      <div className="max-w-[1600px] mx-auto space-y-5">
+    <div className="min-h-screen bg-[#f4f6f9] text-slate-800 p-4 sm:p-6">
+      <div className="max-w-[1600px] mx-auto space-y-4">
         <WmsHeader />
         <WmsNavBar />
-        {error && <WmsErrorState message={error} onRetry={refreshSummary} />}
+        {error && <WmsErrorState message={error} onRetry={refreshPortal} />}
         <main className="min-h-[420px]">{children}</main>
       </div>
     </div>

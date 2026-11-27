@@ -231,6 +231,20 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: true, message: 'Delivery partner removed.' });
     }
 
+    if (action === 'TOGGLE_SUPER_ADMIN_PROVIDER') {
+      const core = readDb();
+      const providers = core.shippingProviders || [];
+      const idx = providers.findIndex((p: any) => String(p.id) === String(body.id));
+      if (idx < 0) return NextResponse.json({ success: false, error: 'Shipping provider not found' }, { status: 404 });
+      providers[idx].isActive = !providers[idx].isActive;
+      core.shippingProviders = providers;
+      writeDb(core);
+      return NextResponse.json({
+        success: true,
+        message: `${providers[idx].friendlyName} is now ${providers[idx].isActive ? 'Active' : 'Inactive'} in Super Admin Shipping.`,
+      });
+    }
+
     // -------------------------------------------------------------------------
     // 5. STOCK & AVAILABILITY (OPENING / ADJUST / RELEASE HELD)
     // -------------------------------------------------------------------------

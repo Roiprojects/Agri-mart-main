@@ -11,12 +11,12 @@ interface WmsErrorStateProps {
 
 export function WmsErrorState({ message, onRetry }: WmsErrorStateProps) {
   return (
-    <div className="bg-rose-950/30 border border-rose-500/40 rounded-xl p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-      <div className="flex items-start gap-3">
-        <AlertTriangle className="w-5 h-5 text-rose-400 shrink-0 mt-0.5" />
+    <div className="bg-rose-50 border border-rose-300 rounded p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div className="flex items-start gap-2.5">
+        <AlertTriangle className="w-4 h-4 text-[#dd4b39] shrink-0 mt-0.5" />
         <div>
-          <h3 className="text-sm font-semibold text-rose-200">Unable to load WMS data</h3>
-          <p className="text-xs text-rose-300/80 mt-0.5">{message}</p>
+          <h3 className="text-xs font-semibold text-rose-800">Unable to load WMS data</h3>
+          <p className="text-xs text-rose-700 mt-0.5">{message}</p>
         </div>
       </div>
       {onRetry && (

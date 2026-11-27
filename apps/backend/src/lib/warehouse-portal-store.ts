@@ -611,9 +611,11 @@ function syncCoreWarehouseStock(warehouseId: string, productId: string, variantI
 
 export function getFullPortalState() {
   const db = readPortalDb();
+  const coreDb = readDb();
   const warehouses = devDb.getWarehouses();
   const products = devDb.getProducts();
-  const variants = readDb().variants || [];
+  const categories = coreDb.categories || [];
+  const variants = coreDb.variants || [];
   const rawOrders = devDb.getOrders();
 
   // Merge warehouse metadata
@@ -627,8 +629,10 @@ export function getFullPortalState() {
     };
   });
 
-  // Build product-variant catalog rows
+  // Build product-variant catalog rows with category metadata
   const catalogVariants = products.flatMap((p) => {
+    const cat = categories.find((c: any) => c.id === p.categoryId || c.id === p.parentCategoryId);
+    const categoryName = cat?.name || 'Uncategorized';
     const pVars = variants.filter((v) => v.productId === p.id);
     if (pVars.length === 0) {
       return [
@@ -639,6 +643,8 @@ export function getFullPortalState() {
           variantName: 'Standard',
           sku: p.sku,
           price: p.price,
+          categoryId: p.categoryId || '',
+          categoryName,
         },
       ];
     }
@@ -649,6 +655,8 @@ export function getFullPortalState() {
       variantName: v.variantName || v.title || 'Standard',
       sku: v.sku || p.sku,
       price: v.price || p.price,
+      categoryId: p.categoryId || '',
+      categoryName,
     }));
   });
 
@@ -662,11 +670,19 @@ export function getFullPortalState() {
     };
   });
 
+  const superAdminShipping = {
+    shippingProviders: coreDb.shippingProviders || [],
+    shippingSettings: coreDb.shippingSettings || null,
+    pickupPointProviders: coreDb.pickupPointProviders || [],
+    pickupLocations: coreDb.pickupLocations || [],
+  };
+
   return {
     warehouses: enrichedWarehouses,
     franchisees: db.franchisees,
     staffUsers: db.staffUsers,
     carriers: db.carriers,
+    categories: categories.map((c: any) => ({ id: c.id, name: c.name })),
     catalogVariants,
     stocks: db.stocks,
     adjustmentLogs: db.adjustmentLogs.slice(0, 100),
@@ -674,6 +690,7 @@ export function getFullPortalState() {
     orders,
     orderFulfillments: db.orderFulfillments,
     exceptions: db.exceptions,
+    superAdminShipping,
   };
 }
 
