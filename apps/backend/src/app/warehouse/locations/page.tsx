@@ -224,6 +224,8 @@ export default function LocationsModulePage() {
                 name: '',
                 email: '',
                 mobile: '',
+                loginId: '',
+                password: '',
                 status: 'ACTIVE',
                 assignments: [
                   {
@@ -494,6 +496,8 @@ export default function LocationsModulePage() {
                 <option value="INVITED">INVITED</option>
                 <option value="SUSPENDED">SUSPENDED</option>
               </select>
+              <input placeholder="Login User ID (e.g. email/mobile)" value={staffModal.loginId || ''} onChange={(e) => setStaffModal({ ...staffModal, loginId: e.target.value })} className="border border-[#d2d6de] rounded px-2.5 py-1.5" />
+              <input type="text" placeholder="Portal Password" value={staffModal.password || ''} onChange={(e) => setStaffModal({ ...staffModal, password: e.target.value })} className="border border-[#d2d6de] rounded px-2.5 py-1.5" />
             </div>
             <div className="space-y-2">
               <div className="text-slate-700 font-semibold">Location &amp; Roles Assignment:</div>

@@ -156,18 +156,21 @@ export async function POST(request: NextRequest) {
     // 3. STAFF USERS & ACCESS
     // -------------------------------------------------------------------------
     if (action === 'SAVE_STAFF') {
-      const { id, name, email, mobile, status, assignments } = body;
+      const { id, name, email, mobile, loginId, password, status, assignments } = body;
       if (!name?.trim()) {
         return NextResponse.json({ success: false, error: 'Staff name is required' }, { status: 400 });
       }
       const staffId = id || `staff-${Date.now()}`;
       const idx = db.staffUsers.findIndex((u) => u.id === staffId);
+      const existing = idx >= 0 ? db.staffUsers[idx] : null;
       const record = {
         id: staffId,
         name: name.trim(),
         email: email || '',
         mobile: mobile || '',
-        status: (status || (idx >= 0 ? db.staffUsers[idx].status : 'ACTIVE')) as 'INVITED' | 'ACTIVE' | 'SUSPENDED',
+        loginId: loginId || email || mobile || existing?.loginId || '',
+        password: password || existing?.password || 'franchisee@123',
+        status: (status || existing?.status || 'ACTIVE') as 'INVITED' | 'ACTIVE' | 'SUSPENDED',
         assignments: Array.isArray(assignments) ? assignments : [],
         invitedAt: idx >= 0 ? db.staffUsers[idx].invitedAt : now,
         activatedAt: status === 'ACTIVE' ? now : idx >= 0 ? db.staffUsers[idx].activatedAt : now,
@@ -1566,6 +1569,106 @@ export async function POST(request: NextRequest) {
         success: true,
         message: `Seeded example stock across ${categories.length} categories (${seededCount} new stock rows) and sample workflow data.`,
       });
+    }
+
+    // -------------------------------------------------------------------------
+    // 11. FRANCHISEE STOCK REQUESTS (APPROVE & CREATE TRANSFER / REJECT)
+    // -------------------------------------------------------------------------
+    if (action === 'APPROVE_STOCK_REQUEST') {
+      const { requestId, warehouseNote, approvedBy } = body;
+      if (!db.stockRequests) db.stockRequests = [];
+      const reqItem = db.stockRequests.find((r) => r.id === requestId);
+      if (!reqItem) return NextResponse.json({ success: false, error: 'Stock request not found' }, { status: 404 });
+      if (reqItem.status !== 'PENDING') {
+        return NextResponse.json({ success: false, error: 'Only pending requests can be approved' }, { status: 400 });
+      }
+
+      // Check & reserve stock at targetWarehouseId
+      for (const it of reqItem.items) {
+        const row = getOrCreateStockRow(db, reqItem.targetWarehouseId, 'WAREHOUSE', it.productId, it.variantId);
+        const available = Math.max(0, row.onHand - row.reserved);
+        if (available < it.requestedQty) {
+          return NextResponse.json(
+            {
+              success: false,
+              error: `Insufficient stock at ${reqItem.targetWarehouseName} for ${it.productName} (${it.variantName}): available ${available}, requested ${it.requestedQty}`,
+            },
+            { status: 400 }
+          );
+        }
+      }
+
+      for (const it of reqItem.items) {
+        const row = getOrCreateStockRow(db, reqItem.targetWarehouseId, 'WAREHOUSE', it.productId, it.variantId);
+        row.reserved += it.requestedQty;
+        row.updatedAt = now;
+        syncCoreWarehouseStock(reqItem.targetWarehouseId, it.productId, it.variantId, row.onHand, row.reserved);
+      }
+
+      const transferNumber = `TRF-${new Date().getFullYear()}-${String(db.transfers.length + 1).padStart(4, '0')}`;
+      const transferId = `trf-${Date.now()}`;
+      const grpId = `grp-${Date.now()}`;
+
+      db.transfers.unshift({
+        id: transferId,
+        transferNumber,
+        sourceWarehouseId: reqItem.targetWarehouseId,
+        sourceWarehouseName: reqItem.targetWarehouseName,
+        isBulkTrip: false,
+        notes: `Franchisee Request ${reqItem.requestNumber} (${reqItem.franchiseeName})`,
+        groups: [
+          {
+            id: grpId,
+            destinationId: reqItem.franchiseeId,
+            destinationKind: 'FRANCHISEE',
+            destinationName: reqItem.franchiseeName,
+            transportMethod: 'OWN_VEHICLE',
+            purpose: 'REPLENISHMENT',
+            status: 'PREPARED',
+            items: reqItem.items.map((it, idx) => ({
+              id: `tli-${Date.now()}-${idx}`,
+              productId: it.productId,
+              variantId: it.variantId,
+              productName: it.productName,
+              variantName: it.variantName,
+              sku: it.sku,
+              requestedQty: it.requestedQty,
+              packedQty: it.requestedQty,
+              receivedGoodQty: 0,
+              receivedDamagedQty: 0,
+              packageId: `PKG-${reqItem.requestNumber.slice(-4)}-${idx + 1}`,
+            })),
+            receipts: [],
+          },
+        ],
+        createdBy: approvedBy || 'Warehouse Dispatcher',
+        createdAt: now,
+        updatedAt: now,
+      });
+
+      reqItem.status = 'APPROVED';
+      reqItem.warehouseNote = warehouseNote || `Approved and prepared as ${transferNumber}`;
+      reqItem.linkedTransferId = transferId;
+      reqItem.linkedTransferNumber = transferNumber;
+      reqItem.updatedAt = now;
+      writePortalDb(db);
+
+      return NextResponse.json({
+        success: true,
+        message: `Request ${reqItem.requestNumber} approved. Transfer ${transferNumber} prepared & stock reserved.`,
+      });
+    }
+
+    if (action === 'REJECT_STOCK_REQUEST') {
+      const { requestId, warehouseNote } = body;
+      if (!db.stockRequests) db.stockRequests = [];
+      const reqItem = db.stockRequests.find((r) => r.id === requestId);
+      if (!reqItem) return NextResponse.json({ success: false, error: 'Stock request not found' }, { status: 404 });
+      reqItem.status = 'REJECTED';
+      reqItem.warehouseNote = warehouseNote || 'Rejected by warehouse';
+      reqItem.updatedAt = now;
+      writePortalDb(db);
+      return NextResponse.json({ success: true, message: `Request ${reqItem.requestNumber} rejected.` });
     }
 
     return NextResponse.json({ success: false, error: `Unsupported action: ${action}` }, { status: 400 });

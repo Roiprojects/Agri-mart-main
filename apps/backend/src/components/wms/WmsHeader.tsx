@@ -104,6 +104,14 @@ export function WmsHeader() {
         </WmsButton>
 
         <Link
+          href="/franchisee"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded bg-white hover:bg-slate-50 border border-[#d2d6de] text-xs font-semibold text-[#2585be] shadow-2xs transition"
+        >
+          <Truck className="w-3.5 h-3.5 text-[#2585be]" />
+          <span>Franchisee Portal</span>
+        </Link>
+
+        <Link
           href="/admin/configuration/settings/shipping"
           className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded bg-white hover:bg-slate-50 border border-[#d2d6de] text-xs font-semibold text-slate-700 shadow-2xs transition"
         >

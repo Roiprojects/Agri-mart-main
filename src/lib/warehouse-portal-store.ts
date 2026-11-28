@@ -71,10 +71,38 @@ export interface PortalStaffUser {
   name: string;
   email: string;
   mobile: string;
+  loginId?: string;
+  password?: string;
   status: 'INVITED' | 'ACTIVE' | 'SUSPENDED';
   assignments: StaffAssignment[];
   invitedAt: string;
   activatedAt?: string;
+}
+
+export interface FranchiseeStockRequest {
+  id: string;
+  requestNumber: string;
+  franchiseeId: string;
+  franchiseeName: string;
+  targetWarehouseId: string;
+  targetWarehouseName: string;
+  requestedByUserId: string;
+  requestedByName: string;
+  items: {
+    productId: string;
+    variantId: string;
+    productName: string;
+    variantName: string;
+    sku: string;
+    requestedQty: number;
+  }[];
+  notes: string;
+  status: 'PENDING' | 'APPROVED' | 'DISPATCHED' | 'RECEIVED' | 'REJECTED';
+  warehouseNote?: string;
+  linkedTransferId?: string;
+  linkedTransferNumber?: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface DeliveryCarrier {
@@ -313,6 +341,7 @@ export interface WarehousePortalDb {
   stocks: LocationVariantStock[];
   adjustmentLogs: StockAdjustmentLog[];
   transfers: StockTransfer[];
+  stockRequests?: FranchiseeStockRequest[];
   orderFulfillments: OrderFulfillmentRecord[];
   exceptions: PortalExceptionCase[];
 }
@@ -424,6 +453,8 @@ function buildInitialPortalDb(): WarehousePortalDb {
       name: 'Lake Franchisee Operator',
       email: 'lake.franchisee@agrimart.in',
       mobile: '9845011223',
+      loginId: 'lake.franchisee@agrimart.in',
+      password: 'lake@123',
       status: 'ACTIVE',
       assignments: [
         {
@@ -488,6 +519,7 @@ function buildInitialPortalDb(): WarehousePortalDb {
     stocks,
     adjustmentLogs: [],
     transfers: [],
+    stockRequests: [],
     orderFulfillments: [],
     exceptions: [],
   };
@@ -687,10 +719,40 @@ export function getFullPortalState() {
     stocks: db.stocks,
     adjustmentLogs: db.adjustmentLogs.slice(0, 100),
     transfers: db.transfers,
+    stockRequests: db.stockRequests || [],
     orders,
     orderFulfillments: db.orderFulfillments,
     exceptions: db.exceptions,
     superAdminShipping,
+  };
+}
+
+export function getFranchiseePortalState(franchiseeId: string) {
+  const full = getFullPortalState();
+  const franchisee = full.franchisees.find((f: any) => f.id === franchiseeId) || null;
+  const linkedWarehouses = franchisee
+    ? full.warehouses.filter((w: any) => (franchisee.linkedWarehouseIds || []).includes(w.id))
+    : full.warehouses;
+
+  const incomingTransfers: { transfer: any; group: any }[] = [];
+  for (const t of full.transfers || []) {
+    for (const g of t.groups || []) {
+      if (g.destinationId === franchiseeId && !['DRAFT', 'CANCELLED'].includes(g.status)) {
+        incomingTransfers.push({ transfer: t, group: g });
+      }
+    }
+  }
+
+  return {
+    franchisee,
+    warehouses: full.warehouses,
+    linkedWarehouses: linkedWarehouses.length > 0 ? linkedWarehouses : full.warehouses,
+    categories: full.categories,
+    catalogVariants: full.catalogVariants,
+    stocks: (full.stocks || []).filter((s: any) => s.locationId === franchiseeId),
+    stockRequests: (full.stockRequests || []).filter((r: any) => r.franchiseeId === franchiseeId),
+    incomingTransfers,
+    orders: (full.orders || []).filter((o: any) => o.fulfillment?.franchiseeId === franchiseeId),
   };
 }
 

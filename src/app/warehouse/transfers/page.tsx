@@ -53,9 +53,82 @@ export default function TransfersModulePage() {
   };
 
   const transfers = portalData?.transfers || [];
+  const stockRequests = portalData?.stockRequests || [];
 
   return (
     <div className="space-y-4">
+      {/* Franchisee Stock Requests Queue */}
+      {stockRequests.length > 0 && (
+        <section className="bg-white border border-[#d2d6de] rounded shadow-2xs overflow-hidden">
+          <div className="px-4 py-3 border-b border-[#e5e7eb] flex items-center justify-between">
+            <h2 className="text-sm font-semibold text-slate-800">
+              Incoming Franchisee Stock Requests ({stockRequests.filter((r: any) => r.status === 'PENDING').length} Pending)
+            </h2>
+          </div>
+          <div className="p-4 space-y-2.5">
+            {stockRequests.map((req: any) => (
+              <div key={req.id} className="bg-[#f4f6f9] border border-[#e5e7eb] rounded p-3 flex flex-wrap items-center justify-between gap-3 text-xs">
+                <div className="space-y-1">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="font-mono font-semibold text-[#2585be]">{req.requestNumber}</span>
+                    <strong className="text-slate-800">{req.franchiseeName}</strong>
+                    <span className="text-slate-500">→ Requested from <strong>{req.targetWarehouseName}</strong></span>
+                    <span className={`px-2 py-0.5 rounded text-[10px] font-semibold ${
+                      req.status === 'PENDING' ? 'bg-amber-50 text-amber-700 border border-amber-200' :
+                      req.status === 'REJECTED' ? 'bg-rose-50 text-rose-700 border border-rose-200' :
+                      'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                    }`}>
+                      {req.status}
+                    </span>
+                    {req.linkedTransferNumber && (
+                      <span className="font-mono text-[11px] text-[#00a65a] font-semibold">Transfer: {req.linkedTransferNumber}</span>
+                    )}
+                  </div>
+                  <div className="flex flex-wrap gap-1.5">
+                    {req.items.map((it: any, idx: number) => (
+                      <span key={idx} className="bg-white border border-[#d2d6de] px-2 py-0.5 rounded">
+                        {it.productName} ({it.variantName}) × <strong>{it.requestedQty}</strong>
+                      </span>
+                    ))}
+                  </div>
+                  {req.notes && <div className="text-[11px] text-slate-500">Franchisee Note: {req.notes}</div>}
+                  {req.warehouseNote && <div className="text-[11px] text-[#2585be]">Warehouse Response: {req.warehouseNote}</div>}
+                </div>
+
+                {req.status === 'PENDING' && (
+                  <div className="flex items-center gap-2">
+                    <WmsButton
+                      variant="success"
+                      size="sm"
+                      onClick={() =>
+                        postAction({
+                          action: 'APPROVE_STOCK_REQUEST',
+                          requestId: req.id,
+                          approvedBy: activeStaff?.name,
+                          warehouseNote: `Approved by ${activeStaff?.name || 'Warehouse'} — preparing dispatch`,
+                        })
+                      }
+                    >
+                      Approve &amp; Prepare Transfer
+                    </WmsButton>
+                    <WmsButton
+                      variant="danger"
+                      size="sm"
+                      onClick={() => {
+                        const reason = window.prompt('Reason for rejecting request:') || 'Out of stock';
+                        postAction({ action: 'REJECT_STOCK_REQUEST', requestId: req.id, warehouseNote: reason });
+                      }}
+                    >
+                      Reject
+                    </WmsButton>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
       <div className="bg-white border border-[#d2d6de] rounded shadow-2xs p-4 flex flex-wrap items-center justify-between gap-3">
         <p className="text-xs text-slate-600">
           Prepare single or multi-stop bulk transfers, issue two-copy numbered challans, and verify driver Pickup OTPs.
