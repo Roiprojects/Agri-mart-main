@@ -9,6 +9,7 @@ const PORTAL_PREFIXES = [
   '/admin',
   '/procurement',
   '/warehouse',
+  '/franchisee',
   '/sales',
   '/repairs',
   '/finance',
