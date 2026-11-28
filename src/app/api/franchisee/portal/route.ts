@@ -100,6 +100,15 @@ export async function POST(request: NextRequest) {
       }
 
       if (!db.stockRequests) db.stockRequests = [];
+      const isFranchiseeSource = db.franchisees.some((f) => f.id === targetWarehouseId);
+      const whMeta = db.warehouseMeta.find((m) => m.warehouseId === targetWarehouseId);
+      const sourceKind = isFranchiseeSource ? ('FRANCHISEE' as const) : ('WAREHOUSE' as const);
+      const sourceTier = isFranchiseeSource
+        ? ('FRANCHISEE' as const)
+        : whMeta?.tier === 'MAIN'
+        ? ('MAIN' as const)
+        : ('BRANCH' as const);
+
       const requestNumber = `REQ-${new Date().getFullYear()}-${String(db.stockRequests.length + 1).padStart(4, '0')}`;
       const newReq = {
         id: `req-${Date.now()}`,
@@ -108,6 +117,8 @@ export async function POST(request: NextRequest) {
         franchiseeName: getLocationName(db, franchiseeId),
         targetWarehouseId,
         targetWarehouseName: getLocationName(db, targetWarehouseId),
+        sourceKind,
+        sourceTier,
         requestedByUserId: requestedByUserId || 'franchisee-agent',
         requestedByName: requestedByName || 'Franchisee Agent',
         items: items.map((it: any) => ({

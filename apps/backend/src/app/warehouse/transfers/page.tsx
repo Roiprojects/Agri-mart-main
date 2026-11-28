@@ -72,7 +72,12 @@ export default function TransfersModulePage() {
                   <div className="flex flex-wrap items-center gap-2">
                     <span className="font-mono font-semibold text-[#2585be]">{req.requestNumber}</span>
                     <strong className="text-slate-800">{req.franchiseeName}</strong>
-                    <span className="text-slate-500">→ Requested from <strong>{req.targetWarehouseName}</strong></span>
+                    <span className="text-slate-500">
+                      → Requested from{' '}
+                      <strong>
+                        [{req.sourceTier === 'MAIN' ? 'MAIN HQ' : req.sourceTier === 'FRANCHISEE' ? 'NEARBY FRANCHISEE' : 'SUB-WAREHOUSE'}] {req.targetWarehouseName}
+                      </strong>
+                    </span>
                     <span className={`px-2 py-0.5 rounded text-[10px] font-semibold ${
                       req.status === 'PENDING' ? 'bg-amber-50 text-amber-700 border border-amber-200' :
                       req.status === 'REJECTED' ? 'bg-rose-50 text-rose-700 border border-rose-200' :

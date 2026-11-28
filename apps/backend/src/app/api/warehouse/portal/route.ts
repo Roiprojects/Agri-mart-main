@@ -1583,9 +1583,11 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ success: false, error: 'Only pending requests can be approved' }, { status: 400 });
       }
 
-      // Check & reserve stock at targetWarehouseId
+      const srcKind = reqItem.sourceKind || (db.franchisees.some((f) => f.id === reqItem.targetWarehouseId) ? 'FRANCHISEE' : 'WAREHOUSE');
+
+      // Check & reserve stock at target source (Main, Sub-Warehouse, or Nearby Franchisee)
       for (const it of reqItem.items) {
-        const row = getOrCreateStockRow(db, reqItem.targetWarehouseId, 'WAREHOUSE', it.productId, it.variantId);
+        const row = getOrCreateStockRow(db, reqItem.targetWarehouseId, srcKind, it.productId, it.variantId);
         const available = Math.max(0, row.onHand - row.reserved);
         if (available < it.requestedQty) {
           return NextResponse.json(
@@ -1599,10 +1601,12 @@ export async function POST(request: NextRequest) {
       }
 
       for (const it of reqItem.items) {
-        const row = getOrCreateStockRow(db, reqItem.targetWarehouseId, 'WAREHOUSE', it.productId, it.variantId);
+        const row = getOrCreateStockRow(db, reqItem.targetWarehouseId, srcKind, it.productId, it.variantId);
         row.reserved += it.requestedQty;
         row.updatedAt = now;
-        syncCoreWarehouseStock(reqItem.targetWarehouseId, it.productId, it.variantId, row.onHand, row.reserved);
+        if (srcKind === 'WAREHOUSE') {
+          syncCoreWarehouseStock(reqItem.targetWarehouseId, it.productId, it.variantId, row.onHand, row.reserved);
+        }
       }
 
       const transferNumber = `TRF-${new Date().getFullYear()}-${String(db.transfers.length + 1).padStart(4, '0')}`;

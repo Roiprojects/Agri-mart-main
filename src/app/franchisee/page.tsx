@@ -152,10 +152,10 @@ export default function GlobalFranchiseePortalPage() {
   };
 
   const openQuickRequest = (cv?: any) => {
-    const warehouses = portalState?.linkedWarehouses || portalState?.warehouses || [];
+    const sources = portalState?.supplySources || portalState?.linkedWarehouses || portalState?.warehouses || [];
     const targetVar = cv || portalState?.catalogVariants?.[0];
     setRequestModal({
-      targetWarehouseId: warehouses[0]?.id || '',
+      targetWarehouseId: sources[0]?.id || '',
       notes: '',
       items: targetVar
         ? [
@@ -497,51 +497,122 @@ export default function GlobalFranchiseePortalPage() {
               </div>
             )}
 
-            {/* TAB 2: MY STOCK REQUESTS */}
+            {/* TAB 2: MY STOCK REQUESTS & PEER REQUESTS */}
             {activeTab === 'requests' && (
-              <div className="space-y-3">
+              <div className="space-y-4">
+                {/* Incoming Requests from Nearby Franchisees */}
+                {(portalState?.incomingRequests || []).length > 0 && (
+                  <div className="bg-white border border-[#d2d6de] rounded shadow-2xs p-4 space-y-2.5 text-xs">
+                    <h3 className="text-sm font-semibold text-slate-800">
+                      Incoming Stock Requests from Nearby Franchisees ({(portalState?.incomingRequests || []).filter((r: any) => r.status === 'PENDING').length} Pending)
+                    </h3>
+                    {(portalState?.incomingRequests || []).map((req: any) => (
+                      <div key={req.id} className="bg-[#f4f6f9] border border-[#e5e7eb] rounded p-3 flex flex-wrap items-center justify-between gap-2">
+                        <div className="space-y-1">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <span className="font-mono font-semibold text-[#2585be]">{req.requestNumber}</span>
+                            <span>From Nearby Franchisee: <strong>{req.franchiseeName}</strong></span>
+                            <span className="px-2 py-0.5 rounded bg-amber-50 border border-amber-200 text-amber-700 text-[10px] font-semibold">{req.status}</span>
+                          </div>
+                          <div className="flex flex-wrap gap-1">
+                            {req.items.map((it: any, idx: number) => (
+                              <span key={idx} className="bg-white border border-[#d2d6de] px-2 py-0.5 rounded">
+                                {it.productName} ({it.variantName}) × <strong>{it.requestedQty}</strong>
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                        {req.status === 'PENDING' && (
+                          <div className="flex items-center gap-2">
+                            <WmsButton
+                              variant="success"
+                              size="sm"
+                              onClick={() =>
+                                postWarehouseAction({
+                                  action: 'APPROVE_STOCK_REQUEST',
+                                  requestId: req.id,
+                                  approvedBy: session.staff.name,
+                                  warehouseNote: `Approved by nearby franchisee ${session.activeFranchisee?.name}`,
+                                })
+                              }
+                            >
+                              Approve &amp; Prepare
+                            </WmsButton>
+                            <WmsButton
+                              variant="danger"
+                              size="sm"
+                              onClick={() =>
+                                postWarehouseAction({
+                                  action: 'REJECT_STOCK_REQUEST',
+                                  requestId: req.id,
+                                  warehouseNote: `Rejected by ${session.activeFranchisee?.name}`,
+                                })
+                              }
+                            >
+                              Reject
+                            </WmsButton>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+
                 {stockRequests.length === 0 ? (
                   <WmsEmptyState
                     title="No stock requests sent yet"
-                    description="If any product is empty or low, click Request Stock from Warehouse to ask for replenishment."
+                    description="If any product is empty or low, click Request Stock to ask Main HQ, a Sub-Warehouse, or a Nearby Franchisee."
                     action={<WmsButton variant="primary" size="sm" onClick={() => openQuickRequest()}>New Stock Request</WmsButton>}
                   />
                 ) : (
-                  stockRequests.map((req: any) => (
-                    <div key={req.id} className="bg-white border border-[#d2d6de] rounded shadow-2xs p-4 space-y-2 text-xs">
-                      <div className="flex flex-wrap items-center justify-between gap-2">
-                        <div className="flex flex-wrap items-center gap-2">
-                          <span className="font-mono font-semibold text-[#2585be]">{req.requestNumber}</span>
-                          <span>To: <strong>{req.targetWarehouseName}</strong></span>
-                          <span className={`px-2 py-0.5 rounded text-[10px] font-semibold ${
-                            req.status === 'PENDING' ? 'bg-amber-50 text-amber-700 border border-amber-200' :
-                            req.status === 'REJECTED' ? 'bg-rose-50 text-rose-700 border border-rose-200' :
-                            'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                          }`}>
-                            {req.status}
-                          </span>
-                          {req.linkedTransferNumber && (
-                            <span className="font-mono text-[#00a65a] font-semibold">
-                              Transfer: {req.linkedTransferNumber}
+                  stockRequests.map((req: any) => {
+                    const tierLabel =
+                      req.sourceTier === 'MAIN'
+                        ? 'MAIN HQ'
+                        : req.sourceTier === 'FRANCHISEE'
+                        ? 'NEARBY FRANCHISEE'
+                        : 'SUB-WAREHOUSE';
+                    return (
+                      <div key={req.id} className="bg-white border border-[#d2d6de] rounded shadow-2xs p-4 space-y-2 text-xs">
+                        <div className="flex flex-wrap items-center justify-between gap-2">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <span className="font-mono font-semibold text-[#2585be]">{req.requestNumber}</span>
+                            <span className="px-1.5 py-0.5 rounded bg-[#e8f4fa] border border-[#b8dcf0] text-[#1f72a3] text-[10px] font-semibold">
+                              Origin: {tierLabel}
                             </span>
-                          )}
+                            <span>
+                              Requested from: <strong>{req.targetWarehouseName}</strong>
+                            </span>
+                            <span className={`px-2 py-0.5 rounded text-[10px] font-semibold ${
+                              req.status === 'PENDING' ? 'bg-amber-50 text-amber-700 border border-amber-200' :
+                              req.status === 'REJECTED' ? 'bg-rose-50 text-rose-700 border border-rose-200' :
+                              'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                            }`}>
+                              {req.status}
+                            </span>
+                            {req.linkedTransferNumber && (
+                              <span className="font-mono text-[#00a65a] font-semibold">
+                                Transfer: {req.linkedTransferNumber} (From {tierLabel}: {req.targetWarehouseName})
+                              </span>
+                            )}
+                          </div>
+                          <span className="text-[11px] text-slate-500">Requested by {req.requestedByName}</span>
                         </div>
-                        <span className="text-[11px] text-slate-500">Requested by {req.requestedByName}</span>
-                      </div>
-                      <div className="flex flex-wrap gap-1.5">
-                        {req.items.map((it: any, idx: number) => (
-                          <span key={idx} className="bg-[#f4f6f9] border border-[#e5e7eb] px-2 py-0.5 rounded">
-                            {it.productName} ({it.variantName}) × <strong>{it.requestedQty}</strong>
-                          </span>
-                        ))}
-                      </div>
-                      {req.warehouseNote && (
-                        <div className="bg-[#e8f4fa] border border-[#b8dcf0] rounded px-3 py-1.5 text-[#1f72a3]">
-                          <strong>Warehouse Update:</strong> {req.warehouseNote}
+                        <div className="flex flex-wrap gap-1.5">
+                          {req.items.map((it: any, idx: number) => (
+                            <span key={idx} className="bg-[#f4f6f9] border border-[#e5e7eb] px-2 py-0.5 rounded">
+                              {it.productName} ({it.variantName}) × <strong>{it.requestedQty}</strong>
+                            </span>
+                          ))}
                         </div>
-                      )}
-                    </div>
-                  ))
+                        {req.warehouseNote && (
+                          <div className="bg-[#e8f4fa] border border-[#b8dcf0] rounded px-3 py-1.5 text-[#1f72a3]">
+                            <strong>Response from {req.targetWarehouseName} ({tierLabel}):</strong> {req.warehouseNote}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })
                 )}
               </div>
             )}
@@ -661,17 +732,27 @@ export default function GlobalFranchiseePortalPage() {
       {requestModal && (
         <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4">
           <div className="bg-white border border-[#d2d6de] rounded shadow-xl w-full max-w-lg p-5 space-y-3 text-xs">
-            <h3 className="text-sm font-semibold text-slate-800">Request Stock from Warehouse</h3>
+            <h3 className="text-sm font-semibold text-slate-800">Request Stock (Main HQ / Sub-Warehouse / Nearby Franchisee)</h3>
             <div>
-              <label className="font-semibold text-slate-700 block mb-1">Target Warehouse</label>
+              <label className="font-semibold text-slate-700 block mb-1">Target Supply Source</label>
               <select
                 value={requestModal.targetWarehouseId}
                 onChange={(e) => setRequestModal({ ...requestModal, targetWarehouseId: e.target.value })}
                 className="w-full border border-[#d2d6de] rounded px-2.5 py-1.5"
               >
-                {(portalState?.linkedWarehouses || []).map((w: any) => (
-                  <option key={w.id} value={w.id}>{w.name}</option>
-                ))}
+                {(portalState?.supplySources || portalState?.linkedWarehouses || []).map((src: any) => {
+                  const tag =
+                    src.tier === 'MAIN'
+                      ? 'MAIN HQ'
+                      : src.tier === 'FRANCHISEE'
+                      ? 'NEARBY FRANCHISEE'
+                      : 'SUB-WAREHOUSE';
+                  return (
+                    <option key={src.id} value={src.id}>
+                      [{tag}] {src.name} {src.distanceKm ? `(${src.distanceKm} km)` : ''}
+                    </option>
+                  );
+                })}
               </select>
             </div>
             <div className="space-y-2">

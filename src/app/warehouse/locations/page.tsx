@@ -22,6 +22,7 @@ export default function LocationsModulePage() {
   const [frModal, setFrModal] = useState<any>(null);
   const [staffModal, setStaffModal] = useState<any>(null);
   const [carrierModal, setCarrierModal] = useState<any>(null);
+  const [summaryFranchisee, setSummaryFranchisee] = useState<any>(null);
 
   if (loading && !portalData) {
     return <WmsLoadingState label="Loading Locations, Staff Access & Super Admin Shipping..." />;
@@ -173,7 +174,13 @@ export default function LocationsModulePage() {
                 <tr key={f.id} className="border-b border-[#f0f0f0] hover:bg-slate-50">
                   <td className="py-2.5 px-3 border-r border-[#f0f0f0] font-mono font-semibold text-[#2585be]">{f.code}</td>
                   <td className="py-2.5 px-3 border-r border-[#f0f0f0]">
-                    <div className="font-semibold text-slate-800">{f.name}</div>
+                    <button
+                      type="button"
+                      onClick={() => setSummaryFranchisee(f)}
+                      className="font-semibold text-[#2585be] hover:underline text-left cursor-pointer"
+                    >
+                      {f.name}
+                    </button>
                     <div className="text-[11px] text-slate-500">{f.address} ({f.district})</div>
                   </td>
                   <td className="py-2.5 px-3 border-r border-[#f0f0f0] text-slate-700">{f.contact}</td>
@@ -195,6 +202,9 @@ export default function LocationsModulePage() {
                     </span>
                   </td>
                   <td className="py-2.5 px-3 text-right space-x-2">
+                    <button type="button" onClick={() => setSummaryFranchisee(f)} className="text-[#00a65a] hover:underline font-semibold cursor-pointer">
+                      Summary
+                    </button>
                     <button type="button" onClick={() => setFrModal({ ...f })} className="text-[#2585be] hover:underline font-medium cursor-pointer">
                       Edit
                     </button>
@@ -577,6 +587,104 @@ export default function LocationsModulePage() {
           </div>
         </div>
       )}
+      {/* Complete Franchisee Summary Modal */}
+      {summaryFranchisee && (() => {
+        const fr = summaryFranchisee;
+        const frStaff = staffUsers.filter((u: any) =>
+          (u.assignments || []).some((a: any) => a.locationId === fr.id)
+        );
+        const frOrders = (portalData?.orders || []).filter(
+          (o: any) => o.fulfillment?.franchiseeId === fr.id
+        );
+        const deliveredOrders = frOrders.filter((o: any) => o.fulfillment?.status === 'DELIVERED');
+        const pendingOrders = frOrders.filter(
+          (o: any) => !['DELIVERED', 'CANCELLED'].includes(o.fulfillment?.status || '')
+        );
+        const frStocks = (portalData?.stocks || []).filter((s: any) => s.locationId === fr.id);
+        const totalOnHand = frStocks.reduce((acc: number, s: any) => acc + (s.onHand || 0), 0);
+        const totalReserved = frStocks.reduce((acc: number, s: any) => acc + (s.reserved || 0), 0);
+        const totalAvailable = Math.max(0, totalOnHand - totalReserved);
+        const frRequests = (portalData?.stockRequests || []).filter(
+          (r: any) => r.franchiseeId === fr.id
+        );
+
+        return (
+          <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4 overflow-y-auto">
+            <div className="bg-white border border-[#d2d6de] rounded shadow-xl w-full max-w-2xl p-5 space-y-4 text-xs my-8">
+              <div className="flex items-start justify-between border-b border-[#e5e7eb] pb-3">
+                <div>
+                  <h3 className="text-base font-semibold text-slate-800">{fr.name} ({fr.code})</h3>
+                  <p className="text-slate-500 mt-0.5">{fr.address} • {fr.district} • Contact: {fr.contact}</p>
+                </div>
+                <span className={`px-2 py-0.5 rounded text-[10px] font-semibold ${fr.isActive ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-slate-100 text-slate-500'}`}>
+                  {fr.isActive ? 'Active' : 'Inactive'}
+                </span>
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                <div className="bg-[#f4f6f9] border border-[#e5e7eb] rounded p-3">
+                  <div className="text-slate-500 text-[11px]">Total Assigned Orders</div>
+                  <div className="text-lg font-bold text-slate-800">{frOrders.length}</div>
+                </div>
+                <div className="bg-emerald-50 border border-emerald-200 rounded p-3">
+                  <div className="text-emerald-700 text-[11px]">Orders Delivered</div>
+                  <div className="text-lg font-bold text-[#00a65a]">{deliveredOrders.length}</div>
+                </div>
+                <div className="bg-amber-50 border border-amber-200 rounded p-3">
+                  <div className="text-amber-700 text-[11px]">Pending Delivery</div>
+                  <div className="text-lg font-bold text-amber-700">{pendingOrders.length}</div>
+                </div>
+                <div className="bg-[#e8f4fa] border border-[#b8dcf0] rounded p-3">
+                  <div className="text-[#1f72a3] text-[11px]">Stock Available / On Hand</div>
+                  <div className="text-lg font-bold text-[#2585be]">{totalAvailable} / {totalOnHand}</div>
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <div className="font-semibold text-slate-700">Staff / Managers Handling This Franchisee ({frStaff.length}):</div>
+                {frStaff.length === 0 ? (
+                  <div className="text-slate-500">No staff assigned yet.</div>
+                ) : (
+                  <div className="space-y-1">
+                    {frStaff.map((u: any) => (
+                      <div key={u.id} className="bg-[#f4f6f9] border border-[#e5e7eb] rounded px-3 py-1.5 flex flex-wrap items-center justify-between gap-2">
+                        <div>
+                          <strong className="text-slate-800">{u.name}</strong> ({u.mobile || u.email})
+                        </div>
+                        <div className="font-mono text-[11px] text-[#2585be]">
+                          ID: {u.loginId || u.email} • Roles: {(u.assignments || []).find((a: any) => a.locationId === fr.id)?.roles?.join(', ')}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <div className="space-y-1.5">
+                <div className="font-semibold text-slate-700">Stock Requests from {fr.name} ({frRequests.length}):</div>
+                {frRequests.length === 0 ? (
+                  <div className="text-slate-500">No stock requests submitted yet.</div>
+                ) : (
+                  <div className="space-y-1 max-h-36 overflow-y-auto">
+                    {frRequests.map((r: any) => (
+                      <div key={r.id} className="bg-[#f4f6f9] border border-[#e5e7eb] rounded px-3 py-1.5 flex items-center justify-between">
+                        <span>
+                          <strong className="text-[#2585be]">{r.requestNumber}</strong> → Source: <strong>[{r.sourceTier || 'WAREHOUSE'}] {r.targetWarehouseName}</strong>
+                        </span>
+                        <span className="font-semibold">{r.status}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <div className="flex justify-end pt-2">
+                <WmsButton onClick={() => setSummaryFranchisee(null)}>Close</WmsButton>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
     </div>
   );
 }

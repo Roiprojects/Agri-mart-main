@@ -86,6 +86,8 @@ export interface FranchiseeStockRequest {
   franchiseeName: string;
   targetWarehouseId: string;
   targetWarehouseName: string;
+  sourceKind?: LocationKind;
+  sourceTier?: 'MAIN' | 'BRANCH' | 'FRANCHISEE';
   requestedByUserId: string;
   requestedByName: string;
   items: {
@@ -743,14 +745,43 @@ export function getFranchiseePortalState(franchiseeId: string) {
     }
   }
 
+  const supplySources = [
+    ...full.warehouses
+      .filter((w: any) => w.isActive)
+      .map((w: any) => ({
+        id: w.id,
+        name: w.name,
+        code: w.code,
+        kind: 'WAREHOUSE' as LocationKind,
+        tier: (w.tier === 'MAIN' ? 'MAIN' : 'BRANCH') as 'MAIN' | 'BRANCH',
+        distanceKm: franchisee
+          ? calculateDistanceKm(franchisee.latitude, franchisee.longitude, w.latitude, w.longitude)
+          : 0,
+      })),
+    ...full.franchisees
+      .filter((f: any) => f.isActive && f.id !== franchiseeId)
+      .map((f: any) => ({
+        id: f.id,
+        name: f.name,
+        code: f.code,
+        kind: 'FRANCHISEE' as LocationKind,
+        tier: 'FRANCHISEE' as const,
+        distanceKm: franchisee
+          ? calculateDistanceKm(franchisee.latitude, franchisee.longitude, f.latitude, f.longitude)
+          : 0,
+      })),
+  ];
+
   return {
     franchisee,
     warehouses: full.warehouses,
     linkedWarehouses: linkedWarehouses.length > 0 ? linkedWarehouses : full.warehouses,
+    supplySources,
     categories: full.categories,
     catalogVariants: full.catalogVariants,
     stocks: (full.stocks || []).filter((s: any) => s.locationId === franchiseeId),
     stockRequests: (full.stockRequests || []).filter((r: any) => r.franchiseeId === franchiseeId),
+    incomingRequests: (full.stockRequests || []).filter((r: any) => r.targetWarehouseId === franchiseeId),
     incomingTransfers,
     orders: (full.orders || []).filter((o: any) => o.fulfillment?.franchiseeId === franchiseeId),
   };
