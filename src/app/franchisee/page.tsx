@@ -255,16 +255,23 @@ export default function GlobalFranchiseePortalPage() {
             <div className="bg-[#f4f6f9] border border-[#e5e7eb] rounded p-3 space-y-1.5 text-[11px]">
               <div className="font-semibold text-slate-700">Active Franchisee Accounts (Configured in Warehouse Portal):</div>
               {directory.map((d, idx) => (
-                <div key={idx} className="flex items-center justify-between gap-2 text-slate-600">
-                  <span>
-                    <strong>{d.franchiseeName}</strong> — <code className="text-[#2585be]">{d.loginId}</code>
-                  </span>
+                <div key={idx} className="flex items-center justify-between gap-2 text-slate-600 border-t border-[#e5e7eb] pt-1.5">
+                  <div>
+                    <div className="font-semibold text-slate-800">{d.franchiseeName}</div>
+                    <div>
+                      ID: <code className="text-[#2585be] font-semibold">{d.loginId}</code> • Pass:{' '}
+                      <code className="text-slate-800 font-semibold">{d.password}</code>
+                    </div>
+                  </div>
                   <button
                     type="button"
-                    onClick={() => setLoginId(d.loginId)}
-                    className="text-[#2585be] hover:underline font-semibold cursor-pointer"
+                    onClick={() => {
+                      setLoginId(d.loginId);
+                      setPassword(d.password || '');
+                    }}
+                    className="text-[#2585be] hover:underline font-semibold cursor-pointer shrink-0"
                   >
-                    Fill ID
+                    Fill &amp; Use
                   </button>
                 </div>
               ))}

@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
     const db = readPortalDb();
 
     if (!franchiseeId) {
-      // Return active franchisee login directory (without exposing passwords)
+      // Return active franchisee login directory with configured credentials for dev/testing
       const directory = (db.staffUsers || [])
         .filter((u) => u.status === 'ACTIVE' && u.assignments?.some((a) => a.locationKind === 'FRANCHISEE'))
         .map((u) => {
@@ -22,6 +22,7 @@ export async function GET(request: NextRequest) {
           return {
             staffName: u.name,
             loginId: u.loginId || u.email || u.mobile,
+            password: u.password || (u.id === 'staff-fr-01' ? 'lake@123' : 'franchisee@123'),
             franchiseeName: fr?.name || frAssignment?.locationId,
           };
         });
@@ -55,7 +56,7 @@ export async function POST(request: NextRequest) {
           (u.loginId || '').toLowerCase() === loginInput ||
           (u.email || '').toLowerCase() === loginInput ||
           (u.mobile || '').toLowerCase() === loginInput;
-        const expectedPass = u.password || 'franchisee@123';
+        const expectedPass = u.password || (u.id === 'staff-fr-01' ? 'lake@123' : 'franchisee@123');
         return matchesId && expectedPass === passwordInput;
       });
 

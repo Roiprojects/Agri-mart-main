@@ -247,6 +247,7 @@ export default function LocationsModulePage() {
               <tr className="bg-[#f4f6f9] text-slate-700 font-semibold border-b border-[#e5e7eb]">
                 <th className="py-2.5 px-3 border-r border-[#e5e7eb]">Staff Name</th>
                 <th className="py-2.5 px-3 border-r border-[#e5e7eb]">Email / Mobile</th>
+                <th className="py-2.5 px-3 border-r border-[#e5e7eb]">Portal Credentials (ID / Password)</th>
                 <th className="py-2.5 px-3 border-r border-[#e5e7eb]">Location &amp; Role Assignments</th>
                 <th className="py-2.5 px-3 border-r border-[#e5e7eb] text-center">Status</th>
                 <th className="py-2.5 px-3 text-right">Actions</th>
@@ -259,6 +260,16 @@ export default function LocationsModulePage() {
                   <td className="py-2.5 px-3 border-r border-[#f0f0f0] text-slate-700">
                     <div>{u.email}</div>
                     <div className="text-[11px] text-slate-500">{u.mobile}</div>
+                  </td>
+                  <td className="py-2.5 px-3 border-r border-[#f0f0f0] font-mono text-[11px]">
+                    <div>
+                      <span className="text-slate-500">ID:</span>{' '}
+                      <span className="text-[#2585be] font-semibold">{u.loginId || u.email || u.mobile || '—'}</span>
+                    </div>
+                    <div>
+                      <span className="text-slate-500">Pass:</span>{' '}
+                      <span className="text-slate-800 font-semibold">{u.password || 'franchisee@123'}</span>
+                    </div>
                   </td>
                   <td className="py-2.5 px-3 border-r border-[#f0f0f0] space-y-1">
                     {(u.assignments || []).map((a: any, idx: number) => {
